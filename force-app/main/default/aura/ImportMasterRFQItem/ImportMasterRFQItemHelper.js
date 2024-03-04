@@ -32,16 +32,11 @@
             if (state === "SUCCESS") {
                 component.set("v.startPage",0);
                 component.set("v.endPage",0);
-                console.log('1');
                 var result = response.getReturnValue();
                 console.log("this is result"+result);
                 if(result != null){
                     component.set("v.disableBtn", false);
-                    console.log('2');
-                    // console.log("this is result length"+result.length());
-                    // console.log("this is result length"+result.length);
                     if(result.length > 2){
-                        console.log('3');
                         result = JSON.parse(result);
                         var maxLength = 40;
                         result.forEach(function(item){       
@@ -86,7 +81,6 @@
                         }
                 }
                 else{
-                    console.log('4');
                 }
                 component.set("v.Spinner",false);
                 this.updateCheckboxValues(component);
@@ -100,137 +94,56 @@
     importRFQItems: function(component, event, helper){
         try {
             component.set("v.Spinner", true);
-        var Records = component.get("v.mainObjectId");
-	    var rfqItems = component.get("v.objInfo");
-        var checkedRecordIds = component.get("v.checkedRecordIds");
-	    // var SubOptions = [];
-       // alert(SubOptions);
-        if(rfqItems != null){
-	    // for(var i=0 ; i < rfqItems.length;i++){
-        //  // alert(rfqItems[i].SubmittalCheck );
-	    //     if(rfqItems[i].SubmittalCheck == true){
-	    //         SubOptions.push(rfqItems[i].MasterRFQItem.Id);
-	    //     }
-	    // }
-	    if(checkedRecordIds.length > 0){
-	        // component.set("v.selectedobjInfo",SubOptions);
-            // console.log(SubOptions);
-            console.log(Records);
-	        var action = component.get("c.importRFQItems");
-            action.setParams({Id : checkedRecordIds, RFQId : Records})
-            action.setCallback(this, function(response) {
-                var state = response.getState();
-                console.log({state});
-                var result = response.getReturnValue();
-                console.log({result});
-                if (state === "SUCCESS") {
+            var Records = component.get("v.mainObjectId");
+	        var rfqItems = component.get("v.objInfo");
+            var checkedRecordIds = component.get("v.checkedRecordIds");
+            if(rfqItems != null){
+	        
+	            if(checkedRecordIds.length > 0){
+	                var action = component.get("c.importRFQItems");
+                    action.setParams({Id : checkedRecordIds, RFQId : Records})
+                    action.setCallback(this, function(response) {
+                        var state = response.getState();
+                        var result = response.getReturnValue();
+                        if (state === "SUCCESS") {
+                            component.set("v.Spinner", false);
+                            component.get("v.onSuccess")();  
+                        }
+                    
+                    }); 
+                    $A.enqueueAction(action);
+                }else{
                     component.set("v.Spinner", false);
-                    component.get("v.onSuccess")();  
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        title: 'Error!',
+                        message: 'Please Select RFQ Item.',
+                        duration: "5000",
+                        key: "info_alt",
+                        type: "error",
+                        mode: "pester",
+                    });
+                    toastEvent.fire();
                 }
-               
-            }); 
-            $A.enqueueAction(action);
-        }else{
-            component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: 'Error!',
-                message: 'Please Select RFQ Item.',
-                duration: "5000",
-                key: "info_alt",
-                type: "error",
-                mode: "pester",
-            });
-            toastEvent.fire();
-        }
-        }else{
-            component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: 'Error!',
-                message: 'There is No Master RFQ Line',
-                duration: "5000",
-                key: "info_alt",
-                type: "error",
-                mode: "pester",
-            });
-            toastEvent.fire();
-            
-        }
+            }else{
+                component.set("v.Spinner", false);
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    title: 'Error!',
+                    message: 'There is No Master RFQ Line',
+                    duration: "5000",
+                    key: "info_alt",
+                    type: "error",
+                    mode: "pester",
+                });
+                toastEvent.fire();
+            }
         } catch (error) {
             console.log({error});
         }
         
 	},
-    next : function(component,event,sObjectList,end,start,pageSize){
-        var Paginationlist = [];
-        var counter = 0;
-        for(var i = end + 1; i < end + pageSize + 1; i++){
-            if(sObjectList.length > i){ 
-                Paginationlist.push(sObjectList[i]);  
-            }
-            counter ++ ;
-        }
-        start = start + counter;
-        end = end + counter;
-        // this.updateCheckboxValues(component);
-        component.set("v.startPage",start);
-        component.set("v.endPage",end);
-        component.set('v.PaginationList', Paginationlist);
-        this.updateCheckboxValues(component);
 
-
-         
-      
-    },
-    previous : function(component,event,sObjectList,end,start,pageSize){
-
-        var Paginationlist = [];
-        var counter = 0;
-        for(var i= start-pageSize; i < start ; i++){
-            if(i > -1){
-                Paginationlist.push(sObjectList[i]); 
-                counter ++;
-            }else{
-                start++;
-            }
-        }
-        start = start - counter;
-        end = end - counter;
-        component.set("v.startPage",start);
-        component.set("v.endPage",end);
-        component.set('v.PaginationList', Paginationlist);
-        this.updateCheckboxValues(component);
-        
-        
-    },
-
-    updatePagination: function(component, filteredList) {
-        var pageSize = component.get("v.pageSize");
-        var totalRecordsCount = filteredList.length;
-        var totalPages = Math.ceil(totalRecordsCount / pageSize);
-        var currentPage = component.get("v.currentPage");
-
-        // Update total records count and total pages
-        component.set("v.totalRecordsCount", totalRecordsCount);
-        component.set("v.TotalPages", totalPages);
-        console.log("Error is before this");
-
-        // Calculate new start and end page indices
-        var startPage = (currentPage - 1) * pageSize;
-        var endPage = Math.min(startPage + pageSize - 1, totalRecordsCount - 1);
-
-        // Update pagination attributes
-        component.set("v.startPage", startPage);
-        component.set("v.endPage", endPage);
-
-        // Update the pagination list based on the new start and end indices
-        var PaginationList = [];
-        for (var i = startPage; i <= endPage; i++) {
-            PaginationList.push(filteredList[i]);
-        }
-        component.set("v.PaginationList", PaginationList);
-    },
 
     updateCheckboxValues: function (component) {
         var PaginationList = component.get("v.PaginationList");

@@ -1,7 +1,8 @@
 /*.THIS.btmodal .modal-container{
             width: 100% !important;
     		max-width: 70rem !important;
-        }*/
+}*/
+
 /* .THIS .custom-loading-text {
     transform: rotate(-90deg);
     position: absolute;
@@ -10,6 +11,7 @@
     white-space: nowrap;
     font-size: 20px;
 } */
+
 .THIS .custom-loading-text {
     transform: rotate(-90deg);
     position: absolute;
@@ -24,6 +26,7 @@
     display: inline-block; 
     padding: 0% 2% 0% 0%;
 }
+
 .THIS .slds-lookup__menu{
     width: max-content !important; 
 }

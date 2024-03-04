@@ -93,22 +93,19 @@
                     <aura:iteration items="{!v.PaginationList}" var="obj">
                         <tr>
                             <td>
-                                 <!-- <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!obj.isChecked}" name="{!obj.Id}" onchange="{!c.selectRfq}"   />-->
-                                <!-- <ui:inputCheckbox aura:id="checkContractor" text="{!obj.MasterRFQItem.Id}" change="{!c.handleCheck}"/> -->
                                 <ui:inputCheckbox aura:id="checkInspection" text="{!obj.MasterRFQItem.Id}" change="{!c.handleCheckbox}" />
                             </td>
                             <td>
-                                  <div style="white-space: pre-wrap;">
-                                <ui:outputtext value="{!obj.MasterRFQItem.truncatedName}" />
+                                <div style="white-space: pre-wrap;">
+                                    <ui:outputtext value="{!obj.MasterRFQItem.truncatedName}" />
                                 </div>
                             </td>
                            <!-- <td>
                                 <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Trade_Type__r.Name}" />
                             </td> -->
                             <td>
-                                  <div style="white-space: pre-wrap;">
-
-                                <ui:outputtext value="{!obj.MasterRFQItem.truncateddes}" />
+                                <div style="white-space: pre-wrap;">
+                                    <ui:outputtext value="{!obj.MasterRFQItem.truncateddes}" />
                                 </div>
                             </td>
                             <td style="text-align: center;">
@@ -140,9 +137,6 @@
     
         <div class="slds-modal__footer">
             <div class="slds-button-group" style="float:left;">
-            <!-- <lightning:button disabled="{!v.startPage == 0}"  name="previous" variant="brand" aura:id="prevPage" label="Prev" onclick="{!c.navigation}"  class="slds-float_left" iconName='utility:back'/>
-            &nbsp; &nbsp; &nbsp;
-            <lightning:button disabled="{!(v.endPage + 1) >= v.totalRecordsCount}" aura:id="nextPage" variant="brand" name="next"  label="Next" onclick="{!c.navigation}" class="slds-float_left" iconName='utility:forward' iconPosition='right'/> -->
             <lightning:button label="Previous" disabled="{!or(v.startPage == 0, v.disableBtn)}"
                     onclick="{!c.previous}" variant="brand" iconName='utility:back' />
                 &nbsp; &nbsp; &nbsp;
@@ -152,12 +146,6 @@
             <button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
     		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import Master RFQ Lines</button>
         </div>
-    <!-- <div class="slds-hide">
-        <div aura:id="footer">
-    		<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
-    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import</button>
-    	</div>
-    </div>	 -->
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
