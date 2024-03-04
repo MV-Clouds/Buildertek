@@ -171,3 +171,21 @@ body {
     text-decoration: underline;
     cursor: pointer;
 }
+
+@media only screen and (max-width: 1440px) {
+    .header-row {
+        padding: 1rem;
+        grid-template-columns: repeat(4, 1fr) 0.5fr 0.5fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .data-row {
+        padding: 1rem;
+        grid-template-columns: repeat(4, 1fr) 0.5fr 0.5fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .slds-gutters .slds-col {
+        padding-right: 2px;
+    }
+}
