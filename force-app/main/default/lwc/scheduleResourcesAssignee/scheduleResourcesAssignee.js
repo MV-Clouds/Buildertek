@@ -14,7 +14,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
     
     @track isLoading = false;
     @track IsTaskAvailable = false;
-    @track customeMessge = 'Loading...'
+    @track customeMessge = ''
     @track scheduleDataWrapper = [];
     @track groupedScheduleData = {};
     @track vendor = {};
@@ -71,7 +71,6 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    this.isLoading = false;
                     this.showToastUtility('Error', 'Something went wrong!', 'error');
                 })
                 .finally(() => {
