@@ -1,38 +1,34 @@
 ({
 	init: function(component, event, helper) {
 	    component.set("v.Spinner",true);
-	    helper.importMasterRFQItems(component, event, helper);
+        var pageNumber = component.get("v.PageNumber");
+        var searchString = '';
+        var pageSize = component.get("v.pageSize");
+	    helper.importMasterRFQItems(component, event, helper, searchString);
 	    helper.getcurr(component, event, helper);
         helper.getmulticur(component, event, helper);
+        
 	},
     
-     handleCheck : function(component, event, helper) {
+
+     handleCheckbox: function (component, event, helper) {
         var checkbox = event.getSource();
-       //alert(checkbox);
-          var getAllId = component.find("checkContractor");
-        var Submittals = component.get("v.objInfo");
-          var selectedRfqIds  = component.get("v.selectedobjInfo");
-        // alert(selectedRfqIds);
-       //  var man = component.get("v.recordid");
-        // alert(getAllId.length);
-        // alert(JSON.stringify(Submittals));
-	    for(var i=0 ; i < Submittals.length;i++){
-           // alert(Submittals.length);
-	        if(Submittals[i].MasterRFQItem.Id == checkbox.get("v.text") && Submittals[i].SubmittalCheck == false){
-               // alert( JSON.stringify(Submittals[i].MasterRFQItem.Id == checkbox.get("v.text")));
-               // alert(Submittals[i].SubmittalCheck == false);
-	            Submittals[i].SubmittalCheck = true;
-	        }
-	        else if(Submittals[i].MasterRFQItem.Id == checkbox.get("v.text") && Submittals[i].SubmittalCheck == true){
-              //  alert("hai");
-	             Submittals[i].SubmittalCheck = false;
+        var isChecked = checkbox.get("v.value");
+        var recordId = checkbox.get("v.text");
+        var checkedRecordIds = component.get("v.checkedRecordIds");
+        console.log(`isChecked: ${isChecked} recordId: ${recordId}`);
+        if (isChecked) {
+            checkedRecordIds.push(recordId);
+        } else {
+            var index = checkedRecordIds.indexOf(recordId);
+            if (index !== -1) {
+                checkedRecordIds.splice(index, 1);
             }
         }
-         if(selectedRfqIds.indexOf(checkbox.get("v.text")) > -1){
-             var index = selectedRfqIds.indexOf(checkbox.get("v.text"));
-             selectedRfqIds.splice(index,1);
-         }
-     },
+
+        component.set("v.checkedRecordIds", checkedRecordIds);
+        console.log('checkedRecordIds', checkedRecordIds);
+    },
     
     selectAll : function(component, event, helper) {     
          
@@ -84,8 +80,9 @@
             }   
         }
      
-     
+    component.set("v.selectedobjInfo", getAllId);
     },
+
     doCancel : function(component, event, helper) {
         component.get("v.onCancel")();     
     },
@@ -93,9 +90,57 @@
     
     
     doSave : function(component, event, helper) {
-        
-        // for Hide/Close Model,set the "isOpen" attribute to "Fasle" 
         helper.importRFQItems(component, event, helper);
-        
     },
+
+    next: function (component, event, helper) {
+        var sObjectList = component.get("v.objInfo");
+        var end = component.get("v.endPage");
+        var start = component.get("v.startPage");
+        var pageSize = component.get("v.pageSize");
+        var Paginationlist = [];
+        var counter = 0;
+        for (var i = end + 1; i < end + pageSize + 1; i++) {
+            if (sObjectList.length > i) {
+                Paginationlist.push(sObjectList[i]);
+            }
+            counter++;
+        }
+        start = start + counter;
+        end = end + counter;
+        component.set("v.startPage", start);
+        component.set("v.endPage", end);
+        component.set('v.PaginationList', Paginationlist);
+        helper.updateCheckboxValues(component);
+    },
+
+    previous: function (component, event, helper) {
+        var sObjectList = component.get("v.objInfo");
+        var end = component.get("v.endPage");
+        var start = component.get("v.startPage");
+        var pageSize = component.get("v.pageSize");
+        var Paginationlist = [];
+        var counter = 0;
+        for (var i = start - pageSize; i < start; i++) {
+            if (i > -1) {
+                Paginationlist.push(sObjectList[i]);
+                counter++;
+            } else {
+                start++;
+            }
+        }
+        start = start - counter;
+        end = end - counter;
+        component.set("v.startPage", start);
+        component.set("v.endPage", end);
+        component.set('v.PaginationList', Paginationlist);
+        helper.updateCheckboxValues(component);
+    },
+
+    handleSearch : function(component, event, helper) {
+        var searchString = event.getParam("value");
+        console.log(searchString);
+        helper.importMasterRFQItems(component, event, helper, searchString);
+    },
+
 })
