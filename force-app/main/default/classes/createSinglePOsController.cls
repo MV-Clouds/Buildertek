@@ -93,9 +93,11 @@ public with sharing class createSinglePOsController {
                         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Update_Quantity__c, buildertek__Show_Fabrication_taxes__c, buildertek__Match_BOM_Lines_with_Schedule_Items__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings' LIMIT 1];
                         System.debug('BOM.buildertek__Project__c: ' + BOM.buildertek__Project__c);
                         if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
+                            // if "Match BOM line with Schedule item" admin setting is checked true, run match schedule item logic...
 
                             List<buildertek__Schedule__c> scheduleList = [SELECT ID, buildertek__Description__c, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
                             String scheduleId = '';
+                            // used FIRST Schedule of Project for matching logic....
                             if(scheduleList.size() > 0){
                                 scheduleId = scheduleList[0].Id;
                                 System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
@@ -111,8 +113,16 @@ public with sharing class createSinglePOsController {
                                         String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
                                         String Category = VendorId_Category.containsKey(PO.buildertek__Vendor__c) ? VendorId_Category.get(PO.buildertek__Vendor__c) : null;
-
-                                        if(SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c && schItemPhaseName == poPhaseName && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c && SchItem.buildertek__BT_Category__c == Category && !PO_to_matchedSchItems.containsKey(PO.Id)) {
+                                        // Schedule Item Matching logic -- 
+                                        // // schedule item contractor == PO phase (first BOM vendor)  removed as per BUIL-3961....
+                                        // schedule item phase == PO phase (first BOM phase)
+                                        // schedule item cost code == PO cost code (first BOM cost code)
+                                        // schedule item category == PO categorty (first BOM category)
+                                        // get first schedule items that match above conditions....
+                                        if( schItemPhaseName == poPhaseName 
+                                            && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
+                                            && SchItem.buildertek__BT_Category__c == Category 
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)) {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
                                         }
@@ -133,6 +143,8 @@ public with sharing class createSinglePOsController {
                                         PO.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
                                         PO.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
                                         MatchedScheduleItem.buildertek__Purchase_Order__c = PO.Id;
+                                        MatchedScheduleItem.buildertek__Contractor__c = PO.buildertek__Vendor__c;      // added as per BUIL-3961
+
                                         schItemsToUpdate.add(MatchedScheduleItem);
                                     }
                                 }
