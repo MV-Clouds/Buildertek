@@ -112,7 +112,7 @@
                                                 <div class="weekly-header-title">
                                                     <a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[currentDate.getMonth()]}&nbsp;${currentDate.getFullYear()}</a>
                                                     <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
-                                                    <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                    <a class="month-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
                                                     <a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                 </div>`);
                     // $('#mycalendar').append('<div class="weekly-header" style="display:none;"><div class="weekly-header-title"><a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">'+monthNamesList[currentDate.getMonth()]+'&nbsp;'+currentDate.getFullYear()+'</a><a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a></div><a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a></div>')
@@ -123,7 +123,7 @@
                                                 <div class="weekly-header-title">
                                                     <a class="monthly-weekly-header-title-date"  style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[viewDate.getMonth()]}&nbsp;${viewDate.getFullYear()}</a>
                                                     <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
-                                                    <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                    <a class="month-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
                                                     <a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                 </div>
                                                     <a class="weekly-prev"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a><a class="weekly-next"  href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
@@ -159,6 +159,18 @@
                     component.set("v.isFirst",false);
                 }
 
+            }
+        }
+
+        var selectDateEle = document.getElementsByClassName('month-header-title-datee');
+
+        if(selectDateEle.length){
+            console.log('addEventListener 1.0--> ');
+            for(var i=0; i<selectDateEle.length; i++){
+                console.log('ele >> ', selectDateEle[i]);
+                selectDateEle[i].addEventListener("click",function(event){
+                    helper.openDatePickerHelper(component, event, helper);
+                });
             }
         }
 
@@ -204,6 +216,31 @@
         }
 
         console.log('addEventListener 2.0--> ');
+
+         // Changes for BUIL-3936
+        // To set yellow circle on selected date;
+        var selectDate = new Date(component.get("v.startDt"));
+        var seletedDateClass = 'dateV'+selectDate.getFullYear() +'-'+ String(selectDate.getMonth() + 1).padStart(2,'0')+ '-' + String(selectDate.getDate() -1).padStart(2,'0');
+        console.log('selected date : ', seletedDateClass);
+
+        var monthDate = document.getElementsByClassName('m-d monthly-day monthly-day-event');
+        console.log('monthDate.length : ', monthDate.length);
+        if(monthDate.length){
+            for(var i=0; i<monthDate.length; i++){
+                if(monthDate[i].classList.contains(seletedDateClass)){
+                    var numberDiv = monthDate[i].querySelector('.monthly-day-number');
+                    if(!numberDiv.classList.contains('selected-Date') && !monthDate[i].classList.contains('monthly-today')){
+                        numberDiv.classList.add('selected-Date');
+                        console.log(`monthDate ${[i]} : `, monthDate[i].classList);
+                    }
+                }
+                else{
+                    if(monthDate[i].querySelector('.monthly-day-number').classList.contains('selected-Date')){
+                        monthDate[i].querySelector('.monthly-day-number').classList.remove('selected-Date');
+                    }
+                }
+            }
+        }
 
         component.resetEventListeners();
         console.log(sampleEvents);
@@ -350,7 +387,7 @@
                                                         <div class="weekly-header-title">
                                                             <a class="monthly-weekly-header-title-date" style="pointer-events: none;"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[currentDate.getMonth()]}&nbsp;${currentDate.getFullYear()}</a>
                                                             <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
-                                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                            <a class="month-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
                                                         </div>
                                                             <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                             <a class="weekly-next" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
@@ -364,7 +401,7 @@
                                                         <div class="weekly-header-title">
                                                             <a class="monthly-weekly-header-title-date"   style="pointer-events: none;" href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">${monthNamesList[viewDate.getMonth()]}&nbsp;${viewDate.getFullYear()}</a>
                                                             <a class="weekly-header-title-date"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;">Week 1-7</a>
-                                                            <a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
+                                                            <a class="month-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date </a>
                                                             <a class="monthly-reset"  href="#" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
                                                         </div>
                                                             <a class="weekly-prev" href="javascript:void(0);" onclick="(function(event){event.preventDefault();return false;})();return false;"></a>
@@ -430,16 +467,12 @@
                         }*/
                     }
 
-                    var selectDateEle = document.getElementsByClassName('daily-header-title-datee');
+                    var selectDateEle = document.getElementsByClassName('month-header-title-datee');
 
                     if(selectDateEle.length){
                         console.log('addEventListener 1.0--> ');
                         for(var i=0; i<selectDateEle.length; i++){
                             console.log('ele >> ', selectDateEle[i]);
-                            // selectDateEle[i].removeEventListener('click', function(event){
-                            //     console.log('remove event listener');
-                            //     helper.openDatePickerHelper(component, event, helper);
-                            // });
                             selectDateEle[i].addEventListener("click",function(event){
                                 helper.openDatePickerHelper(component, event, helper);
                             });
@@ -486,6 +519,37 @@
                     document.getElementById('mycalendar2').style.display = 'block';
                     /*show day view header*/
                     document.getElementsByClassName('daily-header')[0].style.display = 'block';
+
+                    if(currentDate.getMonth() ==  viewDate.getMonth() && currentDate.getFullYear() == viewDate.getFullYear()){
+                        
+                    }
+                    
+                }
+
+
+                // Changes for BUIL-3936
+                // To set yellow circle on selected date;
+                var selectDate = new Date(component.get("v.startDt"));
+                var seletedDateClass = 'dateV'+today.getFullYear() +'-'+ String(today.getMonth() + 1).padStart(2,'0')+ '-' + String(today.getDate() -1).padStart(2,'0');
+                console.log('selected date : ', seletedDateClass);
+    
+                var monthDate = document.getElementsByClassName('m-d monthly-day monthly-day-event');
+                console.log('monthDate.length : ', monthDate.length);
+                if(monthDate.length){
+                    for(var i=0; i<monthDate.length; i++){
+                        if(monthDate[i].classList.contains(seletedDateClass)){
+                            var numberDiv = monthDate[i].querySelector('.monthly-day-number');
+                            if(!numberDiv.classList.contains('selected-Date') && !monthDate[i].classList.contains('monthly-today')){
+                                numberDiv.classList.add('selected-Date');
+                                console.log(`monthDate ${[i]} : `, monthDate[i].classList);
+                            }
+                        }
+                        else{
+                            if(monthDate[i].querySelector('.monthly-day-number').classList.contains('selected-Date')){
+                                monthDate[i].querySelector('.monthly-day-number').classList.remove('selected-Date');
+                            }
+                        }
+                    }
                 }
 
                 component.set("v.showSpinner", false);
@@ -657,6 +721,7 @@
             document.getElementById('resourceInitials').innerText = 'R';
             document.getElementById('selectedContractResource').innerText = 'Resource';
             document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+
             
             // Commented for BUIL-3936
             // document.getElementById('mycalendar').style.display = 'block';
@@ -706,8 +771,8 @@
                 changeMonth: true,
                 changeYear: true,
                 showOn: 'button',
-                buttonImageOnly: true,
-                buttonImage: 'images/calendar.gif',
+                // buttonImageOnly: true,
+                // buttonImage: 'images/calendar.gif',
                 dateFormat: 'yy-MM-dd',
                 yearRange: '-20:+20',
                 showAnim: 'fold',

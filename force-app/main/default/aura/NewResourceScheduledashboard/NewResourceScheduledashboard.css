@@ -907,7 +907,26 @@
     background: #eee!important;
     cursor: default;
     display: inline-block;
-}                                                                   
+} 
+
+.THIS .month-header-title-datee, .THIS .month-header-title-datee:hover{
+	/* background: #fff!important;
+	border: 1px solid #ccc!important;
+	color: #545454!important;
+	cursor: pointer; */
+
+    border: 1px solid #ccc;
+    color: #545454;
+    text-decoration: none;
+    height: 1.75em;
+    line-height: 1.65em;
+    padding: 0 0.65em 0 0.65em;
+    box-sizing: border-box;
+    transition: background .1s;
+    background: #eee!important;
+    cursor: default;
+    display: inline-block;
+}   
                                                                     
 /* wrapper for left/right buttons to make the clickable area bigger */
 .THIS .weekly-prev,
@@ -1206,5 +1225,19 @@ html {
 .THIS .nodata{
     font-size: 0.9rem;
     width: 100%;
+    text-align: center;
+}
+
+.THIS .selected-Date{
+    color: #FFF;
+    background: #3e5ad6;
+    border-radius: 0.75em;
+    top: 0.08em;
+    left: 0.05em;
+    font-size: 0.9em;
+    padding: 0;
+    width: 1.25em;
+    height: 1.25em;
+    line-height: 1.25em;
     text-align: center;
 }

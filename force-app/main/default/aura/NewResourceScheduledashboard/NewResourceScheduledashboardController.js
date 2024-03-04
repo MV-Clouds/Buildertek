@@ -870,12 +870,17 @@
         component.set("v.selectedContractResourceIndex",-1);
         var today = new Date();
         var Datevalue = new Date(today.getFullYear(), today.getMonth(), 1);
-        component.set("v.dateval",Datevalue);
         component.set("v.datevalString",Datevalue.toLocaleDateString());
-        component.set("v.todayDateHeader",Datevalue.toDateString());
         console.log('Datevalue.toDateString() :---->' ,Datevalue.toDateString());
-        component.set("v.todayDate",Datevalue.toLocaleDateString());
         //helper.currentWeekDates(component,helper, component.get("v.dateval"));
+        
+        
+        // Chnages for BUIL-3936
+        var newtodate = new Date(Date.parse(today)).setHours(0,0,0,0);
+        component.set("v.todayDate",new Date(newtodate).toLocaleDateString());
+        component.set("v.dateval" ,today );
+        $(`#datepickerPlaceholder`).datepicker('setDate', today);
+        console.log('defaultDate ->> ',$(`#datepickerPlaceholder`).datepicker('getDate') );
         helper.getTasksByProjects(component,helper, component.get("v.dateval"));
     },
 
@@ -1921,12 +1926,43 @@
             }
             console.log("allevents ",evenList);
             component.set("v.dateEventList",currentDateEventList);
+
+            // Changes for BUIL-3936
+            // To set yellow circle on selected date;
+            var seletedDateClass = 'dateV'+today.getFullYear() +'-'+ String(today.getMonth() + 1).padStart(2,'0')+ '-' + String(today.getDate() -1).padStart(2,'0');
+            console.log('selected date : ', seletedDateClass);
+
+            var monthDate = document.getElementsByClassName('m-d monthly-day monthly-day-event');
+            console.log('monthDate.length : ', monthDate.length);
+            if(monthDate.length){
+                for(var i=0; i<monthDate.length; i++){
+                    if(monthDate[i].classList.contains(seletedDateClass)){
+                        var numberDiv = monthDate[i].querySelector('.monthly-day-number');
+                        if(!numberDiv.classList.contains('selected-Date') && !monthDate[i].classList.contains('monthly-today')){
+                            numberDiv.classList.add('selected-Date');
+                            console.log(`monthDate ${[i]} : `, monthDate[i].classList);
+                        }
+                    }
+                    else{
+                        if(monthDate[i].querySelector('.monthly-day-number').classList.contains('selected-Date')){
+                            monthDate[i].querySelector('.monthly-day-number').classList.remove('selected-Date');
+                        }
+                    }
+                }
+            }
         }
         
         console.log('currentDateEventList--> ',currentDateEventList);
         component.set('v.todayDateHeader',new Date(newtodate).toDateString());
         component.set("v.todayDate",new Date(newtodate).toLocaleDateString());
         component.set("v.dateval" ,new Date() );
+
+        console.log('currentDateValString :: ', component.get("v.currentDateValString"));
+        console.log('todayDate :: ', component.get("v.todayDate"));
+
+        // Chnages for BUIL-3936
+        $(`#datepickerPlaceholder`).datepicker('setDate', today);
+        console.log('defaultDate ->> ',$(`#datepickerPlaceholder`).datepicker('getDate') );
         // $(document).ready(function() {
         //     $("#datepickerPlaceholder").datepicker();
         //     $("#datepickerPlaceholder").datepicker("setDate", new Date());
@@ -1940,7 +1976,7 @@
         var nextBtn = document.getElementsByClassName('monthly-next');
         var todayEle = document.getElementsByClassName('monthly-reset');
 
-        // var selectDateEle = document.getElementsByClassName('daily-header-title-datee');
+        // var selectDateEle = document.getElementsByClassName('month-header-title-datee');
         // console.log('selectDateEle : ', selectDateEle);
         
         var weekPrevBtn = document.getElementsByClassName('weekly-prev');

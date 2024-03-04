@@ -182,7 +182,7 @@ Monthly 2.2.2 by Kevin Thornbloom is licensed under a Creative Commons Attributi
             
             if(month && year){
                 $(parent + " .monthly-header-title").html('<a class="monthly-header-title-date"  onclick="return false;">' + monthNames[month - 1] + " " + year + "</a>"+
-				 '<a class="daily-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date</a>'
+				 '<a class="month-header-title-datee" id="datepickerAnchor" style="position: relative !important;" onclick="(function(event){event.preventDefault();return false;})();return false;">Select Date</a>'
 				+ (settingCurrentMonth && $(parent + " .monthly-event-list").hide() ? "" : '<a class="monthly-reset" ></a>'));
             	$(parent + " .monthly-header-title .monthly-header-title-date").attr("href","javascript:void(0)")
                 $(parent + " .monthly-header-title .monthly-reset").attr("href","javascript:void(0)")

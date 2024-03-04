@@ -413,7 +413,7 @@
                                     <div class="daily-header">
                                         <div class="daily-header-title">
                                             <a class="daily-header-title-date" href="javascript:void(0);">{!v.todayDateHeader}</a>
-                                            <a class="daily-header-title-datee" id="datepickerAnchor" data-name="datepickerPlaceholder_day" style="position: relative !important;" href="javascript:void(0);">Select Date
+                                            <a class="daily-header-title-datee" id="datepickerAnchor" onclick="{!c.openDatePicker}" data-name="datepickerPlaceholder_day" style="position: relative !important;" href="javascript:void(0);">Select Date
                                                 <!-- <div id="datepickerPlaceholder" class="datePickerDiv"></div> -->
                                             </a>
                                             <aura:if isTrue="{!v.currentDateValString != v.todayDate}">
@@ -513,7 +513,7 @@
                                         
                                         </aura:iteration>
                                         <aura:set attribute="else">
-                                            <div style="text-align:center;padding:4rem;">No Events </div>
+                                            <div style="text-align:center;padding:4rem; min-height: 30vh;">No Events </div>
                                         </aura:set>
                                     </aura:if>
                                     <!-- <div class="d-flex mb-3">
