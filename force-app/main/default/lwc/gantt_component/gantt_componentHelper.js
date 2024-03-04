@@ -247,7 +247,7 @@ function covertIntoDate(date) {
 
 function makeComboBoxDataForContractor(listOfContractors) {
     let listOfContractorToReturn = [];
-
+    listOfContractorToReturn.push({ value: '', text: 'None' });
     listOfContractors.forEach(ctrObj => {
         let contractorObj = {};
         if (ctrObj.Id) {
@@ -419,7 +419,7 @@ function mergeArrays(taskData, assignedResources) {
 function createAssignmentData(taskListForPhase, i) {
     let temp = taskListForPhase;
     console.log('taskListForPhase ',JSON.parse(JSON.stringify(temp)));
-    debugger
+    // debugger
     let assignmentRowCon1 = {}
     let assignmentRowCon2 = {}
     let assignmentRowCon3 = {}
@@ -454,7 +454,7 @@ function createAssignmentData(taskListForPhase, i) {
         console.log('assignmentRow cont 1 ',JSON.parse(JSON.stringify(assignmentRowIn1)));
         assignmentRowDataChild.push(assignmentRowIn1)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_3__c) {
         assignmentRowIn2['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
         assignmentRowIn2['event'] = taskListForPhase.Id
@@ -462,7 +462,7 @@ function createAssignmentData(taskListForPhase, i) {
         console.log('assignmentRow cont 2 ',JSON.parse(JSON.stringify(assignmentRowIn2)));
         assignmentRowDataChild.push(assignmentRowIn2)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_4__c) {
         assignmentRowIn3['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
         assignmentRowIn3['event'] = taskListForPhase.Id
@@ -549,7 +549,7 @@ function grpTaskOnPhase(records) {
         if (record.Name == "Milestone Complete") {
             duprecordobj['customtype'] = 'Milestone';
             duprecordobj['duration'] = 0;
-            duprecordobj['cls'] = "milestoneTypeColor";
+            duprecordobj['cls'] = "milestoneTypeColor pavel";
         } else {
             duprecordobj['customtype'] = 'Task';
             duprecordobj['duration'] = record.buildertek__Duration__c || 1;

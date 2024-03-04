@@ -61,12 +61,17 @@ body {
 .groupText {
     text-align: left;
     font-size: 20px;
+    display: inline;
     color: black;
 
     &:hover {
         cursor: pointer;
         color: #0070d2;
     }
+}
+
+.groupText h1 {
+    display: inline;
 }
 
 .header-row {
@@ -96,7 +101,7 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr) 0.5fr 0.5fr 1fr;
     gap: 1rem;
-    padding: 0.5rem 0rem;
+    padding: 0.5rem;
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
     margin-inline: auto;
@@ -108,7 +113,7 @@ body {
     }
 }
 
-.commonTab{
+.commonTab {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -120,7 +125,13 @@ body {
     opacity: 80%;
 }
 
-.projectTab{
+.record-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.projectTab {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -128,7 +139,6 @@ body {
     margin: 0.5rem 0;
     border: 1px solid #ccc;
     border-radius: 5px;
-    /* background-color: #b3cee5; */
     background-color: #add8e5;
     opacity: 80%;
 }

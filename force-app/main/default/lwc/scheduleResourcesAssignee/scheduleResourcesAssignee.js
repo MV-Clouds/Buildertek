@@ -23,6 +23,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
     @track resouceTaks = [];
     @track resourceList = [];
 
+    @track projectColorMap = {};
 
     connectedCallback() {
         loadStyle(this, myResource);
@@ -59,7 +60,10 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                             this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
 
                         }
+                        this.projectColorMap = result.uniqueProjectColorMap;
+                        console.log('this.projectColorMap : ', result.uniqueProjectColorMap);
                         console.log('resourceList : ', JSON.parse(JSON.stringify(this.resourceList)));
+                        this.updateProjectColorMap();
                     }
                     else if(result.status == 'error'){
                         this.showToastUtility('Error',result.returnMessge, result.status);
@@ -76,6 +80,16 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
         } catch (error) {
             console.log('error in getScheduleData Method : ', error.stack);
         }
+    }
+
+    updateProjectColorMap() {
+        setTimeout(() => {
+            let projectElements = this.template.querySelectorAll('[data-id]');
+            for (let i = 0; i < projectElements.length; i++) {
+                let key = projectElements[i].getAttribute('data-id');
+                projectElements[i].style.backgroundColor = this.projectColorMap[key];
+            }
+        }, 0);
     }
 
     handleBack(){

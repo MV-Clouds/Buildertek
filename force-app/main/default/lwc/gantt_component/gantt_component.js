@@ -36,6 +36,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track internalResources;
 
   @track error_toast = true;
+  @track taskId = "";
 
   @api SchedulerId;
   @api isLoading = false;
@@ -597,7 +598,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     resourceRowData = formatedSchData["resourceRowData"];
     assignmentRowData = formatedSchData["assignmentRowData"];
     console.log('assignmentRowData ',assignmentRowData);
-    debugger
+    // debugger
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
 
@@ -681,7 +682,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 }
               },
               renderer: ({ action, record }) => {
-                if (record.type == "Task" && record.name != "Milestone Complete") {                
+                if (record.type == "Task" && record.name != "Milestone Complete") {
                   return `<i class="b-action-item ${action.cls}"></i>`;
                 } else {
                   return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
@@ -703,7 +704,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                 }
               },
               renderer: ({ action, record }) => {
-                if (record.type == "Task" && record.name != "Milestone Complete") {                
+                if (record.type == "Task" && record.name != "Milestone Complete") {
                   return `<i class="b-action-item ${action.cls}"></i>`;
                 } else {
                   return `<i class="b-action-item ${action.cls}" style="display:none;"></i>`;
@@ -749,27 +750,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               return record.value;
             }
           },
-
-        },
-        {
-          type: "predecessor",
-          draggable: false,
-          width: 180,
-          editor: false,
-          renderer: (record) => {
-            populateIcons(record);
-            if (record.record._data.type == "Project") {
-              return "";
-            }
-            if (record.record._data.type == "Phase") {
-              return "";
-            }
-            if (record.record._data.name == "Milestone Complete") {
-              return "";
-            } else {
-              return record.record._data.predecessorName;
-            }
-          },
         },
         {
           type: "startdate",
@@ -805,6 +785,26 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           }
         },
         {
+          type: "predecessor",
+          draggable: false,
+          width: 180,
+          editor: false,
+          renderer: (record) => {
+            populateIcons(record);
+            if (record.record._data.type == "Project") {
+              return "";
+            }
+            if (record.record._data.type == "Phase") {
+              return "";
+            }
+            if (record.record._data.name == "Milestone Complete") {
+              return "";
+            } else {
+              return record.record._data.predecessorName;
+            }
+          },
+        },
+        {
           type: "widget",
           text: "Vendor",
           draggable: false,
@@ -821,8 +821,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                     clearTimeout(this.debouncedChange);
                   }
                   this.debouncedChange = setTimeout(() => {
-                    if (event.value != event.oldValue && this.taskRecordId != null && this.taskRecordId != undefined) {
-                      project.taskStore.getById(this.taskRecordId).assignments = [];
+                    if ((event.value != event.oldValue || event.value === '') && this.taskId != null && this.taskId != undefined) {
+                      project.taskStore.getById(this.taskId).assignments = [];
                     }
                   }, 300);
                 }
@@ -1092,8 +1092,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     gantt.on('startCellEdit', (editorContext) => {
       if ( editorContext.editorContext.column.type == 'resourceassignment' ) {
+        editorContext.editorContext.editor.inputField.store.clearFilters();
         let contractorId = editorContext.editorContext.record._data.contractorId;
-        editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
+                editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
           source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
         };
         // editorContext.editorContext.editor.inputField.store.filter(record => (record.resource.type == 'Internal Resources') || record.resource.contractorId == contractorId);
@@ -1151,7 +1152,8 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         }
       }
       //Added for Contractor
-      if (event.column.data.text == "Contractor") {
+      if (event.column.data.text == "Vendor") {
+        this.taskId = event.record.id;
         if (event.target.id == "editcontractor") {
           if (event.target.dataset.resource) {
             this.taskRecordId = event.record._data.id;
@@ -1168,7 +1170,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           this.selectedResourceAccount = "";
         }
       }
-      if (event.column.data.text == "Contractor Resource") {
+      if (event.column.data.text == "Assigned Resources") {
         if (event.target.id == "editcontractorResource") {
           if (event.target.dataset.resource) {
             this.taskRecordId = event.record._data.id;
@@ -1306,7 +1308,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           response,
         });
         console.log("response ", response);
-        debugger;
+        // debugger;
         if (response == "Success") {
           that.dispatchEvent(
             new ShowToastEvent({

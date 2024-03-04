@@ -218,26 +218,26 @@ export default base => class GanttToolbar extends base {
                                         feature : 'nonWorkingTime',
                                         checked : false
                                     },
-                                    {
-                                        text    : 'Enable cell editing',
-                                        feature : 'cellEdit',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show baselines',
-                                        feature : 'baselines',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show rollups',
-                                        feature : 'rollups',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show progress line',
-                                        feature : 'progressLine',
-                                        checked : false
-                                    },
+                                    // {
+                                    //     text    : 'Enable cell editing',
+                                    //     feature : 'cellEdit',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show baselines',
+                                    //     feature : 'baselines',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show rollups',
+                                    //     feature : 'rollups',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show progress line',
+                                    //     feature : 'progressLine',
+                                    //     checked : false
+                                    // },
                                     {
                                         text    : 'Hide schedule',
                                         cls     : 'b-separator',
@@ -322,7 +322,7 @@ export default base => class GanttToolbar extends base {
                         },
                         {
                             type     : 'button',
-                            text     : 'Set Original Dates',
+                            text     : 'Set Baseline Dates',
                             color    : 'b-blue',
                             ref      : 'editOriginalDate',
                             icon     : 'b-fa-file-export',
