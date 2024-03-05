@@ -121,7 +121,7 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 			if (newProjectTask.buildertek__Completion__c == 100){
 				newProjectTask.buildertek__Actual_Completion_date__c = system.today();
 				newProjectTask.buildertek__Completed__c = true;
-			}else if (newProjectTask.buildertek__Completion__c < 100 && newProjectTask.buildertek__Actual_Start_Date__c == null){
+			}else if (newProjectTask.buildertek__Completion__c < 100 &&  newProjectTask.buildertek__Completion__c > 0 && newProjectTask.buildertek__Actual_Start_Date__c == null){
 				newProjectTask.buildertek__Actual_Start_Date__c=system.today();
 			}else if (newProjectTask.buildertek__Completion__c < 100){
 				newProjectTask.buildertek__Actual_Completion_date__c = null;
@@ -166,7 +166,7 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 			if (updatedProjectTask.buildertek__Completion__c == 100){
 				updatedProjectTask.buildertek__Actual_Completion_date__c = system.today();
 				updatedProjectTask.buildertek__Completed__c = true;
-			}else if (updatedProjectTask.buildertek__Completion__c < 100 && updatedProjectTask.buildertek__Actual_Start_Date__c == null){
+			}else if (updatedProjectTask.buildertek__Completion__c < 100 && updatedProjectTask.buildertek__Completion__c > 0 && updatedProjectTask.buildertek__Actual_Start_Date__c == null){
 				updatedProjectTask.buildertek__Actual_Start_Date__c = system.today();
 			}else if (updatedProjectTask.buildertek__Completion__c < 100){
 				updatedProjectTask.buildertek__Actual_Completion_date__c = null;
