@@ -247,7 +247,7 @@ function covertIntoDate(date) {
 
 function makeComboBoxDataForContractor(listOfContractors) {
     let listOfContractorToReturn = [];
-
+    listOfContractorToReturn.push({ value: '', text: 'None' });
     listOfContractors.forEach(ctrObj => {
         let contractorObj = {};
         if (ctrObj.Id) {
@@ -454,7 +454,7 @@ function createAssignmentData(taskListForPhase, i) {
         console.log('assignmentRow cont 1 ',JSON.parse(JSON.stringify(assignmentRowIn1)));
         assignmentRowDataChild.push(assignmentRowIn1)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_3__c) {
         assignmentRowIn2['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
         assignmentRowIn2['event'] = taskListForPhase.Id
@@ -462,7 +462,7 @@ function createAssignmentData(taskListForPhase, i) {
         console.log('assignmentRow cont 2 ',JSON.parse(JSON.stringify(assignmentRowIn2)));
         assignmentRowDataChild.push(assignmentRowIn2)
     }
-    
+
     if (!taskListForPhase.buildertek__Milestone__c && taskListForPhase.buildertek__Internal_Resource_4__c) {
         assignmentRowIn3['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
         assignmentRowIn3['event'] = taskListForPhase.Id
@@ -557,13 +557,25 @@ function grpTaskOnPhase(records) {
             if(record.buildertek__Dependency__r){
                 duprecordobj['predecessorName'] = record.buildertek__Dependency__r.Name
             }
-            duprecordobj['eventColor'] = record.buildertek__task_color__c || "";
+            duprecordobj['eventColor'] = checkPastDueForTask(record);
         }
         targetNode.children.push(duprecordobj);
     });
 
-
     return hierarchy;
+}
+
+function checkPastDueForTask(task) {
+    if (task.buildertek__Finish__c != null && task.buildertek__Finish__c != undefined) {
+        var today = new Date();
+        var finishDate = new Date(task.buildertek__Finish__c);
+        if (finishDate < today && task.buildertek__Completion__c < 100 && task.buildertek__Milestone__c == false && task.buildertek__Type__c != 'Milestone' && task.buildertek__Completed__c == false) {
+            return 'red';
+        } else {
+            return task.buildertek__task_color__c || "";
+        }
+
+    }
 }
 
 export { formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };
