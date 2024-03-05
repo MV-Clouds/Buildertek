@@ -27,7 +27,7 @@
         var productTypeValue = component.get("v.searchProductTypeFilter");
         var tradeValue = component.get("v.searchTradeTypeFilter");
          var priceBook = component.get("v.searchPriceBookFilter");
-        helper.getRfqList(component, event, helper, pageNumber, pageSize, productTypeValue, tradeValue, productFamilyValue, productValue, productCategoryValue, priceBook);
+        helper.getRfqList(component, event, helper, pageNumber, pageSize, productFamilyValue, tradeValue, productTypeValue, productValue, productCategoryValue, priceBook);
     },
     
     handlePrev: function (component, event, helper) {
@@ -40,7 +40,7 @@
         var productTypeValue = component.get("v.searchProductTypeFilter");
         var tradeValue = component.get("v.searchTradeTypeFilter");
          var priceBook = component.get("v.searchPriceBookFilter");
-        helper.getRfqList(component, event, helper, pageNumber, pageSize, productTypeValue, tradeValue, productFamilyValue, productValue, productCategoryValue, priceBook);
+         helper.getRfqList(component, event, helper, pageNumber, pageSize, productFamilyValue, tradeValue, productTypeValue, productValue, productCategoryValue, priceBook);
     },
     selectRfq: function (component, event, helper) {
         var checkbox = event.getSource();
@@ -146,7 +146,12 @@
     },
     
     closeModal: function (component, event, helper) {
-         var workspaceAPI = component.find("workspace");
+        var myPageRef = component.get("v.pageReference");
+        var recordId = myPageRef.state.buildertek__parentId;
+        if(!recordId){
+            recordId = component.get("v.recordId");
+        }
+        var workspaceAPI = component.find("workspace");
         workspaceAPI.getFocusedTabInfo().then(function(response) {
             var focusedTabId = response.tabId;
             workspaceAPI.closeTab({tabId: focusedTabId});
@@ -156,6 +161,10 @@
             console.log(error);
         });
         //component.get("v.onCancel")(); 
+        $A.get("e.force:navigateToSObject").setParams({
+            "recordId": recordId,
+            "slideDevName": "detail"
+        }).fire();
     },
     
     doRfqSearch: function (component, event, helper) {

@@ -57,7 +57,7 @@
                             
                 helper.showSuccessToast(component,event,helper, "Success!",'Purchase Order Lines Imported Successfully ');
                 $A.get("e.force:closeQuickAction").fire();
-                 setTimeout(function(){ location.reload(); }, 1800);
+                 setTimeout(function(){ $A.get("e.force:refreshView").fire(); }, 1000);
                  component.set("v.Spinner", false);
                 component.set("v.showMessage", false);
                 $A.get("e.force:navigateToSObject").setParams({

@@ -100,46 +100,46 @@
         </div>
     </div>
     <div class="slds-scrollable" style="width:100%">
-    <div  class="slds-modal__content slds-p-around--large">
+    <div  class="slds-modal__content slds-p-around--large" style="overflow: auto;">
         <div>
             <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                 <thead>
                     <tr class="slds-text-heading--label">
-                        <th class="slds-is-sortable" scope="col" width="5px">
+                        <th class="slds-is-sortable" scope="col" width="1%">
                             <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> 
                         </th>
-                        <th scope="col" >
-                            <div class="slds-truncate" title="Product Family">
+                        <th scope="col" width="20%">
+                            <div title="Product Family">
                                 Product Family
                             </div>
                         </th>
-                        <th scope="col">
-                            <div class="slds-truncate" title="Product Name">
+                        <th scope="col" width="29%">
+                            <div title="Product Name">
                                 Product Name
                             </div>
                         </th>
-                         <th scope="col">
-                            <div class="slds-truncate" title="Category">
+                         <th scope="col" width="10%">
+                            <div title="Category">
                                 Category
                             </div>
                         </th>
-                        <th scope="col">
-                            <div class="slds-truncate" title="Vendor Name">
+                        <th scope="col" width="10%">
+                            <div title="Vendor Name">
                                 Product Type
                             </div>
                         </th>
-                        <th  scope="col" >
-                            <div class="slds-truncate" title="Trade Type">
+                        <th scope="col" width="10%">
+                            <div title="Trade Type">
                                 Trade Type
                             </div>
                         </th> 
-                        <th  scope="col" >
-                            <div class="slds-truncate" title="Vendor">
+                        <th scope="col" width="10%">
+                            <div title="Vendor">
                                 Vendor
                             </div>
                         </th>
-                        <th scope="col">
-                            <div class="slds-truncate" title="SKU">
+                        <th scope="col" width="10%">
+                            <div title="SKU">
                                 SKU
                             </div>
                         </th>
@@ -148,26 +148,26 @@
                 <tbody>
                     <aura:iteration items="{!v.rfqRecordList}" var="item" indexVar="index">
                         <tr>
-                            <td>
+                            <td width="1%">
                                 <lightning:input type="checkbox" aura:id="checkRFQ" checked="false" name="{!item.Id}" onchange="{!c.selectRfq}"/>
                             </td>
-                            <td>
-                               <div class="slds-truncate" title="{!item.Family}" >
+                            <td style="white-space: normal" width="20%">
+                               <div title="{!item.Family}" >
                                     {!item.Family}
                                 </div>
                             </td>
-                            <td>
-                                <div class="slds-truncate" title="{!item.Name}" >
+                            <td style="white-space: normal" width="29%">
+                                <div title="{!item.Name}" >
                                     {!item.Name}
                                 </div>
                             </td>
-                           <td>
+                           <td style="white-space: normal" width="10%">
                                 <aura:if isTrue="{!item.buildertek__Category__r != undefined}">
-                                    <div class="slds-truncate" title="{!item.buildertek__Category__r.Name}" >
+                                    <div title="{!item.buildertek__Category__r.Name}" >
                                         {!item.buildertek__Category__r.Name}
                                     </div>
                                     <aura:set attribute="else">
-                                        <div class="slds-truncate" title="">
+                                        <div title="">
                                             
                                         </div>
                                     </aura:set>
@@ -175,39 +175,39 @@
                                 
                             </td>
                             
-                            <td>
+                            <td style="white-space: normal" width="10%">
                                 <aura:if isTrue="{!item.buildertek__Product_Type__r != undefined}">
-                                    <div class="slds-truncate" title="{!item.buildertek__Product_Type__r.Name}" >
+                                    <div title="{!item.buildertek__Product_Type__r.Name}" >
                                         {!item.buildertek__Product_Type__r.Name}
                                     </div>
                                     <aura:set attribute="else">
-                                        <div class="slds-truncate" title="">
+                                        <div title="">
                                             
                                         </div>
                                     </aura:set>
                                 </aura:if>
                                 
                             </td>
-                            <td>
+                            <td style="white-space: normal" width="10%">
                                 <aura:if isTrue="{!item.buildertek__Trade_Type__r != undefined}">
-                                    <div class="slds-truncate" title="{!item.buildertek__Trade_Type__r.Name}" >
+                                    <div title="{!item.buildertek__Trade_Type__r.Name}" >
                                         {!item.buildertek__Trade_Type__r.Name}
                                     </div>
                                     <aura:set attribute="else">
-                                        <div class="slds-truncate" title="" >
+                                        <div title="" >
                                             
                                         </div>
                                     </aura:set>
                                 </aura:if>
                             </td> 
-                            <td>
-                                <div class="slds-truncate" title="{!item.buildertek__Vendor__r}" >
+                            <td style="white-space: normal" width="10%">
+                                <div title="{!item.buildertek__Vendor__r}" >
                                     {!item.buildertek__Vendor__r.Name}
                                 </div>
                             </td>
                             
-                            <td>
-                                <div class="slds-truncate" title="{!item.StockKeepingUnit}" >
+                            <td style="white-space: normal" width="10%">
+                                <div title="{!item.StockKeepingUnit}" >
                                     {!item.StockKeepingUnit}
                                 </div>
                             </td>

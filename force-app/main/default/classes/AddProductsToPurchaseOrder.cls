@@ -1,103 +1,96 @@
 public class AddProductsToPurchaseOrder {
     @AuraEnabled
-    public static RfqDataTableWrapper getProducts(Integer pageNumber, Integer pageSize, string RFQRecId, String productFamily, String tradeType, String productType, String Product, String category, String priceBook){
+    public static RfqDataTableWrapper getProducts(Integer pageNumber, Integer pageSize, String RFQRecId, String productFamily, String tradeType, String productType, String Product, String category, String priceBook) {
+
         List<Product2> rfqList = new List<Product2>();
-        
         Integer offset = (pageNumber - 1) * pageSize;
-        //Total Records 
         Integer totalRecords = 0;
-        system.debug('pricebook'+priceBook);
-        list<String> pB1 = new list<String>();
         
+        List<String> pB1 = new List<String>();
         
-        if(priceBook != '' && priceBook != null){
-            system.debug('pricebookAt starting'+priceBook);
-            String query1 = 'select Id, Name,Pricebook2.Name,Product2Id from PricebookEntry where Pricebook2.Name LIKE  \'%'+String.escapeSingleQuotes(priceBook)+'%\'';
-            system.debug('query111111111'+query1);
-            list<PricebookEntry> productIdInPB = Database.Query(query1);
+        if (priceBook != null && priceBook != '') {
+            String query1 = 'SELECT Id, Name, Product2Id FROM PricebookEntry WHERE Pricebook2.Name LIKE \'%' + String.escapeSingleQuotes(priceBook) + '%\'';
+            List<PricebookEntry> productIdInPB = Database.query(query1);
             
-            
-            for(PricebookEntry Pricebook1 : productIdInPB){
+            for (PricebookEntry Pricebook1 : productIdInPB) {
                 pB1.add(Pricebook1.Product2Id);
             }
         }
-        system.debug('pbe'+pB1);
         
-        if(productFamily != '' || tradeType != '' || productType != '' || Product  != '' || category != '' || priceBook != ''){
-            String query = 'Select COUNT() FROM Product2 WHERE id!=NULL';
-            if(productFamily != '' && productFamily != null){
-                query = query+ ' AND Family LIKE \'%'+String.escapeSingleQuotes(productFamily)+'%\'';
+        if (productFamily != null || tradeType != null || productType != null || Product != null || category != null || priceBook != null) {
+            String query = 'SELECT COUNT() FROM Product2 WHERE Id != NULL';
+            
+            if (productFamily != null && productFamily != '') {
+                query += ' AND Family LIKE \'%' + String.escapeSingleQuotes(productFamily) + '%\'';
             }
-            if(tradeType != '' && tradeType != null){
-                query = query+ ' AND buildertek__Trade_Type__r.Name LIKE \'%'+String.escapeSingleQuotes(tradeType)+'%\'';
+            if (tradeType != null && tradeType != '') {
+                query += ' AND buildertek__Trade_Type__r.Name LIKE \'%' + String.escapeSingleQuotes(tradeType) + '%\'';
             }
-            if(productType != '' && productType != null){
-                query = query+ ' AND buildertek__Product_Type__r.Name LIKE \'%'+String.escapeSingleQuotes(productType)+'%\'';
+            if (productType != null && productType != '') {
+                query += ' AND buildertek__Product_Type__r.Name LIKE \'%' + String.escapeSingleQuotes(productType) + '%\'';
             }
-            if(Product != '' && Product != null){
-                query = query+ ' AND Name LIKE \'%'+String.escapeSingleQuotes(Product)+'%\'';
+            if (Product != null && Product != '') {
+                query += ' AND Name LIKE \'%' + String.escapeSingleQuotes(Product) + '%\'';
             }
-            if(category != '' && category != null){
-                query = query+ ' AND buildertek__Category__r.Name LIKE \'%'+String.escapeSingleQuotes(category)+'%\'';
+            if (category != null && category != '') {
+                query += ' AND buildertek__Category__r.Name LIKE \'%' + String.escapeSingleQuotes(category) + '%\'';
             }
-            if(priceBook != '' && priceBook != null){
-                query = query+ ' AND Id IN:pB1';
+            if (priceBook != null && priceBook != '') {
+                query += ' AND Id IN :pB1';
             }
-            system.debug('111111111111111111111111'+query);
+            System.debug('query--->'+query);
             totalRecords = Database.countQuery(query);
-            system.debug('TotalRecords'+totalRecords);
-        }
-        else{
-            totalRecords = [SELECT COUNT() FROM Product2 ];
+        } else {
+            totalRecords = [SELECT COUNT() FROM Product2];
         }
         
+        Integer recordEnd = Math.min(pageSize * pageNumber, totalRecords);
         
-        Integer recordEnd = pageSize * pageNumber;
-        
-        //Instance of Contact DataTable Wrapper Class
         RfqDataTableWrapper objDT = new RfqDataTableWrapper();
         objDT.pageSize = pageSize;
         objDT.pageNumber = pageNumber;
         objDT.recordStart = offset + 1;
-        objDT.recordEnd = totalRecords >= recordEnd ? recordEnd : totalRecords;
+        objDT.recordEnd = recordEnd;
         objDT.totalRecords = totalRecords;
-        if(productFamily != '' || tradeType != '' || productType != '' || Product  != '' || category != '' || priceBook != ''){
-            String queryList = 'Select Id,Name,Family,buildertek__Product_Type__r.Name,buildertek__Category__r.Name,buildertek__Trade_Type__r.Name,buildertek__Vendor__r.Name,StockKeepingUnit FROM Product2 WHERE id!=NULL ';
-            if(productFamily != '' && productFamily != null){
-                queryList = queryList+ ' AND (Family LIKE \'%'+productFamily+'%\')'; //String.escapeSingleQuotes(description)
-            }
-            if(tradeType != '' && tradeType != null){
-                queryList = queryList+ ' AND (buildertek__Trade_Type__r.Name LIKE \'%'+tradeType+'%\')';
-            }
-            if(productType != '' && productType != null){
-                queryList = queryList+ ' AND (buildertek__Product_Type__r.Name LIKE \'%'+productType+'%\')';
-            }
-            if(Product != '' && Product != null){
-                queryList = queryList+ ' AND (Name LIKE \'%'+Product+'%\')';
-            }
-            if(category != '' && category != null){
-                queryList = queryList+ ' AND (buildertek__Category__r.Name LIKE \'%'+category+'%\')';
-            }
-            if(priceBook != '' && priceBook != null){
-                queryList = queryList+ ' AND Id IN:pB1';
-            }
-            queryList = queryList+ ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
-            // system.debug(queryList);
-            objDT.recordList = Database.query(queryList);
-            // system.debug(objDT.recordList);
-            
-        }
-        else{
-            objDT.recordList = [Select Id,Name,Family,buildertek__Product_Type__r.Name,buildertek__Trade_Type__r.Name,buildertek__Vendor__r.Name,buildertek__Category__r.Name,StockKeepingUnit 
-                                FROM Product2  ORDER BY Name 
-                                LIMIT :pageSize
-                                OFFSET :offset];
-        }
         
+        if (productFamily != null || tradeType != null || productType != null || Product != null || category != null || priceBook != null) {
+            String queryList = 'SELECT Id, Name, Family, buildertek__Product_Type__r.Name, buildertek__Category__r.Name, buildertek__Trade_Type__r.Name, buildertek__Vendor__r.Name, StockKeepingUnit FROM Product2 WHERE Id != NULL';
+            
+            if (productFamily != null && productFamily != '') {
+                queryList += ' AND Family LIKE \'%' + productFamily + '%\'';
+            }
+            if (tradeType != null && tradeType != '') {
+                queryList += ' AND buildertek__Trade_Type__r.Name LIKE \'%' + tradeType + '%\'';
+            }
+            if (productType != null && productType != '') {
+                queryList += ' AND buildertek__Product_Type__r.Name LIKE \'%' + productType + '%\'';
+            }
+            if (Product != null && Product != '') {
+                queryList += ' AND Name LIKE \'%' + Product + '%\'';
+            }
+            if (category != null && category != '') {
+                queryList += ' AND buildertek__Category__r.Name LIKE \'%' + category + '%\'';
+            }
+            if (priceBook != null && priceBook != '') {
+                queryList += ' AND Id IN :pB1';
+            }
+            
+            queryList += ' ORDER BY Name LIMIT :pageSize OFFSET :offset';
+            
+            objDT.recordList = Database.query(queryList);
+        } else {
+            objDT.recordList = [
+                SELECT Id, Name, Family, buildertek__Product_Type__r.Name, buildertek__Trade_Type__r.Name, buildertek__Vendor__r.Name, buildertek__Category__r.Name, StockKeepingUnit 
+                FROM Product2  
+                ORDER BY Name 
+                LIMIT :pageSize 
+                OFFSET :offset
+            ];
+        }
         
         return objDT;
-        //return rfqList;
     }
+    
     
     @AuraEnabled
     public static String addProductToPO(List<String>productIds, String RfqId){
