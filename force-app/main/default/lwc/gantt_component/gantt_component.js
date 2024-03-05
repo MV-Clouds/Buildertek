@@ -21,7 +21,8 @@ import {
   makeComboBoxDataForContractor,
   calcBusinessDays,
   makeComboBoxDataForResourceData,
-  mergeArrays
+  mergeArrays,
+  checkPastDueForTaskInFront
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
 
@@ -559,11 +560,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     }
   }
 
-  addtaskeventcall(taskrecord) {
-    console.log("In addtaskeventcall method");
-    console.log(taskrecord);
-  }
-
   createGanttChartInitially() {
     const GanttToolbar = GanttToolbarMixin(bryntum.gantt.Toolbar);
 
@@ -647,26 +643,19 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             {
               cls: "b-fa b-fa-check",
               onClick: ({ record }) => {
-                console.log("record ", record);
-                if (record.type == "Task") {
-                  if (record.percentDone == 100) {
-                    record.set("percentDone", 0);
-                    if (record.endDate < new Date()) {
-                      record.set("eventColor", 'red');
-                    } else {
-                      record.set("eventColor", 'green');
-                    }
-                  } else {
-                    record.set("percentDone", 100);
-                    record.set("eventColor", 'green');
-                  }
-                }
+                checkPastDueForTaskInFront(record);
               },
               renderer: ({ action, record }) => {
                 if (record.type == "Task" && record.name != "Milestone Complete") {
                   if (record.percentDone == 100) {
+                    record.set("eventColor", 'green');
                     return `<i class="b-action-item ${action.cls}" style="color: #5ee14c;"></i>`;
                   } else {
+                    if (record.endDate < new Date() && record.percentDone < 100 && record._data.type != "Project" && record._data.name != "Milestone Complete" && record._data.type != "Phase") {
+                      record.set("eventColor", 'red');
+                    } else {
+                      record.set("eventColor", 'green');
+                    }
                     return `<i class="b-action-item ${action.cls}"></i>`;
                   }
                 } else {
@@ -756,7 +745,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             } else {
               if (record.record.endDate < new Date() && record.record.percentDone < 100 && record.record._data.type != "Project" && record.record._data.name != "Milestone Complete" && record.record._data.type != "Phase") {
                 record.cellElement.style.color = 'red';
-              }else {
+              } else {
                 record.cellElement.style.color = '#5F6263';
               }
               return record.value;
@@ -770,7 +759,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           renderer: (record) => {
             if (record.record.endDate < new Date() && record.record.percentDone < 100 && record.record._data.type != "Project" && record.record._data.name != "Milestone Complete" && record.record._data.type != "Phase") {
               record.cellElement.style.color = 'red';
-            }else {
+            } else {
               record.cellElement.style.color = '#5F6263';
             }
             const options = { month: 'short', day: '2-digit', year: 'numeric' };
