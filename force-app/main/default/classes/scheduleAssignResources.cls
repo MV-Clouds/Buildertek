@@ -34,10 +34,10 @@ public class scheduleAssignResources {
                                             FROM buildertek__BT_Schedule_Items4__r WHERE buildertek__Type__c = 'Task' AND buildertek__Schedule__r.buildertek__Project__c != null ORDER BY buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Schedule__r.Name, Name,buildertek__Dependency__r.Name,buildertek__Start__c,buildertek__Finish__c ASC LIMIT 10000)
                                         FROM Contact WHERE Id =: vendorResourceId];
 
-                if(resourceListWithTaks.size() > 0 && resourceListWithTaks[0].AccountId != null){
-                    vendor = [SELECT Id, Name FROM Account WHERE Id =:  resourceListWithTaks[0].AccountId];
+                // if(resourceListWithTaks.size() > 0 && resourceListWithTaks[0].AccountId != null){
+                    vendor = [SELECT Id, Name FROM Account WHERE Id =:  vendorId];
                     wrapper.vendor = vendor;
-                }
+                // }
             }
             
             Integer colorIndex = 0;

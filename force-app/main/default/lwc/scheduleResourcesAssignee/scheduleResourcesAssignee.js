@@ -57,9 +57,8 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                             })
                             resourceListRaw = this.customSorting(resourceListRaw);
                             this.resourceList = resourceListRaw;
-                            this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
-
                         }
+                        this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
                         this.projectColorMap = result.uniqueProjectColorMap;
                         console.log('this.projectColorMap : ', result.uniqueProjectColorMap);
                         console.log('resourceList : ', JSON.parse(JSON.stringify(this.resourceList)));
@@ -131,6 +130,8 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
 
     customSorting(resourceListRaw){
         try {
+            console.log('resourceListRaw : ', JSON.stringify(resourceListRaw));
+            resourceListRaw.sort((a, b) => a.resource.Name.localeCompare(b.resource.Name));
             resourceListRaw.forEach(ele => {
                 ele.taskList.sort((a, b) => {
                     const Project_A = a.buildertek__Schedule__r.buildertek__Project__c ? (a.buildertek__Schedule__r.buildertek__Project__r.Name).toUpperCase() : '';
