@@ -379,4 +379,17 @@ public with sharing class PreviewBillingsController{
         }
         return con;
     }
+
+    @AuraEnabled
+    public static String getBlobBody(String recordId, String templateId){
+
+        pagereference pdf;
+        pdf = Page.buildertek__BT_GenerateQuotePDF;
+        system.debug('*********'+pdf);
+        pdf.getParameters().put('recordId', recordId);
+        pdf.getParameters().put('templateId', templateId);
+        pdf.setRedirect(true);
+
+        return EncodingUtil.base64Encode(pdf.getContent());
+    }
 }
