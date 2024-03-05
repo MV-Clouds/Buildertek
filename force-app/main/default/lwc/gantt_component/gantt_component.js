@@ -754,7 +754,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               record.record.readOnly = true;
               return record.record.name;
             } else {
-              console.log('record.record.endDate ',record.record.endDate);
               if (record.record.endDate < new Date() && record.record.percentDone < 100 && record.record._data.type != "Project" && record.record._data.name != "Milestone Complete" && record.record._data.type != "Phase") {
                 record.cellElement.style.color = 'red';
               }else {
