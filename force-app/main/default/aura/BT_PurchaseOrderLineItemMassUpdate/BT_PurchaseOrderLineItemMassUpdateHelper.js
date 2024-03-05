@@ -92,6 +92,9 @@
             var restrictUpdate = false;
             var listOfRecords = component.get('v.listOfRecords');
             listOfRecords.forEach(ele => {
+                if(ele.buildertek__Cost_Type__c == null){
+                    ele.buildertek__Cost_Type__c = 'None';
+                }
                 if(!restrictUpdate){
                     // Only show Error msg when Remaining Quantity exced Available Quantity First time....
                     if(ele.buildertek__Quantity__c && ele.buildertek__Quantity_Received__c){
