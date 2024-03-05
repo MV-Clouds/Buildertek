@@ -8,7 +8,7 @@ public class scheduleAssignResources {
         ScheduleDataWrapper wrapper = new ScheduleDataWrapper();
         try {
             List<resouceDataWrapper> resourceDataList = new List<resouceDataWrapper>();
-            Account vendor = new Account();
+            List<Account> vendor = new List<Account>();
 
             List<Contact> resourceListWithTaks = new List<Contact>();
 
@@ -22,7 +22,9 @@ public class scheduleAssignResources {
                                             FROM buildertek__BT_Schedule_Items4__r WHERE buildertek__Type__c = 'Task' AND buildertek__Schedule__r.buildertek__Project__c != null ORDER BY buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Schedule__r.Name, Name,buildertek__Dependency__r.Name,buildertek__Start__c,buildertek__Finish__c ASC LIMIT 10000)
                                         FROM Contact WHERE AccountId =: vendorId];
                 vendor = [SELECT Id, Name FROM Account WHERE Id =:  vendorId ];
-                wrapper.vendor = vendor;
+                if (vendor.size() > 0){
+                    wrapper.vendor = vendor;
+                }
         }
             else if(vendorResourceId != null && vendorId == null){
                 resourceListWithTaks = [SELECT Id, Name, AccountId,
@@ -36,7 +38,9 @@ public class scheduleAssignResources {
 
                 // if(resourceListWithTaks.size() > 0 && resourceListWithTaks[0].AccountId != null){
                     vendor = [SELECT Id, Name FROM Account WHERE Id =:  vendorId];
-                    wrapper.vendor = vendor;
+                    if (vendor.size() > 0){
+                        wrapper.vendor = vendor;
+                    }
                 // }
             }
             
@@ -98,7 +102,7 @@ public class scheduleAssignResources {
     public class ScheduleDataWrapper {
         @AuraEnabled public String status;
         @AuraEnabled public String returnMessge;
-        @AuraEnabled public Account vendor;
+        @AuraEnabled public List<Account> vendor;
         @AuraEnabled public List<resouceDataWrapper> resourceDataList;
         @AuraEnabled public Map<Id, String> uniqueProjectColorMap;
     }

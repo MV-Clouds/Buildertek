@@ -58,7 +58,7 @@ export default class ScheduleResourcesAssignee extends NavigationMixin(Lightning
                             resourceListRaw = this.customSorting(resourceListRaw);
                             this.resourceList = resourceListRaw;
                         }
-                        this.vendor = result.vendor ? result.vendor : {Id: '', Name : '---'};
+                        this.vendor = result.hasOwnProperty('vendor') ? result.vendor[0] : {Id: '', Name : '---'};
                         this.projectColorMap = result.uniqueProjectColorMap;
                         console.log('this.projectColorMap : ', result.uniqueProjectColorMap);
                         console.log('resourceList : ', JSON.parse(JSON.stringify(this.resourceList)));
