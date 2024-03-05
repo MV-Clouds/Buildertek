@@ -810,7 +810,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               let projectStartDate = new Date(record.record.startDate);
               let projectEndDate = new Date(record.record.endDate);
               let projectDuration = calcBusinessDays(projectStartDate, projectEndDate);
-              console.log('projectDuration ', projectDuration);
               return projectDuration + ' days';
             }
             if (record.record._data.type == "Phase") {
