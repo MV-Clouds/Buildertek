@@ -569,6 +569,8 @@ function checkPastDueForTask(task) {
     if (task.buildertek__Finish__c != null && task.buildertek__Finish__c != undefined) {
         var today = new Date();
         var finishDate = new Date(task.buildertek__Finish__c);
+        today.setHours(0,0,0,0);
+        finishDate.setHours(0,0,0,0);
         if (finishDate < today && task.buildertek__Completion__c < 100 && task.buildertek__Milestone__c == false && task.buildertek__Type__c != 'Milestone' && task.buildertek__Completed__c == false) {
             return 'red';
         } else {
