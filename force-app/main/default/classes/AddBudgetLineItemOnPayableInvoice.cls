@@ -10,12 +10,16 @@
 public with sharing class AddBudgetLineItemOnPayableInvoice {
     public static void createNewBudgetLineItem(Id payInvoice){
 
-        buildertek__Account_Payable_Clone__c payableInvoice = [Select Id, buildertek__Description__c, buildertek__Budget__c,buildertek__Total_Amount__c , buildertek__Budget_Line__c from buildertek__Account_Payable_Clone__c where Id =:payInvoice limit 1];
+        buildertek__Account_Payable_Clone__c payableInvoice = [Select Id, Name, buildertek__Description__c, buildertek__Budget__c,buildertek__Total_Amount__c , buildertek__Budget_Line__c from buildertek__Account_Payable_Clone__c where Id =:payInvoice limit 1];
         buildertek__Budget_Line_Group__c  budgetlinegroup =[select id,Name from buildertek__Budget_Line_Group__c  where Name = 'Invoice (AP)' limit 1];
         
         buildertek__Budget_Item__c budgetitem = new buildertek__Budget_Item__c();
         budgetitem.buildertek__Budget__c = payableInvoice.buildertek__Budget__c;
-        budgetitem.Name = payableInvoice.buildertek__Description__c;
+        if (payableInvoice.buildertek__Description__c != '' && payableInvoice.buildertek__Description__c != null) {
+            budgetitem.Name = payableInvoice.Name + ' ' + payableInvoice.buildertek__Description__c;
+        } else {
+            budgetitem.Name = payableInvoice.Name;
+        }
         budgetitem.buildertek__Quantity__c = 1; 
         budgetitem.buildertek__Invoice_total__c = payableInvoice.buildertek__Total_Amount__c;
         System.debug('payableInvoice.buildertek__Total_Amount__c '+payableInvoice.buildertek__Total_Amount__c);
