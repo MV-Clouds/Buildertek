@@ -143,7 +143,13 @@ public with sharing class createSinglePOsController {
                                         PO.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
                                         PO.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
                                         MatchedScheduleItem.buildertek__Purchase_Order__c = PO.Id;
-                                        MatchedScheduleItem.buildertek__Contractor__c = PO.buildertek__Vendor__c;      // added as per BUIL-3961
+                                        if(MatchedScheduleItem.buildertek__Contractor__c != PO.buildertek__Vendor__c){
+                                            MatchedScheduleItem.buildertek__Contractor__c = PO.buildertek__Vendor__c;       // added as per BUIL-3961
+                                            MatchedScheduleItem.buildertek__Contractor_Resource__c = null;
+                                            MatchedScheduleItem.buildertek__Contractor_Resource_1__c = null;
+                                            MatchedScheduleItem.buildertek__Contractor_Resource_2__c = null;
+                                            MatchedScheduleItem.buildertek__Contractor_Resource_3__c = null;
+                                        }
 
                                         schItemsToUpdate.add(MatchedScheduleItem);
                                     }

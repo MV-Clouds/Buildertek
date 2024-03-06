@@ -187,8 +187,7 @@ public class createPOfromBOM_controller {
             if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
                 List<buildertek__Schedule__c> scheduleList = [SELECT ID, Name, buildertek__Description__c FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
                 String scheduleId = '';
-                // used FIRST Schedule of Project for matching logic....
-                if(scheduleList.size() > 0){
+                                if(scheduleList.size() > 0){
                     scheduleId = scheduleList[0].Id;
                     System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
                 }
@@ -209,8 +208,7 @@ public class createPOfromBOM_controller {
                         // schedule item phase == PO phase (first BOM phase)
                         // schedule item cost code == PO cost code (first BOM cost code)
                         // schedule item category == PO categorty (first BOM category)
-                        // get first schedule items that match above conditions....
-                        if( schItemPhaseName == poPhaseName 
+                                                if( schItemPhaseName == poPhaseName 
                             && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
                             && SchItem.buildertek__BT_Category__c == Category
                             && matchedSchItems.size() == 0)
@@ -232,7 +230,13 @@ public class createPOfromBOM_controller {
                         CreatedPOs.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
                         CreatedPOs.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
                         MatchedScheduleItem.buildertek__Purchase_Order__c = CreatedPOs.Id;
-                        MatchedScheduleItem.buildertek__Contractor__c = CreatedPOs.buildertek__Vendor__c;       // added as per BUIL-3961
+                        if(MatchedScheduleItem.buildertek__Contractor__c != CreatedPOs.buildertek__Vendor__c){
+                            MatchedScheduleItem.buildertek__Contractor__c = CreatedPOs.buildertek__Vendor__c;       // added as per BUIL-3961
+                            MatchedScheduleItem.buildertek__Contractor_Resource__c = null;
+                            MatchedScheduleItem.buildertek__Contractor_Resource_1__c = null;
+                            MatchedScheduleItem.buildertek__Contractor_Resource_2__c = null;
+                            MatchedScheduleItem.buildertek__Contractor_Resource_3__c = null;
+                        }
 
                         update MatchedScheduleItem;
                         update CreatedPOs;
