@@ -37,6 +37,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     @track conflictingSchedules = [];
     @track intialConflictList = [];
     @track existingConflictScheduleMap = {};
+    @track conflictData = {};
 
     connectedCallback() {
         loadStyle(this, myResource)
@@ -610,7 +611,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     // * Method to get conflicting schedule for all task
     getCurrentConflictingSchedules() {
         this.existingConflictScheduleMap = {};
-
+        this.conflictData = {};
+    
         this.tableData.forEach(task => {
             const taskId = task.id;
             const selectedStartDate = task.startDate;
@@ -618,22 +620,25 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             const selectedVendorId = task.vendorId;
             const internalResourceId = task.internalResourceId;
             const selectedResources = [internalResourceId, task.vendorResources1Id, task.vendorResources2Id, task.vendorResources3Id].filter(Boolean);
-
+            const taskConflicts = {
+                InternalResource: [],
+                ExternalResource1: [],
+                ExternalResource2: [],
+                ExternalResource3: []
+            };
+    
             selectedResources.forEach(selectedResource => {
                 const schedules = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, internalResourceId);
-
                 const conflictScheduleList = schedules.vendorSchedules.concat(schedules.internalSchedules);
-
+    
                 conflictScheduleList.forEach(scheduleItem => {
                     if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItem.scheduleId);
-
+    
                         if (conflictingSchedule) {
-                            if (!this.existingConflictScheduleMap[taskId]) {
-                                this.existingConflictScheduleMap[taskId] = [];
-                            }
-
-                            this.existingConflictScheduleMap[taskId].push({
+                            const conflictType = schedules.vendorSchedules.includes(scheduleItem) ? 'ExternalResource' : 'InternalResource';
+    
+                            taskConflicts[conflictType].push({
                                 id: conflictingSchedule.Id,
                                 taskName: conflictingSchedule.Name,
                                 startDate: conflictingSchedule.buildertek__Start__c,
@@ -647,19 +652,23 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                     }
                 });
             });
-
-            //* Set the background color for the conflicting tasks
+    
+            // Set the background color for the conflicting tasks
             setTimeout(() => {
-                const hasConflict = !!this.existingConflictScheduleMap[taskId];
+                const hasConflict = Object.values(taskConflicts).some(conflicts => conflicts.length > 0);
                 const taskElement = this.template.querySelector(`div[data-id="${taskId}"]`);
                 if (taskElement) {
                     taskElement.style.backgroundColor = hasConflict ? '#ffbabc' : '';
                 }
             }, 0);
+    
+            // Store the conflicts for the current task
+            this.conflictData[taskId] = taskConflicts;
         });
-
+    
         return this.existingConflictScheduleMap;
     }
+               
 
     isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem) {
         const { StartDate: startDate, EndDate: endDate } = scheduleItem;
@@ -671,11 +680,12 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             (endDate >= selectedStartDate && endDate <= selectedEndDate)
         );
     }
-    
+
     showCurrentConflict(event) {
         this.conflictingSchedules = [];
+        console.log(`conflictData: ${JSON.stringify(this.conflictData)}`);
         const taskId = event.currentTarget.dataset.id;
-    
+
         const currentConflict = this.tableData.find(row => row.id === taskId);
         if (currentConflict) {
             this.conflictingSchedules.push({
@@ -684,13 +694,13 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 scheduleName: currentConflict.schedule
             });
         }
-    
+
         const otherConflicts = this.existingConflictScheduleMap[taskId];
         if (otherConflicts && otherConflicts.length > 0) {
             this.conflictingSchedules = this.conflictingSchedules.concat(otherConflicts);
         }
-    
+
         this.isConflict = true;
     }
-    
+
 }
