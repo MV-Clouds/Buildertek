@@ -40,7 +40,7 @@ public class AuthorizationController {
     public void generateAccessToken(){
         String clientId = '';
         String clientSecret = '';
-        List<buildertek__QuickBooks_Setting__mdt> generalSettingsList = new List<buildertek__QuickBooks_Setting__mdt>([SELECT Id, DeveloperName, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1]);
+        List<buildertek__QuickBooks_Setting__mdt> generalSettingsList = new List<buildertek__QuickBooks_Setting__mdt>([SELECT Id,Label, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Access_Token_Expire_At__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Refresh_Token_Expire_At__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1]);
 
         if (generalSettingsList.size()>0) {
             clientId = generalSettingsList[0].buildertek__Client_Id__c;
@@ -85,7 +85,11 @@ public class AuthorizationController {
                 mapToUpdate.put('buildertek__Access_Token__c',response_Map.get('access_token'));
                 mapToUpdate.put('buildertek__Refresh_Token__c',response_Map.get('refresh_token'));
                 mapToUpdate.put('buildertek__Company_Id__c',companyId);
-                QuickbooksConfigController.handleInsertAndUpdate('buildertek__QuickBooks_Setting.QB_bc_buildertek_com','QB_bc@buildertek.com',mapToUpdate);
+                dateTime access_Expiration = Datetime.now().addMinutes(55);         // Access tocken Expires in 60 minutes;
+                Date refresh_Expiration = Datetime.now().Date().addDays(99);        // Refresh tocken expires in 101 days;
+                mapToUpdate.put('buildertek__Access_Token_Expire_At__c',access_Expiration);
+                mapToUpdate.put('buildertek__Refresh_Token_Expire_At__c',refresh_Expiration);
+                QuickbooksConfigController.handleInsertAndUpdate('buildertek__QuickBooks_Setting.' + generalSettingsList.DeveloperName, generalSettingsList.Label,mapToUpdate);
 
 
                 ApexPages.addmessage( new ApexPages.message(ApexPages.severity.Confirm,+' '+'Successfully Authenticated with Quickbooks System!!!') );

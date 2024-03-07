@@ -168,4 +168,40 @@
             </aura:if>
         </div>
     </div>
+
+    <aura:html tag="style">
+        .input-text{
+            display: flex !important;
+            justify-content: space-between !important;
+        }
+        .slds-grow{
+            flex-grow : 0 !important;
+        }
+    </aura:html>
+    <!-- <div class="Welcome_header">
+        <div class="input_fields">
+            <div class="single_field">
+                <div class="field_lable">Client Id</div>
+                <lightning:input name="input3" label="Client Id" value="{!v.qbConfigs.buildertek__Client_Id__c}" placeholder="enter client id here..." readonly="{!!v.isEdit}" variant="label-hidden"/>
+            </div>
+            <div class="single_field">
+                <div class="field_lable">Client Secret</div>
+                <lightning:input name="input3" label="Client Secret" value="{!v.qbConfigs.buildertek__Client_Id__c}" placeholder="enter client secret here..."  readonly="{!!v.isEdit}"/>
+            </div>
+            <div class="single_field">
+                <div class="field_lable">Scope</div>
+                <lightning:input name="input3" label="Scope" value="{!v.qbConfigs.buildertek__Client_Id__c}" placeholder="enter scope here..." readonly="{!!v.isEdit}"/>
+            </div>
+        </div>
+        <div class="buttons">
+            <aura:if isTrue="{!!v.isEdit}">
+                <lightning:button variant="Neutral" label="Edit" title="Edit Data" onclick="{! c.edit }" />
+                <lightning:button variant="brand" label="Authorize" title="Authorize to Quickbooks" onclick="{! c.authorize }" />
+                <aura:set attribute="else">
+                    <lightning:button variant="Neutral" label="Cancel" title="Cancel" onclick="{! c.cancel }" />
+                    <lightning:button variant="brand" label="Save" title="Save data" onclick="{! c.save }" />
+                </aura:set>
+            </aura:if>
+        </div>
+    </div> -->
 </aura:component>

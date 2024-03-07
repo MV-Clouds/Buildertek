@@ -27,8 +27,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
     
                 buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Qb_URL__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
                 
-                Boolean Get_Access_Token = false;
-    
                 String SyncObjName = 'buildertek__Billings__c';
     
                 // if(acc.buildertek__QB_Id__c == null){
@@ -38,12 +36,10 @@ public with sharing class QBIntegrationQueue_SIFlow {
                     SI_Wrapper.SI = SI;
                     SI_Wrapper.acc = acc;
                     SI_Wrapper.QBMetadata = QBMetadata;
-                    SI_Wrapper.Get_Access_Token = Get_Access_Token;
                     SI_Wrapper.receiptID = receiptID;
                     SI_Wrapper.SyncObjName = SyncObjName;
                     system.debug('SI_Wrapper : ' + SI_Wrapper);
                     sync_Customer_in_QB(SI_Wrapper);
-                    // sync_Customer_in_QB(SILines, SI, acc, QBMetadata, Get_Access_Token, receiptID, SyncObjName);
                     
     
             } catch (Exception e) {
@@ -60,7 +56,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                 String Customer_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/customer?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c;            
                 String Customer_RequestBody = QBMap.mapAccountData(SI_Wrapper, 1);
                 system.debug('JSON Body >>' +  Customer_RequestBody);
-                HttpResponse Customer_Response = QBCallOutService.QBAPICallOut(Customer_EndPoint , Customer_RequestBody, SI_Wrapper.Get_Access_Token);
+                HttpResponse Customer_Response = QBCallOutService.QBAPICallOut(Customer_EndPoint , Customer_RequestBody);
                 system.debug('Customer API Status Code >> ' + Customer_Response.getStatusCode());
                 System.debug('Customer_Response.getBody() :: '+ Customer_Response.getBody());
                 SI_Wrapper.SyncToken = null;
@@ -76,9 +72,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
                         System.debug('SI_Wrapper for line to Item Create and Account Update : ' + SI_Wrapper);
 
                     if(SI_Wrapper.SyncObjName != 'Account'){ 
-                        // sync_TaxRate_in_QB(SILines, SI, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, Create_Payment, SyncObjName);
-                        // sync_item_in_QB(SI_Wrapper.SILines, SI_Wrapper.SI, CustomerQBId, SI_Wrapper.QBMetadata, SI_Wrapper.Get_Access_Token, SI_Wrapper.receiptID, SI_Wrapper.SyncObjName);
-                        // sync_lines_to_items(SI_Wrapper.SILines, SI_Wrapper.SI, CustomerQBId, SI_Wrapper.QBMetadata, SI_Wrapper.Get_Access_Token, SI_Wrapper.receiptID, SI_Wrapper.SyncObjName);
                         sync_lines_to_items(SI_Wrapper);
                     }
                     UpdateAccount(SI_Wrapper, 'Customer');
@@ -147,7 +140,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                 // API Callout to Check Duplicate Name's Items alredy Exist or Not in QB...
                 String ItemQuery = EncodingUtil.urlEncode('select * from Item WHERE name in '+ ItemNames + ' STARTPOSITION 1 MAXRESULTS 1000', 'UTF-8');
                 string GET_Items_JSONBody = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/query?query=' + ItemQuery + '&minorversion='+ SI_Wrapper.QBMetadata.buildertek__minorversion__c;   
-                HttpResponse GET_Items_Response = QBCallOutService.QBAPICallOut_GET(GET_Items_JSONBody, null, false);
+                HttpResponse GET_Items_Response = QBCallOutService.QBAPICallOut_GET(GET_Items_JSONBody, null);
                 System.debug('GET_Items_Response.getStatusCode() : ' + GET_Items_Response.getStatusCode());
                 System.debug('GET_Items_Response.getBody() : ' + GET_Items_Response.getBody());
                 list<QBBatchResJSON.Item> queryItemsList = new list<QBBatchResJSON.Item>();
@@ -256,7 +249,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                             String Items_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/batch?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c;
                             String Items_RequestBody = QBMap.MapInvoiceLineToBatch(itemsBatch); 
                             System.debug('Items_RequestBody ' +Items_RequestBody);
-                            HttpResponse Items_Response = QBCallOutService.QBAPICallOut(Items_EndPoint , Items_RequestBody, SI_Wrapper.Get_Access_Token);
+                            HttpResponse Items_Response = QBCallOutService.QBAPICallOut(Items_EndPoint , Items_RequestBody);
                             system.debug('Item Batch API Status Code >> ' + Items_Response.getStatusCode());
                             system.debug('Item Batch Resopnce >> ' + Items_Response.getBody());
 
@@ -321,7 +314,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
                                 System.debug('lineIdsMap >> ' + lineIdsMap);
                                 SI_Wrapper.lineIdsMap = lineIdsMap;
                                 SI_Wrapper.SILines = ItemList;
-                                // sync_TaxRate_in_QB(SILines, SI, lineIdsMap, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, SyncObjName);
                                 sync_TaxRate_in_QB(SI_Wrapper);
                                 UpdateSIline(SI_Wrapper);
                                 // UpdateSIline(ItemList, lineIdsMap);
@@ -369,10 +361,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
 
                     if(lineIdsMap.size() > 0){
                         System.debug('lineIdsMap When Items To Create is NUll>> ' + lineIdsMap);
-
-                        // sync_TaxRate_in_QB(SILines, SI, lineIdsMap, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, SyncObjName);
                         // UpdateSIline(ItemList, lineIdsMap);
-
                         SI_Wrapper.lineIdsMap = lineIdsMap;
                         SI_Wrapper.SILines = ItemList;
                         sync_TaxRate_in_QB(SI_Wrapper);
@@ -393,10 +382,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                             }
                     );
                 }
-
-                // sync_TaxRate_in_QB(SILines, SI, lineIdsMap1, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, SyncObjName);
                 // UpdateSIline(ItemList, lineIdsMap1);
-
                 SI_Wrapper.lineIdsMap = lineIdsMap1;
                 SI_Wrapper.SILines = ItemList;
                 sync_TaxRate_in_QB(SI_Wrapper);
@@ -425,7 +411,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
     
                 String EndPoint_for_get_TaxRate_fromQB = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/query?query=' + encodedQueryParam + '&minorversion='+ SI_Wrapper.QBMetadata.buildertek__minorversion__c; 
     
-                HttpResponse get_TaxRate_from_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
+                HttpResponse get_TaxRate_from_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null);
                     if(get_TaxRate_from_QB_ResponseBody.getStatusCode() == 200){
                         System.debug('get_TaxRate_from_QB_ResponseBody.getBody() :: ' + get_TaxRate_from_QB_ResponseBody.getBody());
     
@@ -448,7 +434,9 @@ public with sharing class QBIntegrationQueue_SIFlow {
                             System.debug('// Create New Tax Rate In QB...');
                             String TaxRate_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/taxservice/taxcode?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c; 
                             String TaxRate_RequestBody = QBMap.mapTaxRateData(SI_Wrapper.SI);           
-                            HttpResponse TaxRate_ResponseBody = QBCallOutService.QBAPICallOut(TaxRate_EndPoint, TaxRate_RequestBody,false);
+                            system.debug('TaxRate_RequestBody :: ' + TaxRate_RequestBody);
+                            HttpResponse TaxRate_ResponseBody = QBCallOutService.QBAPICallOut(TaxRate_EndPoint, TaxRate_RequestBody);
+                            system.debug('TaxRate_ResponseBody :: ' + TaxRate_ResponseBody.getBody());
                             if(TaxRate_ResponseBody.getStatusCode() == 200){
                                 System.debug('TaxRate_ResponseBody.getBody() :: '+ TaxRate_ResponseBody.getBody());
                                 QBTaxCodeResponseJSON TaxRate_ResponseBody_Deser =  QBTaxCodeResponseJSON.parse(TaxRate_ResponseBody.getBody());
@@ -490,7 +478,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                 // String TermQBId = null;
     
                 // Check if term Availbe or not in QB....
-                HttpResponse term_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null,false);
+                HttpResponse term_QB_ResponseBody = QBCallOutService.QBAPICallOut_GET(EndPoint_for_get_TaxRate_fromQB, null);
                 System.debug('term_QB_ResponseBody >> ' + term_QB_ResponseBody);
                     if(term_QB_ResponseBody.getStatusCode() == 200){
                         QBtermsResponseJSON term_QB_ResponseBody_Desr = QBtermsResponseJSON.parse(term_QB_ResponseBody.getBody());
@@ -504,12 +492,10 @@ public with sharing class QBIntegrationQueue_SIFlow {
                             System.debug('Term.QueryResponse >> ' + Terms[0].Id);
                             SI_Wrapper.TermQBId = Terms[0].Id;
     
-                            // sync_invoice_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, taxCodeId, taxRateValue, TermQBId, SyncObjName);
                             sync_invoice_in_QB(SI_Wrapper);
                         }
                         else{
                             // Create Invoice Without Term...
-                            // sync_invoice_in_QB(SI, CustomerQBId, lineIdsMap,QBMetadata, Get_Access_Token, receiptID, taxCodeId, taxRateValue, TermQBId, SyncObjName);
                             sync_invoice_in_QB(SI_Wrapper);
                         }
                     }
@@ -539,7 +525,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                 String Invoice_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/invoice?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c;
                 String Invoice_RequestBody = QBMap.mapInvoiceDataBatch(SI_Wrapper);
                 System.debug('Invoice_RequestBody >> ' + Invoice_RequestBody);
-                HttpResponse Invoice_Response = QBCallOutService.QBAPICallOut(Invoice_EndPoint , Invoice_RequestBody, SI_Wrapper.Get_Access_Token);
+                HttpResponse Invoice_Response = QBCallOutService.QBAPICallOut(Invoice_EndPoint , Invoice_RequestBody);
                 
                 system.debug('Invoice API Status Code >> ' + Invoice_Response.getStatusCode());
                 system.debug('Invoice Resopnce >> ' + Invoice_Response.getBody());
@@ -553,7 +539,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
                     SI_Wrapper.QbInvNumber = invoice.DocNumber;
                     SI_Wrapper.QBInvSyncTocken = invoice.SyncToken;
                     if(SI_Wrapper.receiptID != null){
-                        // sync_Payment_In_QB(InvoiceQBId, CustomerQBId, QBMetadata, Get_Access_Token, receiptID, SyncObjName);
                         sync_Payment_In_QB(SI_Wrapper);
                     }
                     // UpdateSalesInvoice(SI.Id, InvoiceQBId, taxCodeId, taxRateValue,QBMetadata, TermQBId, QbInvNumber, QBInvSyncTocken);
@@ -595,7 +580,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                 String Payment_EndPoint = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/payment?minorversion=' + SI_Wrapper.QBMetadata.buildertek__minorversion__c;            
                 String Payment_RequestBody = QBMap.mapReceipt_PaymetData(SI_Wrapper);
                 system.debug('Payment_RequestBody >>' +  Payment_RequestBody);
-                HttpResponse Payment_Response = QBCallOutService.QBAPICallOut(Payment_EndPoint , Payment_RequestBody, SI_Wrapper.Get_Access_Token);
+                HttpResponse Payment_Response = QBCallOutService.QBAPICallOut(Payment_EndPoint , Payment_RequestBody);
                 system.debug('Payment_RequestBody API Status Code >> ' + Payment_Response.getStatusCode());
                 SI_Wrapper.SyncToken = null;
                 if(Payment_Response.getStatusCode() == 200){
@@ -609,7 +594,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
                     UpdateReceipt(SI_Wrapper);
                 }
                 else{
-                    QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                     QBOErrorJSON Response_Error = QBOErrorJSON.parse(Payment_Response.getBody());
                     QBOErrorJSON.Fault falut = new QBOErrorJSON.Fault();
                     falut = Response_Error.Fault;
@@ -621,6 +605,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
                         Query_QB_Record(SI_Wrapper);
                     }
                     else{
+                        QBException.QB_response( Payment_Response.getStatusCode(),  Payment_Response.getBody(), 'QBIntegrationQueueable', 'QBIntegrationMethod');
                         String ErrorMessage = 'Error During Payment Callout :- '+ ' Message : ' + falut.Error[0].Message +', Detail : '+ falut.Error[0].Detail;
                         // UpdateReceipt_OnError(receiptID, ErrorMessage);
                         QBIntegrationQueue.UpdateRecord_OnError(SI_Wrapper.receiptID, ErrorMessage , SI_Wrapper.SyncObjName);
@@ -762,7 +747,7 @@ public with sharing class QBIntegrationQueue_SIFlow {
 
                 String ItemQuery = EncodingUtil.urlEncode('select * from ' +QBObject+ ' WHERE Id = \''+ QBId + '\'', 'UTF-8');
                 string GET_Items_JSONBody = '/v3/company/' + SI_Wrapper.QBMetadata.buildertek__Company_Id__c + '/query?query=' + ItemQuery + '&minorversion='+ SI_Wrapper.QBMetadata.buildertek__minorversion__c;   
-                HttpResponse GET_Items_Response = QBCallOutService.QBAPICallOut_GET(GET_Items_JSONBody, null, false);
+                HttpResponse GET_Items_Response = QBCallOutService.QBAPICallOut_GET(GET_Items_JSONBody, null);
                 System.debug('GET_Items_Response.getStatusCode() : ' + GET_Items_Response.getStatusCode());
                 System.debug('GET_Items_Response.getBody() : ' + GET_Items_Response.getBody());
 
@@ -858,7 +843,6 @@ public with sharing class QBIntegrationQueue_SIFlow {
             public String QBId;
             public String SyncToken;
             public buildertek__QuickBooks_Setting__mdt QBMetadata;
-            public Boolean Get_Access_Token;
             public String receiptID;
             public String taxCodeId;
             public Double taxRateValue;

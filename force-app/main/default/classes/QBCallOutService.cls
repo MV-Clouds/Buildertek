@@ -1,50 +1,25 @@
 public with sharing class QBCallOutService {
 
-    public static String QBCallOutService(String APImethodName, String QBEndPoint, String JSONBody, String ReqHeader) {
-        try {
-
-            Http h = new Http();
-
-            HttpRequest req = new HttpRequest();
-            req.setMethod(APImethodName);
-            req.setEndpoint(QBEndPoint);
-            req.setBody(JSONBody);
-            req.setHeader('Authorization',ReqHeader);
-            // req.setHeader('Content-Type','application/x-www-form-urlencoded');
-            req.setHeader('Content-Type','application/json');
-
-            HttpResponse res = new HttpResponse();
-            res = h.send(req);
-            String ResponseBody = res.getBody();
-            System.debug('Response Status Code >> ' + res.getStatusCode() + ' || Response status >> '+ res.getStatus());
-            System.debug('ResponseBody >> ' + ResponseBody);
-
-            return ResponseBody;
-
-        } catch (Exception e ) {
-            System.debug('Error Drung APi Callout >> ' + e.getMessage());
-            return null;
-        }
-    }
-
-    public static HttpResponse QBAPICallOut(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
+    // POST method
+    public static HttpResponse QBAPICallOut(String QBEndPoint, String JSONBody) {
         try {
 
             String Access_Token;
             String SetQBEndPoint;
-                        // req.setEndpoint('callout:Quickbooks_REST_API/v3/company/4620816365353049760/customer?minorversion=69');
-            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Name_Credential_API_Name__c, buildertek__Qb_URL__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Name_Credential_API_Name__c, buildertek__Qb_URL__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Access_Token_Expire_At__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Refresh_Token_Expire_At__c, buildertek__Scope__c, buildertek__Get_Access_Token__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            Boolean Get_Access_Token = QBMetadata.buildertek__Get_Access_Token__c;
             if(Access_Token != '' || Access_Token != null){
                 Http h = new Http();
                 
                 HttpRequest req = new HttpRequest();
                 req.setMethod('POST');
                 if(Get_Access_Token == true){
-                     Access_Token = GenerateAccessToken();
-                     SetQBEndPoint = QBMetadata.buildertek__Base_Url__c + QBEndPoint;
+                    //  Access_Token = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..KatHVe6RKPA3SrQSayqm0A.8IpWhOCGdf8-7ApTGabckQpVZPOCotvl-ieKKGOz6c1pVe0DRTw8ILZ0qg72i_FFSp1PJiDR33MB5llcB_a16VZItio0EqogXKWMDEqVDOxX16KJ_KLMIWTAKs0ucDsLNx4aghtAnnA2WKqeX5AOnZ8XSd2qVzQFudEWzyA7bXr6WyaZJApZFNqRQnOFJinJgVfy1nj1XZm8hbEy5dcmZsqZLdNuG4uKEN1Qep8UOAIMLCVHS6maiUuBeaLNg0E93r0B0HMYB672VpMhWEP9pLVQGPHhwC_h2JnjSxIdlKVNUL5XbDidRqjzDy1WYVwIv0Lu1TwZ90gI6S2Ny-ljlaIKbzBRE4X-nmexBTEvjf9l2nnPFreJuxCK0i19-7YLCtEU81r08u1xs57GlamOAIXc7db_UXmz8j1_fYvG24OaSv9jxNFxB3p4v5vGUIkmut06O5MNsNFt4g5cDNlrFxns1mlvHht8sGY4p-7wW7ofk-9-4ZF0uN6IeTVs5dypLS9Vlnf2yJOdlLf4QhAmcw8Tagw99C6purTrTxwpeDWI4uUstuEMrFXUey6K87AdVjhtKNYFEspeUSBb1wTsIzrG9r6hsnWf1Ex5RghFqTMF15XLO71zAyGSOO1_d-WLKA1Z7wxDipt12Ybqh0D16wiFvanYL4ohYi0at6fI0pPHGgmjwEqJiLGghNshm-GWNXD6FMlgSctl_LekxNjTT5LFnwn9zRb1Q_acCbdW5c2ovdesbguUiHERP1KKNVjs.-KHS9JsKtx63560yGWr0tw';
+                    Access_Token = QBMetadata.buildertek__Access_Token__c;
+                    SetQBEndPoint = QBMetadata.buildertek__Base_Url__c + QBEndPoint;
                     System.debug('access tocken endpoint : ' + SetQBEndPoint);
-                     req.setEndpoint(SetQBEndPoint);
-                     req.setHeader('Authorization','Bearer '+ Access_Token );
+                    req.setEndpoint(SetQBEndPoint);
+                    req.setHeader('Authorization','Bearer '+ Access_Token );
                 }
                 else{
                     SetQBEndPoint = 'callout:'+ QBMetadata.buildertek__Name_Credential_API_Name__c + QBEndPoint;
@@ -74,16 +49,19 @@ public with sharing class QBCallOutService {
             return null;
         }
     }
-    public static HttpResponse QBAPICallOut_GET(String QBEndPoint, String JSONBody, Boolean Get_Access_Token) {
+
+    // Get Method
+    public static HttpResponse QBAPICallOut_GET(String QBEndPoint, String JSONBody ) {
         try {
             String Access_Token;
             String endpointUrl;
+            String SetQBEndPoint;
     
             // Perform DML operations or other database transactions here
     
             // Query the metadata record
-            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c, buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
-    
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName,buildertek__Base_Url__c, buildertek__Qb_URL__c, buildertek__Name_Credential_API_Name__c, buildertek__minorversion__c, MasterLabel, buildertek__Access_Token__c, buildertek__Access_Token_Expire_At__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Get_Access_Token__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            Boolean Get_Access_Token = QBMetadata.buildertek__Get_Access_Token__c;
             // Create HTTP objects
             Http http = new Http();
             HttpRequest request = new HttpRequest();
@@ -93,6 +71,18 @@ public with sharing class QBCallOutService {
              endpointUrl = 'callout:'+ QBMetadata.buildertek__Name_Credential_API_Name__c + QBEndPoint;
             System.debug('endpointUrl---->' + endpointUrl);
             // Set the HTTP method to GET
+            if(Get_Access_Token == true){
+                Access_Token = QBMetadata.buildertek__Access_Token__c;
+                SetQBEndPoint = QBMetadata.buildertek__Base_Url__c + QBEndPoint;
+                request.setEndpoint(SetQBEndPoint);
+                request.setHeader('Authorization','Bearer '+ Access_Token );
+            }
+            else{
+                SetQBEndPoint = 'callout:'+ QBMetadata.buildertek__Name_Credential_API_Name__c + QBEndPoint;
+                System.debug('name cred End Point : ' + SetQBEndPoint);
+                request.setEndpoint(SetQBEndPoint);
+                request.setHeader('Authorization','Bearer ');
+            }
             request.setMethod('GET');
             request.setEndpoint(endpointUrl);
             request.setHeader('Content-Type', 'application/json');
@@ -114,11 +104,10 @@ public with sharing class QBCallOutService {
     }
     
 
-    public static String GenerateAccessToken(){
+    // Post method to get access Token...
+    public static String GenerateAccessToken(buildertek__QuickBooks_Setting__mdt QBMetadata){
         try {
                 String accessToken = '';
-                buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, DeveloperName, MasterLabel, buildertek__Access_Token__c, buildertek__Qb_URL__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, buildertek__Refresh_Token__c, buildertek__Scope__c, buildertek__Company_Id__c FROM buildertek__QuickBooks_Setting__mdt];
-                // QBData__c QBData = [SELECT ID, Name, Refresh_Token__c, buildertek__Client_Id__c, buildertek__Client_Secret__c, 	Last_Updated__c FROM QBData__c];
                 String refreshToken = QBMetadata.buildertek__Refresh_Token__c;
                 System.debug('refreshToken :: ' + refreshToken);
                 String newRefreshToken = '';
@@ -135,19 +124,14 @@ public with sharing class QBCallOutService {
                     newRefreshToken = (String) responseMap.get('refresh_token');
                     System.debug('Tokens : '+newRefreshToken );
                     System.debug('accessToken : '+accessToken );
-                    // buildertek__QuickBooks_Setting__mdt QBS = new buildertek__QuickBooks_Setting__mdt(buildertek__Refresh_Token__c = newRefreshToken, buildertek__Access_Token__c = accessToken, buildertek__Last_Modified_Refresh_Token__c = date.today());
 
-                    Map<String, Object> mapToUpdate = new Map<String, Object>();
-                    mapToUpdate.put('buildertek__Refresh_Token__c',newRefreshToken);
-                    mapToUpdate.put('buildertek__Access_Token__c',accessToken);
-                    mapToUpdate.put('buildertek__Last_Modified_Refresh_Token__c',date.today());
-                    // QuickbooksConfigController.handleInsertAndUpdate('buildertek__QuickBooks_Setting.QB_bc_buildertek_com','QB_bc@buildertek.com', mapToUpdate);
-                    return accessToken;
+                    system.debug(string.valueOf(accessToken+'_'+newRefreshToken).split('_')[0]);
+                    return accessToken+'_'+newRefreshToken;
                 }
                     else {
                     System.debug('Failed to refresh access token. Status Code: ' + res.getStatusCode());
                     System.debug('Response: ' + res.getBody());
-                    return accessToken;
+                    return null;
                 }
 
         } catch (Exception e) {
