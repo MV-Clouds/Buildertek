@@ -33,6 +33,12 @@
     align-items: center;
 }
 
+.record-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .data-row:nth-child(even) {
     background-color: #f0f8ff;
 }

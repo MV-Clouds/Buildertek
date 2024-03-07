@@ -55,7 +55,7 @@
                 </div>
                 <div class="recordValues">
                     <template for:each={tableData} for:item="row">
-                        <div key={row.id} class="slds-grid slds-gutters data-row">
+                        <div key={row.id} data-id={row.id} class="slds-grid slds-gutters data-row">
                             <template if:true={row.isEditing}>
                                 <div class="slds-col slds-truncate">
                                     <p class="record-value">{row.taskName}</p>
@@ -95,7 +95,7 @@
                                         onchange={vendorResourcesChange} placeholder="Select Vendor Resources"
                                         class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
-                                <div class="icons">
+                                <div class="slds-col icons">
                                     <lightning-icon icon-name='utility:save' alternative-text='save' size='x-small'
                                         title='save' onclick={saveResource} data-id={row.id}></lightning-icon>
                                     <lightning-icon icon-name='utility:close' alternative-text='close' size='x-small'
@@ -137,6 +137,10 @@
                                     <lightning-icon icon-name='utility:edit' alternative-text='edit' size='xx-small'
                                         title='edit' onclick={editResource} data-id={row.id}
                                         data-vendorid={row.vendor}></lightning-icon>
+                                    <lightning-icon if:true={row.hasConflict} icon-name='utility:pop_in' alternative-text='bundle_config'
+                                        size='x-small' title='show Conflict' onclick={showCurrentConflict}
+                                        data-id={row.id}></lightning-icon>
+
                                 </div>
                             </template>
                         </div>
