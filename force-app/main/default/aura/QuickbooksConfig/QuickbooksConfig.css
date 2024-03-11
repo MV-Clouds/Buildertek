@@ -1,2 +1,6 @@
-.THIS {
+.THIS .input_fields{
+    padding: 1rem 2rem;
+}
+.THIS .single_field{
+    width: 30%;
 }

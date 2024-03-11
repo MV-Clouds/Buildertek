@@ -3,30 +3,56 @@
         var id = component.get("v.recordId");
         console.log('RecordId---> ',id);
 
-        var Objectname = component.get("v.sobjecttype");
-        console.log('Objectname---> ',Objectname);
+        var action = component.get('c.verifyAccessToken');
+        action.setCallback(this, function(response){
+            var result = response.getReturnValue();
+            if(result != null){
+                if(result == 'success'){
+                    
+                    var Objectname = component.get("v.sobjecttype");
+                    console.log('Objectname---> ',Objectname);
 
-        if(Objectname == "Account"){
-            component.set("v.ShowAccountTypeOpt", true);
-        }
-        else if (Objectname == 'buildertek__Purchase_Order__c') {
-            helper.SyncPO(component, event, helper);
-        }
-        else if(Objectname == 'buildertek__Account_Payable__c'){
-            helper.SyncCOInvoice(component, event, helper)
-        }
-        else if(Objectname == 'buildertek__Account_Payable_Clone__c'){
-            helper.SyncPayableInvoice(component, event, helper)
-        }
-        else if(Objectname == 'buildertek__Billings__c'){
-            helper.SyncSIInvoice(component, event, helper)
-        }
-        else if(Objectname == 'buildertek__Expense__c'){
-            helper.SyncExpense(component, event, helper)
-        }
-        else if(Objectname == 'buildertek__Receipt__c'){
-            helper.SyncReceipt(component, event, helper)
-        }
+                    if(Objectname == "Account"){
+                        component.set("v.ShowAccountTypeOpt", true);
+                    }
+                    else if (Objectname == 'buildertek__Purchase_Order__c') {
+                        helper.SyncPO(component, event, helper);
+                    }
+                    else if(Objectname == 'buildertek__Account_Payable__c'){
+                        helper.SyncCOInvoice(component, event, helper)
+                    }
+                    else if(Objectname == 'buildertek__Account_Payable_Clone__c'){
+                        helper.SyncPayableInvoice(component, event, helper)
+                    }
+                    else if(Objectname == 'buildertek__Billings__c'){
+                        helper.SyncSIInvoice(component, event, helper)
+                    }
+                    else if(Objectname == 'buildertek__Expense__c'){
+                        helper.SyncExpense(component, event, helper)
+                    }
+                    else if(Objectname == 'buildertek__Receipt__c'){
+                        helper.SyncReceipt(component, event, helper)
+                    }
+                }
+                else{
+                    helper.ShowResponsePopupHelper(component, event, helper, result, result);
+                    $A.get("e.force:closeQuickAction").fire();
+                }
+            }
+            else{
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Warning!",
+                    "message": 'Something Went Wrong !!!',
+                });  
+                $A.get("e.force:closeQuickAction").fire();
+
+            }
+        });
+        $A.enqueueAction(action);	
+
+
+        
     },
 
     // this method only run when Object Is Account
