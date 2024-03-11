@@ -88,7 +88,8 @@ public with sharing class PurchaseOrderTriggerHandler{
                     }
                 }
                 else if(PO.buildertek__Paid__c == 0){
-                    if(PO.buildertek__Status__c != 'Open'){
+                    //BUIL - 3960 PO could be at Open, Approved, Ordered, Vendor Accepted, Vendor Rejected and Liend Release Accepted status when the paid amount is 0
+                    if (PO.buildertek__Status__c != 'Open' && PO.buildertek__Status__c != 'Approved' && PO.buildertek__Status__c != 'Ordered' && PO.buildertek__Status__c != 'Vendor Accepted' && PO.buildertek__Status__c != 'Vendor Rejected' && PO.buildertek__Status__c != 'Lien Release Accepted'){
                         PO.buildertek__Status__c = 'Open';
                     }
                 }

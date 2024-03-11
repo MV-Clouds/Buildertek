@@ -12,8 +12,9 @@
                 if (templates.length === 1) {
                     component.set("v.selectedTemplate", templates[0].Id);
                     component.set("v.isTemplateSelected", true);
-                    helper.getContact(component, event, helper);
-                    helper.getTemplateBody(component, event, helper);
+                    $A.enqueueAction(component.get('c.preiewEmailTemplate'));
+                    // helper.getContact(component, event, helper);
+                    // helper.getTemplateBody(component, event, helper);
                 }
                 component.set("v.templates", templates);
             } else {

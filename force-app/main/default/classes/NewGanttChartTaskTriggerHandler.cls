@@ -104,4 +104,105 @@ public with sharing class NewGanttChartTaskTriggerHandler{
         }
     }
 
+    public static void OnBeforeInsert(Project_Task__c[] newProjectTasks){
+		Set<id> accountIds = new Set<id>();
+		for (Project_Task__c newProjectTask : newProjectTasks){
+			accountIds.add(newProjectTask.buildertek__Contractor__c);
+		}
+		Map<id, account> newMapAccounts = new Map<id, account>([select id, buildertek__Trade_Type_Lookup__c
+		                                                        from Account
+		                                                        where id IN:accountIds]);
+		for (Project_Task__c newProjectTask : newProjectTasks){
+
+			/**
+			 * BUIL-2551
+			 * Update completed checkbox true when completion is 100, if completion is less than 100 then completed checkbox false
+			 */
+			if (newProjectTask.buildertek__Completion__c == 100){
+				newProjectTask.buildertek__Actual_Completion_date__c = system.today();
+				newProjectTask.buildertek__Completed__c = true;
+			}else if (newProjectTask.buildertek__Completion__c < 100 &&  newProjectTask.buildertek__Completion__c > 0 && newProjectTask.buildertek__Actual_Start_Date__c == null){
+				newProjectTask.buildertek__Actual_Start_Date__c=system.today();
+			}else if (newProjectTask.buildertek__Completion__c < 100){
+				newProjectTask.buildertek__Actual_Completion_date__c = null;
+				newProjectTask.buildertek__Completed__c = false;
+			}
+			/**
+			 * BUIL-3308
+			 * When the user check the Completed checkbox it should set the Completion % field - 100 and set the Actual Completion Date = TODAY()
+			 */
+			if (newProjectTask.buildertek__Completed__c == true){
+				newProjectTask.buildertek__Actual_Completion_date__c = system.today();
+				newProjectTask.buildertek__Completion__c = 100;
+			}
+
+			if (newProjectTask.buildertek__Completion__c > 0 && newProjectTask.buildertek__Completion_updated__c == false){
+				newProjectTask.buildertek__Actual_Start_Date__c = system.today();
+				newProjectTask.buildertek__Completion_updated__c = true;
+			}
+
+			//Get 'Trade Type' from selected Contractor[Account] and update 'Trade Type' field in Schedule Item
+			if (newProjectTask.buildertek__Contractor__c != null && newMapAccounts.containsKey(newProjectTask.buildertek__Contractor__c)){
+				if (newMapAccounts.get(newProjectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c != null){
+					newProjectTask.buildertek__Trade_Type__c = newMapAccounts.get(newProjectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c;
+				}
+			}
+		}
+	}
+
+	public static void OnBeforeUpdate(Project_Task__c[] oldProjectTasks, Project_Task__c[] updatedProjectTasks, Map<ID, Project_Task__c> ProjectTaskMap, Map<Id, Project_Task__c> oldProjectTaskMap){
+		Set<Id> accountIds = new Set<Id>();
+		system.debug('updatedprojecttasks:- '+updatedProjectTasks);
+		system.debug('oldprojecttasks:- '+oldProjectTasks);
+		for (Project_Task__c updatedProjectTask : updatedProjectTasks){
+			accountIds.add(updatedProjectTask.buildertek__Contractor__c);
+		}
+		Map<id, Account> updatedMapAccounts = new Map<id, Account>([Select id, buildertek__Trade_Type_Lookup__c
+		                                                            from Account
+		                                                            where id IN:accountIds]);
+		for (Project_Task__c updatedProjectTask : updatedProjectTasks){
+			
+			//Actual Completion date
+			if (updatedProjectTask.buildertek__Completion__c == 100){
+				updatedProjectTask.buildertek__Actual_Completion_date__c = system.today();
+				updatedProjectTask.buildertek__Completed__c = true;
+			}else if (updatedProjectTask.buildertek__Completion__c < 100 && updatedProjectTask.buildertek__Completion__c > 0 && updatedProjectTask.buildertek__Actual_Start_Date__c == null){
+				updatedProjectTask.buildertek__Actual_Start_Date__c = system.today();
+			}else if (updatedProjectTask.buildertek__Completion__c < 100){
+				updatedProjectTask.buildertek__Actual_Completion_date__c = null;
+				updatedProjectTask.buildertek__Completed__c = false;
+			}
+
+			/**
+			 * BUIL-3308
+			 * When the user check the Completed checkbox it should set the Completion % field - 100 and set the Actual Completion Date = TODAY()
+			 */
+			if (updatedProjectTask.buildertek__Completed__c == true){
+				updatedProjectTask.buildertek__Actual_Completion_date__c = system.today();
+				updatedProjectTask.buildertek__Completion__c = 100;
+			}
+
+
+			if (updatedProjectTask.buildertek__Completion__c > 0 && updatedProjectTask.buildertek__Completion_updated__c == false){
+				updatedProjectTask.buildertek__Actual_Start_Date__c = system.today();
+				updatedProjectTask.buildertek__Completion_updated__c = true;
+			}
+
+			//Get 'Trade Type' from selected Contractor[Account] and update 'Trade Type' field in Schedule Item
+			if (updatedProjectTask.buildertek__Contractor__c != null && updatedMapAccounts.containsKey(updatedProjectTask.buildertek__Contractor__c)){
+				if (updatedMapAccounts.get(updatedProjectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c != null){
+					if (updatedProjectTask.buildertek__Contractor__c != oldProjectTaskMap.get(updatedProjectTask.Id).buildertek__Contractor__c || updatedProjectTask.buildertek__Trade_Type__c == null || updatedProjectTask.buildertek__Trade_Type__c != updatedMapAccounts.get(updatedProjectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c){
+						updatedProjectTask.buildertek__Trade_Type__c = updatedMapAccounts.get(updatedProjectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c;
+					}
+				}
+			} else if (updatedProjectTask.buildertek__Contractor__c == null && oldProjectTaskMap.get(updatedProjectTask.Id).buildertek__Contractor__c != null){
+				updatedProjectTask.buildertek__Trade_Type__c = null;
+			}
+
+			if (String.isBlank(updatedProjectTask.buildertek__Dependency__c)){
+				updatedProjectTask.buildertek__Schedule_Item_Dependency_Path__c = '';
+			}
+		}
+	}
+
 }

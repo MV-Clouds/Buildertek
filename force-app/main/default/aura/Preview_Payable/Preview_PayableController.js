@@ -30,6 +30,7 @@
 				if (templates.length === 1) {
 					component.set("v.selectedTemplate", templates[0].Id);
 					component.set("v.isTemplateSelected", true);
+                    $A.enqueueAction(component.get('c.preiewEmailTemplate'));
 				}
 				component.set("v.templates", templates);
 			} else {

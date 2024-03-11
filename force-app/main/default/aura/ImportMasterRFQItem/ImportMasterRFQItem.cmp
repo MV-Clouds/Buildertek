@@ -8,7 +8,38 @@
     <aura:attribute name="currencycode" type="String"/>
     <aura:handler name="init" value="{!this}" action="{!c.init}" />
     <aura:attribute name="selectedobjInfo" type="list"   /> 
+    <aura:attribute name="maxLength" type="Integer" default="20" />
     <aura:attribute name="Spinner" type="boolean" default="false"/>
+
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="TotalPages" type="integer" default="0" />
+    <aura:attribute name="TotalRecords" type="integer" default="0" />
+    <aura:attribute name="RecordStart" type="integer" default="0" />
+    <aura:attribute name="RecordEnd" type="integer" default="0" />
+    <aura:attribute name="checkedRecordIds" type="List" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
+
+
+    <aura:attribute name="startPage" type="Integer" default="0"/>
+    <aura:attribute name="endPage" type="Integer" default="0"/>
+    <aura:attribute name="pageSize" type="integer" default="10" />
+    <aura:attribute name="PaginationList" type="list"/> 
+    <aura:attribute name="totalRecordsCount" type="Integer" default="0"/>
+    <aura:attribute name="currentPage" type="integer" default="1"/>
+    <aura:attribute name="allSelectedIds" type="List" default="[]" />
+
+    <aura:attribute name="selectedCheckboxIds" type="List" default="[]" />
+
+
+    <!-- <aura:attribute name="searchString" type="String" /> -->
+
+    <div class="slds-p-around--large " style="padding-top: 0.6250em;">
+        <lightning:layoutItem padding="around-small" size="12">
+            <lightning:input type="search" placeholder="Search RFQ Items..." onchange="{!c.handleSearch}"/>
+        </lightning:layoutItem>
+    
+    
+
    <aura:if isTrue="{!v.Spinner}">
     		<div aura:id="spinnerId" class="slds-spinner_container">
     		   <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -25,62 +56,62 @@
 <!--<div class="slds-scrollable_x" style="width:69rem">-->
 <!--<div class="slds-scrollable_x" style="height:5rem;width:100rem">-->
 
-
+    
     <div aura:id="coContainer" class="c-container slds-scrollable_x">
         
-
-    	<table class="slds-table slds-table_bordered slds-table_cell-buffer " style="border:1px solid rgb(216, 237, 255); border-radius:5px;">
+        
+    	<table class="slds-table slds-table_bordered ">
     		<thead>
-    			<tr class="slds-text-title_caps"  >
-    				<th scope="col" style="background-color:grey; color:white; border-top-left-radius:5px;vertical-align: top;">
-    					<div class="slds-truncate" title="Product">Check All</div>
+                <aura:if isTrue="{! (v.objInfo != null)}"> 
+    			<tr class="slds-text-title_caps">
+    				<th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; vertical-align: middle; line-height: 2; width: 2%;">
+    					<div class="slds-truncate" title="Product"></div>
                         <!-- <lightning:input type="checkbox" aura:id="headCheckRFQ" checked="false" onchange="{!c.selectAllRfq}"/> -->
-    					<ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/>
+    					<!-- <ui:inputCheckbox aura:id="checkContractors"  change="{!c.selectAll}"/> -->
     				</th>
-    				<th style="background-color:grey; color:white;vertical-align: top;">
+    				<th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 25%; line-height: 2;">
     					 <div class="slds-truncate" title="Quote Line">RFQ Item</div>
     				</th>
     				<!--<th style="background-color:grey; color:white;vertical-align: top;">
     					 <div class="slds-truncate" title="Quote Line">Trade Type</div>
     				</th>-->
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; width: 40%; line-height: 2;">
     					 <div class="slds-truncate" title="Quote Line">Description</div>
     				</th>
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; line-height: 2; text-align: center; width: 9%">
     					 <div class="slds-truncate" title="Quote Line">Quantity</div>
     				</th>
-                    <th style="background-color:grey; color:white;vertical-align: top;">
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top; line-height: 2; text-align: center;">
     					 <div class="slds-truncate" title="Quote Line">Unit Price</div>
     				</th>
     			</tr>
+                </aura:if>
     		</thead>
             
     		<tbody>
                 <aura:if isTrue="{! (v.objInfo != null)}"> 
-                    <aura:iteration items="{!v.objInfo}" var="obj">
+                    <aura:iteration items="{!v.PaginationList}" var="obj">
                         <tr>
                             <td>
-                                 <!-- <lightning:input type="checkbox" aura:id="checkRFQ"  checked="{!obj.isChecked}" name="{!obj.Id}" onchange="{!c.selectRfq}"   />-->
-                                <ui:inputCheckbox aura:id="checkContractor"  text="{!obj.MasterRFQItem.Id}" change="{!c.handleCheck}"/>
+                                <ui:inputCheckbox aura:id="checkInspection" text="{!obj.MasterRFQItem.Id}" change="{!c.handleCheckbox}" />
                             </td>
                             <td>
-                                  <div style="white-space: pre-wrap;">
-                                <ui:outputtext value="{!obj.MasterRFQItem.Name}" />
+                                <div style="white-space: pre-wrap;">
+                                    <ui:outputtext value="{!obj.MasterRFQItem.truncatedName}" />
                                 </div>
                             </td>
                            <!-- <td>
                                 <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Trade_Type__r.Name}" />
                             </td> -->
                             <td>
-                                  <div style="white-space: pre-wrap;">
-
-                                <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Description__c}" />
+                                <div style="white-space: pre-wrap;">
+                                    <ui:outputtext value="{!obj.MasterRFQItem.truncateddes}" />
                                 </div>
                             </td>
-                            <td>
+                            <td style="text-align: center;">
                                 <ui:outputtext value="{!obj.MasterRFQItem.buildertek__Quantity__c}" />
                             </td>
-                            <td>
+                            <td style="text-align: center;">
                                 <aura:if isTrue='{!v.multicurrency}'>
                                     <lightning:formattedNumber value="{!obj.MasterRFQItem.buildertek__Unit_Price__c}" currencyDisplayAs="code" 
                                                                 currencyCode="{!obj.MasterRFQItem.CurrencyIsoCode}" style="currency" />
@@ -95,18 +126,26 @@
                     </aura:iteration>
                 </aura:if> 
                 <aura:if isTrue="{! (v.objInfo == null)}"> 
-    				  <h1 style="font-size:18px"> &nbsp;No Records to Display</h1>
+                    <div class="slds-m-vertical_medium slds-p-horizontal_medium" style="display: flex;justify-content: center;">
+                        <p class="slds-text-heading_medium" style="margin-block: 20px;">No Records Found</p>
+                    </div>
     			 </aura:if> 
     		</tbody>
     	</table>
         </div>
- 
-    <div class="slds-hide">
-        <div aura:id="footer">
-    		<button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
-    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import</button>
-    	</div>
-    </div>	
+    </div>
+    
+        <div class="slds-modal__footer">
+            <div class="slds-button-group" style="float:left;">
+            <lightning:button label="Previous" disabled="{!or(v.startPage == 0, v.disableBtn)}"
+                    onclick="{!c.previous}" variant="brand" iconName='utility:back' />
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!or(v.endPage >= v.totalRecordsCount, v.disableBtn)}"
+                    onclick="{!c.next}" variant="brand" iconName='utility:forward' iconPosition='right' />
+            </div>
+            <button class="slds-button slds-button_neutral" onclick="{!c.doCancel}">Cancel</button>
+    		<button class="slds-button slds-button_brand" onclick="{!c.doSave}">Import Master RFQ Lines</button>
+        </div>
     <aura:if isTrue="{!v.Spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">

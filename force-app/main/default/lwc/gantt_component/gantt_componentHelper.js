@@ -34,8 +34,8 @@ function formatApexDatatoJSData(scheduleData, scheduleItemsData, scheduleItemsDa
             taskDependencyData.push(dependencyRow)
         }
 
-        console.log('counter',i);
-        console.log('taskListForPhase[i] ',taskListForPhase[i]);
+        console.log('counter', i);
+        console.log('taskListForPhase[i] ', taskListForPhase[i]);
         assignmentRowData.push.apply(assignmentRowData, createAssignmentData(taskListForPhase[i], i)); //adds all the assignment data to the main list.
     }
 
@@ -451,7 +451,7 @@ function createAssignmentData(taskListForPhase, i) {
         assignmentRowIn1['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_1__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_1__r.Name;
         assignmentRowIn1['event'] = taskListForPhase.Id
         assignmentRowIn1['resource'] = taskListForPhase.buildertek__Internal_Resource_1__c;
-        console.log('assignmentRow cont 1 ',JSON.parse(JSON.stringify(assignmentRowIn1)));
+        console.log('assignmentRow cont 1 ', JSON.parse(JSON.stringify(assignmentRowIn1)));
         assignmentRowDataChild.push(assignmentRowIn1)
     }
 
@@ -459,7 +459,7 @@ function createAssignmentData(taskListForPhase, i) {
         assignmentRowIn2['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_3__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_3__r.Name;
         assignmentRowIn2['event'] = taskListForPhase.Id
         assignmentRowIn2['resource'] = taskListForPhase.buildertek__Internal_Resource_3__c;
-        console.log('assignmentRow cont 2 ',JSON.parse(JSON.stringify(assignmentRowIn2)));
+        console.log('assignmentRow cont 2 ', JSON.parse(JSON.stringify(assignmentRowIn2)));
         assignmentRowDataChild.push(assignmentRowIn2)
     }
 
@@ -467,11 +467,11 @@ function createAssignmentData(taskListForPhase, i) {
         assignmentRowIn3['id'] = taskListForPhase.Id + '_' + taskListForPhase.buildertek__Internal_Resource_4__c + '__index' + i + 'ContractorResource_Name' + taskListForPhase.buildertek__Internal_Resource_4__r.Name;
         assignmentRowIn3['event'] = taskListForPhase.Id
         assignmentRowIn3['resource'] = taskListForPhase.buildertek__Internal_Resource_4__c;
-        console.log('assignmentRow cont 3 ',JSON.parse(JSON.stringify(assignmentRowIn3)));
+        console.log('assignmentRow cont 3 ', JSON.parse(JSON.stringify(assignmentRowIn3)));
         assignmentRowDataChild.push(assignmentRowIn3)
     }
 
-    console.log('assignmentRowDataChild ',assignmentRowDataChild);
+    console.log('assignmentRowDataChild ', assignmentRowDataChild);
     return assignmentRowDataChild;
 }
 
@@ -510,7 +510,7 @@ function grpTaskOnPhase(records) {
 
             targetNode = phase3Node;
         } else if (phase2 !== 'UnknownPhase2' && phase1 !== 'UnknownPhase1') {
-            let phase2Node = hierarchy.children.find(child => child.id=== phase1).children.find(child => child.id === phase1 + phase2);
+            let phase2Node = hierarchy.children.find(child => child.id === phase1).children.find(child => child.id === phase1 + phase2);
 
             if (!phase2Node) {
                 phase2Node = { id: phase1 + phase2, name: record.buildertek__BT_Grouping__r.Name, expanded: true, type: "Phase", children: [] };
@@ -538,8 +538,8 @@ function grpTaskOnPhase(records) {
             NewPhase: record.buildertek__Phase__c,
             percentDone: record.buildertek__Completion__c || 0,
             startDate: record.buildertek__Start__c,
-            constraintType : "startnoearlierthan",
-            constriantDate : record.buildertek__Start__c,
+            constraintType: "startnoearlierthan",
+            constriantDate: record.buildertek__Start__c,
             expanded: true,
             type: "Task",
             iconCls: "b-fa b-fa-arrow-right",
@@ -554,16 +554,47 @@ function grpTaskOnPhase(records) {
             duprecordobj['customtype'] = 'Task';
             duprecordobj['duration'] = record.buildertek__Duration__c || 1;
             duprecordobj['cls'] = "task";
-            if(record.buildertek__Dependency__r){
+            if (record.buildertek__Dependency__r) {
                 duprecordobj['predecessorName'] = record.buildertek__Dependency__r.Name
             }
-            duprecordobj['eventColor'] = record.buildertek__task_color__c || "";
+            duprecordobj['eventColor'] = checkPastDueForTask(record);
         }
         targetNode.children.push(duprecordobj);
     });
 
-
     return hierarchy;
 }
 
-export { formatApexDatatoJSData, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };
+function checkPastDueForTask(task) {
+    if (task.buildertek__Finish__c != null && task.buildertek__Finish__c != undefined) {
+        var today = new Date();
+        var finishDate = new Date(task.buildertek__Finish__c);
+        today.setHours(0, 0, 0, 0);
+        finishDate.setHours(0, 0, 0, 0);
+        if (finishDate < today && task.buildertek__Completion__c < 100 && task.buildertek__Milestone__c == false && task.buildertek__Type__c != 'Milestone' && task.buildertek__Completed__c == false) {
+            return 'red';
+        } else {
+            return task.buildertek__task_color__c || "";
+        }
+
+    }
+}
+
+function checkPastDueForTaskInFront(record) {
+    console.log('it is working fine');
+    if (record.type == "Task") {
+        if (record.percentDone == 100) {
+            record.set("percentDone", 0);
+            if (record.endDate < new Date()) {
+                record.set("eventColor", 'red');
+            } else {
+                record.set("eventColor", 'green');
+            }
+        } else {
+            record.set("percentDone", 100);
+            record.set("eventColor", 'green');
+        }
+    }
+}
+
+export { formatApexDatatoJSData, checkPastDueForTaskInFront, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };

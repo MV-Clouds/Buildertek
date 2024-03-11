@@ -77,6 +77,9 @@ export default class GanttCSVExportComponent extends LightningElement {
             console.log('exportScheduleData', JSON.parse(JSON.stringify(this.scheduleDataToExport)));
             debugger;
             const convertedObject = this.scheduleDataToExport.map((item) => {
+                if (item.buildertek__Type__c === 'Milestone') {
+                    return null;
+                }
                 const obj = {};
                 getColumns.forEach((column, index) => {
                     if (item.hasOwnProperty(column)) {
@@ -92,7 +95,7 @@ export default class GanttCSVExportComponent extends LightningElement {
                     }
                 });
                 return obj;
-            });
+            }).filter(item => item !== null);
 
             var csvData = Papa.unparse(convertedObject);
             const element = document.createElement("a");

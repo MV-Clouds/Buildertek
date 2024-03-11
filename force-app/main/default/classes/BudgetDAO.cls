@@ -2846,7 +2846,11 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         Map<Id, buildertek__Budget_Item__c> budgetItemMap = new Map<Id, buildertek__Budget_Item__c>();
         for (buildertek__Account_Payable_Clone__c invoiceAP : selectedInvoices) {
             buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
-            budgetItem.Name = invoiceAP.buildertek__Description__c;
+            if (invoiceAP.buildertek__Description__c != '' && invoiceAP.buildertek__Description__c != null) {
+                budgetItem.Name = invoiceAP.Name + ' ' + invoiceAP.buildertek__Description__c;
+            } else {
+                budgetItem.Name = invoiceAP.Name;
+            }
             budgetItem.buildertek__Budget__c = RecId;
             budgetItem.buildertek__Group__c = groupId;
             budgetItemMap.put(invoiceAP.Id, budgetItem);

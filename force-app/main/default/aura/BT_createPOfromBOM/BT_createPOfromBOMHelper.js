@@ -169,7 +169,12 @@
               }
               else if(result.state == 'error'){
                 component.set("v.isSpinner", false);
-                helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
+                if(result.isCustomeValidation){
+                    helper.ToastMessageUtilityMethod(component, '', 'Custom validation error : ' + result.returnMessage, 'error', 6000);
+                }
+                else{
+                    helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
+                }
               }
               // console.log('response : ', result);
           });
