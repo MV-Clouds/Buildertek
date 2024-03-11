@@ -756,6 +756,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
           type: "startdate",
           draggable: false,
           allowedUnits: "datetime",
+
           renderer: (record) => {
             if (record.record.endDate < new Date() && record.record.percentDone < 100 && record.record._data.type != "Project" && record.record._data.name != "Milestone Complete" && record.record._data.type != "Phase") {
               record.cellElement.style.color = 'red';
@@ -1118,10 +1119,10 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     });
 
     gantt.on('startCellEdit', (editorContext) => {
-      if (editorContext.editorContext.column.type == 'resourceassignment') {
+      if ( editorContext.editorContext.column.type == 'resourceassignment' ) {
         editorContext.editorContext.editor.inputField.store.clearFilters();
         let contractorId = editorContext.editorContext.record._data.contractorId;
-        editorContext.editorContext.editor.inputField.picker.onShow = ({ source }) => {
+                editorContext.editorContext.editor.inputField.picker.onShow = ({source}) => {
           source.store.filter(record => (record.resource.type == 'Internal Resources' || record.resource.contractorId == contractorId));
         };
         // editorContext.editorContext.editor.inputField.store.filter(record => (record.resource.type == 'Internal Resources') || record.resource.contractorId == contractorId);

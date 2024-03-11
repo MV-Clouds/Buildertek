@@ -1,0 +1,120 @@
+<template>
+    <lightning-card>
+        <div class="header">
+            <lightning-button label="back" title="back" onclick={handleBack} icon-name="utility:back"
+                icon-position="left" class="slds-m-right_large"></lightning-button>
+            <div class="center-content">
+                <p class="slds-p-horizontal_small">
+                    Review Resource Schedule
+                </p>
+            </div>
+        </div>
+
+        <div class="body">
+            <div class="vendorContainer">
+                <p class="vendorHeading">Vendor : </p>
+                <p onclick={redirectTOsobject} data-id={vendor.Id} class="vendorName" data-objname="Account">
+                    {vendor.Name}</p>
+            </div>
+
+            <template lwc:if={IsTaskAvailable}>
+                <template for:each={resourceList} for:item="row">
+                    <div key={resource}>
+                        <div class="groupheader">
+                            <div class="groupText">
+                                <h1 onclick={redirectTOsobject} data-id={row.resource.Id} data-objname="Contact">
+                                    {row.resource.Name}</h1>
+                            </div>
+                        </div>
+                        <template lwc:if={row.isTaskAssigned}>
+                            <div class="dataTable">
+                                <div class="slds-grid slds-gutters header-row">
+                                    <div class="slds-col">
+                                        <p class="header-text">Project</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Schedule</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Schedule Item</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Dependency</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Start date</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Finish Date</p>
+                                    </div>
+                                    <div class="slds-col">
+                                        <p class="header-text">Notes</p>
+                                    </div>
+                                </div>
+                                <div class="recordValues">
+                                    <template for:each={row.taskList} for:item="task">
+                                        <div key={task.id} class="slds-grid slds-gutters data-row">
+                                            <div class="slds-col slds-truncate link projectTab"
+                                                data-id={task.buildertek__Schedule__r.buildertek__Project__c}
+                                                data-objname="buildertek__Project__c" onclick={redirectTOsobject}>
+                                                <p class="record-value">
+                                                    {task.buildertek__Schedule__r.buildertek__Project__r.Name}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate link commonTab"
+                                                data-id={task.buildertek__Schedule__r.Id}
+                                                data-objname="buildertek__Schedule__c" onclick={redirectTOsobject}>
+                                                <p class="record-value">
+                                                    {task.buildertek__Schedule__r.buildertek__Description__c}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate link commonTab" data-id={task.Id}
+                                                data-objname="buildertek__Project_Task__c" onclick={redirectTOsobject}>
+                                                <p class="record-value">{task.Name}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate commonTab">
+                                                <p class="record-value">{task.DependancyName}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate commonTab">
+                                                <p class="record-value">{task.buildertek__Start__c}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate commonTab">
+                                                <p class="record-value">{task.buildertek__Finish__c}</p>
+                                            </div>
+                                            <div class="slds-col slds-truncate commonTab">
+                                                <p class="record-value">{task.buildertek__Notes__c}</p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="noTaskInfo">
+                                <h2>No task assigned to {row.resource.Name}</h2>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </template>
+            <template lwc:else>
+                <div class="noTaskInfo">
+                    <h2>{customeMessge}</h2>
+                </div>
+            </template>
+        </div>
+
+    </lightning-card>
+
+    <template if:true={isLoading}>
+        <div class="slds-spinner_container" style="position:fixed;">
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="spinnerText">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+</template>

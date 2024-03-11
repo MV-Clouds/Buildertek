@@ -418,7 +418,7 @@ function mergeArrays(taskData, assignedResources) {
 
 function createAssignmentData(taskListForPhase, i) {
     let temp = taskListForPhase;
-    console.log('taskListForPhase ', JSON.parse(JSON.stringify(temp)));
+    console.log('taskListForPhase ',JSON.parse(JSON.stringify(temp)));
     // debugger
     let assignmentRowCon1 = {}
     let assignmentRowCon2 = {}
@@ -549,7 +549,7 @@ function grpTaskOnPhase(records) {
         if (record.Name == "Milestone Complete") {
             duprecordobj['customtype'] = 'Milestone';
             duprecordobj['duration'] = 0;
-            duprecordobj['cls'] = "milestoneTypeColor";
+            duprecordobj['cls'] = "milestoneTypeColor pavel";
         } else {
             duprecordobj['customtype'] = 'Task';
             duprecordobj['duration'] = record.buildertek__Duration__c || 1;

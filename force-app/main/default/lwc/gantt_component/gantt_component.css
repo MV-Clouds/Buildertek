@@ -56,6 +56,10 @@
     border-radius: 10px
 } */
 
+.b-grid-row.pavel {
+    background: #ff2c2c;
+  }
+
 .b-indicator{
     width: 16px !important;
     height: 16px !important;
