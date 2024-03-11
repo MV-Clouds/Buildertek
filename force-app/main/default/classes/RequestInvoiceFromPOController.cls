@@ -47,7 +47,8 @@ public with sharing class RequestInvoiceFromPOController {
                     List<Messaging.SingleEmailMessage> msgList = new List<Messaging.SingleEmailMessage>();
                     Savepoint sp = Database.setSavepoint();
                     Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
-                    string theTemplatebodyid = [SELECT Id  FROM EmailTemplate  WHERE DeveloperName = 'Purchase_Order_Template_1'].Id;
+                    String theTemplatebodyid = [SELECT Id  FROM EmailTemplate  WHERE DeveloperName = 'Purchase_Order_Template_1'].Id;
+                    
                     email.setTemplateId(template.Id);
                     email.setTargetObjectId(poRecord[0].OwnerId);
                     email.setSaveAsActivity(false);
@@ -60,6 +61,14 @@ public with sharing class RequestInvoiceFromPOController {
                     for (Messaging.SingleEmailMessage emailNew : msgList){
                         system.debug(emailNew);
                         templateBody1 = emailNew.getHTMLBody();
+                    }
+
+                    String CurrentUserId  = UserInfo.getUserId();
+                    String Signature = [SELECT Id, Signature FROM User WHERE Id =: CurrentUserId].Signature;
+                    String OrgName = UserInfo.getOrganizationName();
+                    String CompanyLabel = System.Label.company_website;
+                    if (Signature == null) {
+                        templateBody1 += '<p style="padding-top: 10px;margin-bottom: 0px;">Sincerely,</p><p style="margin-top: 0px;margin-bottom: 0px;">' + OrgName + '</p><p style="margin-top: 0px;margin-bottom: 0px;"><a href="' + CompanyLabel + '">' + CompanyLabel + '</a></p>';
                     }
 
                     List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
