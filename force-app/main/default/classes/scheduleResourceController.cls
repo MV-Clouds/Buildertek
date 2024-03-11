@@ -32,6 +32,7 @@ public with sharing class scheduleResourceController {
     @AuraEnabled
     public static String updateScheduleItemResources(buildertek__Project_Task__c scheduleItem){
         try {
+            System.debug('scheduleItem: ' + scheduleItem);
             buildertek__Project_Task__c scheduleItemToUpdate = new buildertek__Project_Task__c(Id = scheduleItem.Id);
             scheduleItemToUpdate.buildertek__Contractor__c = scheduleItem.buildertek__Contractor__c;
             scheduleItemToUpdate.buildertek__Contractor_Resource_1__c = scheduleItem.buildertek__Contractor_Resource_1__c;
@@ -39,6 +40,7 @@ public with sharing class scheduleResourceController {
             scheduleItemToUpdate.buildertek__Contractor_Resource_3__c = scheduleItem.buildertek__Contractor_Resource_3__c;
             scheduleItemToUpdate.buildertek__Internal_Resource_1__c = scheduleItem.buildertek__Internal_Resource_1__c;
             update scheduleItemToUpdate;
+            System.debug('scheduleItemToUpdate: ' + scheduleItemToUpdate);
             return 'Success';
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());

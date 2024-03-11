@@ -129,3 +129,9 @@
         gap: 3px;
     }
 }
+
+@media only screen and (min-width: 1920px) {
+    .editResources {
+        padding-right: 5px;
+    }
+}
