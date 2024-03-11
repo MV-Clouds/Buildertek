@@ -156,13 +156,24 @@ public with sharing class AccountPayableHelper {
 
     public static void UpdateCOntractorInvoiceStatus(List<buildertek__Account_Payable__c> newAccountPayList, Map<Id, buildertek__Account_Payable__c> oldAccountPayMap) {
         try {
+            Set<Id> contractorInvoiceIdsToUpdate = new Set<Id>();
+            List<buildertek__Account_Payable__c> contractorInvoiceListForStatusUpdate = new List<buildertek__Account_Payable__c>();
         
             for (buildertek__Account_Payable__c pay : newAccountPayList) {
                 buildertek__Account_Payable__c oldAPLine = oldAccountPayMap.get(pay.Id);
                 if (pay.buildertek__Payments__c != oldAPLine.buildertek__Payments__c && pay.buildertek__Payments__c == 0) {
-                    pay.buildertek__Status__c = 'Open';
+                    contractorInvoiceIdsToUpdate.add(pay.Id);
                 }
             }
+        
+            List<buildertek__Account_Payable__c> getContInvoiceRecord = [Select Id, Name, buildertek__Payments__c, buildertek__Status__c FROM buildertek__Account_Payable__c WHERE Id IN :contractorInvoiceIdsToUpdate];
+
+            for (buildertek__Account_Payable__c updateCI : getContInvoiceRecord) {
+                updateCI.buildertek__Status__c = 'Open';
+                contractorInvoiceListForStatusUpdate.add(updateCI);
+            }
+            
+            update contractorInvoiceListForStatusUpdate;
 
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());
@@ -247,7 +258,11 @@ public with sharing class AccountPayableHelper {
             for(buildertek__Account_Payable__c invoicePo : invoiceList){
                 if(invoicePo.buildertek__BT_Budget_Line__c==null && invoicePo.buildertek__Budget__c != oldInvoiceMap.get(invoicePo.Id).buildertek__Budget__c && invoicePo.buildertek__Budget__c!=null){
                         buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
-                        budgetLine.Name = invoicePo.Name + ' budget line';
+                        if (invoicePo.buildertek__Description__c != '' && invoicePo.buildertek__Description__c != null) {
+                            budgetLine.Name = invoicePo.Name + ' ' + invoicePo.buildertek__Description__c;
+                        } else {
+                            budgetLine.Name = invoicePo.Name;
+                        }
                         budgetLine.buildertek__Unit_Price__c = 0;
                         budgetLine.buildertek__Invoice_PO__c = invoicePo.buildertek__Net_Amount__c;
                         budgetLine.buildertek__Quantity__c = 1;
