@@ -189,6 +189,14 @@ export default base => class GanttToolbar extends base {
                         {
                             type       : 'button',
                             color      : 'b-blue',
+                            ref        : 'saveDataButton',
+                            icon       : 'b-fa b-fa-save',
+                            text       : 'Save Changes',
+                            onAction : 'up.onSaveClick'
+                        },
+                        {
+                            type       : 'button',
+                            color      : 'b-blue',
                             ref        : 'featuresButton',
                             icon       : 'b-fa b-fa-tasks',
                             text       : 'Features',
@@ -297,12 +305,12 @@ export default base => class GanttToolbar extends base {
                         //     }
                         // },
                         {
-                            type       : 'button',
-                            color      : 'b-blue',
-                            ref        : 'saveDataButton',
-                            icon       : 'b-fa b-fa-save',
-                            text       : 'Save Changes',
-                            onAction : 'up.onSaveClick'
+                            type     : 'button',
+                            text     : 'Import Schedule',
+                            color    : 'b-blue',
+                            ref      : 'excelImportBtn',
+                            icon     : 'b-fa-file-import',
+                            onAction : 'up.onImportclick'
                         },
                         {
                             type     : 'button',
@@ -311,14 +319,6 @@ export default base => class GanttToolbar extends base {
                             ref      : 'excelExportBtn',
                             icon     : 'b-fa-file-export',
                             onAction : 'up.onExportclick'
-                        },
-                        {
-                            type     : 'button',
-                            text     : 'Import Schedule',
-                            color    : 'b-blue',
-                            ref      : 'excelImportBtn',
-                            icon     : 'b-fa-file-import',
-                            onAction : 'up.onImportclick'
                         },
                         {
                             type     : 'button',
