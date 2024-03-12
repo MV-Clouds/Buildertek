@@ -37,6 +37,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     @track conflictingSchedules = [];
     @track intialConflictList = [];
     @track existingConflictScheduleMap = {};
+    @track oldPopup = false;
 
     connectedCallback() {
         loadStyle(this, myResource)
@@ -373,6 +374,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         } else {
             // Show the conflict popup
             this.isConflict = true;
+            this.oldPopup = true;
         }
     }
 
@@ -497,11 +499,13 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         this.tableData = this.tableData.map(row => {
             return { ...row, isEditing: false };
         });
+        this.oldPopup = false;
     }
 
     // * Method to Accept conflict and update the resource
     handleAcceptConflict() {
         this.isConflict = false;
+        this.oldPopup = false;
         // Update the conflictingSchedules list based on the accepted changes
         this.conflictingSchedules = this.conflictingSchedules.map(conflict => {
             return {
@@ -521,6 +525,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     // * Redirect to the current schedule
     handleFixConflict(event) {
         this.isConflict = false;
+        this.oldPopup = false;
         let scheduleId = event.currentTarget.dataset.id;
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
@@ -624,13 +629,16 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             const selectedVendorId = task.vendorId;
             const internalResourceId = task.internalResourceId;
             const selectedResources = [internalResourceId, task.vendorResources1Id, task.vendorResources2Id, task.vendorResources3Id].filter(Boolean);
-
+            console.log(`Task ID: ${taskId}, Selected Resources: ${JSON.stringify(selectedResources)}, Start Date: ${selectedStartDate}, End Date: ${selectedEndDate}`);
             selectedResources.forEach(selectedResource => {
                 const schedules = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, internalResourceId);
                 const conflictScheduleList = schedules.vendorSchedules.concat(schedules.internalSchedules);
+                console.log(`Conflicting Schedules List: ${JSON.stringify(conflictScheduleList)}`);
 
                 conflictScheduleList.forEach(scheduleItem => {
+                    console.log(`Checking conflict for Schedule Item: ${JSON.stringify(scheduleItem)}`);
                     if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
+                        console.log(`Conflict detected for Schedule Item: ${JSON.stringify(scheduleItem)}`);
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItem.scheduleId);
 
                         if (conflictingSchedule) {
@@ -673,12 +681,9 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
     isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem) {
         const { StartDate: startDate, EndDate: endDate } = scheduleItem;
-
         return (
-            (selectedStartDate >= startDate && selectedStartDate <= endDate) ||
-            (selectedEndDate >= startDate && selectedEndDate <= endDate) ||
-            (startDate >= selectedStartDate && startDate <= selectedEndDate) ||
-            (endDate >= selectedStartDate && endDate <= selectedEndDate)
+            (selectedStartDate <= endDate && selectedEndDate >= startDate) ||
+            (startDate <= selectedEndDate && endDate >= selectedStartDate)
         );
     }
 
