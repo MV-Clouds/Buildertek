@@ -258,8 +258,8 @@
         console.log('selected value -->',selectedValue.toFixed(2));
         var ObjectName = component.get("v.ObjectName");
         var record = component.get('v.record');
-        record[fieldLabel] = selectedValue != undefined || selectedValue != '' ? selectedValue.toFixed(2) : 0;
-        component.set('v.percentageValue', selectedValue.toFixed(2));
+        record[fieldLabel] = selectedValue != undefined || selectedValue != '' ? selectedValue : 0;
+        component.set('v.percentageValue', selectedValue);
         component.set('v.record', record);
 
         if(fieldLabel == 'buildertek__BL_MARKUP__c' && ObjectName == 'buildertek__Select_Sheet__c'){
