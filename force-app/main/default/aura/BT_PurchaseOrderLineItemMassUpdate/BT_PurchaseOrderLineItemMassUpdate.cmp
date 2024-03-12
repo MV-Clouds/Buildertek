@@ -103,7 +103,7 @@
                     </h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p>Are you sure you want to delete {!v.quoteLineName} ?</p>
+                    <p style="display:flex; justify-content: center;">Are you sure you want to delete {!v.quoteLineName} ?</p>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.handleCancel }" />
@@ -125,7 +125,7 @@
                     </h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p>Are you sure you want to Cancel?</p>
+                    <p style="display:flex; justify-content: center;">Are you sure you want to Cancel?</p>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeCancelModal }" />

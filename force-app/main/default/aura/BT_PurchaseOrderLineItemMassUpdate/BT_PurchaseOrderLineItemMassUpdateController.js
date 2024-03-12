@@ -76,8 +76,11 @@
 
     deleteRecord: function (component, event, helper) {
         var target = event.target;
-        var index = target.getAttribute("data-index");
+        var index = event.currentTarget.dataset.index;
+        console.log('event-index', event.currentTarget.dataset.index);
+        console.log('index-->',index);
         var records = component.get("v.listOfRecords");
+        console.log('record[index]-->',records[index]);
         if (records[index].Id != undefined) {
             component.set("v.selectedRecordIndex", index);
             component.set("v.quoteLineName", records[index].Name);
