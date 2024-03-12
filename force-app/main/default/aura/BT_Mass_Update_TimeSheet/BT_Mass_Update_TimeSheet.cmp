@@ -1,0 +1,80 @@
+<aura:component controller="BT_MassUpdate_TimeSheet"  implements="force:appHostable,lightning:isUrlAddressable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="Spinner" type="boolean" />
+    <aura:attribute name="timeSheetEntries" type="List" default="[]" />
+   
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+
+    <div class="slds-modal__content slds-scrollable" style="height:100% !important">
+        <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Mass Update Time Sheet Entries">
+            <aura:set attribute="actions">
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdateSave}" label="Save" />
+                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
+            </aura:set>
+        </lightning:card>
+
+        <div class="slds-border_top slds-box slds-box_xx-small" style="overflow: auto;" id="test" >
+            <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
+                <!-- Quote Line Table -->
+                <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                Name
+                            </th>
+                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                Status
+                            </th>
+                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                Start Time
+                            </th>
+                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
+                                End Time
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.timeSheetEntries}" var="rec">
+                            <tr class="slds-hint-parent">
+                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                    <lightning:input type="text" value="{!rec.Name}" />                                    
+                                </td>
+                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" >
+                                    <lightning:select name="status" label="Status" value="{!rec.buildertek__Status__c}" >
+                                        <option value="New">New</option>
+                                        <option value="Submitted">Submitted</option>
+                                        <option value="Approved">Approved</option>
+                                    </lightning:select>
+                                </td>
+                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                    <ui:inputDateTime value="{!rec.buildertek__Start_Time__c}" displayDatePicker="true" />
+                                </td>
+                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                    <ui:inputDateTime value="{!rec.buildertek__End_Time__c}" displayDatePicker="true" />
+                                </td>   
+                                                           
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+                
+    </div>
+
+
+</aura:component>	
