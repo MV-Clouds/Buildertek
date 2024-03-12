@@ -807,29 +807,11 @@ public without sharing class NewResourceScheduleDashnoardCls{
                         calendarList.add(EquipmentRec);
                         projectTaskLinkMap.put(pse.buildertek__Schedule__r.buildertek__Project__c,calendarList);
                     }
-                    //* Comented by Nishit Suthar
-                    //! commeting this if and else block because it is causing the data issue since we are not using the buildertek__Contractor_Resource__c field
-                    // if(contactTaskMap.get(pse.buildertek__Contractor_Resource__c) != null && pse.buildertek__Contractor_Resource__c != null){
-                    //     System.debug('if condition 3');
-                    //     list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Contractor_Resource__c);
-                    //     tasksList.add(EquipmentRec);
-                    //     contactTaskMap.put(pse.buildertek__Contractor_Resource__c,tasksList);
-                    //     List<String> idsList = contactTaskIdMap.get(pse.buildertek__Contractor_Resource__c);
-                    //     idsList.add(EquipmentRec.Id);
-                    //     contactTaskIdMap.put(pse.buildertek__Contractor_Resource__c, idsList);
-                    // }else if(pse.buildertek__Contractor_Resource__c != null){
-                    //     System.debug('if condition 4');
-                    //     list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                    //     tasksList.add(EquipmentRec);
-                    //     contactTaskMap.put(pse.buildertek__Contractor_Resource__c,tasksList);
-                    //     List<String> idsList = new List<String>();
-                    //     idsList.add(EquipmentRec.Id);
-                    //     contactTaskIdMap.put(pse.buildertek__Contractor_Resource__c, idsList);
-                    // }
+
                     if(contactTaskMap.get(pse.buildertek__Contractor_Resource_1__c) != null && pse.buildertek__Contractor_Resource_1__c != null){
                         System.debug('if condition 5');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Contractor_Resource_1__c);
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_1__r.Name));
                         contactTaskMap.put(pse.buildertek__Contractor_Resource_1__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Contractor_Resource_1__c);
                         idsList.add(EquipmentRec.Id);
@@ -837,8 +819,8 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Contractor_Resource_1__c != null){
                         System.debug('if condition 6');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        // tasksList.add(EquipmentRec);
-                        contactTaskMap.put(pse.buildertek__Contractor_Resource_1__c,assignExternalResource(EquipmentRec, pse.buildertek__Contractor_Resource_1__r.Name));
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_1__r.Name));
+                        contactTaskMap.put(pse.buildertek__Contractor_Resource_1__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
                         contactTaskIdMap.put(pse.buildertek__Contractor_Resource_1__c, idsList);
@@ -847,7 +829,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     if(contactTaskMap.get(pse.buildertek__Contractor_Resource_2__c) != null && pse.buildertek__Contractor_Resource_2__c != null){
                         System.debug('if condition 7');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Contractor_Resource_2__c);
-                        tasksList.add(EquipmentRec);
+                        System.debug('tasksList size --> '+tasksList.size()+' tasksList --> '+tasksList);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_2__r.Name));
+                        System.debug('tasksList size after --> '+tasksList.size()+' tasksList after --> '+tasksList);
                         contactTaskMap.put(pse.buildertek__Contractor_Resource_2__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Contractor_Resource_2__c);
                         idsList.add(EquipmentRec.Id);
@@ -855,9 +839,8 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Contractor_Resource_2__c != null){
                         System.debug('if condition 8');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        // tasksList.add(EquipmentRec);
-                        // contactTaskMap.put(pse.buildertek__Contractor_Resource_2__c,tasksList);
-                        contactTaskMap.put(pse.buildertek__Contractor_Resource_2__c,assignExternalResource(EquipmentRec, pse.buildertek__Contractor_Resource_2__r.Name));
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_2__r.Name));
+                        contactTaskMap.put(pse.buildertek__Contractor_Resource_2__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
                         contactTaskIdMap.put(pse.buildertek__Contractor_Resource_2__c, idsList);
@@ -865,7 +848,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     if(contactTaskMap.get(pse.buildertek__Contractor_Resource_3__c) != null && pse.buildertek__Contractor_Resource_3__c != null){
                         System.debug('if condition 9');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Contractor_Resource_3__c);
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_3__r.Name));
                         contactTaskMap.put(pse.buildertek__Contractor_Resource_3__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Contractor_Resource_3__c);
                         idsList.add(EquipmentRec.Id);
@@ -873,53 +856,19 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Contractor_Resource_3__c != null){
                         System.debug('if condition 10');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Contractor_Resource_3__r.Name));
                         contactTaskMap.put(pse.buildertek__Contractor_Resource_3__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
                         contactTaskIdMap.put(pse.buildertek__Contractor_Resource_3__c, idsList);
                     }
-                    if(contactTaskMap.get(pse.buildertek__Resource__c) != null && pse.buildertek__Resource__c != null && pse.buildertek__Resource__c != pse.buildertek__Contractor_Resource__c){
-                        System.debug('if condition 11');
-                        list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Resource__c);
-                        tasksList.add(EquipmentRec);
-                        contactTaskMap.put(pse.buildertek__Resource__c,tasksList);
-                        List<String> idsList = contactTaskIdMap.get(pse.buildertek__Resource__c);
-                        idsList.add(EquipmentRec.Id);
-                        contactTaskIdMap.put(pse.buildertek__Resource__c, idsList);
-                    }else if(pse.buildertek__Resource__c != null && pse.buildertek__Resource__c != pse.buildertek__Contractor_Resource__c){
-                        System.debug('if condition 12');
-                        list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
-                        contactTaskMap.put(pse.buildertek__Resource__c,tasksList);
-                        List<String> idsList = new List<String>();
-                        idsList.add(EquipmentRec.Id);
-                        contactTaskIdMap.put(pse.buildertek__Resource__c, idsList);
-                    }
 
-
-                    // Chnages for BUIL-3938 ------------------- START --------------------------------
-                    if(contactTaskMap.get(pse.buildertek__Internal_User__c) != null && pse.buildertek__Internal_User__c != null){
-                        System.debug('if condition 13');
-                        list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Internal_User__c);
-                        tasksList.add(EquipmentRec);
-                        contactTaskMap.put(pse.buildertek__Internal_User__c,tasksList);
-                        List<String> idsList = contactTaskIdMap.get(pse.buildertek__Internal_User__c);
-                        idsList.add(EquipmentRec.Id);
-                        contactTaskIdMap.put(pse.buildertek__Internal_User__c, idsList);
-                    }else if(pse.buildertek__Internal_User__c != null){
-                        System.debug('if condition 14');
-                        list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
-                        contactTaskMap.put(pse.buildertek__Internal_User__c,tasksList);
-                        List<String> idsList = new List<String>();
-                        idsList.add(EquipmentRec.Id);
-                        contactTaskIdMap.put(pse.buildertek__Internal_User__c, idsList);
-                    }
                     if(contactTaskMap.get(pse.buildertek__Internal_Resource_1__c) != null && pse.buildertek__Internal_Resource_1__c != null){
                         System.debug('if condition 15');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Internal_Resource_1__c);
-                        tasksList.add(EquipmentRec);
+                        System.debug('tasksList size --> '+tasksList.size()+' tasksList --> '+tasksList);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_1__r.Name));
+                        System.debug('tasksList size after --> '+tasksList.size()+' tasksList after --> '+tasksList);
                         contactTaskMap.put(pse.buildertek__Internal_Resource_1__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Internal_Resource_1__c);
                         idsList.add(EquipmentRec.Id);
@@ -927,7 +876,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Internal_Resource_1__c != null){
                         System.debug('if condition 16');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_1__r.Name));
                         contactTaskMap.put(pse.buildertek__Internal_Resource_1__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
@@ -936,7 +885,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     if(contactTaskMap.get(pse.buildertek__Internal_Resource_3__c) != null && pse.buildertek__Internal_Resource_3__c != null){
                         System.debug('if condition 17');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Internal_Resource_3__c);
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_3__r.Name));
                         contactTaskMap.put(pse.buildertek__Internal_Resource_3__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Internal_Resource_3__c);
                         idsList.add(EquipmentRec.Id);
@@ -944,7 +893,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Internal_Resource_3__c != null){
                         System.debug('if condition 18');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_3__r.Name));
                         contactTaskMap.put(pse.buildertek__Internal_Resource_3__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
@@ -953,7 +902,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     if(contactTaskMap.get(pse.buildertek__Internal_Resource_4__c) != null && pse.buildertek__Internal_Resource_4__c != null){
                         System.debug('if condition 19');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = contactTaskMap.get(pse.buildertek__Internal_Resource_4__c);
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_4__r.Name));
                         contactTaskMap.put(pse.buildertek__Internal_Resource_4__c,tasksList);
                         List<String> idsList = contactTaskIdMap.get(pse.buildertek__Internal_Resource_4__c);
                         idsList.add(EquipmentRec.Id);
@@ -961,7 +910,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     }else if(pse.buildertek__Internal_Resource_4__c != null){
                         System.debug('if condition 20');
                         list<ResourceCalendarWrap.ProjectTaskRecords> tasksList = new list<ResourceCalendarWrap.ProjectTaskRecords>();
-                        tasksList.add(EquipmentRec);
+                        tasksList.add(assignResource(EquipmentRec, pse.buildertek__Internal_Resource_4__r.Name));
                         contactTaskMap.put(pse.buildertek__Internal_Resource_4__c,tasksList);
                         List<String> idsList = new List<String>();
                         idsList.add(EquipmentRec.Id);
@@ -1200,13 +1149,12 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
     }
 
-    public static list<ResourceCalendarWrap.ProjectTaskRecords> assignExternalResource(ResourceCalendarWrap.ProjectTaskRecords wrapperRecord, String Name){
-        list<ResourceCalendarWrap.ProjectTaskRecords> taskList1 = new list<ResourceCalendarWrap.ProjectTaskRecords>();
+    public static ResourceCalendarWrap.ProjectTaskRecords assignResource(ResourceCalendarWrap.ProjectTaskRecords wrapperRecord, String Name){
+        ResourceCalendarWrap.ProjectTaskRecords taskObj1 = new ResourceCalendarWrap.ProjectTaskRecords();
         String originalJson = JSON.serialize(wrapperRecord);
         ResourceCalendarWrap.ProjectTaskRecords clonedRecord = (ResourceCalendarWrap.ProjectTaskRecords) JSON.deserialize(originalJson, ResourceCalendarWrap.ProjectTaskRecords.class);
         clonedRecord.contractresourceId = Name;
-        taskList1.add(clonedRecord);
-        return taskList1;
+        return clonedRecord;
 
     }
 
