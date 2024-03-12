@@ -348,8 +348,18 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 }
             }
         }
-        // console.log('this.internalResourceConflictJSON:', JSON.parse(JSON.stringify(this.internalResourceConflictJSON)));
-        // console.log('vendorResourceConflictJSON:', JSON.parse(JSON.stringify(this.vendorResourceConflictJSON)));
+        this.internalResourceConflictJSON = Object.fromEntries(
+            Object.entries(this.internalResourceConflictJSON)
+                .filter(([, value]) => Object.keys(value).length > 0)
+        );
+
+        this.vendorResourceConflictJSON = Object.fromEntries(
+            Object.entries(this.vendorResourceConflictJSON)
+                .filter(([, value]) => Object.keys(value).length > 0)
+        );
+
+        // console.log('this.internalResourceConflictJSON:', JSON.stringify(this.internalResourceConflictJSON));
+        // console.log('vendorResourceConflictJSON:', JSON.stringify(this.vendorResourceConflictJSON));
         this.getCurrentConflictingSchedules();
     }
 
@@ -429,7 +439,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         for (const internalResourceIdKey in internalData) {
             const schedules = internalData[internalResourceIdKey];
             for (const scheduleItemId in schedules) {
-                if (internalResourceIdKey === internalResourceId && scheduleItemId !== this.editRecordId) {
+                if (scheduleItemId !== this.editRecordId) {
                     const scheduleItem = schedules[scheduleItemId];
                     internalSchedules.push({
                         scheduleId: scheduleItemId,
@@ -455,7 +465,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
         for (const selectedResource of selectedResources) {
             const schedules = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, internalResourceId);
-            console.log(`Selected Record Start Date: ${selectedStartDate}, Selected End Date: ${selectedEndDate}`);
+            // console.log(`Selected Record Start Date: ${selectedStartDate}, Selected End Date: ${selectedEndDate}`);
 
             // Check conflicts in both vendor and internal schedules
             let conflictScheduleList = schedules.vendorSchedules.concat(schedules.internalSchedules);
@@ -477,7 +487,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                             scheduleId: conflictingSchedule.buildertek__Schedule__c
                         });
                     }
-                    console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
+                    // console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
                 }
             }
         }
@@ -629,16 +639,11 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             const selectedVendorId = task.vendorId;
             const internalResourceId = task.internalResourceId;
             const selectedResources = [internalResourceId, task.vendorResources1Id, task.vendorResources2Id, task.vendorResources3Id].filter(Boolean);
-            console.log(`Task ID: ${taskId}, Selected Resources: ${JSON.stringify(selectedResources)}, Start Date: ${selectedStartDate}, End Date: ${selectedEndDate}`);
             selectedResources.forEach(selectedResource => {
                 const schedules = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, internalResourceId);
                 const conflictScheduleList = schedules.vendorSchedules.concat(schedules.internalSchedules);
-                console.log(`Conflicting Schedules List: ${JSON.stringify(conflictScheduleList)}`);
-
                 conflictScheduleList.forEach(scheduleItem => {
-                    console.log(`Checking conflict for Schedule Item: ${JSON.stringify(scheduleItem)}`);
                     if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
-                        console.log(`Conflict detected for Schedule Item: ${JSON.stringify(scheduleItem)}`);
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItem.scheduleId);
 
                         if (conflictingSchedule) {
