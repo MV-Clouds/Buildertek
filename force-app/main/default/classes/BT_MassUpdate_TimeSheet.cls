@@ -15,7 +15,7 @@ public with sharing class BT_MassUpdate_TimeSheet {
 
     @AuraEnabled
     public static List<buildertek__BT_Time_Sheet_Entry__c> getTimeSheetEntries(string recordId) {
-        List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntries = [SELECT Id, Name, buildertek__Status__c,buildertek__Start_Time__c, buildertek__End_Time__c, buildertek__BT_Time_Sheet__c, buildertek__Duration__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__BT_Project__c, buildertek__BT_Schedule_Item__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c = :recordId];
+        List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntries = [SELECT Id, Name, buildertek__Status__c,buildertek__Start_Time__c, buildertek__End_Time__c, buildertek__BT_Time_Sheet__c, buildertek__Duration__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__BT_Project__c, buildertek__BT_Schedule_Item__c, buildertek__Description__c, buildertek__Notes__c, buildertek__Duration_Manual__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c = :recordId];
         return timeSheetEntries;
     }
 

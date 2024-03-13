@@ -33,39 +33,59 @@
                 <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                     <thead>
                         <tr class="slds-text-title_caps">
-                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
                                 Name
                             </th>
-                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                Description
+                            </th>
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
                                 Status
                             </th>
-                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
                                 Start Time
                             </th>
-                            <th width="20%" style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
                                 End Time
+                            </th>
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
+                                Duration
+                            </th>
+                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
+                                Notes
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <aura:iteration items="{!v.timeSheetEntries}" var="rec">
                             <tr class="slds-hint-parent">
-                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
-                                    <lightning:input type="text" value="{!rec.Name}" />                                    
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
+                                    <!-- <lightning:input type="text" value="{!rec.Name}" />  -->
+                                    <ui:outputText value="{!rec.Name}" />
                                 </td>
-                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;" >
-                                    <lightning:select name="status" label="Status" value="{!rec.buildertek__Status__c}" >
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
+                                    <lightning:input type="text" value="{!rec.buildertek__Description__c}" />
+                                </td>
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;" >
+                                    <lightning:select name="status"  value="{!rec.buildertek__Status__c}" >
                                         <option value="New">New</option>
                                         <option value="Submitted">Submitted</option>
                                         <option value="Approved">Approved</option>
                                     </lightning:select>
                                 </td>
-                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
                                     <ui:inputDateTime value="{!rec.buildertek__Start_Time__c}" displayDatePicker="true" />
                                 </td>
-                                <td width="20%" role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
                                     <ui:inputDateTime value="{!rec.buildertek__End_Time__c}" displayDatePicker="true" />
                                 </td>   
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
+                                    <lightning:input type="number" value="{!rec.buildertek__Duration_Manual__c}" />
+                                </td>
+                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
+                                    <lightning:input type="text" value="{!rec.buildertek__Notes__c}" />
+                                    <!-- <lightning:inputRichText value="{!rec.buildertek__Notes__c}" /> -->
+                                </td>
                                                            
                             </tr>
                         </aura:iteration>
