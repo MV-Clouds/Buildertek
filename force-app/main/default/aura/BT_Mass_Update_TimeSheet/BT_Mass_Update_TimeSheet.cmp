@@ -26,7 +26,7 @@
                 <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
             </aura:set>
         </lightning:card>
-
+    
         <div class="slds-border_top slds-box slds-box_xx-small slds-m-top_medium slds-p-horizontal_medium">
             <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                 <thead>
@@ -45,16 +45,16 @@
                         <tr class="slds-hint-parent">
                             <!-- Name -->
                             <td role="gridcell">
-                                <!-- <lightning:input type="text" disabled="true"  value="{!rec.Name}" /> -->
+                                <!-- <lightning:input type="text" disabled="true" value="{!rec.Name}" /> -->
                                 <ui:outputText value="{!rec.Name}" />
                             </td>
                             <!-- Description -->
                             <td role="gridcell">
-                                <lightning:input type="text"  value="{!rec.buildertek__Description__c}" />
+                                <lightning:input type="text" value="{!rec.buildertek__Description__c}" />
                             </td>
                             <!-- Status -->
                             <td role="gridcell">
-                                <lightning:select name="status"  value="{!rec.buildertek__Status__c}" >
+                                <lightning:select name="status" value="{!rec.buildertek__Status__c}">
                                     <option value="New">New</option>
                                     <option value="Submitted">Submitted</option>
                                     <option value="Approved">Approved</option>
@@ -62,19 +62,27 @@
                             </td>
                             <!-- Start Time -->
                             <td role="gridcell">
-                                <lightning:input type="datetime-local"  value="{!rec.buildertek__Start_Time__c}" />
+                                <div class="slds-form-element">
+                                    <lightning:input type="datetime-local" value="{!rec.buildertek__Start_Time__c}" />
+                                </div>
                             </td>
                             <!-- End Time -->
                             <td role="gridcell">
-                                <lightning:input type="datetime-local"  value="{!rec.buildertek__End_Time__c}" />
+                                <div class="slds-form-element">
+                                    <lightning:input type="datetime-local" value="{!rec.buildertek__End_Time__c}" />
+                                </div>
                             </td>
                             <!-- Duration -->
                             <td role="gridcell">
-                                <lightning:input type="number"  value="{!rec.buildertek__Duration_Manual__c}" />
+                                <div class="slds-form-element">
+                                    <lightning:input type="number" value="{!rec.buildertek__Duration_Manual__c}" />
+                                </div>
                             </td>
                             <!-- Notes -->
                             <td role="gridcell">
-                                <lightning:input type="text"  value="{!rec.buildertek__Notes__c}" />
+                                <div class="slds-form-element">
+                                    <lightning:input type="text" value="{!rec.buildertek__Notes__c}" />
+                                </div>
                             </td>
                         </tr>
                     </aura:iteration>
@@ -82,6 +90,7 @@
             </table>
         </div>
     </div>
+    
 
 
 </aura:component>	
