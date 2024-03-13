@@ -19,81 +19,68 @@
         </div>
     </aura:if>
 
-    <div class="slds-modal__content slds-scrollable" style="height:100% !important">
+    <div class="slds-modal__content slds-scrollable" style="height: 100% !important;">
         <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Mass Update Time Sheet Entries">
             <aura:set attribute="actions">
-                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdateSave}" label="Save" />
+                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdateSave}" label="Save" class="slds-m-right_small" />
                 <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
             </aura:set>
         </lightning:card>
 
-        <div class="slds-border_top slds-box slds-box_xx-small" style="overflow: auto;" id="test" >
-            <div class="slds slds-m-top_medium slds-p-horizontal_medium" >
-                <!-- Quote Line Table -->
-                <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
-                    <thead>
-                        <tr class="slds-text-title_caps">
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Name
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Description
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Status
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                Start Time
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
-                                End Time
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
-                                Duration
-                            </th>
-                            <th  style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2; padding:4px 15px !important;"> 
-                                Notes
-                            </th>
+        <div class="slds-border_top slds-box slds-box_xx-small slds-m-top_medium slds-p-horizontal_medium">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Duration</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.timeSheetEntries}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <!-- Name -->
+                            <td role="gridcell">
+                                <!-- <lightning:input type="text" disabled="true"  value="{!rec.Name}" /> -->
+                                <ui:outputText value="{!rec.Name}" />
+                            </td>
+                            <!-- Description -->
+                            <td role="gridcell">
+                                <lightning:input type="text"  value="{!rec.buildertek__Description__c}" />
+                            </td>
+                            <!-- Status -->
+                            <td role="gridcell">
+                                <lightning:select name="status"  value="{!rec.buildertek__Status__c}" >
+                                    <option value="New">New</option>
+                                    <option value="Submitted">Submitted</option>
+                                    <option value="Approved">Approved</option>
+                                </lightning:select>
+                            </td>
+                            <!-- Start Time -->
+                            <td role="gridcell">
+                                <lightning:input type="datetime-local"  value="{!rec.buildertek__Start_Time__c}" />
+                            </td>
+                            <!-- End Time -->
+                            <td role="gridcell">
+                                <lightning:input type="datetime-local"  value="{!rec.buildertek__End_Time__c}" />
+                            </td>
+                            <!-- Duration -->
+                            <td role="gridcell">
+                                <lightning:input type="number"  value="{!rec.buildertek__Duration_Manual__c}" />
+                            </td>
+                            <!-- Notes -->
+                            <td role="gridcell">
+                                <lightning:input type="text"  value="{!rec.buildertek__Notes__c}" />
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <aura:iteration items="{!v.timeSheetEntries}" var="rec">
-                            <tr class="slds-hint-parent">
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <!-- <lightning:input type="text" value="{!rec.Name}" />  -->
-                                    <ui:outputText value="{!rec.Name}" />
-                                </td>
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <lightning:input type="text" value="{!rec.buildertek__Description__c}" />
-                                </td>
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;" >
-                                    <lightning:select name="status"  value="{!rec.buildertek__Status__c}" >
-                                        <option value="New">New</option>
-                                        <option value="Submitted">Submitted</option>
-                                        <option value="Approved">Approved</option>
-                                    </lightning:select>
-                                </td>
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <ui:inputDateTime value="{!rec.buildertek__Start_Time__c}" displayDatePicker="true" />
-                                </td>
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <ui:inputDateTime value="{!rec.buildertek__End_Time__c}" displayDatePicker="true" />
-                                </td>   
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <lightning:input type="number" value="{!rec.buildertek__Duration_Manual__c}" />
-                                </td>
-                                <td role="gridcell" style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width:fit-content;">
-                                    <lightning:input type="text" value="{!rec.buildertek__Notes__c}" />
-                                    <!-- <lightning:inputRichText value="{!rec.buildertek__Notes__c}" /> -->
-                                </td>
-                                                           
-                            </tr>
-                        </aura:iteration>
-                    </tbody>
-                </table>
-            </div>
+                    </aura:iteration>
+                </tbody>
+            </table>
         </div>
-                
     </div>
 
 

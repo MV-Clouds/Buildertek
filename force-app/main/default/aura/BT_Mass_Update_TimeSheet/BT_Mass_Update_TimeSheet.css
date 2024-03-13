@@ -46,11 +46,3 @@
 .THIS .slds-icon-text-default {
   fill:rgb(116, 116, 116) !important;
 }
-
-.THIS .uiInput--datetime .datePicker-openIcon {
-    display: none;
-}
-
-.THIS .uiInput--datetime .timePicker-openIcon {
-    display: none;
-}
