@@ -549,7 +549,7 @@ function grpTaskOnPhase(records) {
         if (record.Name == "Milestone Complete") {
             duprecordobj['customtype'] = 'Milestone';
             duprecordobj['duration'] = 0;
-            duprecordobj['cls'] = "milestoneTypeColor pavel";
+            duprecordobj['cls'] = "milestoneTypeColor";
         } else {
             duprecordobj['customtype'] = 'Task';
             duprecordobj['duration'] = record.buildertek__Duration__c || 1;
