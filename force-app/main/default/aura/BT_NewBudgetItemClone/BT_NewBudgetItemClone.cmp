@@ -374,6 +374,19 @@
                 height: calc(94vh + {!v.slds_tab_height_diff});
             }
         } -->
+
+        .SolvingCssIssue .slds-form .slds-form-element__label{
+            display: none !important;
+        }
+
+        .SolvingCssIssue input{
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+
+        .SolvingCssIssue .slds-combobox__form-element{
+            top: 0px;
+        }
     </aura:HTML>
     <!-- =============================== End ======================= -->
 
@@ -534,7 +547,7 @@
                                     <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup" />
                                     <aura:set attribute="else">
 
-                                        <lightning:button label="Add Invoice (PO)" onclick="{!c.addInvoicePO}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Contractor Invoice" onclick="{!c.addInvoicePO}" class="sldsButtonGroup" />
                                         <lightning:button iconName="utility:edit" iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup" />
                                         <!--  <lightning:button iconName="utility:copy" iconPosition="left"
                                             onclick="{!c.onClickMassDuplicate}" label="Duplicate Lines" class="sldsButtonGroup" />-->
@@ -546,7 +559,7 @@
                                         <lightning:button label="Add Expense" onclick="{!c.addExpense}" class="sldsButtonGroup" />
                                         <lightning:button label="Add PO" onclick="{!c.addPO}" class="sldsButtonGroup" />
                                         <lightning:button label="Add CO" onclick="{!c.addCO}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Invoice (AP)" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Payable Invoice" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Sales Invoice" onclick="{!c.addSalesInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Labor" onclick="{!c.addTimeCard}" class="sldsButtonGroup" />
                                         <lightning:button label="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />
@@ -1089,9 +1102,19 @@
                                                                         {!col.label}
                                                                     </div>
                                                                     <aura:set attribute="else">
-                                                                        <div class="slds-truncate" title="{!col.label}" style="font-weight: 400;">
+                                                                        <aura:if isTrue="{!col.label == 'Vendor'}">
+                                                                            <div class="slds-truncate" title="{!col.label}" style="font-weight: 400;padding-left: 30px;padding-right: 30px;">
+                                                                                {!col.label}
+                                                                            </div>
+                                                                            <aura:set attribute="else">
+                                                                                <div class="slds-truncate" title="{!col.label}" style="font-weight: 400;">
+                                                                                    {!col.label}
+                                                                                </div>
+                                                                            </aura:set>
+                                                                        </aura:if>
+                                                                        <!-- <div class="slds-truncate" title="{!col.label}" style="font-weight: 400;">
                                                                             {!col.label}
-                                                                        </div>
+                                                                        </div> -->
                                                                     </aura:set>
                                                                 </aura:if>
                                                             </aura:if>
@@ -1201,7 +1224,9 @@
                                                                                                     blur="{!c.onblur}" />
                                                                                 </aura:if>-->
                                                                                 <aura:if isTrue="{!value.fieldType == 'reference'}">
-                                                                                    <c:BT_LookupFields childObjectName="buildertek__Budget_Item__c" selectedRecordId="{!value.originalValue}" fieldName="{!value.fieldName}" index="{!recIndex}" groupindex="{!groIndex}" />
+                                                                                    <div class="SolvingCssIssue">
+                                                                                        <c:BT_LookupFields childObjectName="buildertek__Budget_Item__c" selectedRecordId="{!value.originalValue}" fieldName="{!value.fieldName}" index="{!recIndex}" groupindex="{!groIndex}" />
+                                                                                    </div>
                                                                                     <aura:set attribute="else">
                                                                                         <aura:if isTrue="{!value.fieldType == 'string'}">
                                                                                             <ui:inputText aura:id="inputId" value="{!value.originalValue}" change="{!c.updateQuoteData}" blur="{!c.onblur}" />
