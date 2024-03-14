@@ -653,8 +653,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   } else {
                     if (record.endDate < new Date() && record.percentDone < 100 && record._data.type != "Project" && record._data.name != "Milestone Complete" && record._data.type != "Phase") {
                       record.set("eventColor", 'red');
-                    } else {
-                      record.set("eventColor", 'green');
                     }
                     return `<i class="b-action-item ${action.cls}"></i>`;
                   }
