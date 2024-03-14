@@ -930,15 +930,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
         if(conresource.size() > 0){
             for (contact con : conresource){
 
-                for (Id key : contactTaskMap.keySet()) {
-
-                    System.debug('value of map  '+key);
-                    System.debug('value of map  '+contactTaskMap.get(key));
-
-                }
-                System.debug('check map value '+contactTaskMap.get(con.Id));
-                System.debug('contact id '+con.Id);
-                System.debug('contact value '+con);
                 if (contactnamemap.get(con.id) != null){
                     ResourceCalendarWrap projectRec = new ResourceCalendarWrap();
                     // list<ResourceCalendarWrap.ProjectTaskRecordsList> SchedulertaskRecordList = new list<ResourceCalendarWrap.ProjectTaskRecordsList>();
