@@ -186,8 +186,11 @@
                                         <div class="slds-col">
                                             <p class="header-text">End Date</p>
                                         </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">Resolve</p>
+                                        </div>
                                     </div>
-                                    <div class="recordValues">
+                                    <div class="popup__recordValues">
                                         <template for:each={conflict.schedules} for:item="scheduleItem">
                                             <div key={scheduleItem.id} data-id={scheduleItem.id}
                                                 class="slds-grid slds-gutters popup__data-row">
@@ -205,6 +208,12 @@
                                                 </div>
                                                 <div class="slds-col slds-truncate">
                                                     <p class="popup__record-value">{scheduleItem.endDate}</p>
+                                                </div>
+                                                <div class="slds-col" style="margin: auto;">
+                                                    <lightning-icon icon-name="utility:open" alternative-text="Redirect"
+                                                        size="xx-small" title="Redirect"
+                                                        data-id={scheduleItem.scheduleId} onclick={handleFixConflict}
+                                                        class="popup__record-value redirectIcon"></lightning-icon>
                                                 </div>
                                             </div>
                                         </template>

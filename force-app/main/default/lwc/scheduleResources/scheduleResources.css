@@ -14,9 +14,6 @@
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 1;
 }
 
 .header-text {
@@ -126,6 +123,9 @@
     overflow-y: auto;
     text-overflow: ellipsis;
     white-space: nowrap;
+    border: 1px solid #d3d3d3;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .popup__header {
@@ -143,20 +143,13 @@
 
 .popup__data-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr;
+    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr 0.25fr;
     gap: 0.5rem;
     padding: 0.5rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid #d3d3d3;
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
     align-items: center;
-}
-
-.popup__data-row:nth-child(even) {
-    background-color: #f0f8ff;
-}
-
-.popup__data-row:nth-child(odd) {
-    background-color: #ffffff;
 }
 
 .popup__body {
@@ -224,7 +217,7 @@
 
 .popup__header-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr;
+    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr 0.25fr;
     gap: 0.5rem;
     background-color: #4a90e2;
     color: #ffffff;
@@ -232,9 +225,6 @@
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 1;
 }
 
 .popup-container {

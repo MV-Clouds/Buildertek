@@ -310,7 +310,10 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         this.vendorResourceConflictJSON[vendorId][resourceId1][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
                             EndDate: schedule.buildertek__Finish__c,
-                            resourceId1: resourceId1
+                            resourceId1: resourceId1,
+                            resourceName: schedule?.buildertek__Contractor_Resource_1__r?.Name || '',
+                            scheduleName: schedule.buildertek__Schedule__r.buildertek__Description__c,
+                            projectName: schedule?.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
                         };
                     }
 
@@ -321,7 +324,10 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         this.vendorResourceConflictJSON[vendorId][resourceId2][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
                             EndDate: schedule.buildertek__Finish__c,
-                            resourceId2: resourceId2
+                            resourceId2: resourceId2,
+                            resourceName: schedule?.buildertek__Contractor_Resource_1__r?.Name || '',
+                            scheduleName: schedule.buildertek__Schedule__r.buildertek__Description__c,
+                            projectName: schedule?.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
                         };
                     }
 
@@ -332,7 +338,10 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                         this.vendorResourceConflictJSON[vendorId][resourceId3][schedule.Id] = {
                             StartDate: schedule.buildertek__Start__c,
                             EndDate: schedule.buildertek__Finish__c,
-                            resourceId3: resourceId3
+                            resourceId3: resourceId3,
+                            resourceName: schedule?.buildertek__Contractor_Resource_1__r?.Name || '',
+                            scheduleName: schedule.buildertek__Schedule__r.buildertek__Description__c,
+                            projectName: schedule?.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
                         };
                     }
                 }
@@ -343,7 +352,10 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                     this.internalResourceConflictJSON[internalResourceId][schedule.Id] = {
                         StartDate: schedule.buildertek__Start__c,
                         EndDate: schedule.buildertek__Finish__c,
-                        internalResourceId: internalResourceId
+                        internalResourceId: internalResourceId,
+                        resourceName: schedule.buildertek__Internal_Resource_1__r.Name,
+                        scheduleName: schedule.buildertek__Schedule__r.buildertek__Description__c,
+                        projectName: schedule?.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
                     };
                 }
             }
@@ -358,8 +370,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 .filter(([, value]) => Object.keys(value).length > 0)
         );
 
-        // console.log('this.internalResourceConflictJSON:', JSON.stringify(this.internalResourceConflictJSON));
-        // console.log('vendorResourceConflictJSON:', JSON.stringify(this.vendorResourceConflictJSON));
+        console.log('this.internalResourceConflictJSON:', JSON.stringify(this.internalResourceConflictJSON));
+        console.log('vendorResourceConflictJSON:', JSON.stringify(this.vendorResourceConflictJSON));
         this.getCurrentConflictingSchedules();
     }
 
@@ -437,20 +449,22 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         }
 
         for (const internalResourceIdKey in internalData) {
-            const schedules = internalData[internalResourceIdKey];
-            for (const scheduleItemId in schedules) {
-                if (scheduleItemId !== this.editRecordId) {
-                    const scheduleItem = schedules[scheduleItemId];
-                    internalSchedules.push({
-                        scheduleId: scheduleItemId,
-                        StartDate: scheduleItem.StartDate,
-                        EndDate: scheduleItem.EndDate
-                    });
+            if (internalResourceIdKey === internalResourceId) {
+                const schedules = internalData[internalResourceIdKey];
+                for (const scheduleItemId in schedules) {
+                    if (scheduleItemId !== this.editRecordId) {
+                        console.log(`Adding schedule for internal resource ID ${internalResourceId}:`, schedules[scheduleItemId]);
+                        internalSchedules.push({
+                            scheduleId: scheduleItemId,
+                            StartDate: schedules[scheduleItemId].StartDate,
+                            EndDate: schedules[scheduleItemId].EndDate
+                        });
+                    }
                 }
             }
         }
 
-        // console.log(`Vendor Schedules: ${JSON.stringify(vendorSchedules)}, Internal Schedules: ${JSON.stringify(internalSchedules)}`);
+        console.log(`Vendor Schedules: ${JSON.stringify(vendorSchedules)} && Internal Schedules: ${JSON.stringify(internalSchedules)}`);
         return { vendorSchedules, internalSchedules };
     }
 
@@ -646,7 +660,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                     if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItem.scheduleId);
 
-                        if (conflictingSchedule) {
+                        if (conflictingSchedule && conflictingSchedule.Id !== task.id) {
                             if (!this.existingConflictScheduleMap[taskId]) {
                                 this.existingConflictScheduleMap[taskId] = {};
                             }
