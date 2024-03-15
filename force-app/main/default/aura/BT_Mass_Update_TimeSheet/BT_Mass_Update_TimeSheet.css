@@ -26,6 +26,9 @@
 }
 
 .THIS .tableDiv{
-    min-height: 70vh;
+    min-height: 90vh;
 }
 
+.THIS .some-indicator {
+    background-color: indianred !important;
+}

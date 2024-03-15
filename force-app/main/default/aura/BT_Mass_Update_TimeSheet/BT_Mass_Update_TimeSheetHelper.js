@@ -20,6 +20,11 @@
                             "type": "error"
                         });
                     }     
+                    var appEvent = $A.get("e.c:myEvent");
+                    appEvent.setParams({
+                        "message" : "Event fired"
+                    });
+                    appEvent.fire();
                     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
                 }
                 component.set("v.timeSheetEntries", result);
