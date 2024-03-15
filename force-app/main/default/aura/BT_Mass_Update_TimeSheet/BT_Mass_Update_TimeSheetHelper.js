@@ -11,6 +11,17 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
+                if(result.length == 0){
+                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Error!",
+                            "message": "No Time Sheet Entry found for this Time Sheet!",
+                            "type": "error"
+                        });
+                    }     
+                    sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                }
                 component.set("v.timeSheetEntries", result);
                 component.set("v.Spinner", false);
             }
@@ -18,37 +29,67 @@
         $A.enqueueAction(action);
     },
 
+    validateTimeSheetEntries : function(component, event, helper) {
+        console.log('validateTimeSheetEntries');
+        var timeSheetEntries = component.get('v.timeSheetEntries');
+        var isValid = true;
+        for(var i = 0; i < timeSheetEntries.length; i++){
+            if(timeSheetEntries[i].Name == ''){
+                component.set("v.Spinner", false);
+                isValid = false;
+                window.onload = showToast();        // Show  toast message on VF page --> Aura
+                function showToast() {
+                    sforce.one.showToast({
+                        "title": "Error!",
+                        "message": "Name cannot be empty on row " + (i + 1),
+                        "type": "error"
+                    });
+                }     
+                break;
+            }
+        }
+        if(isValid){
+            helper.updateTimeSheetEntries(component, event, helper);
+        }
+    },
+
     updateTimeSheetEntries : function(component, event, helper) {
-        console.log('updateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         console.log('timeSheetEntries', timeSheetEntries);
+        var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
+        console.log('deletedTimeSheetEntries', deletedTimeSheetEntries);
+
         var action = component.get("c.updateTimeSheetEntries");
         action.setParams({
-            "timeSheetEntries": timeSheetEntries
+            "upsertTimeSheetEntries": JSON.stringify(timeSheetEntries),
+            "deletedTimeSheetEntries": JSON.stringify(deletedTimeSheetEntries)
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
-                component.set("v.Spinner", false);
-                var workspaceAPI = component.find("workspace");
-                workspaceAPI.getFocusedTabInfo().then(function(response) {
-                    var focusedTabId = response.tabId;
-                    workspaceAPI.closeTab({tabId: focusedTabId});
-                });
-                var toastEvent = $A.get("e.force:showToast");
-                if(toastEvent){
-                    toastEvent.setParams({
-                        "title": "Success",
-                        "message": "TimeSheet Entries Updated Successfully.",
-                        "type": "success",
-                        "duration": 1000
+                if(result == 'success'){
+                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Success!",
+                            "message": "Time Sheet Entries updated successfully!",
+                            "type": "success"
+                        });
+                    }     
+                    var appEvent = $A.get("e.c:myEvent");
+                    appEvent.setParams({
+                        "message" : "Event fired"
                     });
-                    toastEvent.fire();
+                    appEvent.fire();
+                    sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                    windows.location.reload();
                 }
             }
         });
         $A.enqueueAction(action);
+
+        
     },
 })

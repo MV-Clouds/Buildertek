@@ -1,88 +1,88 @@
-<aura:component controller="BT_MassUpdate_TimeSheet"  implements="force:appHostable,lightning:isUrlAddressable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
-    <aura:handler name="change" value="{!v.pageReference}" action="{!c.doInit}" />
+<aura:component controller="BT_MassUpdate_TimeSheet"  implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    
+
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+    <aura:registerEvent name="myevent" type="c:myEvent" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    
     <aura:attribute name="Spinner" type="boolean" />
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
+    <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
     <aura:attribute name="timeSheetEntries" type="List" default="[]" />
+    <aura:attribute name="deletedTimeSheetEntries" type="List" default="[]" />
+    <aura:attribute name="PageNumber" type="integer" default="1" />
+    <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
    
     <lightning:workspaceAPI aura:id="workspace" />
     
     <aura:if isTrue="{!v.Spinner}">
-        <div class="slds-spinner_container">
-            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                <span class="slds-assistive-text">Loading</span>
-                <div class="slds-spinner__dot-a"></div>
-                <div class="slds-spinner__dot-b"></div>
-                <div class="custom-loading-text">
-                    <b>Processing, Please Wait</b>
-                </div>
-            </div>
-        </div>
+        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
     </aura:if>
 
-    <div class="slds-modal__content slds-scrollable" style="height: 100% !important;">
-        <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header slds-scrollable" title="Mass Update Time Sheet Entries">
-            <aura:set attribute="actions">
-                <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdateSave}" label="Save" class="slds-m-right_small" />
-                <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}" label="Cancel" />
-            </aura:set>
-        </lightning:card>
-    
-        <div class="slds-border_top slds-box slds-box_xx-small slds-m-top_medium slds-p-horizontal_medium">
-            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+    <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Time Sheet Entries">
+    <aura:set attribute="actions">
+        <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}"
+            label="Save" class="" />
+        <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
+        <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
+            label="Cancel" />
+        <!-- <lightning:button iconName="utility:back" iconPosition="left" disabled="{!v.PageNumber == 1}"
+            aura:id="prevPage" label="Previous" onclick="{!c.handlePrev}" />
+        <lightning:button iconName="utility:forward" iconPosition="right" disabled="{!v.isNextDisabled}"
+            aura:id="nextPage" label="Next" onclick="{!c.handleNext}" /> -->
+    </aura:set>
+
+    <div class="slds-modal__content slds-scrollable">
+        <div class="slds slds-m-top_medium slds-p-horizontal_medium tableDiv slds-scrollable">
+            <table class="slds-table slds-table--bordered slds-table--edit">
                 <thead>
-                    <tr class="slds-text-title_caps">
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Start Time</th>
-                        <th>End Time</th>
-                        <th>Duration</th>
-                        <th>Notes</th>
+                    <tr style="height:35px; !important">
+                        <th> Name </th>
+                        <th> Status </th>
+                        <th> Description </th>
+                        <th> Start Time </th>
+                        <th> End Time </th>
+                        <th> Duration </th>
+                        <th> Notes </th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <aura:iteration items="{!v.timeSheetEntries}" var="rec">
-                        <tr class="slds-hint-parent">
-                            <!-- Name -->
-                            <td role="gridcell">
-                                <!-- <lightning:input type="text" disabled="true" value="{!rec.Name}" /> -->
-                                <ui:outputText value="{!rec.Name}" />
+                    <aura:iteration items="{!v.timeSheetEntries}" var="entry" indexVar="index">
+                        <tr>
+                            <td>
+                                <lightning:input type="text" value="{!entry.Name}" />
                             </td>
-                            <!-- Description -->
-                            <td role="gridcell">
-                                <lightning:input type="text" value="{!rec.buildertek__Description__c}" />
-                            </td>
-                            <!-- Status -->
-                            <td role="gridcell">
-                                <lightning:select name="status" value="{!rec.buildertek__Status__c}">
+                            <td>
+                                <lightning:select name="status" value="{!entry.buildertek__Status__c}">
                                     <option value="New">New</option>
                                     <option value="Submitted">Submitted</option>
                                     <option value="Approved">Approved</option>
                                 </lightning:select>
                             </td>
-                            <!-- Start Time -->
-                            <td role="gridcell">
-                                <div class="slds-form-element">
-                                    <lightning:input type="datetime-local" value="{!rec.buildertek__Start_Time__c}" />
-                                </div>
+                            <td>
+                                <lightning:input type="text" value="{!entry.buildertek__Description__c}" />
                             </td>
-                            <!-- End Time -->
-                            <td role="gridcell">
-                                <div class="slds-form-element">
-                                    <lightning:input type="datetime-local" value="{!rec.buildertek__End_Time__c}" />
-                                </div>
+                            <td>
+                                <lightning:input type="datetime-local" value="{!entry.buildertek__Start_Time__c}" />
                             </td>
-                            <!-- Duration -->
-                            <td role="gridcell">
-                                <div class="slds-form-element">
-                                    <lightning:input type="number" value="{!rec.buildertek__Duration_Manual__c}" />
-                                </div>
+                            <td>
+                                <lightning:input type="datetime-local" value="{!entry.buildertek__End_Time__c}" />
                             </td>
-                            <!-- Notes -->
-                            <td role="gridcell">
-                                <div class="slds-form-element">
-                                    <lightning:input type="text" value="{!rec.buildertek__Notes__c}" />
-                                </div>
+                            <td>
+                                <lightning:input type="number" value="{!entry.buildertek__Duration_Manual__c}" />
+                            </td>
+                            <td>
+                                <lightning:input type="text" value="{!entry.buildertek__Notes__c}" />
+                            </td>
+                            <td>
+                                <span onclick="{!c.deleteRecord}" data-index='{!index}'>
+                                    <lightning:icon iconName="action:close" alternativeText="Delete"
+                                        class="some-indicator" size="x-small" title="Delete" />
+                                </span>
                             </td>
                         </tr>
                     </aura:iteration>
@@ -90,7 +90,30 @@
             </table>
         </div>
     </div>
-    
+</lightning:card>
 
+    
+    <aura:if isTrue="{!v.isCancelModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeCancelModal}"
+                        alternativeText="close" size="medium" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Changes
+                        Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p>Are you sure you want to Cancel?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeCancelModal }" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{! c.closeScreen }" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
 
 </aura:component>	

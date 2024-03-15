@@ -1,53 +1,77 @@
 ({
     doInit : function(component, event, helper) {
         component.set("v.Spinner", true);
-        var recordId = component.get("v.pageReference.state.buildertek__parentId");
-        component.set('v.recordId', recordId);
-        helper.getTimeSheetEntries(component, event, helper);
+        var pageNumber = component.get("v.PageNumber");
+        var pageSize = component.get("v.pageSize");
+        window.setTimeout(
+            $A.getCallback(function () {
+                console.log('recordId', component.get('v.recordId'));
+                helper.getTimeSheetEntries(component, event, helper);
+            }),
+            2000
+        );
     },
 
-    onMassUpdateSave: function(component, event, helper){
+    onMassUpdate: function(component, event, helper){
         component.set("v.Spinner", true);
-        console.log('onMassUpdateSave');
+        helper.validateTimeSheetEntries(component, event, helper);
+        // helper.updateTimeSheetEntries(component, event, helper);
+    },
+
+    onAddClick: function(component, event, helper){
+        console.log('onAddClick');
         var timeSheetEntries = component.get('v.timeSheetEntries');
-        var valid = timeSheetEntries.every(function(entry){
-            console.log('entry.buildertek__Duration_Manual__c', entry.buildertek__Duration_Manual__c);
-            return (entry.buildertek__Duration_Manual__c === null || !isNaN(entry.buildertek__Duration_Manual__c) || entry.buildertek__Duration_Manual__c === '' || entry.buildertek__Duration_Manual__c === undefined);
-        });
-        if(!valid){
-            component.set("v.Spinner", false);
-            var toastEvent = $A.get("e.force:showToast");
-            if(toastEvent){
-                toastEvent.setParams({
-                    "title": "Error",
-                    "message": "Duration should be a number.",
-                    "type": "error",
-                    "duration": 1000
-                });
-                toastEvent.fire();
+        //create a timeSheetEntry
+        var timeSheetEntry = {
+            'Name': '',
+            'buildertek__BT_Time_Sheet__c': component.get('v.recordId'),
+        };
+        //push on the top of the list
+        timeSheetEntries.unshift(timeSheetEntry);
+        component.set('v.timeSheetEntries', timeSheetEntries);
+    },
+
+    deleteRecord: function(component, event, helper){
+        console.log('deleteRecord');
+        var target = event.target;
+        var timeSheetEntries = component.get('v.timeSheetEntries');
+        var index = target.getAttribute("data-index");
+        console.log('index', index);
+        if(index != null){
+            if(timeSheetEntries[index].Id != ''){
+                var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
+                deletedTimeSheetEntries.push(timeSheetEntries[index]);
+                component.set('v.deletedTimeSheetEntries', deletedTimeSheetEntries);
+                timeSheetEntries.splice(index, 1);
+                component.set('v.timeSheetEntries', timeSheetEntries);
+
+            } else {
+                timeSheetEntries.splice(index, 1);
+                component.set('v.timeSheetEntries', timeSheetEntries);
             }
-            return;
         }
-        debugger;
-        helper.updateTimeSheetEntries(component, event, helper);
+        
     },
 
     onMassUpdateCancel: function(component, event, helper){
-        var workspaceAPI = component.find("workspace");
-	    workspaceAPI.getFocusedTabInfo().then(function(response) {
-
-		    var focusedTabId = response.tabId;
-		    workspaceAPI.closeTab({tabId: focusedTabId});
-		});
-        var toastEvent = $A.get("e.force:showToast");
-        if(toastEvent){
-            toastEvent.setParams({
-                "title": "Info",
-                "message": "TimeSheet Entries Update Cancelled.",
-                "type": "info",
-                "duration": 1000
-            });
-            toastEvent.fire();
-        }
+        component.set("v.isCancelModalOpen", true);
     },
+
+    closeScreen: function(component, event, helper){
+        component.set("v.isCancelModalOpen", false);
+        //    <aura:registerEvent name="myevent" type="c:myEvent" />
+        var appEvent = $A.get("e.c:myEvent");
+        appEvent.setParams({
+            "message" : "Event fired"
+        });
+        appEvent.fire();
+        
+        sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+    },
+
+    closeCancelModal: function(component, event, helper){
+        component.set("v.isCancelModalOpen", false);
+    },
+
+
 })
