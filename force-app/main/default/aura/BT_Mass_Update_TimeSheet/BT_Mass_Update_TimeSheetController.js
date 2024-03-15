@@ -38,7 +38,7 @@
         var index = target.getAttribute("data-index");
         console.log('index', index);
         if(index != null){
-            if(timeSheetEntries[index].Id != ''){
+            if(timeSheetEntries[index].Id != '' && timeSheetEntries[index].Id != undefined  && timeSheetEntries[index].Id != null){
                 var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
                 deletedTimeSheetEntries.push(timeSheetEntries[index]);
                 component.set('v.deletedTimeSheetEntries', deletedTimeSheetEntries);

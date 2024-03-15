@@ -35,7 +35,7 @@
             aura:id="nextPage" label="Next" onclick="{!c.handleNext}" /> -->
     </aura:set>
 
-    <div class="slds-modal__content slds-scrollable">
+    <div class="slds-modal__content slds-scrollable" style="min-height:90vh">
         <div class="slds slds-m-top_medium slds-p-horizontal_medium tableDiv slds-scrollable">
             <table class="slds-table slds-table--bordered slds-table--edit">
                 <thead>
