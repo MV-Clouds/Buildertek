@@ -6,9 +6,9 @@ public class createPOfromBOM_controller {
         responseWrapper returnValue = new responseWrapper();
         try {
             system.debug('BOMiD : ' + BOMiD);
-        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
+        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Tax_Percent__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
                                                       FROM buildertek__Select_Sheet__c 
-                                                      WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD];
+                                                      WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD ORDER BY buildertek__Vendor__r.Name ASC NULLS LAST, Name ASC];
         Set<String> vendorList = new Set<String>();
 
         if(BOMLines.size() > 0){
@@ -49,28 +49,28 @@ public class createPOfromBOM_controller {
             String result = '';
             List<String> pickListValuesList = new List<String>();
             SObjectType objToken = Schema.getGlobalDescribe().get(ObjectName);
-			Schema.DescribeSObjectResult d = objToken.getDescribe();
-			Map<String, Schema.FieldSet> FsMap = d.fieldSets.getMap();
-			if (FsMap.containsKey(FieldSetName)){
-				for (Schema.FieldSetMember f : FsMap.get(FieldSetName).getFields()){
-					if (result != ''){
-						result += ',';
-					}
-					String jsonPart = '{';
-					jsonPart += '"label":"' +( String.valueOf(f.getFieldPath()) == 'Name' ? 'BOM Line' : f.getLabel() )+'",'; // changes for BUIL-3953, to change field label...
-					jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired())+'",';
-					jsonPart += '"type":"' + (f.getType())+'",';
-					jsonPart += '"name":"' + f.getFieldPath()+'"';
+            Schema.DescribeSObjectResult d = objToken.getDescribe();
+            Map<String, Schema.FieldSet> FsMap = d.fieldSets.getMap();
+            if (FsMap.containsKey(FieldSetName)){
+                for (Schema.FieldSetMember f : FsMap.get(FieldSetName).getFields()){
+                    if (result != ''){
+                        result += ',';
+                    }
+                    String jsonPart = '{';
+                    jsonPart += '"label":"' +( String.valueOf(f.getFieldPath()) == 'Name' ? 'BOM Line' : f.getLabel() )+'",'; // changes for BUIL-3953, to change field label...
+                    jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired())+'",';
+                    jsonPart += '"type":"' + (f.getType())+'",';
+                    jsonPart += '"name":"' + f.getFieldPath()+'"';
                     
-					if (String.valueOf(f.getType()) == 'PICKLIST'){
-						pickListValuesList = getDropDown(ObjectName, String.valueOf(f.getFieldPath()));
-						jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
-					}
-					jsonPart += '}';
-					result += jsonPart;
+                    if (String.valueOf(f.getType()) == 'PICKLIST'){
+                        pickListValuesList = getDropDown(ObjectName, String.valueOf(f.getFieldPath()));
+                        jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
+                    }
+                    jsonPart += '}';
+                    result += jsonPart;
 
-				}
-			}
+                }
+            }
 
             returnValue.state = 'success';
             returnValue.FieldSetValues = '[' + result + ']';
@@ -90,22 +90,22 @@ public class createPOfromBOM_controller {
     }
 
     @AuraEnabled
-	public static List<String> getDropDown(String objName, String fieldName){
-		List<String> pickListValuesList = new List<String>();
-		try{
-			Schema.SObjectType s = Schema.getGlobalDescribe().get(objName);
-			Schema.DescribeSObjectResult r = s.getDescribe();
-			Map<String, Schema.SObjectField> fields = r.fields.getMap();
-			Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
-			List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-			for (Schema.PicklistEntry pickListVal : ple){
-				pickListValuesList.add(pickListVal.getLabel());
-			}
-		} catch (Exception e){
-			throw new AuraHandledException(e.getMessage());
-		}
-		return pickListValuesList;
-	}
+    public static List<String> getDropDown(String objName, String fieldName){
+        List<String> pickListValuesList = new List<String>();
+        try{
+            Schema.SObjectType s = Schema.getGlobalDescribe().get(objName);
+            Schema.DescribeSObjectResult r = s.getDescribe();
+            Map<String, Schema.SObjectField> fields = r.fields.getMap();
+            Schema.DescribeFieldResult fieldResult = fields.get(fieldName).getDescribe();
+            List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+            for (Schema.PicklistEntry pickListVal : ple){
+                pickListValuesList.add(pickListVal.getLabel());
+            }
+        } catch (Exception e){
+            throw new AuraHandledException(e.getMessage());
+        }
+        return pickListValuesList;
+    }
 
 
     @AuraEnabled
@@ -118,7 +118,7 @@ public class createPOfromBOM_controller {
                                                                   WHERE Id =: BOMiD];
 
                                 
-            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
+            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Tax_Percent__c,buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
                                                                   buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
                                                           FROM buildertek__Select_Sheet__c 
                                                           WHERE Id IN : slectedLinesId];
@@ -163,7 +163,8 @@ public class createPOfromBOM_controller {
                     Poline.buildertek__Product__c = line.buildertek__Product__c;
                     Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                     Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
-                    Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
+                    Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;                   
+                    Poline.buildertek__Tax__c = line.buildertek__Tax_Percent__c;                                        
                     Poline.buildertek__Purchase_Order__c = CreatedPOs.Id;
                     
                     POlinesToCreate.add(Poline);
@@ -208,7 +209,8 @@ public class createPOfromBOM_controller {
                         // schedule item phase == PO phase (first BOM phase)
                         // schedule item cost code == PO cost code (first BOM cost code)
                         // schedule item category == PO categorty (first BOM category)
-                                                if( schItemPhaseName == poPhaseName 
+                        if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c
+                            // && schItemPhaseName == poPhaseName 
                             && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
                             && SchItem.buildertek__BT_Category__c == Category
                             && matchedSchItems.size() == 0)

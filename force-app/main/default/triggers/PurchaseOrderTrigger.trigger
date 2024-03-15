@@ -8,9 +8,9 @@
 trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, after undelete, after update, before delete, before insert, before update ){
     System.debug('In trigger');
 
-    if (!BT_Utils.isTriggerDeactivate('Purchase_Order__c') && !PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger){
+    PurchaseOrderTriggerHandler handler = new PurchaseOrderTriggerHandler(Trigger.isExecuting, Trigger.size);
 
-        PurchaseOrderTriggerHandler handler = new PurchaseOrderTriggerHandler(Trigger.isExecuting, Trigger.size);
+    if (!BT_Utils.isTriggerDeactivate('Purchase_Order__c') && !PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger){
 
         if (Trigger.isInsert && Trigger.isBefore){
             handler.OnBeforeInsert(Trigger.new);
@@ -45,6 +45,15 @@ trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, af
             PurchaseOrder_handler.handledelete(Trigger.old);
         } else if (Trigger.isDelete && Trigger.isAfter){
             handler.OnAfterDelete(Trigger.old);
+            handler.updateprojectonpodelete(Trigger.old);
         } 
+    } else {
+        if (Trigger.isInsert && Trigger.isAfter){
+            handler.updateprojectonpoinsert(Trigger.new);
+        } else if (Trigger.isUpdate && Trigger.isAfter ){
+            handler.updateAmountonProject(Trigger.new, Trigger.oldMap);
+        } else if (Trigger.isDelete && Trigger.isAfter){
+            handler.updateprojectonpodelete(Trigger.old);
+        }
     }
 }

@@ -6,7 +6,7 @@ public with sharing class createSinglePOsController {
         try {
             buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c FROM buildertek__Project_Selection_Sheet_Takeoff__c WHERE Id = :bomId];
 
-            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Category__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :bomId];
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Tax_Percent__c, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Category__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :bomId];
             
             if (!BOMLines.isEmpty()) {
                 boolean AllBOMlinesAssigedWithPO =  true;
@@ -72,6 +72,7 @@ public with sharing class createSinglePOsController {
                                 Poline.buildertek__Quantity__c = bomline.buildertek__Quantity__c;
                                 Poline.buildertek__Cost_Code__c = bomline.buildertek__Cost_Code__c;
                                 Poline.buildertek__Unit_Price__c = bomline.buildertek__BL_UNIT_COST__c;
+                                Poline.buildertek__Tax__c = bomline.buildertek__Tax_Percent__c;
                                 Poline.buildertek__Purchase_Order__c = poMap.get(bomline.Id).Id;
                                 POlinesToCreate.add(Poline);
                                 bomIdToPOLineMap.put(bomline.Id, Poline);
@@ -119,7 +120,8 @@ public with sharing class createSinglePOsController {
                                         // schedule item cost code == PO cost code (first BOM cost code)
                                         // schedule item category == PO categorty (first BOM category)
                                         // get first schedule items that match above conditions....
-                                        if( schItemPhaseName == poPhaseName 
+                                        if( SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c
+                                            // && schItemPhaseName == poPhaseName 
                                             && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
                                             && !PO_to_matchedSchItems.containsKey(PO.Id)) {
