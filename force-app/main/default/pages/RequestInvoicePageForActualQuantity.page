@@ -121,9 +121,7 @@
                     'agreeFunction': agreeFunction
                 }
             } else {
-                confirmPromptOptions = {
-                    'modalPopupId': 'lightningInfoPopup1'
-                }
+                document.getElementById('myModal1').style.display = 'block';
             }
             Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
         }
@@ -174,6 +172,7 @@
             document.getElementById('fileError').innerHTML = 'File size exceeds 5MB. Please select a smaller file.';
             document.getElementById('fileError').style.display = 'block';
             document.getElementById('fileToUpload').value = '';
+            document.getElementById('fileNameFieldId').style.display = 'none';
             return;
         }
 
@@ -235,6 +234,7 @@
 
         function closeModal() {
             document.getElementById('myModal').style.display = 'none';
+            document.getElementById('myModal1').style.display = 'none';
         }
 
     function inputLimiter(e, allow) {
@@ -447,31 +447,19 @@
                 </div>
                 <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
             </apex:outputPanel>
-            <apex:outputPanel layout="block" id="lightningInfoPopup1" style="display: none; z-index: 8552;">
-                <div class="apModal" style="z-index: 8551;">
-                    <div class="apModalContainer">
-                        <div class="apModalHeader">
-                            <button id="lightningInfoPopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!JSENCODE($Component.lightningInfoPopup1)}'}); return false;"
-                                title="{!$Label.Close}">
-                                <c:BT_LightningSvg parentId="lightningInfoPopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/>
-                                <span class="slds-assistive-text">{!$Label.Close}</span>
-                            </button>
-                            <h2 class="apModalHeading" id="lightningInfoPopupHeader">Error</h2>
-                        </div>
-                        <div class="apModalContent">
-                            <div class="apNotifyContainer" style="position: relative; text-align:center;">
-                                <div>
-                                    <h2 id="lightningInfoPopupMessage">Please upload an Invoice</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="apModalFooter">
-                            <button id="lightningInfoPopupCloseButton" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!JSENCODE($Component.lightningInfoPopup1)}'}); return false;">Close</button>
-                        </div>
+            <div id="myModal1" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="rkheader slds-modal__header">
+                        <h2 style="margin-bottom: 1px;" class="slds-text-heading--medium">Error</h2>
+                    </div>
+                    <div class="rkbody slds-modal__content slds-p-around--medium">
+                        <p>Please upload an Invoice</p>
+                    </div>
+                    <div class="rkfooter slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_neutral" onclick="closeModal()">Close</button>
                     </div>
                 </div>
-                <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
-            </apex:outputPanel>
+            </div>
             <div id="myModal" class="modal" style="{!IF(isModalVisible, 'display: block;', 'display: none;')}">
                 <div class="modal-content">
                     <div class="rkheader slds-modal__header">
