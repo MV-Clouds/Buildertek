@@ -57,6 +57,11 @@
     <aura:attribute name="newPO" type="Purchase_Order__c" default="{ 'sobjectType': 'Purchase_Order__c' }" access="public" />
     <aura:attribute name="newPOItems" type="Purchase_Order_Item__c[]" access="public" />
 
+    <aura:attribute name="selectedOption" type="String" default="" />
+    <aura:attribute name="choosebetweenLabour" type="Boolean" default="true" />
+    <aura:attribute name="ShowTimeCards" type="Boolean" default="false" />
+    <aura:attribute name="ShowTimeSheets" type="Boolean" default="false" />
+
     <!-- check existing po -->
     <aura:attribute name="isExistingPo" type="Boolean" default="false" access="public" />
     <aura:attribute name="selectedExistingPO" type="List" default="" access="public" />
@@ -2604,88 +2609,202 @@
                 <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                     <div class="slds-modal__container" style="width: 50%;">
                         <div aura:id="poContainer" class="c-container">
-                            <header class="slds-modal__header">
-                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
-                                <p></p>
-                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Time Cards
-                                </h2>
-                                <p></p>
-                            </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
-                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
-                                    <thead>
-                                        <tr class="slds-text-title_caps">
-                                            <th scope="col" class="slds-truncate">
-                                                <lightning:input aura:id="selectAllTimeCards" type="checkbox" name="checkAll" onchange="{!c.checkAllTimeCards}" />
-
-                                                <!-- <lightning:input type="checkbox"
-                                                                         name="{!item.Id}"
-                                                                         onchange="{!c.selectedSchedule}" /> -->
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Duration">TimeCard Name</div>
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">Description</div>
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">Daily Expense</div>
-                                            </th>
-                                            <!-- * commented this column becuase there is no vendor on the time card -->
-                                            <!-- <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">Vendor</div>
-                                            </th> -->
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <aura:iteration items="{!v.recordList}" var="item" indexVar="index">
-                                            <tr>
-                                                <!-- <td class="slds-truncate" style="width: 10px;">
-                                                    <lightning:input type="checkbox"
-                                                                         name="{!item.Id}"
-                                                                         onchange="{!c.selectedSchedule}" /> 
-                                                </td>-->
-                                                <td style="padding-left: 0.5rem; width: 30px;">
-                                                    <lightning:input  type="checkbox" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkTimeCard}" />
-                                                    <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedTC}">
-                                                        <ui:inputRadio aura:id="radio" name="select" label=""
-                                                            value="{!item.selectedTimeCards}" />
-                                                    </span> -->
-                                                </td>
-                                                <td class="slds-truncate" style="">
-                                                    {!item.Name}
-                                                </td>
-                                                <td>
-                                                    {!item.buildertek__Description__c}
-                                                </td>
-                                                <td>
-                                                    <!--<aura:if isTrue='{!v.multicurrency}'>
-                                                        <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!item.CurrencyIsoCode}" currencyDisplayAs="code"/>
-                                                    </aura:if>
-                                                    <aura:if isTrue='{!!v.multicurrency}'>-->
-                                                    <lightning:formattedNumber value="{!item.buildertek__Daily_Expense__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                                                    <!--</aura:if>-->
-                                                    <!--<lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="USD"/>-->
-
-                                                </td>
+                            <aura:if isTrue="{!v.choosebetweenLabour}">
+                                <header class="slds-modal__header">
+                                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                    <p></p>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Labor
+                                    </h2>
+                                    <p></p>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                    <!-- add a picklist to choose between TCTS -->
+                                    <div class="slds-form-element">
+                                        <label class="slds-form-element__label" for="select-01">Choose between Time Cards and Time Sheets</label>
+                                        <div class="slds-form-element__control">
+                                            <lightning:select name="select-01" value="{!v.selectedOption}">
+                                                <option value="" disabled="true">Choose one...</option>
+                                                <option value="TimeCards">Time Cards</option>
+                                                <option value="TimeSheets">Time Sheets</option>
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                    <lightning:button variant="brand" type="submit" name="Save" label="Next" onclick="{!c.choosebetweenTCTS}" />
+                                </footer>
+                            </aura:if>
+                                
+                            <aura:if isTrue="{!v.ShowTimeCards}">
+                                <header class="slds-modal__header">
+                                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                    <p></p>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Time-Cards
+                                    </h2>
+                                    <p></p>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th scope="col" class="slds-truncate">
+                                                    <lightning:input aura:id="selectAllTimeCards" type="checkbox" name="checkAll" onchange="{!c.checkAllTimeCards}" />
+    
+                                                    <!-- <lightning:input type="checkbox"
+                                                                             name="{!item.Id}"
+                                                                             onchange="{!c.selectedSchedule}" /> -->
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Duration">TimeCard Name</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Description</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Daily Expense</div>
+                                                </th>
                                                 <!-- * commented this column becuase there is no vendor on the time card -->
-                                                <!-- <td>
-                                                    {!item.buildertek__Vendor__r.Name}
-                                                </td> -->
+                                                <!-- <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Vendor</div>
+                                                </th> -->
                                             </tr>
-                                        </aura:iteration>
-                                        <aura:if isTrue="{!empty(v.recordList)}">
-                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
-                                                No Records Found
-                                            </td>
-                                        </aura:if>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <footer class="slds-modal__footer">
-                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
-                                <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBudgetLine}" />
-                            </footer>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.recordList}" var="item" indexVar="index">
+                                                <tr>
+                                                    <!-- <td class="slds-truncate" style="width: 10px;">
+                                                        <lightning:input type="checkbox"
+                                                                             name="{!item.Id}"
+                                                                             onchange="{!c.selectedSchedule}" /> 
+                                                    </td>-->
+                                                    <td style="padding-left: 0.5rem; width: 30px;">
+                                                        <lightning:input  type="checkbox" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkTimeCard}" />
+                                                        <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedTC}">
+                                                            <ui:inputRadio aura:id="radio" name="select" label=""
+                                                                value="{!item.selectedTimeCards}" />
+                                                        </span> -->
+                                                    </td>
+                                                    <td class="slds-truncate" style="">
+                                                        {!item.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!item.buildertek__Description__c}
+                                                    </td>
+                                                    <td>
+                                                        <!--<aura:if isTrue='{!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!item.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+                                                        <aura:if isTrue='{!!v.multicurrency}'>-->
+                                                        <lightning:formattedNumber value="{!item.buildertek__Daily_Expense__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                        <!--</aura:if>-->
+                                                        <!--<lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="USD"/>-->
+    
+                                                    </td>
+                                                    <!-- * commented this column becuase there is no vendor on the time card -->
+                                                    <!-- <td>
+                                                        {!item.buildertek__Vendor__r.Name}
+                                                    </td> -->
+                                                </tr>
+                                            </aura:iteration>
+                                            <aura:if isTrue="{!empty(v.recordList)}">
+                                                <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                    No Records Found
+                                                </td>
+                                            </aura:if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                    <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBudgetLine}" />
+                                </footer>
+                            </aura:if>
+                            <aura:if isTrue="{!v.ShowTimeSheets}">
+                                <header class="slds-modal__header">
+                                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                    <p></p>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Time-Sheets
+                                    </h2>
+                                    <p></p>
+                                </header>
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                        <thead>
+                                            <tr class="slds-text-title_caps">
+                                                <th scope="col" class="slds-truncate">
+                                                    <lightning:input aura:id="selectAllTimeCards" type="checkbox" name="checkAll" onchange="{!c.checkAllTimeCards}" />
+    
+                                                    <!-- <lightning:input type="checkbox"
+                                                                             name="{!item.Id}"
+                                                                             onchange="{!c.selectedSchedule}" /> -->
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Duration">TimeCard Name</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Description</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Daily Expense</div>
+                                                </th>
+                                                <!-- * commented this column becuase there is no vendor on the time card -->
+                                                <!-- <th scope="col">
+                                                    <div class="slds-truncate" title="Project Description">Vendor</div>
+                                                </th> -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.recordList}" var="item" indexVar="index">
+                                                <tr>
+                                                    <!-- <td class="slds-truncate" style="width: 10px;">
+                                                        <lightning:input type="checkbox"
+                                                                             name="{!item.Id}"
+                                                                             onchange="{!c.selectedSchedule}" /> 
+                                                    </td>-->
+                                                    <td style="padding-left: 0.5rem; width: 30px;">
+                                                        <lightning:input  type="checkbox" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkTimeCard}" />
+                                                        <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedTC}">
+                                                            <ui:inputRadio aura:id="radio" name="select" label=""
+                                                                value="{!item.selectedTimeCards}" />
+                                                        </span> -->
+                                                    </td>
+                                                    <td class="slds-truncate" style="">
+                                                        {!item.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!item.buildertek__Description__c}
+                                                    </td>
+                                                    <td>
+                                                        <!--<aura:if isTrue='{!v.multicurrency}'>
+                                                            <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!item.CurrencyIsoCode}" currencyDisplayAs="code"/>
+                                                        </aura:if>
+                                                        <aura:if isTrue='{!!v.multicurrency}'>-->
+                                                        <lightning:formattedNumber value="{!item.buildertek__Daily_Expense__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                        <!--</aura:if>-->
+                                                        <!--<lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="USD"/>-->
+    
+                                                    </td>
+                                                    <!-- * commented this column becuase there is no vendor on the time card -->
+                                                    <!-- <td>
+                                                        {!item.buildertek__Vendor__r.Name}
+                                                    </td> -->
+                                                </tr>
+                                            </aura:iteration>
+                                            <aura:if isTrue="{!empty(v.recordList)}">
+                                                <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                    No Records Found
+                                                </td>
+                                            </aura:if>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                    <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBudgetLine}" />
+                                </footer>
+                            </aura:if>
+                                
                         </div>
                     </div>
                 </section>

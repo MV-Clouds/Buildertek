@@ -2042,6 +2042,11 @@
         component.set('v.budgetItemId', '');
 
         component.set('v.addInvoicePOSection', false);
+        component.set('v.choosebetweenLabour', true);
+        component.set('v.ShowTimeSheets', false);
+        component.set('v.ShowTimeCards', false);
+        component.set('v.selectedOption', '');
+
 
 
         // $A.get('e.force:refreshView').fire();
@@ -2077,6 +2082,30 @@
         // $A.get('e.force:refreshView').fire();
 
         helper.getBudgetGroups(component, event, helper, page, function () { });
+    },
+
+    choosebetweenTCTS: function (component, event, helper) {
+        component.set("v.choosebetweenLabour", false);
+        var selectedValue = component.get("v.selectedOption");
+        console.log('selectedValue', selectedValue);
+        if(selectedValue == 'TimeSheets'){
+            component.set("v.ShowTimeCards", false);
+            component.set("v.ShowTimeSheets", true);
+        }
+        else if(selectedValue == 'TimeCards'){
+            component.set("v.ShowTimeSheets", false);
+            component.set("v.ShowTimeCards", true);
+        }else{
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: "Error",
+                message: "Please select an option",
+                type: "error"
+            });
+            toastEvent.fire();
+            component.set("v.choosebetweenLabour", true);
+        }
+
     },
     onSaveSuccess: function (component, event, helper) {
         if (event) {
