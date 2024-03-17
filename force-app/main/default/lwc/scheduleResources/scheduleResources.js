@@ -463,46 +463,57 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
     //* Check for conflicting dates before assigning resources
     checkResourceConflict() {
+        const { editRecordId, tableData, selectedVendorId, selectedInternalResourceId, selectedVendorResources1, selectedVendorResources2, selectedVendorResources3 } = this;
+        const selectedRecord = tableData.find(row => row.id === editRecordId);
+        const selectedStartDate = selectedRecord.startDate;
+        const selectedEndDate = selectedRecord.endDate;
+        const selectedResources = [selectedInternalResourceId, selectedVendorResources1, selectedVendorResources2, selectedVendorResources3].filter(Boolean);
         this.conflictingSchedules = [];
-        const selectedStartDate = this.tableData.find(row => row.id === this.editRecordId).startDate;
-        const selectedEndDate = this.tableData.find(row => row.id === this.editRecordId).endDate;
-        const selectedVendorId = this.selectedVendorId;
-        const internalResourceId = this.selectedInternalResourceId;
-        const selectedResources = [internalResourceId, this.selectedVendorResources1, this.selectedVendorResources2, this.selectedVendorResources3].filter(Boolean);
+
+        const addConflict = (resourceId, resourceName, conflictingResource) => {
+            let resource = this.conflictingSchedules.find(item => item.resourceId === resourceId);
+            if (!resource) {
+                resource = { resourceId, resourceName, schedules: [] };
+                this.conflictingSchedules.push(resource);
+            }
+            resource.schedules.push(conflictingResource);
+        };
 
         for (const selectedResource of selectedResources) {
-            const schedules = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, internalResourceId);
-            // console.log(`Selected Record Start Date: ${selectedStartDate}, Selected End Date: ${selectedEndDate}`);
+            const { vendorSchedules, internalSchedules } = this.findSchedules(this.vendorResourceConflictJSON, this.internalResourceConflictJSON, selectedVendorId, selectedResource, selectedInternalResourceId);
+            const conflictScheduleList = vendorSchedules.concat(internalSchedules);
 
-            // Check conflicts in both vendor and internal schedules
-            let conflictScheduleList = schedules.vendorSchedules.concat(schedules.internalSchedules);
             for (const scheduleItem of conflictScheduleList) {
-                const scheduleId = scheduleItem.scheduleId;
-
-                // Check for conflicts
+                const scheduleItemId = scheduleItem.scheduleId;
                 if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
-                    // Push conflicting schedule details
-                    const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleId);
-                    if (conflictingSchedule) {
-                        this.conflictingSchedules.push({
+                    const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItemId);
+                    if (conflictingSchedule && conflictingSchedule.Id !== editRecordId) {
+                        addConflict(selectedResource, selectedResource === selectedInternalResourceId ? selectedRecord.internalResource : this.vendorResourcesMap[selectedVendorId]?.find(resource => resource.value === selectedResource)?.label || '', {
                             id: conflictingSchedule.Id,
                             taskName: conflictingSchedule.Name,
                             startDate: conflictingSchedule.buildertek__Start__c,
                             endDate: conflictingSchedule.buildertek__Finish__c,
-                            scheduleName: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
-                            projectName: conflictingSchedule.buildertek__Schedule__r.hasOwnProperty('buildertek__Project__r') ? conflictingSchedule.buildertek__Schedule__r.buildertek__Project__r.Name : '',
-                            scheduleId: conflictingSchedule.buildertek__Schedule__c
+                            schedule: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
+                            project: conflictingSchedule.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
+                            scheduleId: conflictingSchedule.buildertek__Schedule__c,
                         });
                     }
-                    // console.log('Conflicting Schedule:', JSON.parse(JSON.stringify(conflictingSchedule)));
                 }
             }
         }
 
         if (this.conflictingSchedules.length > 0) {
-            const selectedRecord = this.tableData.find(row => row.id === this.editRecordId);
-            this.conflictingSchedules.unshift({ id: selectedRecord.id, taskName: selectedRecord.taskName, startDate: selectedRecord.startDate, endDate: selectedRecord.endDate, scheduleName: selectedRecord.schedule, projectName: selectedRecord.project, scheduleId: this.recordId ? this.recordId : (this.selectedScheduleId ? this.selectedScheduleId : this.selectedScheduleIdForJS) });
-            console.log('Conflicting schedules:', this.conflictingSchedules);
+            this.conflictingSchedules.unshift({
+                id: selectedRecord.id,
+                taskName: selectedRecord.taskName,
+                startDate: selectedRecord.startDate,
+                endDate: selectedRecord.endDate,
+                schedule: selectedRecord.schedule,
+                project: selectedRecord.project,
+                scheduleId: this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS,
+                resourceName: 'Current Schedule'
+            });
+            console.log('Conflicting schedules:', JSON.parse(JSON.stringify(this.conflictingSchedules)));
             return this.conflictingSchedules;
         } else {
             console.log('No conflicting schedules found');
