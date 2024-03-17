@@ -244,6 +244,13 @@
     white-space: nowrap;
 }
 
+.resource-name {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #333;
+    text-transform: uppercase;
+}
+
 @media only screen and (min-width: 1024px) {
     .custom-card {
         width: 50%;

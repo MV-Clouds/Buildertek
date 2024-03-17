@@ -170,7 +170,7 @@
                                     <div class="resource-header">
                                         <p class="resource-name">{conflict.resourceName}</p>
                                     </div>
-                                    <div class="slds-grid slds-gutters popup__header-row">
+                                    <div class="popup__header-row">
                                         <div class="slds-col">
                                             <p class="header-text">Project</p>
                                         </div>
@@ -193,12 +193,12 @@
                                     <div class="popup__recordValues">
                                         <template for:each={conflict.schedules} for:item="scheduleItem">
                                             <div key={scheduleItem.id} data-id={scheduleItem.id}
-                                                class="slds-grid slds-gutters popup__data-row">
+                                                class="popup__data-row">
                                                 <div class="slds-col slds-truncate">
-                                                    <p class="popup__record-value">{scheduleItem.projectName}</p>
+                                                    <p class="popup__record-value">{scheduleItem.project}</p>
                                                 </div>
                                                 <div class="slds-col slds-truncate">
-                                                    <p class="popup__record-value">{scheduleItem.scheduleName}</p>
+                                                    <p class="popup__record-value">{scheduleItem.schedule}</p>
                                                 </div>
                                                 <div class="slds-col slds-truncate">
                                                     <p class="popup__record-value">{scheduleItem.taskName}</p>
