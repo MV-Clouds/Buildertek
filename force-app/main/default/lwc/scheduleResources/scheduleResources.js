@@ -37,7 +37,6 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     @track conflictingSchedules = [];
     @track intialConflictList = [];
     @track existingConflictScheduleMap = {};
-    @track oldPopup = false;
 
     connectedCallback() {
         loadStyle(this, myResource)
@@ -390,10 +389,19 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         // Check for conflicting dates before assigning resources
         if (!this.checkResourceConflict()) {
             this.updateResourceOnScheduleItem();
+
+            this.tableData = this.tableData.map(row => {
+                return row.id === this.editRecordId ? { ...row, hasConflict: false } : row;
+            });
+
+            setTimeout(() => {
+                const taskElement = this.template.querySelector(`div[data-id="${this.editRecordId}"]`);
+                if (taskElement) {
+                    taskElement.style.backgroundColor = '#ffffff';
+                }
+            }, 0);
         } else {
-            // Show the conflict popup
             this.isConflict = true;
-            this.oldPopup = true;
         }
     }
 
@@ -504,14 +512,19 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
         if (this.conflictingSchedules.length > 0) {
             this.conflictingSchedules.unshift({
-                id: selectedRecord.id,
-                taskName: selectedRecord.taskName,
-                startDate: selectedRecord.startDate,
-                endDate: selectedRecord.endDate,
-                schedule: selectedRecord.schedule,
-                project: selectedRecord.project,
-                scheduleId: this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS,
-                resourceName: 'Current Schedule'
+                resourceId: selectedRecord.id,
+                resourceName: 'Current Schedule Item',
+                schedules: [
+                    {
+                        id: selectedRecord.id,
+                        taskName: selectedRecord.taskName,
+                        startDate: selectedRecord.startDate,
+                        endDate: selectedRecord.endDate,
+                        schedule: selectedRecord.schedule,
+                        project: selectedRecord.project,
+                        scheduleId: this.recordId || this.selectedScheduleId || this.selectedScheduleIdForJS
+                    }
+                ]
             });
             console.log('Conflicting schedules:', JSON.parse(JSON.stringify(this.conflictingSchedules)));
             return this.conflictingSchedules;
@@ -527,13 +540,12 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         this.tableData = this.tableData.map(row => {
             return { ...row, isEditing: false };
         });
-        this.oldPopup = false;
     }
 
     // * Method to Accept conflict and update the resource
     handleAcceptConflict() {
         this.isConflict = false;
-        this.oldPopup = false;
+
         // Update the conflictingSchedules list based on the accepted changes
         this.conflictingSchedules = this.conflictingSchedules.map(conflict => {
             return {
@@ -548,12 +560,24 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
 
         // Call the updateResourceOnScheduleItem method to persist the changes
         this.updateResourceOnScheduleItem();
+
+        // Update hasConflict to true for the current task
+        this.tableData = this.tableData.map(row => {
+            return row.id === this.editRecordId ? { ...row, hasConflict: true } : row;
+        });
+
+        // Update the bg color for the current task
+        setTimeout(() => {
+            const taskElement = this.template.querySelector(`div[data-id="${this.editRecordId}"]`);
+            if (taskElement) {
+                taskElement.style.backgroundColor = '#ffbabc';
+            }
+        }, 0);
     }
 
     // * Redirect to the current schedule
     handleFixConflict(event) {
         this.isConflict = false;
-        this.oldPopup = false;
         let scheduleId = event.currentTarget.dataset.id;
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
@@ -721,7 +745,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         if (currentConflict) {
             const currentSchedule = {
                 resourceId: currentConflict.Id,
-                resourceName: 'Current Schedule',
+                resourceName: 'Current Schedule Item',
                 schedules: [currentConflict]
             };
             this.conflictingSchedules.push(currentSchedule);
