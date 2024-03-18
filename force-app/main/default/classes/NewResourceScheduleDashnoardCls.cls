@@ -8,14 +8,21 @@ public without sharing class NewResourceScheduleDashnoardCls{
     }
 
     @AuraEnabled
-    //public static  combinedProjectCalendarWrapperClone getScheduleItemsByProject(Date fromDate, Date toDate, string slectedTradetypeId, string slectedprojectId, string slectedcontactId, String projectSearch,String resourceSearch, String alltypeSearch){
     public static  combinedProjectCalendarWrapperClone getScheduleItemsByProject(String fromDate, String toDate, string slectedTradetypeId, string slectedprojectId, string slectedcontactId, String projectSearch,String resourceSearch, String alltypeSearch){
 
-        //Boolean isCommunityUser = getUser();
+        System.debug('fromdate : '+fromDate);
+        System.debug('toDate : '+toDate);
+        System.debug('slectedTradetypeId : '+slectedTradetypeId);
+        System.debug('slectedprojectId : '+slectedprojectId);
+        System.debug('slectedcontactId : '+slectedcontactId);
+        System.debug('projectSearch : '+projectSearch);
+        System.debug('resourceSearch : '+resourceSearch);
+        System.debug('alltypeSearch : '+alltypeSearch);
+
         string userName = userInfo.getUserId();
-        system.debug(userName);
+
         list<Network> netRec = [SELECT Id FROM Network];
-        system.debug('%%%'+netRec.size());
+
         if(netRec.size() > 0){
             string strQry = 'Select Id,Name, isPortalEnabled From User Where id=: userName';
             list<User> userRec = Database.query(strQry);
@@ -25,10 +32,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 alltypeSearch  = '';
             }
         }
-        system.debug('projectSearch-->'+projectSearch+' resourceSearch-->'+resourceSearch+' alltypeSearch-->'+alltypeSearch);
 
-        system.debug(slectedTradetypeId + '----slectedTradetypeId---' + slectedprojectId + '-------slectedprojectId-' + slectedcontactId);
-        system.debug('====' + fromDate + '======' + toDate);
         Map<Id, list<buildertek__Project_Task__c>> scheduleitemmap = new Map<Id, list<buildertek__Project_Task__c>>();
         Map<Id, string> contactnamemap = new Map<Id, string>();
         list<buildertek__Project_Task__c> schudleitemList = new list<buildertek__Project_Task__c>();
@@ -38,29 +42,17 @@ public without sharing class NewResourceScheduleDashnoardCls{
         list<user> internalResource = new list<user>();
         List<buildertek__Project__c> projectRecordList = new List<buildertek__Project__c>();
 
-       // date myDate = date.newInstance(1990, 11, 21);
-       //
+
         String str = fromDate;
         List<String> res = str.split('-');
-        System.debug(Date.newInstance(Integer.valueOf(res[0]),Integer.valueOf(res[1]),Integer.valueOf(res[2])));
 
         String str2 = toDate;
         List<String> res2 = str2.split('-');
-        System.debug(Date.newInstance(Integer.valueOf(res2[0]),Integer.valueOf(res2[1]),Integer.valueOf(res2[2])));
-
-        /*date startDate  = fromDate;
-        date endDate = toDate;*/
 
         date startDate  = Date.newInstance(Integer.valueOf(res[0]),Integer.valueOf(res[1]),Integer.valueOf(res[2]));
         date endDate = Date.newInstance(Integer.valueOf(res2[0]),Integer.valueOf(res2[1]),Integer.valueOf(res2[2]));
 
-        // date.newInstance(fromDate.year(),fromDate.);
-        //date startDate = date.parse(fromDate);
-        //date endDate = date.parse(toDate);
-        system.debug('-------startDate' + startDate);
-        system.debug('-------endDate' + endDate);
         String dtFormat = 'yyyy-MM-dd\'T\'HH:mm:ss\'Z\'';
-
 
         list<contact> resources = new list<contact>();
         list<buildertek__Project_Task__c> schduleitems = new List<buildertek__Project_Task__c>();
@@ -81,13 +73,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
             alltypeSearchVal = '%'+alltypeSearch+'%';
         }
 
-        system.debug(projectSearchVal+'--'+alltypeSearchVal+'---'+resourceSearchVal);
-
-        /*if(projectSearch != '' && projectSearch != null){
-            schduleitems = [Select id,buildertek__Start__c,buildertek__Finish__c, Name, buildertek__Schedule__c,buildertek__Schedule__r.buildertek__Project__c,buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Resource__c,buildertek__Resource__r.Name, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Contractor_Resource__r.Name, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
-                            From buildertek__Project_Task__c
-                                                          where buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null)  AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate]; //AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate
-        }*/
+        System.debug('projectSearchVal : '+projectSearchVal);
+        System.debug('resourceSearchVal : '+resourceSearchVal);
+        System.debug('alltypeSearchVal : '+alltypeSearchVal);
 
 
         String taskQuery = 'Select id,buildertek__Start__c, buildertek__Contractor_Resource_1__c, buildertek__Contractor_Resource_1__r.Name, buildertek__Contractor_Resource_1__r.AccountId, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_1__r.Account.Name, buildertek__Contractor_Resource_1__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_2__c, buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_2__r.AccountId, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_2__r.Account.Name, buildertek__Contractor_Resource_2__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_3__c, buildertek__Contractor_Resource_3__r.Name, buildertek__Contractor_Resource_3__r.AccountId, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_3__r.Account.Name, buildertek__Contractor_Resource_3__r.buildertek__Simultaneous_Tasks__c, buildertek__Finish__c, Name, buildertek__Duration__c,buildertek__Schedule__c,buildertek__Schedule__r.buildertek__Project__c,buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Resource__c,buildertek__Resource__r.Name, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Contractor_Resource__r.Name, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c, ';
@@ -104,18 +92,11 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 if(projectSearch != '' && projectSearch != null){
                     system.debug(projectSearch + '---projId---' + slectedprojectId);
                     taskQuery += ' AND (buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) ';
-                   // taskQuery += ' AND (buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) ';
-                        /*schduleitems = [Select id,buildertek__Start__c,buildertek__Finish__c, Name, buildertek__Schedule__c,buildertek__Schedule__r.buildertek__Project__c,buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Resource__c,buildertek__Resource__r.Name, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Contractor_Resource__r.Name, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
-                        From buildertek__Project_Task__c
-                        where (buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null)  AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate];*/ //AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate
                 }else{
                     taskQuery += ' AND (buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId) ';
-                    /*schduleitems = [Select id,buildertek__Start__c,buildertek__Finish__c, Name, buildertek__Schedule__c,buildertek__Schedule__r.buildertek__Project__c,buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Resource__c,buildertek__Resource__r.Name, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Contractor_Resource__r.Name, buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
-                    From buildertek__Project_Task__c
-                    where buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId  AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null)  AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate]; */ //AND buildertek__Start__c <=:endDate AND buildertek__Finish__c >=: startDate
+
                 }
             }else if(projectSearch != '' && projectSearch != null){
-                system.debug(projectSearch);
                 taskQuery += ' AND (buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) ';
             }
             if(resourceSearch != null && resourceSearch != ''){
@@ -123,9 +104,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
             }else{
                 taskQuery += ' AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null OR buildertek__Contractor_Resource_1__c != null OR buildertek__Contractor_Resource_2__c != null OR buildertek__Contractor_Resource_3__c != null OR buildertek__Internal_User__c != null OR buildertek__Internal_Resource_1__c != null OR buildertek__Internal_Resource_3__c != null OR buildertek__Internal_Resource_4__c != null) ';
             }
-            /*if(alltypeSearch != '' && alltypeSearch !=null){
-                taskQuery += ' AND (buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name LIKE: alltypeSearchVal OR buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name LIKE: alltypeSearchVal) ';
-            }*/
         }else{
             if(slectedprojectId != '' && slectedprojectId != null){
                 taskQuery += ' AND (buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId) AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null OR buildertek__Contractor_Resource_1__c != null OR buildertek__Contractor_Resource_2__c != null OR buildertek__Contractor_Resource_3__c != null OR buildertek__Internal_User__c != null OR buildertek__Internal_Resource_1__c != null OR buildertek__Internal_Resource_3__c != null OR buildertek__Internal_Resource_4__c != null) ';
@@ -135,17 +113,16 @@ public without sharing class NewResourceScheduleDashnoardCls{
         }
 
         schduleitems = Database.query(taskQuery);
-        system.debug(schduleitems.Size());
-        system.debug(schduleitems);
+
         List<String> scheduleitemIdList = new List<String>();
         for(buildertek__Project_Task__c item:schduleitems){
             if(!scheduleitemIdList.contains(item.id)){
+
                 scheduleitemIdList.add(item.id);
             }
         }
 
 
-        system.debug(scheduleitemIdList);
         List<buildertek__Project_Task__c> tasksforalltypesearch = new List<buildertek__Project_Task__c>();
         String taskQuery2;
         if(alltypeSearch != '' && alltypeSearch !=null){
@@ -160,8 +137,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
             if(slectedprojectId != '' && slectedprojectId != null){
                 if(alltypeSearch != '' && alltypeSearch != null){
                     taskQuery2 += ' AND ((buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
-                   // taskQuery2 += ' AND ((buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
-                    //taskQuery2 +=  ' buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId  AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null) ';
                 }
             }else {
                 taskQuery2 += ' AND ((buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
@@ -175,35 +150,18 @@ public without sharing class NewResourceScheduleDashnoardCls{
         }
 
 
-        system.debug(tasksforalltypesearch.size());
-
-
-         List<String> filteredTasksIds = new List<String>();
+            List<String> filteredTasksIds = new List<String>();
         for(buildertek__Project_Task__c allTypeSearchTask : tasksforalltypesearch){
-            system.debug(allTypeSearchTask.buildertek__Schedule__r.buildertek__Project__r.Name);
-            system.debug(allTypeSearchTask.buildertek__Contractor_Resource__r.Name);
-            if(allTypeSearchTask.buildertek__Resource__c != null){
-                system.debug(allTypeSearchTask.buildertek__Resource__r.Name);
-            }
-            system.debug(allTypeSearchTask);
-            system.debug(allTypeSearchTask.buildertek__Contractor_Resource__r.Account.Name);
+
             if(!filteredTasksIds.contains(allTypeSearchTask.Id)){
                 filteredTasksIds.add(allTypeSearchTask.Id);
-                system.debug(allTypeSearchTask) ;
             }
         }
 
-
-
-
         List<String> filteredTasks = new  List<String>();
 
-        system.debug(filteredTasksIds);
-
         if(filteredTasksIds.size()>0 && (projectSearch !='' || projectSearch != null || resourceSearch != null || resourceSearch != '')) {
-            //filteredTasks.addAll(filteredTasksIds);
             for(buildertek__Project_Task__c filterTask : schduleitems){
-                system.debug(filterTask);
                 if(filteredTasksIds.contains(filterTask.Id)){
                     filteredTasks.add(filterTask.Id);
                 }
@@ -212,25 +170,22 @@ public without sharing class NewResourceScheduleDashnoardCls{
             filteredTasks = filteredTasksIds;
         }
 
-       system.debug(filteredTasks.Size());
 
-       //add condition for task is not milstone type
-        //AND buildertek__Schedule__c !=  null AND buildertek__Schedule__r.buildertek__Type__c != 'Master'
         set<Id> userId = new set<Id>();         // Changes for BUIL-3932
         set<Id> conid = new set<Id>();
         set<Id> scheduleids = new set<Id>();
         set<Id> accountRecIds = new Set<Id>();
         if(filteredTasks.Size() > 0){
             List<buildertek__Project_Task__c> filteredTaskList = [Select id,buildertek__Start__c, buildertek__Internal_User__c, buildertek__Internal_Resource_1__c, buildertek__Internal_Resource_3__c, buildertek__Internal_Resource_4__c, buildertek__Finish__c,buildertek__Duration__c, Name, buildertek__Schedule__c,buildertek__Schedule__r.buildertek__Project__c, buildertek__Contractor_Resource_1__c, buildertek__Contractor_Resource_1__r.Name, buildertek__Contractor_Resource_1__r.AccountId, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_1__r.Account.Name, buildertek__Contractor_Resource_1__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_2__c, buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_2__r.AccountId, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_2__r.Account.Name, buildertek__Contractor_Resource_2__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_3__c, buildertek__Contractor_Resource_3__r.Name, buildertek__Contractor_Resource_3__r.AccountId, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_3__r.Account.Name, buildertek__Contractor_Resource_3__r.buildertek__Simultaneous_Tasks__c, buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Resource__c,buildertek__Resource__r.Name, buildertek__Contractor__c, buildertek__Contractor_Resource__c, buildertek__Contractor_Resource__r.Name,buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c, buildertek__Resource__r.Account.Name,buildertek__Contractor_Resource__r.Account.Name,buildertek__Contractor_Resource__r.AccountId,buildertek__Resource__r.AccountId,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name  From buildertek__Project_Task__c where id IN: filteredTasks];
-            system.debug(filteredTaskList.size());
+
             for (buildertek__Project_Task__c scitem : filteredTaskList){
 
-                if(!conid.contains(scitem.buildertek__Contractor_Resource__c) && scitem.buildertek__Contractor_Resource__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
-                    conid.add(scitem.buildertek__Contractor_Resource__c);
-                }
-                if(!conid.contains(scitem.buildertek__Resource__c) && scitem.buildertek__Resource__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
-                    conid.add(scitem.buildertek__Resource__c);
-                }
+                // if(!conid.contains(scitem.buildertek__Contractor_Resource__c) && scitem.buildertek__Contractor_Resource__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
+                //     conid.add(scitem.buildertek__Contractor_Resource__c);
+                // }
+                // if(!conid.contains(scitem.buildertek__Resource__c) && scitem.buildertek__Resource__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
+                //     conid.add(scitem.buildertek__Resource__c);
+                // }
                 if(!conid.contains(scitem.buildertek__Contractor_Resource_1__c) && scitem.buildertek__Contractor_Resource_1__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
                     conid.add(scitem.buildertek__Contractor_Resource_1__c);
                 }
@@ -242,9 +197,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 }
 
                 // Changes for BUIL-3932 ------ START --------
-                if(!userId.contains(scitem.buildertek__Internal_User__c) && scitem.buildertek__Internal_User__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
-                    userId.add(scitem.buildertek__Internal_User__c);
-                }
+                // if(!userId.contains(scitem.buildertek__Internal_User__c) && scitem.buildertek__Internal_User__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
+                //     userId.add(scitem.buildertek__Internal_User__c);
+                // }
                 if(!userId.contains(scitem.buildertek__Internal_Resource_1__c) && scitem.buildertek__Internal_Resource_1__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
                     userId.add(scitem.buildertek__Internal_Resource_1__c);
                 }
@@ -259,17 +214,16 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
                 scheduleids.add(scitem.buildertek__Schedule__c);
 
-                system.debug(fromDate+','+ toDate+','+scitem.buildertek__Start__c+','+scitem.buildertek__Finish__c);
             }
         }else{
             for (buildertek__Project_Task__c scitem : schduleitems){
 
-                if(!conid.contains(scitem.buildertek__Contractor_Resource__c) && scitem.buildertek__Contractor_Resource__c != null){
-                    conid.add(scitem.buildertek__Contractor_Resource__c);
-                }
-                if(!conid.contains(scitem.buildertek__Resource__c) && scitem.buildertek__Resource__c != null){
-                    conid.add(scitem.buildertek__Resource__c);
-                }
+                // if(!conid.contains(scitem.buildertek__Contractor_Resource__c) && scitem.buildertek__Contractor_Resource__c != null){
+                //     conid.add(scitem.buildertek__Contractor_Resource__c);
+                // }
+                // if(!conid.contains(scitem.buildertek__Resource__c) && scitem.buildertek__Resource__c != null){
+                //     conid.add(scitem.buildertek__Resource__c);
+                // }
                 if(!conid.contains(scitem.buildertek__Contractor_Resource_1__c) && scitem.buildertek__Contractor_Resource_1__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
                     conid.add(scitem.buildertek__Contractor_Resource_1__c);
                 }
@@ -281,9 +235,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 }
 
                 // Changes for BUIL-3932 -------- START -------------
-                if(!userId.contains(scitem.buildertek__Internal_User__c) && scitem.buildertek__Internal_User__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
-                    userId.add(scitem.buildertek__Internal_User__c);
-                }
+                // if(!userId.contains(scitem.buildertek__Internal_User__c) && scitem.buildertek__Internal_User__c != null){ // && (scitem.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
+                //     userId.add(scitem.buildertek__Internal_User__c);
+                // }
                 if(!userId.contains(scitem.buildertek__Internal_Resource_1__c) && scitem.buildertek__Internal_Resource_1__c != null){ // && (scitem.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase())
                     userId.add(scitem.buildertek__Internal_Resource_1__c);
                 }
@@ -298,17 +252,15 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
                 scheduleids.add(scitem.buildertek__Schedule__c);
 
-                system.debug(fromDate+','+ toDate+','+scitem.buildertek__Start__c+','+scitem.buildertek__Finish__c);
             }
         }
 
-        system.debug(conid);
         SchedulerList = [select Id, Name, buildertek__Contractor__c, buildertek__Contractor__r.Name, buildertek__Project__c, buildertek__Project__r.Name
-                         from buildertek__Schedule__c
-                         where Id IN :scheduleids];
+                            from buildertek__Schedule__c
+                            where Id IN :scheduleids];
         resources = [select id, Name,AccountId,Account.Name
-                     from Contact
-                     where Id IN :conid];
+                        from Contact
+                        where Id IN :conid];
 
         for(Contact con : resources){
             if(!accountRecIds.contains(con.AccountId)){
@@ -331,9 +283,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
             if(slectedprojectId != '' && slectedprojectId != null){
                 if(projectSearch != '' && projectSearch != null){
-                    system.debug(projectSearch);
                     Query += ' AND (buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) ';
-                   // Query += ' AND (buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: projectSearchVal) ';
                 }else{
                     Query += ' AND (buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId) ';
                 }
@@ -346,35 +296,17 @@ public without sharing class NewResourceScheduleDashnoardCls{
             }else{
                 Query += ' and (buildertek__Contractor_Resource__c IN:conid OR buildertek__Resource__c IN:conid OR buildertek__Contractor_Resource_1__c IN:conid OR buildertek__Contractor_Resource_2__c IN:conid OR buildertek__Contractor_Resource_3__c IN:conid OR buildertek__Internal_User__c IN: userId OR buildertek__Internal_Resource_1__c IN: userId OR buildertek__Internal_Resource_3__c IN: userId OR buildertek__Internal_Resource_4__c IN: userId)';
             }
-            /*if(alltypeSearch != '' && alltypeSearch !=null){
-                Query += ' AND (buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name LIKE: alltypeSearchVal OR buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name LIKE: alltypeSearchVal) ';
-            }*/
+
         }else{
             if (slectedprojectId != null && slectedprojectId != ''){
                 Query += ' and buildertek__Schedule__r.buildertek__Project__c=:slectedprojectId';
             }
-            /*if(slectedcontactId != null && slectedcontactId != ''){
-                    Query += ' and (buildertek__Contractor_Resource__c =: slectedcontactId OR buildertek__Resource__c =:slectedcontactId)';
-            }else{
-                Query += ' and (buildertek__Contractor_Resource__c IN:conid OR buildertek__Resource__c IN:conid)';
-            }*/
+
             Query += ' and (buildertek__Contractor_Resource__c IN:conid OR buildertek__Resource__c IN:conid OR buildertek__Contractor_Resource_1__c IN:conid OR buildertek__Contractor_Resource_2__c IN:conid OR buildertek__Contractor_Resource_3__c IN:conid OR buildertek__Internal_User__c IN: userId OR buildertek__Internal_Resource_1__c IN: userId OR buildertek__Internal_Resource_3__c IN: userId OR buildertek__Internal_Resource_4__c IN: userId)';
         }
 
 
-
-
-        /*
-         *
-         * if(slectedcontactId != null && slectedcontactId != ''){
-            Query += ' and (buildertek__Contractor_Resource__c =: slectedcontactId OR buildertek__Resource__c =:slectedcontactId)';
-        }else{
-            Query += ' and (buildertek__Contractor_Resource__c IN:conid OR buildertek__Resource__c IN:conid)';
-        }*/
-
-
         schudleitemList = Database.query(Query);
-         system.debug('schudleitemList----->' + schudleitemList.size());
 
         List<buildertek__Project_Task__c> tasksforalltypesearch2 = new List<buildertek__Project_Task__c>();
         String taskQuery3;
@@ -392,8 +324,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
             if(slectedprojectId != '' && slectedprojectId != null){
                 if(alltypeSearch != '' && alltypeSearch != null){
                     taskQuery3 += ' AND ((buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
-                   // taskQuery2 += ' AND ((buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
-                    //taskQuery2 +=  ' buildertek__Schedule__r.buildertek__Project__c =:slectedprojectId  AND (buildertek__Contractor_Resource__c != null OR buildertek__Resource__c != null) ';
                 }
             }else {
                 taskQuery3 += ' AND ((buildertek__Schedule__r.buildertek__Project__c != null AND buildertek__Schedule__r.buildertek__Project__r.Name LIKE: alltypeSearchVal) ';
@@ -409,31 +339,16 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
         List<String> filteredTasksIds2 = new List<String>();
         for(buildertek__Project_Task__c allTypeSearchTask : tasksforalltypesearch2){
-            system.debug(allTypeSearchTask.buildertek__Schedule__r.buildertek__Project__r.Name);
-            system.debug(allTypeSearchTask.buildertek__Contractor_Resource__r.Name);
-            if(allTypeSearchTask.buildertek__Resource__c != null){
-                system.debug(allTypeSearchTask.buildertek__Resource__r.Name);
-            }
-            system.debug(allTypeSearchTask);
-            system.debug(filteredTasksIds2);
-            system.debug(allTypeSearchTask.buildertek__Contractor_Resource__r.Account.Name);
+
             if(!filteredTasksIds2.contains(allTypeSearchTask.Id)){
                 filteredTasksIds2.add(allTypeSearchTask.Id);
-                system.debug(allTypeSearchTask) ;
             }
         }
 
 
-
-        system.debug(filteredTasksIds2.size());
-
-
         List<String> filteredTasks2 = new  List<String>();
 
-        system.debug(filteredTasksIds2);
-
         if(filteredTasksIds2.size()>0 && (projectSearch !='' || projectSearch != null || resourceSearch != null || resourceSearch != '')) {
-            //filteredTasks.addAll(filteredTasksIds);
             for(buildertek__Project_Task__c filterTask : schudleitemList){
                 system.debug(filterTask);
                 if(filteredTasksIds2.contains(filterTask.Id)){
@@ -444,59 +359,24 @@ public without sharing class NewResourceScheduleDashnoardCls{
             filteredTasks2 = filteredTasksIds2;
         }
 
-       system.debug(filteredTasks2.Size());
-
 
         if(filteredTasks2.Size() > 0){
             List<buildertek__Project_Task__c> filteredTaskList2 = [select id,Name, buildertek__Contractor_Resource_1__c, buildertek__Contractor_Resource_1__r.Name, buildertek__Contractor_Resource_1__r.AccountId, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_1__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_1__r.Account.Name, buildertek__Contractor_Resource_1__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_2__c, buildertek__Contractor_Resource_2__r.Name, buildertek__Contractor_Resource_2__r.AccountId, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_2__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_2__r.Account.Name, buildertek__Contractor_Resource_2__r.buildertek__Simultaneous_Tasks__c, buildertek__Contractor_Resource_3__c, buildertek__Contractor_Resource_3__r.Name, buildertek__Contractor_Resource_3__r.AccountId, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Contractor_Resource_3__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Contractor_Resource_3__r.Account.Name, buildertek__Contractor_Resource_3__r.buildertek__Simultaneous_Tasks__c, buildertek__Duration__c,buildertek__Completion__c,buildertek__Schedule__c,buildertek__Dependency__c,buildertek__Contractor_Resource__c,buildertek__Contractor_Resource__r.Name,buildertek__Contractor_Resource__r.buildertek__Simultaneous_Tasks__c,
                                                                     buildertek__Schedule__r.buildertek__Project__c,buildertek__Schedule__r.buildertek__Project__r.Name,buildertek__Schedule__r.buildertek__Contractor__c,buildertek__Schedule__r.buildertek__Contractor__r.Name,buildertek__Schedule__r.buildertek__Contractor__r.buildertek__Simultaneous_Tasks__c,buildertek__Schedule__r.Name,buildertek__Dependency__r.Name,
-                                                                   buildertek__Contractor_Resource__r.AccountId,buildertek__Resource__r.AccountId,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name,
-                                                                   buildertek__Resource__r.Name,buildertek__Resource__r.Account.Name,buildertek__Contractor_Resource__r.Account.Name,buildertek__Resource__c,buildertek__Start__c,buildertek__Finish__c,
-                                                                   buildertek__Internal_Resource_1__c, buildertek__Internal_Resource_1__r.Name, buildertek__Internal_Resource_1__r.AccountId, buildertek__Internal_Resource_1__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_1__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_1__r.Account.Name, buildertek__Internal_Resource_4__c, buildertek__Internal_Resource_4__r.Name, buildertek__Internal_Resource_4__r.AccountId, buildertek__Internal_Resource_4__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_4__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_4__r.Account.Name, buildertek__Internal_Resource_3__c, buildertek__Internal_Resource_3__r.Name, buildertek__Internal_Resource_3__r.AccountId, buildertek__Internal_Resource_3__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_3__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_3__r.Account.Name, buildertek__Internal_User__c, buildertek__Internal_User__r.Name, buildertek__Internal_User__r.AccountId, buildertek__Internal_User__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_User__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_User__r.Account.Name,
-                                                                   buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
-                                                                   From buildertek__Project_Task__c where id IN: filteredTasks2];
-            system.debug(filteredTaskList2.size());
+                                                                    buildertek__Contractor_Resource__r.AccountId,buildertek__Resource__r.AccountId,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__c,buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name,buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name,
+                                                                    buildertek__Resource__r.Name,buildertek__Resource__r.Account.Name,buildertek__Contractor_Resource__r.Account.Name,buildertek__Resource__c,buildertek__Start__c,buildertek__Finish__c,
+                                                                    buildertek__Internal_Resource_1__c, buildertek__Internal_Resource_1__r.Name, buildertek__Internal_Resource_1__r.AccountId, buildertek__Internal_Resource_1__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_1__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_1__r.Account.Name, buildertek__Internal_Resource_4__c, buildertek__Internal_Resource_4__r.Name, buildertek__Internal_Resource_4__r.AccountId, buildertek__Internal_Resource_4__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_4__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_4__r.Account.Name, buildertek__Internal_Resource_3__c, buildertek__Internal_Resource_3__r.Name, buildertek__Internal_Resource_3__r.AccountId, buildertek__Internal_Resource_3__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_Resource_3__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_Resource_3__r.Account.Name, buildertek__Internal_User__c, buildertek__Internal_User__r.Name, buildertek__Internal_User__r.AccountId, buildertek__Internal_User__r.Account.buildertek__Trade_Type_Lookup__c, buildertek__Internal_User__r.Account.buildertek__Trade_Type_Lookup__r.Name, buildertek__Internal_User__r.Account.Name,
+                                                                    buildertek__Original_Start_Date__c, buildertek__Original_End_Date__c
+                                                                    From buildertek__Project_Task__c where id IN: filteredTasks2];
             schudleitemList = filteredTaskList2;
         }
-        system.debug('schudleitemList----->' + schudleitemList.size());
 
         Map<String,List<buildertek__Project_Task__c>> ProjScheduleTaskMap = new Map<String,List<buildertek__Project_Task__c>>();
         List<String> projectIdList = new List<String>();
         for(buildertek__Project_Task__c schItemTask : schudleitemList){
-            system.debug(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
-            if(schItemTask.buildertek__Schedule__r.buildertek__Project__c != null){
-                /*if(alltypeSearch != '' && alltypeSearch != null){
-                    if(schItemTask.buildertek__Contractor_Resource__c != null && schItemTask.buildertek__Resource__c != null){
-                        if((schItemTask.buildertek__Contractor_Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase()) ||
-                           (schItemTask.buildertek__Resource__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase()) ||
-                           (schItemTask.buildertek__Contractor_Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase()) ||
-                           (schItemTask.buildertek__Resource__r.Account.buildertek__Trade_Type_Lookup__r.Name.toLowerCase()).contains(alltypeSearch.toLowerCase()) ){
 
-                               projectIdList.add(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
-                               if(ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c) != null){
-                                   List<buildertek__Project_Task__c> projTask = ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
-                                   projTask.add(schItemTask);
-                                   ProjScheduleTaskMap.put(schItemTask.buildertek__Schedule__r.buildertek__Project__c,projTask);
-                               }else{
-                                   List<buildertek__Project_Task__c> projTask = new List<buildertek__Project_Task__c>();
-                                   projTask.add(schItemTask);
-                                   ProjScheduleTaskMap.put(schItemTask.buildertek__Schedule__r.buildertek__Project__c,projTask);
-                               }
-                           }
-                    }
-                }else{
-                    projectIdList.add(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
-                    if(ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c) != null){
-                        List<buildertek__Project_Task__c> projTask = ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
-                        projTask.add(schItemTask);
-                        ProjScheduleTaskMap.put(schItemTask.buildertek__Schedule__r.buildertek__Project__c,projTask);
-                    }else{
-                        List<buildertek__Project_Task__c> projTask = new List<buildertek__Project_Task__c>();
-                        projTask.add(schItemTask);
-                        ProjScheduleTaskMap.put(schItemTask.buildertek__Schedule__r.buildertek__Project__c,projTask);
-                    }
-                }*/
-                system.debug(schItemTask.buildertek__Schedule__r.buildertek__Project__r.Name);
+            if(schItemTask.buildertek__Schedule__r.buildertek__Project__c != null){
+
                 projectIdList.add(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
                 if(ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c) != null){
                     List<buildertek__Project_Task__c> projTask = ProjScheduleTaskMap.get(schItemTask.buildertek__Schedule__r.buildertek__Project__c);
@@ -510,8 +390,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
             }
         }
 
-        system.debug(ProjScheduleTaskMap.keySet().Size());
-
         //will get only schedule items of schedule that is linked to project
         projectRecordList = [Select Id,Name, buildertek__Customer__c,buildertek__Customer__r.Name From buildertek__Project__c WHERE ID IN: projectIdList];
 
@@ -519,27 +397,27 @@ public without sharing class NewResourceScheduleDashnoardCls{
         Map<Id, string> contactAccountMap = new Map<Id, string>();
         Map<Id, Decimal> contactSimulateMap = new Map<Id, Decimal>();
         for (contact conrec : [Select id, Name, AccountId, buildertek__Simultaneous_Tasks__c
-                               from Contact
-                               where id in :conid]){ // AND Name LIKE : resourceSearchVal
+                                from Contact
+                                where id in :conid]){ // AND Name LIKE : resourceSearchVal
                                     if(resourceSearch != '' && resourceSearch != null){
-                                       if(conrec.Name.containsIgnoreCase(resourceSearch)){
-                                           if (conrec.AccountId != null){
-                                               contactAccountMap.put(conrec.id, conrec.AccountId);
-                                               if (conrec.buildertek__Simultaneous_Tasks__c != null){
-                                                   contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
-                                               }
-                                           }
-                                       }
-                                   }else{
-                                       if (conrec.AccountId != null){
-                                           contactAccountMap.put(conrec.id, conrec.AccountId);
-                                           if (conrec.buildertek__Simultaneous_Tasks__c != null){
-                                               contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
-                                           }
-                                       }
-                                   }
+                                        if(conrec.Name.containsIgnoreCase(resourceSearch)){
+                                            if (conrec.AccountId != null){
+                                                contactAccountMap.put(conrec.id, conrec.AccountId);
+                                                if (conrec.buildertek__Simultaneous_Tasks__c != null){
+                                                    contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
+                                                }
+                                            }
+                                        }
+                                    }else{
+                                        if (conrec.AccountId != null){
+                                            contactAccountMap.put(conrec.id, conrec.AccountId);
+                                            if (conrec.buildertek__Simultaneous_Tasks__c != null){
+                                                contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
+                                            }
+                                        }
+                                    }
 
-                               }
+                                }
 
         // Chnages for BUIL-3932 --------- START --------------------
         for (user conrec : [Select id, Name, AccountId
@@ -549,43 +427,23 @@ public without sharing class NewResourceScheduleDashnoardCls{
                                     if(conrec.Name.containsIgnoreCase(resourceSearch)){
                                         if (conrec.AccountId != null){
                                             contactAccountMap.put(conrec.id, conrec.AccountId);
-                                            // if (conrec.buildertek__Simultaneous_Tasks__c != null){
-                                            //     contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
-                                            // }
                                         }
                                     }
                                 }else{
                                     if (conrec.AccountId != null){
                                         contactAccountMap.put(conrec.id, conrec.AccountId);
-                                        // if (conrec.buildertek__Simultaneous_Tasks__c != null){
-                                        //     contactSimulateMap.put(conrec.id, conrec.buildertek__Simultaneous_Tasks__c);
-                                        // }
                                     }
                                 }
                             }
         // Chnages for BUIL-3932  ---- END ------
 
         for (Account accrec : [Select id, Name, buildertek__Trade_Type_Lookup__c, buildertek__Simultaneous_Tasks__c, buildertek__Trade_Type_Lookup__r.Name
-                               from account
-                               where id in :contactAccountMap.values() ]){ //AND buildertek__Trade_Type_Lookup__r.Name LIKE :alltypeSearchVal
-                                   /*if(alltypeSearch!='' && alltypeSearch!= null){
-                                       system.debug((accrec.buildertek__Trade_Type_Lookup__r.Name.toLowerCase())+'---'+alltypeSearch.toLowerCase()+'--'+(accrec.buildertek__Trade_Type_Lookup__r.Name.toLowerCase()).containsIgnoreCase(alltypeSearch.toLowerCase()));
-                                       if( (accrec.buildertek__Trade_Type_Lookup__r.Name.toLowerCase()).containsIgnoreCase(alltypeSearch.toLowerCase())){
-                                           if (accrec.buildertek__Trade_Type_Lookup__c != null){
-                                               tradeTypenamemap.put(accrec.id, accrec.buildertek__Trade_Type_Lookup__r.Name);
-                                           }
-                                       }
-
-                                   }else{
-                                       system.debug(alltypeSearch);
-                                       if (accrec.buildertek__Trade_Type_Lookup__c != null){
-                                           tradeTypenamemap.put(accrec.id, accrec.buildertek__Trade_Type_Lookup__r.Name);
-                                       }
-                                   }*/
-                                   if (accrec.buildertek__Trade_Type_Lookup__c != null){
-                                       tradeTypenamemap.put(accrec.id, accrec.buildertek__Trade_Type_Lookup__r.Name);
-                                   }
-                               }
+                                from account
+                                where id in :contactAccountMap.values() ]){ //AND buildertek__Trade_Type_Lookup__r.Name LIKE :alltypeSearchVal
+                                    if (accrec.buildertek__Trade_Type_Lookup__c != null){
+                                        tradeTypenamemap.put(accrec.id, accrec.buildertek__Trade_Type_Lookup__r.Name);
+                                    }
+                                }
 
 
         string contactQuery = 'Select id,Name,Account.Name,AccountId,buildertek__Simultaneous_Tasks__c From Contact Where ';
@@ -600,12 +458,8 @@ public without sharing class NewResourceScheduleDashnoardCls{
             contactQuery += ' AND id IN: conid';
         }
 
-
-        /*if (slectedcontactId != null && slectedcontactId != ''){
-            contactQuery += ' Id=: slectedcontactId';
-        }*/
         contactQuery += ' order by Name asc';
-        system.debug('--contactQuery---' + contactQuery);
+
         conresource = Database.query(contactQuery);
 
         // Changes for BUIL-3932 ------ START --------
@@ -620,7 +474,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
         }else{
             internalResourcelistQuery += ' AND id IN: userId';
         }
-        system.debug('--internalResourcelistQuery---' + internalResourcelistQuery);
+
         internalResource = Database.query(internalResourcelistQuery);
         // Changes for BUIL-3932 ------ END --------
 
@@ -632,12 +486,12 @@ public without sharing class NewResourceScheduleDashnoardCls{
             }
             scheduleitemmap.get(scitem.buildertek__Contractor_Resource__c).add(scitem);
 
-            if(scitem.buildertek__Resource__c != scitem.buildertek__Contractor_Resource__c && scitem.buildertek__Resource__c!= null){
-                if(!scheduleitemmap.containsKey(scitem.buildertek__Resource__c)){
-                    scheduleitemmap.put(scitem.buildertek__Resource__c, new List<buildertek__Project_Task__c>());
-                }
-                scheduleitemmap.get(scitem.buildertek__Resource__c).add(scitem);
-            }
+            // if(scitem.buildertek__Resource__c != scitem.buildertek__Contractor_Resource__c && scitem.buildertek__Resource__c!= null){
+            //     if(!scheduleitemmap.containsKey(scitem.buildertek__Resource__c)){
+            //         scheduleitemmap.put(scitem.buildertek__Resource__c, new List<buildertek__Project_Task__c>());
+            //     }
+            //     scheduleitemmap.get(scitem.buildertek__Resource__c).add(scitem);
+            // }
             if (scitem.buildertek__Contractor_Resource_1__c!= null) {
                 if(!scheduleitemmap.containsKey(scitem.buildertek__Contractor_Resource_1__c)){
                     scheduleitemmap.put(scitem.buildertek__Contractor_Resource_1__c, new List<buildertek__Project_Task__c>());
@@ -689,9 +543,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
             if (scitem.buildertek__Contractor_Resource__c != null){
                 contactnamemap.put(scitem.buildertek__Contractor_Resource__c, scitem.buildertek__Contractor_Resource__r.Name);
             }
-            if(scitem.buildertek__Resource__c != scitem.buildertek__Contractor_Resource__c && scitem.buildertek__Resource__c != null){
-                contactnamemap.put(scitem.buildertek__Resource__c, scitem.buildertek__Resource__r.Name);
-            }
+            // if(scitem.buildertek__Resource__c != scitem.buildertek__Contractor_Resource__c && scitem.buildertek__Resource__c != null){
+            //     contactnamemap.put(scitem.buildertek__Resource__c, scitem.buildertek__Resource__r.Name);
+            // }
             if(scitem.buildertek__Contractor_Resource_1__c != scitem.buildertek__Contractor_Resource__c && scitem.buildertek__Contractor_Resource_1__c != scitem.buildertek__Resource__c && scitem.buildertek__Contractor_Resource_1__c != null){
                 contactnamemap.put(scitem.buildertek__Contractor_Resource_1__c, scitem.buildertek__Contractor_Resource_1__r.Name);
             }
@@ -721,7 +575,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
         Map<String,List<ResourceCalendarWrap>> accountResourceLinkList = new Map<String,List<ResourceCalendarWrap>>();
         Map<String,List<ResourceCalendarWrap.ProjectTaskRecords>> projectTaskLinkMap = new Map<String,List<ResourceCalendarWrap.ProjectTaskRecords>>();
-        //Map<Id,List<NewResourceDashboardCalendarWrap.ProjectTaskRecords>> contactTaskMap = new Map<Id,List<NewResourceDashboardCalendarWrap.ProjectTaskRecords>>();
         Map<Id,List<ResourceCalendarWrap.ProjectTaskRecords>> contactTaskMap = new Map<Id,List<ResourceCalendarWrap.ProjectTaskRecords>>();
         list<ResourceCalendarWrap> RecordList = new list<ResourceCalendarWrap>();
         Map<Id,List<String>> contactTaskIdMap = new Map<Id,List<String>>();
@@ -733,16 +586,16 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 ResourceCalendarWrap.ProjectTaskRecords EquipmentRec = new ResourceCalendarWrap.ProjectTaskRecords();
                 Datetime dt = (DateTime)pse.buildertek__Start__c;
                 String dayOfWeek = dt.format('yyyy-MM-dd');
-                System.debug('pse.Name '+pse.Name);
+
                 EquipmentRec.title = pse.Name;
                 EquipmentRec.startString = '';
                 EquipmentRec.endString = '';
                 string s = string.valueOfGmt(pse.buildertek__Start__c);
                 String strDate = s.split(' ')[0];
                 String sMonth = String.valueof(pse.buildertek__Start__c.month());
-                system.debug('sMonth***'+sMonth);
+
                 String sDay = String.valueof(pse.buildertek__Start__c.day());
-                system.debug('sDay***'+sDay);
+
                 if (sMonth.length() == 1){
                     sMonth = '0' + sMonth;
                 }
@@ -766,10 +619,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     Datetime dt1 = DateTime.newInstance(date.valueOf(ndate1), Time.newInstance(0, 0, 0, 0));
                     String dateStr = dt1.format('EEEE');
                     EquipmentRec.weekName = dateStr;
-                    system.debug('--dateStr--->' + dateStr);
-                    //system.debug('--dayOfWeek--->'+dayOfWeek);
 
-                    system.debug('--ndate--->' + ndate1);
                     EquipmentRec.day = ndate;
                     EquipmentRec.endday = FinishDatendate;
                     EquipmentRec.projectId = pse.buildertek__Schedule__r.buildertek__Project__r.Name;
@@ -779,10 +629,14 @@ public without sharing class NewResourceScheduleDashnoardCls{
                         EquipmentRec.contractresourceId = pse.buildertek__Contractor_Resource_2__r.Name;
                     }else if(pse.buildertek__Contractor_Resource_3__c != null){
                         EquipmentRec.contractresourceId = pse.buildertek__Contractor_Resource_3__r.Name;
-                    }else {
-                        EquipmentRec.contractresourceId = pse.buildertek__Contractor_Resource__r.Name;
+                    }else if(pse.buildertek__Internal_Resource_1__c != null){
+                        EquipmentRec.contractresourceId = pse.buildertek__Internal_Resource_1__r.Name;
+                    }else if(pse.buildertek__Internal_Resource_3__c != null){
+                        EquipmentRec.contractresourceId = pse.buildertek__Internal_Resource_3__r.Name;
+                    }else{
+                        EquipmentRec.contractresourceId = pse.buildertek__Internal_Resource_4__r.Name;
                     }
-                    //EquipmentRec.internalresourceId = pse.buildertek__Resource__r.Name;
+
                     EquipmentRec.Id = pse.id;
                     EquipmentRec.taskdescription = pse.Name;
                     EquipmentRec.taskdays = integer.valueof(pse.buildertek__Duration__c);
@@ -791,7 +645,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     EquipmentRec.enddate = pse.buildertek__Finish__c;
                     EquipmentRec.Eid = pse.buildertek__Schedule__c;
                     EquipmentRec.Model = pse.buildertek__Schedule__r.Name;
-                    EquipmentRec.UnitId = pse.buildertek__Resource__r.Name;
                     EquipmentRecordList.add(EquipmentRec);
                     taskMap.put(pse.id,EquipmentRec);
 
@@ -949,44 +802,35 @@ public without sharing class NewResourceScheduleDashnoardCls{
                         projectRec.tasks = string.valueof(scheduleitemmap.get(con.id).size());
                     }
                     if (contactAccountMap.get(con.id) != null){
-                        system.debug(tradeTypenamemap.get(contactAccountMap.get(con.id)));
                         projectRec.TradeType = tradeTypenamemap.get(contactAccountMap.get(con.id));
-                        if(tradeTypenamemap.get(contactAccountMap.get(con.id))!=null){
-                            system.debug((projectRec.TradeType.toLowerCase()).contains(alltypeSearch.toLowerCase()));
-                        }
 
                     }
                     projectRec.Companyname = con.Account.Name;
-                    System.debug(projectRec.ContractresourceId);
 
                     //get selected resources tasks
                     if(slectedcontactId != '' && slectedcontactId != null){
-                        System.debug(projectRec.ContractresourceId);
                         if(con.Id == slectedcontactId){
-                            System.debug(projectRec.ContractresourceId);
-                           projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
+                            projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
                         }
                     }else{
-                        System.debug(projectRec.ContractresourceId);
                         projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
-                       // resourceTaskList.addAll(contactTaskIdMap.get(con.Id));
                     }
 
                     if(alltypeSearch != '' && alltypeSearch != null){
-                        system.debug(alltypeSearch);
-                        system.debug((projectRec.ContractresourceName.toLowerCase()));
-                        system.debug((projectRec.ContractresourceName.toLowerCase()).contains(alltypeSearch.toLowerCase()));
 
                         if((projectRec.ContractresourceName.toLowerCase()).contains(alltypeSearch.toLowerCase()) || (projectRec.Companyname != null  && (projectRec.Companyname.toLowerCase()).contains(alltypeSearch.toLowerCase()))
-                           || (projectRec.TradeType != null && (projectRec.TradeType.toLowerCase()).contains(alltypeSearch.toLowerCase()))){
-                            system.debug(alltypeSearch);
-                            system.debug('con '+con);
-                            system.debug('contactTaskIdMap.get(con.Id) '+contactTaskIdMap.get(con.Id));
+                            || (projectRec.TradeType != null && (projectRec.TradeType.toLowerCase()).contains(alltypeSearch.toLowerCase()))){
+                                for (Id key : contactTaskIdMap.keySet()) {
+                                    System.debug('key --> '+key);
+                                    System.debug('value --> '+contactTaskIdMap.get(key));
+                                }
+                                System.debug('before error');
+                                System.debug('check cont Id '+con.Id);
+                                System.debug('getting contactTaskIdMap value --> '+contactTaskIdMap.get(con.Id));
                             resourceTaskList.addAll(contactTaskIdMap.get(con.Id));
                             RecordList.add(projectRec);
                         }
                     }else{
-                        system.debug(alltypeSearch);
                         RecordList.add(projectRec);
                     }
                     combinedWrapper.areExternalResource = true;
@@ -1003,7 +847,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
             for (User con : internalResource){
                 if (contactnamemap.get(con.id) != null){
                     ResourceCalendarWrap projectRec = new ResourceCalendarWrap();
-                    // list<ResourceCalendarWrap.ProjectTaskRecordsList> SchedulertaskRecordList = new list<ResourceCalendarWrap.ProjectTaskRecordsList>();
 
                     projectRec.ContractresourceId = con.id;
 
@@ -1013,10 +856,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                     if(contactnamemap.get(con.Id) !=null && contactnamemap.get(con.Id) !=''){
                         projectRec.FirstLetterofContractresourceName = contactnamemap.get(con.Id).toUpperCase().substring(0,1);
                     }
-                    //projectRec.simultaneousTasksContractor = cona;
-                    // if (contactSimulateMap.containsKey(con.Id)){
-                    //     projectRec.simultaneousTasksContractorResources = contactSimulateMap.get(con.Id);
-                    // }
+
                     if (scheduleitemmap.get(con.id) != null){
                         projectRec.tasks = string.valueof(scheduleitemmap.get(con.id).size());
                     }
@@ -1029,34 +869,26 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
                     }
                     projectRec.Companyname = con.Account.Name;
-                    System.debug(projectRec.ContractresourceId);
 
                     //get selected resources tasks
                     if(slectedcontactId != '' && slectedcontactId != null){
-                        System.debug(projectRec.ContractresourceId);
                         if(con.Id == slectedcontactId){
-                            System.debug(projectRec.ContractresourceId);
-                           projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
+                            projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
                         }
                     }else{
-                        System.debug(projectRec.ContractresourceId);
                         projectRec.ProjectTaskRecordsList = contactTaskMap.get(con.Id);
-                       // resourceTaskList.addAll(contactTaskIdMap.get(con.Id));
                     }
 
                     if(alltypeSearch != '' && alltypeSearch != null){
-                        system.debug(alltypeSearch);
-                        system.debug((projectRec.ContractresourceName.toLowerCase()));
-                        system.debug((projectRec.ContractresourceName.toLowerCase()).contains(alltypeSearch.toLowerCase()));
 
                         if((projectRec.ContractresourceName.toLowerCase()).contains(alltypeSearch.toLowerCase()) || (projectRec.Companyname != null  && (projectRec.Companyname.toLowerCase()).contains(alltypeSearch.toLowerCase()))
-                           || (projectRec.TradeType != null && (projectRec.TradeType.toLowerCase()).contains(alltypeSearch.toLowerCase()))){
-                            system.debug(alltypeSearch);
+                            || (projectRec.TradeType != null && (projectRec.TradeType.toLowerCase()).contains(alltypeSearch.toLowerCase()))){
+
                             resourceTaskList.addAll(contactTaskIdMap.get(con.Id));
                             RecordList.add(projectRec);
                         }
                     }else{
-                        system.debug(alltypeSearch);
+
                         RecordList.add(projectRec);
                     }
                     combinedWrapper.areInternalResource = true;
@@ -1068,10 +900,6 @@ public without sharing class NewResourceScheduleDashnoardCls{
         }
         //  BUIL-3932 --------------- END ---------------------
 
-
-        system.debug(projectTaskLinkMap);
-
-        //List<buildertek__Project_Task__c> projectAlltypeFilterTask = new List<buildertek__Project_Task__c>();
         Map<String,List<ResourceCalendarWrap.ProjectTaskRecords>> projectAlltypeFilterTask = new Map<String,List<ResourceCalendarWrap.ProjectTaskRecords>>();
         if(resourceTaskList.size() > 0){
             for(buildertek__Project_Task__c task : schudleitemList){
@@ -1091,19 +919,11 @@ public without sharing class NewResourceScheduleDashnoardCls{
             }
         }
 
-
-        system.debug(resourceTaskList);
-        system.debug(projectAlltypeFilterTask.keyset());
-        system.debug(projectAlltypeFilterTask.Size());
-
-        system.debug(projectRecordList);
         List<projectResourceWrapperClone> projResWrapList = new List<projectResourceWrapperClone>();
         Set<String> projeRecSet = new Set<String>();
         for(buildertek__Project__c proj : projectRecordList){
             projectResourceWrapperClone projRec = new projectResourceWrapperClone();
-            system.debug(proj.buildertek__Customer__c);
-            system.debug(proj.Name);
-            system.debug(projRec);
+
             if(alltypeSearch != '' && alltypeSearch != null && resourceSearch != '' && resourceSearch !=null){
                 if(projectAlltypeFilterTask.keyset().Size() > 0){
                     if(projectAlltypeFilterTask.keyset().contains(proj.Id)){
@@ -1114,7 +934,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
                         projRec.projectRecId = proj.Id;
                         projeRecSet.add(proj.Id);
                         projResWrapList.add(projRec);
-                        system.debug(projRec);
+
                     }
 
                 }
@@ -1126,20 +946,16 @@ public without sharing class NewResourceScheduleDashnoardCls{
                 projRec.projectRecId = proj.Id;
                 projeRecSet.add(proj.Id);
                 projResWrapList.add(projRec);
-                system.debug(projRec);
+
             }
         }
 
-        system.debug('projResWrapList---->'+projResWrapList);
-        // combinedProjectCalendarWrapperClone combinedWrapper = new combinedProjectCalendarWrapperClone();
-        //projects and tasks
+
         combinedWrapper.projectList = projResWrapList;
         //resources and tasks
         combinedWrapper.calendarTaskList = RecordList;
 
-        //return RecordList;
         return combinedWrapper;
-
     }
 
     public static ResourceCalendarWrap.ProjectTaskRecords assignResource(ResourceCalendarWrap.ProjectTaskRecords wrapperRecord, String Name){
@@ -1147,6 +963,7 @@ public without sharing class NewResourceScheduleDashnoardCls{
         String originalJson = JSON.serialize(wrapperRecord);
         ResourceCalendarWrap.ProjectTaskRecords clonedRecord = (ResourceCalendarWrap.ProjectTaskRecords) JSON.deserialize(originalJson, ResourceCalendarWrap.ProjectTaskRecords.class);
         clonedRecord.contractresourceId = Name;
+        clonedRecord.UnitId = Name;
         return clonedRecord;
 
     }

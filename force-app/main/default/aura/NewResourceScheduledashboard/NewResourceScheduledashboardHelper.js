@@ -199,8 +199,8 @@
         }
 
         // Changes for BUIL-3936
-        // When date choosen from Week view set calander and heard according to week... 
-        // When date choosen from Day view set calander and heard according to Dat... 
+        // When date choosen from Week view set calander and heard according to week...
+        // When date choosen from Day view set calander and heard according to Dat...
         // else by default it will set to month view...
         if(component.get("v.currentCalendarView") == 'weekView'){
             component.setWeekView();
@@ -354,6 +354,7 @@
                 var baseURL = component.get("v.BaseURLs");
                 for(var i=0; i<evetList.length; i++){
                     var task = evetList[i];
+                    console.log('task : ', task);
                     var taskObj = {};
                     taskObj["id"] = task.Id;
                     var name =  task.title ? task.title : task.taskdescription
@@ -505,8 +506,8 @@
                 }
 
                 // Changes for BUIL-3936
-                // When date choosen from Week view set calander and heard according to week... 
-                // When date choosen from Day view set calander and heard according to Dat... 
+                // When date choosen from Week view set calander and heard according to week...
+                // When date choosen from Day view set calander and heard according to Dat...
                 // else by default it will set to month view...
                 if(component.get("v.currentCalendarView") == 'weekView'){
                     component.setWeekView();
@@ -514,16 +515,16 @@
                 else if(component.get("v.currentCalendarView") == 'dayView'){
                     // component.setDayView();
                     document.getElementById('mycalendar').style.display = 'none';
-        
+
                     /*Show day view div*/
                     document.getElementById('mycalendar2').style.display = 'block';
                     /*show day view header*/
                     document.getElementsByClassName('daily-header')[0].style.display = 'block';
 
                     if(currentDate.getMonth() ==  viewDate.getMonth() && currentDate.getFullYear() == viewDate.getFullYear()){
-                        
+
                     }
-                    
+
                 }
 
 
@@ -532,7 +533,7 @@
                 var selectDate = new Date(component.get("v.startDt"));
                 var seletedDateClass = 'dateV'+today.getFullYear() +'-'+ String(today.getMonth() + 1).padStart(2,'0')+ '-' + String(today.getDate() -1).padStart(2,'0');
                 console.log('selected date : ', seletedDateClass);
-    
+
                 var monthDate = document.getElementsByClassName('m-d monthly-day monthly-day-event');
                 console.log('monthDate.length : ', monthDate.length);
                 if(monthDate.length){
@@ -710,7 +711,7 @@
             });
         }
     },
-    
+
     handleSaveDates: function(component, event, helper) {
         var startDate = component.get("v.startDt");
         console.log('selected stard date : ', startDate);
@@ -722,19 +723,19 @@
             document.getElementById('selectedContractResource').innerText = 'Resource';
             document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
 
-            
+
             // Commented for BUIL-3936
             // document.getElementById('mycalendar').style.display = 'block';
             /*hide day view div*/
             // document.getElementById('mycalendar2').style.display = 'none';
             // document.getElementsByClassName('daily-header')[0].style.display = 'none';
-            
+
             component.set("v.showSpinner", true);
             component.set("v.newContractResource","");
             if(component.get("v.recordId") != '' && component.get("v.recordId") != undefined && component.get("v.recordId") != null){
                 component.set("v.newSelectedProjectId",component.get("v.newSelectedProjectIdClone"));
             }else{
-                component.set("v.newSelectedProjectId",""); 
+                component.set("v.newSelectedProjectId","");
             }
             component.set("v.selectedContractResourceIndex",-1);
             var Datevalue =  startDateObj;
@@ -753,7 +754,7 @@
             toastEvent.setParams({
                 "title": "Error!",
                 "type": "error",
-                "message": "Start date cannot be empty."  
+                "message": "Start date cannot be empty."
             });
             toastEvent.fire();
         }
@@ -784,21 +785,21 @@
                         helper.handleSaveDates(component,event,helper);
                     }
                 });
-        
+
                 // Hide the date picker initially
                 $(`#datepickerPlaceholder`).hide();
-    
+
                 component.set("v.isDatePickerLoaded", true);
             }
-    
+
             // Toggle the visibility of the date picker
             console.log('is date picker visible :  ', $(`#datepickerPlaceholder`).is(":visible"));
-            
+
             $(`#datepickerPlaceholder`).toggle();
             component.set("v.isBackShadow", $(`#datepickerPlaceholder`).is(":visible"));
         } catch (error) {
             console.log('error in  openDatePickerHelper : ', error.stack);
-            
+
         }
     }
 })

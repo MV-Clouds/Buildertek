@@ -1,21 +1,21 @@
 <aura:component controller="NewResourceScheduleDashnoardCls"
                 implements="lightning:isUrlAddressable,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
-   
-     
-   	<ltng:require styles="{!$Resource.ResourceScheduleDashboiardIcons}" /> 
+
+
+   	<ltng:require styles="{!$Resource.ResourceScheduleDashboiardIcons}" />
     <!-- <ltng:require styles="{!$Resource.BootstrapStyles}" /> --><!-- $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/bootstrapClone.min.css', -->
-   
+
    <ltng:require styles="{!join(',',
-                         
-                          $Resource.FaFaFont + '/css2.css', 
+
+                          $Resource.FaFaFont + '/css2.css',
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/Fontawesome/css/all.min.css',
-                          $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/custom.css', 
+                          $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/custom.css',
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/monthly.css',
                           $Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/sidebars.css',
-                          $Resource.Jquery + '/jquery/css/ui-smoothness/jquer-datePicker.css')}"  /> 
-    
-    <!-- by sai --> 
-    <ltng:require scripts="{!join(',', 
+                          $Resource.Jquery + '/jquery/css/ui-smoothness/jquer-datePicker.css')}"  />
+
+    <!-- by sai -->
+    <ltng:require scripts="{!join(',',
                            $Resource.Jquery + '/jquery/lightning/js/jquery-3.7.1.min.js',
                            $Resource.Jquery + '/jquery/lightning/js/jquery-ui-1.12.1.min.js')}"
                            afterScriptsLoaded="{!c.handleAfterLoadscript}"/>
@@ -34,7 +34,7 @@
 
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
-   
+
     <aura:attribute name="recordId" type="String" access="public"/>
     <aura:attribute name="selectedProjColor" type="String" default="" />
     <aura:attribute name="projectColorMap" type="Map" />
@@ -48,16 +48,16 @@
     <aura:attribute name="dateValForDateView" type="String" />
     <aura:attribute name="NextMonth" type="list" />
     <aura:attribute name="BaseURLs" type="String" />
-    <aura:attribute name="monthnames" type="List" 
+    <aura:attribute name="monthnames" type="List"
                     default='["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]'/>
-    <aura:attribute name="dayNames" type="List" 
+    <aura:attribute name="dayNames" type="List"
                     default = '["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"]' />
-    <aura:attribute name="projectColors" type="List" 
+    <aura:attribute name="projectColors" type="List"
                      default = '[ "#BFCE80","#43A6EE","#9CC4E8","#3BBF65", "#FFBC00", "#62D0CB", "#6997FD", "#FD6D00", "#C3DD2E","#8058D6","#E98FC3"]' />
-	
-    <aura:attribute name="resourceColors" type="List" 
+
+    <aura:attribute name="resourceColors" type="List"
                      default = '["#E98FC3", "#8058D6", "#C3DD2E", "#FD6D00", "#6997FD", "#62D0CB", "#FFBC00","#3BBF65","#9CC4E8","#43A6EE","#BFCE80"]' />
-    
+
     <aura:attribute name="isFirst" type="Boolean" />
     <aura:attribute name="newSelectedProjectId" type="String" default="" />
     <aura:attribute name="newSelectedProjectIdClone" type="String" default="" />
@@ -65,26 +65,26 @@
     <aura:attribute name="selectedContractResourceIndex" type="Integer" default="-1" />
     <aura:attribute name="contractResourceListIds" type="List" default="[]" />
     <aura:attribute name="currentCalendarView" type="String" default="monthView" />
-    <aura:attribute name="calendarViewTypeList" type="List" default="['dayView,'weekView','monthView']" /> 
+    <aura:attribute name="calendarViewTypeList" type="List" default="['dayView,'weekView','monthView']" />
     <aura:attribute name="weekIndex" type="Integer" default="0" />
     <aura:attribute name="resourcesList" type="List" />
     <aura:attribute name="dateEventList" type="List" />
     <aura:attribute name="conflictEventList" type="List" />
     <aura:attribute name="standardEventList" type="List" />
     <aura:attribute name="startDt" type="Date" />
-    <aura:attribute name="endDt" type="Date" />    
+    <aura:attribute name="endDt" type="Date" />
     <!-- search -->
-    
+
     <aura:attribute name="searchProjectFilter" type="String" default="" />
     <aura:attribute name="searchResourceFilter" type="String" default="" />
     <aura:attribute name="allFilter" type="String" default="" />
-    
+
     <aura:handler name="change" value="{!v.searchProjectFilter}" action="{!c.doTaskProjectSearch}" />
     <aura:handler name="change" value="{!v.searchResourceFilter}" action="{!c.doTaskResourceSearch}" />
     <aura:handler name="change" value="{!v.allFilter}" action="{!c.doTaskAllFilterSearch}" />
-    
+
     <!--search end -->
-    
+
    <!-- <aura:handler event="aura:locationChange" action="{!c.update}"/> -->
     <lightning:workspaceAPI aura:id="workspaceresource" />
     <aura:attribute name="rerendermonthly" type="Boolean" default="true" />
@@ -92,12 +92,12 @@
     <aura:attribute type="String" name="calendarView" default="Dayview" />
     <aura:attribute name="showSpinner" type="boolean" default="false" />
     <aura:attribute type="String" name="displayView" default="project" />
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="type" type="String" default="info" />
     <aura:attribute name="color" type="String" default="white" />
     <aura:attribute name="index" type="String" default="" />
     <aura:attribute name="contactList" type="contact[]" />
-    
+
     <aura:attribute type="String" name="headerDate" />
     <aura:attribute type="String" name="ColorName1" />
     <aura:attribute type="String" name="ColorName2" />
@@ -112,12 +112,12 @@
     <aura:attribute name="eventList" type="list" />
     <aura:attribute name="projectList" type="list" />
     <aura:attribute type="boolean" name="NoSchedules" />
-    
+
     <aura:attribute name="currentYear" type="list" />
     <aura:attribute name="fristMonth" type="list" />
     <aura:attribute name="secondMonth" type="list" />
-    
-    
+
+
     <aura:attribute name="ResourceCollapseText" type="String" default="[+]" />
     <aura:attribute name="projectCollapseText" type="String" default="[+]" />
     <aura:attribute name="projectTaskCollapseText" type="String" default="[+]" />
@@ -129,55 +129,55 @@
     <aura:attribute name="selectedContact" type="sObject" default="{}" />
     <aura:attribute name="selectedproject" type="sObject" default="{}" />
     <aura:attribute name="selectedTradetype" type="sObject" default="{}" />
-    
+
     <aura:attribute name="showModal" type="Boolean" default="fasle" />
     <aura:attribute name="showModal1" type="Boolean" default="fasle" />
     <aura:attribute name="contactScheduleItemList" type="List" default="" />
-    
+
     <aura:attribute name="tradeTypeScheduleItemList" type="List" default="" />
-    
+
     <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}" />
-    
+
     <aura:handler event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}" />
-    
-    
+
+
     <aura:handler name="render" value="{!this}" action="{!c.onRender}"/>
-    
+
      <!-- <aura:method name="drawTable" action="{!c.resourcedrawTable}" description="drawTable">
         <aura:attribute name="index" type="String" default="" />
     </aura:method> -->
-    
+
    <!-- <aura:method name="drawTable" action="{!c.checkContent}" description="drawTable">
         <aura:attribute name="index" type="String" default="" />
     </aura:method> -->
-    
+
     <aura:method name="drawTablebyweek" action="{!c.drawTablebyweek}" description="">
         <aura:attribute name="index" type="String" default="" />
     </aura:method>
-    
+
     <aura:method name="reloadPrevCalendar" action="{!c.previousMonth}" description="">
         <aura:attribute name="index" type="String" default="" />
     </aura:method>
-    
+
     <aura:method name="reloadNextCalendar" action="{!c.nextMonth}" description="">
         <aura:attribute name="index" type="String" default="" />
     </aura:method>
-    
+
     <aura:method name="reloadCurrentDateCalendar" action="{!c.currentDateMonth}" description="">
     </aura:method>
-    
+
     <aura:method name="reloadPrevWeekCalendar" action="{!c.previousWeekClone}" description=""> <!--  previousWeek-->
     </aura:method>
-    
+
     <aura:method name="reloadNextWeekCalendar" action="{!c.nextWeekClone}" description="">  <!--  nextWeek-->
     </aura:method>
 
     <aura:method name="reloadCurrentWeekCalendar" action="{!c.currentWeekClone}" description="">  <!--   currentWeek-->
     </aura:method>
-    
+
     <aura:method name="resetEventListeners" action="{!c.resetPreNextTodayListeners}" description="" >
     </aura:method>
-    
+
     <aura:method name="conflictData" action="{!c.setConflictData}" description="" >
     </aura:method>
 
@@ -186,21 +186,21 @@
 
     <aura:method name="setWeekView" action="{!c.calendarWeekView}" description="">
     </aura:method>
-    
+
      <aura:method name="monthlyFunMethod" action="{!c.getmonthlyfunc}">
        <!-- <aura:attribute name="component" type="Aura.Component"/>
         <aura:attribute name="controllerMethod" type="String" />
         <aura:attribute name="actionParameters" type="Object" /> -->
         <aura:attribute name="monthlyFunc" type="Function" />
-    </aura:method>      
-   
+    </aura:method>
+
     <body style="font-family: 'Poppins', sans-serif;">
         <div class="projectResourceContainer wrapper" style="background-color:white;font-size:0.95rem;" aura:id="projectResourceContainer">
                 <div class="main">
                     <div class="d-flex flex-column flex-shrink-0 p-3 pt-2 left-nav-main" style="padding-top:0.09rem !important;">
                         <div class="input-group px-3 py-2">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
-                           <input type="text" class="form-control brd-l-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search Project"  onkeyup="{!c.FilterprojectTasks}"/> 
+                           <input type="text" class="form-control brd-l-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search Project"  onchange="{!c.FilterprojectTasks}"/>
                         </div>
                         <a href="#" class="d-flex align-items-center mb-3 me-md-auto link-dark text-decoration-none">
                             <span class="fs-6 fw-semibold">Projects</span>
@@ -213,13 +213,13 @@
                                             <aura:if isTrue="{!projectItem.projectRecId == v.newSelectedProjectId}">
                                                 <a href="javascript:void(0);" class="nav-link active" aria-current="true" onclick="{!c.handleSelectedProject}" data-projid="{!projectItem.projectRecId}" style="justify-content: space-between;">
                                                     <div style="display: flex; align-items: center;justify-content: space-between;">
-                                                        
+
                                                         <!-- <i class="me-3 far fa-building"></i> -->
                                                         <div class="Proj_profile_name " style="margin-right:1rem !important"> <!-- prof_bg1 -->
                                                             <i class= "marColor far fa-building"></i>
                                                         </div>
                                                         <div class="lh-sm">
-                                                            <label>{!projectItem.projectRecName}</label> 
+                                                            <label>{!projectItem.projectRecName}</label>
                                                             <span class="menu-sub-text">Account: {!projectItem.projectRecAccName}</span>
                                                         </div>
                                                     </div>
@@ -230,10 +230,10 @@
                                                         <div style="display: flex; align-items: center;justify-content: space-between;">
                                                            <div class="Proj_profile_name " style="margin-right:1rem !important"> <!-- prof_bg1 -->
                                                                 <i class= "far fa-building marColor"></i>
-                                                            </div> 
+                                                            </div>
                                                            <!-- <i class="me-3 far fa-building"></i> -->
                                                             <div class="lh-sm">
-                                                                <label>{!projectItem.projectRecName}</label> 
+                                                                <label>{!projectItem.projectRecName}</label>
                                                                 <span class="menu-sub-text">Account: {!projectItem.projectRecAccName}</span>
                                                             </div>
                                                         </div>
@@ -241,8 +241,8 @@
                                                     </a>
                                                 </aura:set>
                                             </aura:if>
-                                            
-                                        </li> 
+
+                                        </li>
                                     </aura:iteration>
                                     <aura:set attribute="else" >
                                             No Projects Found
@@ -251,11 +251,11 @@
                             </ul>
                         </div>
                     </div>
-                    
+
                     <div class="d-flex flex-column flex-shrink-0 align-items-stretch bg-white left-nav2">
                         <div class="input-group px-3 py-2">
                             <span class="input-group-text"><i class="fas fa-search"></i></span>
-                            <input type="text" class="form-control brd-l-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search Name" onkeyup="{!c.FilterResourceTasks}"/>
+                            <input type="text" class="form-control brd-l-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search Name" onchange="{!c.FilterResourceTasks}"/>
                         </div>
                         <div class="list-group list-group-flush scrollarea p-2 pt-0">
                             <aura:if isTrue="{!v.resourcesList.length}" >
@@ -270,10 +270,10 @@
                                                         <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
                                                             <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
-                                                        <div> 
-                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                        <div>
+                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                             <br/>
-                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -283,10 +283,10 @@
                                                             <div class="profile_name me-3"  > <!-- prof_bg1 -->
                                                                 <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                             </div>
-                                                            <div> 
-                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                            <div>
+                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                                 <br/>
-                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                             </div>
                                                         </div>
                                                     </a>
@@ -309,10 +309,10 @@
                                                         <div class="profile_name me-3" > <!-- prof_bg1 style="width: 3rem;text-align: center;" -->
                                                             <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
-                                                        <div> 
-                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                        <div>
+                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                             <br/>
-                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -322,10 +322,10 @@
                                                             <div class="profile_name me-3"  > <!-- prof_bg1 -->
                                                                 <span style="width:5rem;text-align: center;" >{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                             </div>
-                                                            <div> 
-                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong> 
+                                                            <div>
+                                                                <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                                 <br/>
-                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small> 
+                                                                <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                             </div>
                                                         </div>
                                                     </a>
@@ -339,17 +339,17 @@
                                 </aura:if>
 
                                 <aura:set attribute="else" >
-                                	No Resources Found 
+                                	No Resources Found
                                 </aura:set>
                             </aura:if>
                         </div>
                     </div>
-                    
+
                     <div class="container py-1">
                         <div class="row pb-2">
                             <div class="col-md-6 col-xl-7 col-xxl-8">
                                 <div class="input-group pt-1">
-                                    <input type="text" class="form-control brd-r-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search by Project, Trade Type, Resource" onkeyup="{!c.FilterTradeTypeTasks}" />
+                                    <input type="text" class="form-control brd-r-0" aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search by Project, Trade Type, Resource" onchange="{!c.FilterTradeTypeTasks}" />
                                     <span class="input-group-text"><i class="fas fa-search" ></i></span> </div>
                             </div>
                             <div class="col-md-6 col-xl-5 col-xxl-4 text-end">
@@ -363,7 +363,7 @@
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <div class="cal_header">
                             <div class="row">
                                 <div class="col-md-6 col-xl-4" id="selectedResourceContainer">
@@ -371,9 +371,9 @@
                                         <div class="profile_name me-3 prof_bg2" id="profileBgSymbol">
                                             <span id="resourceInitials">R</span>
                                         </div>
-                                        <div> 
+                                        <div>
                                             <strong class="mb-1" id="selectedContractResource">Resource</strong> <br/>
-                                            <small class="text-black-50" id="selectedContractResourceTradeType">Trade Type</small> 
+                                            <small class="text-black-50" id="selectedContractResourceTradeType">Trade Type</small>
                                         </div>
                                     </div>
                                 </div>
@@ -391,25 +391,25 @@
                                 <div class="backShadow" onclick="{!c.openDatePicker}"></div>
                             </aura:if>
                         </div>
-                        
-                        
+
+
 
                         <!-- <div style="display: flex;justify-content: flex-end;align-items: flex-end;">
                             <a class="daily-header-title-datee" id="datepickerAnchor"onclick="{!c.openDatePicker}" href="javascript:void(0);">Select Date</a> -->
                         <!-- </div> -->
-                        
+
                         <div class="row" style="overflow-y : scroll; height: 80%;">
                             <div class="col-12">
                                 <!-- Month View -->
                                 <div class="monthly" id="mycalendar">
-                                    
+
                                 </div>
-                                
-                                
-                                
+
+
+
                                 <!-- day view -->
                                 <div class="monthly" id="mycalendar2" style="display:none;padding:5px;">
-                                    
+
                                     <div class="daily-header">
                                         <div class="daily-header-title">
                                             <a class="daily-header-title-date" href="javascript:void(0);">{!v.todayDateHeader}</a>
@@ -446,15 +446,15 @@
                                                         <label class="event_title">{!eventItem.projectId} - {!eventItem.contractresourceId}</label>
                                                         <aura:set attribute="else">
                                                             <aura:if isTrue="{!eventItem.UnitId}">
-                                                                <label class="event_title">{!eventItem.projectId} - {!eventItem.UnitId}</label>	
+                                                                <label class="event_title">{!eventItem.projectId} - {!eventItem.UnitId}</label>
                                                                 <aura:set attribute="else">
-                                                                    <label class="event_title">{!eventItem.projectId}</label>	
+                                                                    <label class="event_title">{!eventItem.projectId}</label>
                                                                 </aura:set>
                                                             </aura:if>
                                                         </aura:set>
                                                     </aura:if> -->
-                                                    
-                                                    
+
+
                                                     <div class="row mb-4">
                                                         <div class="col-sm-3"> <!-- col-sm-4 -->
                                                             <h5 class="event_head">Resource</h5>
@@ -469,7 +469,7 @@
                                                                     </aura:if>
                                                                 </aura:set>
                                                             </aura:if>
-                                                            
+
                                                         </div>
                                                         <div class="col-sm-3">
                                                             <h5 class="event_head">Description</h5>
@@ -484,7 +484,7 @@
                                                             <label class="event_cont">{!eventItem.taskdays}</label>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div class="row">
                                                         <div class="col-sm-3">
                                                             <h5 class="event_head">Start Date</h5>
@@ -502,15 +502,15 @@
                                                                     <label class="event_cont">0%</label>
                                                                 </aura:set>
                                                             </aura:if>
-                                                            
+
                                                         </div>
-                                                        
+
                                                     </div>
-                                                    
+
                                                 </div>
                                                <!-- </div> -->
                                             </div>
-                                        
+
                                         </aura:iteration>
                                         <aura:set attribute="else">
                                             <div style="text-align:center;padding:4rem; min-height: 30vh;">No Events </div>
@@ -523,7 +523,7 @@
                                         </div>
                                         <div class="event event_red">
                                             <label class="event_title">The villa at grand station</label>
-                                            
+
                                             <div class="row mb-4">
                                                 <div class="col-sm-4">
                                                     <h5 class="event_head">Description</h5>
@@ -538,7 +538,7 @@
                                                     <label class="event_cont">10 days</label>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="row">
                                                 <div class="col-sm-4">
                                                     <h5 class="event_head">Start Date</h5>
@@ -555,10 +555,10 @@
                                             </div>
                                         </div>
                                     </div> -->
-                                    
+
                                 </div>
 
-                            </div>	
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -570,22 +570,19 @@
                     <div class="slds-spinner__dot-a"></div>
                     <div class="slds-spinner__dot-b"></div>
                     <div class="custom-loading-text">
-                        <aura:if isTrue="{!v.showMessage}">
-                            <!--<b>Importing Schedule Lines... </b>-->
-                            <b>Processing, Please Wait</b>
-                        </aura:if>
+                        <b>Processing, Please Wait</b>
                     </div>
                 </div>
             </div>
         </aura:if>
     </body>
-    
+
 
     <ltng:require scripts="{!$Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/sidebars.js'}"  />
  	<!-- <ltng:require scripts="{!$Resource.ResourceScheduleTabContent + '/ResourceScheduleTab/jquery.min.js'}"  /> -->
-    
+
    <!-- <aura:if isTrue="{!v.rerendermonthly}"> -->
     	 <ltng:require scripts="{!$Resource.ResourceScheduleDashboardMonthly}"  afterScriptsLoaded="{!c.handleAfterLoad}" /> <!--  <ltng:require scripts="{!$Resource.ResourceScheduleDashboardJquery}"  /> -->
    <!-- </aura:if> -->
-     
+
 </aura:component>

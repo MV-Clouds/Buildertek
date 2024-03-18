@@ -280,6 +280,9 @@
 
                     var calendarBuild = component.get("c.buildCalendar");
                     $A.enqueueAction(calendarBuild);
+                } else {
+                    component.set("v.showSpinner", false);
+                    console.log('error',response.getError());
                 }
             });
             $A.enqueueAction(action);
@@ -473,6 +476,9 @@
                     var calendarBuild = component.get("c.buildCalendar");
                     $A.enqueueAction(calendarBuild);
                     //component.set("v.showSpinner",false);
+                } else {
+                    component.set("v.showSpinner", false);
+                    console.log('error',response.getError());
                 }
             });
             $A.enqueueAction(action);
@@ -2287,6 +2293,9 @@
                     var calendarBuild = component.get("c.buildCalendar");
                     $A.enqueueAction(calendarBuild);
                     component.set("v.showSpinner",false);
+                } else {
+                    component.set("v.showSpinner", false);
+                    console.log('error',response.getError());
                 }
             });
             $A.enqueueAction(action);
@@ -2390,12 +2399,16 @@
                     var calendarBuild = component.get("c.buildCalendar");
                     $A.enqueueAction(calendarBuild);
                     component.set("v.showSpinner",false);
+                } else {
+                    component.set("v.showSpinner", false);
+                    console.log('error',response.getError());
                 }
             });
             $A.enqueueAction(action);
     },
 
     doTaskAllFilterSearch:  function (component, event, helper) {
+        console.log('doTaskAllFilterSearch');
         //var value = component.get("v.searchRfqFilter");//event.getSource().get("v.value");
         console.log(component.get("v.searchProjectFilter"));
         console.log(component.get("v.searchResourceFilter"));
@@ -2533,6 +2546,9 @@
                     var calendarBuild = component.get("c.buildCalendar");
                     $A.enqueueAction(calendarBuild);
                     component.set("v.showSpinner",false);
+                } else {
+                    component.set("v.showSpinner", false);
+                    console.log('error',response.getError());
                 }
             });
             $A.enqueueAction(action);
