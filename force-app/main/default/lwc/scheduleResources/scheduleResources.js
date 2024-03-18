@@ -496,7 +496,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
                     const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItemId);
                     if (conflictingSchedule && conflictingSchedule.Id !== editRecordId) {
-                        addConflict(selectedResource, selectedResource === selectedInternalResourceId ? selectedRecord.internalResource : this.vendorResourcesMap[selectedVendorId]?.find(resource => resource.value === selectedResource)?.label || '', {
+                        addConflict(selectedResource, selectedResource === selectedInternalResourceId ? this.internalResourcesOption.find(resource => resource.value === selectedInternalResourceId).label : this.vendorResourcesMap[selectedVendorId]?.find(resource => resource.value === selectedResource)?.label || '', {
                             id: conflictingSchedule.Id,
                             taskName: conflictingSchedule.Name,
                             startDate: conflictingSchedule.buildertek__Start__c,
@@ -504,6 +504,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                             schedule: conflictingSchedule.buildertek__Schedule__r.buildertek__Description__c,
                             project: conflictingSchedule.buildertek__Schedule__r?.buildertek__Project__r?.Name || '',
                             scheduleId: conflictingSchedule.buildertek__Schedule__c,
+                            resourceName: selectedResource === selectedInternalResourceId ? this.internalResourcesOption.find(resource => resource.value === selectedInternalResourceId).label : this.vendorResourcesMap[selectedVendorId]?.find(resource => resource.value === selectedResource)?.label || '',
                         });
                     }
                 }
@@ -640,6 +641,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 this.showToast('Error', 'There was an error while updating the record. Please contact the administrator to resolve this issue.', 'error');
             })
             .finally(() => {
+                this.scheduleData();
                 this.isLoading = false;
             });
     }
@@ -687,8 +689,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 conflictScheduleList.forEach(scheduleItem => {
                     if (this.isScheduleConflicting(selectedStartDate, selectedEndDate, scheduleItem)) {
                         const conflictingSchedule = this.intialConflictList.find(row => row.Id === scheduleItem.scheduleId);
-                        console.log(`Schedule Id ====: ${JSON.stringify(scheduleItem.scheduleId)}`);
-                        console.log(`conflictingSchedule ====: ${JSON.stringify(conflictingSchedule)}`);
+                        console.log(`Schedule Id ==== ${JSON.stringify(scheduleItem.scheduleId)}`);
+                        console.log(`conflictingSchedule ==== ${JSON.stringify(conflictingSchedule)}`);
                         if (conflictingSchedule && conflictingSchedule.Id !== task.id) {
                             if (!this.existingConflictScheduleMap[taskId]) {
                                 this.existingConflictScheduleMap[taskId] = {};
@@ -776,7 +778,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
                 ].filter(resource => resource.resourceId);
                 vendorResources.forEach(({ resourceId, resourceName }) => {
                     const vendorSchedules = this.existingConflictScheduleMap[taskId][resourceId];
-                    if (vendorSchedules) {
+                    if (vendorSchedules && vendorSchedules.length > 0) {
                         addConflict(resourceId, resourceName, vendorSchedules);
                     }
                 });
@@ -785,7 +787,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             if (internalResourceId) {
                 const internalResource = this.internalResourcesOption.find(resource => resource.value === internalResourceId);
                 const internalSchedules = this.existingConflictScheduleMap[taskId][internalResourceId];
-                if (internalSchedules) {
+                if (internalSchedules && internalSchedules.length > 0) {
                     addConflict(internalResourceId, internalResource.label, internalSchedules);
                 }
             }
