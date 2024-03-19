@@ -49,20 +49,6 @@
         helper.handleAfterScriptsLoaded(component, helper);
     },
 
-    buildCalendar: function (component, event, helper) {
-
-        console.log(component.get('v.eventList'));
-        var resources = component.get('v.resourcesList');
-        var contractResourceIdList = [];
-        for (var i = 0; i < resources.length; i++) {
-            contractResourceIdList.push(resources[i].ContractresourceId);
-        }
-        component.set("v.contractResourceListIds", contractResourceIdList);
-        var index = contractResourceIdList.indexOf(component.get("v.newContractResource"));
-        console.log(index, component.get("v.selectedContractResourceIndex"))
-        helper.buildCalendarWithTasks(component, helper, component.get('v.resourcesList'), component.get("v.selectedContractResourceIndex"));
-    },
-
     handleSelectedProject: function (component, event, helper) {
 
         event.stopPropagation();
@@ -94,9 +80,6 @@
                 component.set("v.newSelectedProjectId", "");
             }
 
-            //proj profile color
-            var projectColorIndex = event.currentTarget.dataset.projprofilesbl ? Number(event.currentTarget.dataset.projprofilesbl.split("_bg")[1]) - 1 : 0;
-
             component.set("v.newContractResource", "");
             component.set("v.selectedContractResourceIndex", "-1");
             var todayDate = new Date(component.get("v.dateval"));
@@ -113,72 +96,58 @@
             newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
             newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
             console.log('ans 2--->', component.get("v.newSelectedProjectId"));
-            var action = component.get("c.getScheduleItemsByProject");
-            action.setParams({
-                fromDate: newFromstr,//newFromstr.toString(),//fromdateStr,newfromdate
-                toDate: newTostr,//newTostr.toString(),//todateStr,newtodate
-                slectedTradetypeId: component.get("v.selectedTradetype").Id,
-                slectedprojectId: component.get("v.newSelectedProjectId"),
-                slectedcontactId: component.get("v.newContractResource"),
-                resourceSearch: component.get("v.searchResourceFilter"),
-                alltypeSearch: component.get("v.allFilter")
-            });
-            action.setCallback(this, function (response) {
-                var state = response.getState();
-                if (state === "SUCCESS") {
-                    console.log('response.getReturnValue()::', response.getReturnValue());
-                    component.set("v.showSpinner", false);
 
-                    var evetList = [];
-                    var projColors = component.get("v.projectColors");
-                    var resourceColor = component.get("v.resourceColors");
-                    var projResColorMap = new Map();
+            helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+            .then(function (response) {
+                console.log('response.getReturnValue()::', response);
 
-                    for (var k = 0; k < response.getReturnValue().calendarTaskList.length; k++) {
-                        if (response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList) {
-                            for (var j = 0; j < response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
-                                var weekName = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
-                                var startDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
-                                if (weekName != null && weekName != undefined) {
-                                    var dayNames = component.get("v.dayNames");
-                                    response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
-                                }
+                var evetList = [];
+                var projColors = component.get("v.projectColors");
+                var resourceColor = component.get("v.resourceColors");
+                var projResColorMap = new Map();
 
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                                var endDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
-                                evetList.push(response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]);
-
+                for (var k = 0; k < response.calendarTaskList.length; k++) {
+                    if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                        for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                            var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                            var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                            if (weekName != null && weekName != undefined) {
+                                var dayNames = component.get("v.dayNames");
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
                             }
+
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                            var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
+                            evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
+
                         }
                     }
-                    component.set("v.eventList", evetList);
-                    component.set("v.dateEventList", evetList);
-                    component.set("v.standardEventList", evetList);
-                    component.set("v.resourcesList", response.getReturnValue().calendarTaskList);
-                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
-                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
-
-                    var contractResourceIdList = [];
-                    document.getElementById('mycalendar').style.display = 'block';
-                    document.getElementById('mycalendar2').style.display = 'none';
-
-                    /*reset selected resource  */
-                    document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
-                    document.getElementById('resourceInitials').innerText = 'R';
-                    document.getElementById('selectedContractResource').innerText = 'Resource';
-                    document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
-
-                    var calendarBuild = component.get("c.buildCalendar");
-                    $A.enqueueAction(calendarBuild);
-                } else {
-                    component.set("v.showSpinner", false);
-                    console.log('error', response.getError());
                 }
+                component.set("v.eventList", evetList);
+                component.set("v.dateEventList", evetList);
+                component.set("v.standardEventList", evetList);
+                component.set("v.resourcesList", response.calendarTaskList);
+                component.set("v.areExternalResource", response.areExternalResource);
+                component.set("v.areInternalResource", response.areInternalResource);
+
+                document.getElementById('mycalendar').style.display = 'block';
+                document.getElementById('mycalendar2').style.display = 'none';
+
+                /*reset selected resource  */
+                document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+                document.getElementById('resourceInitials').innerText = 'R';
+                document.getElementById('selectedContractResource').innerText = 'Resource';
+                document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+
+                helper.buildCalendar(component, helper);
+            })
+            .catch(function (error) {
+                component.set("v.showSpinner", false);
+                console.log('error', error);
             });
-            $A.enqueueAction(action);
         }
 
     },
@@ -237,20 +206,10 @@
             newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
             newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
 
-            var action = component.get("c.getScheduleItemsByProject");
-            action.setParams({
-                fromDate: newFromstr,
-                toDate: newTostr,
-                slectedTradetypeId: component.get("v.selectedTradetype").Id,
-                slectedprojectId: component.get("v.newSelectedProjectId"),
-                slectedcontactId: component.get("v.newContractResource"),
-                resourceSearch: component.get("v.searchResourceFilter"),
-                alltypeSearch: component.get("v.allFilter")
-            });
-            action.setCallback(this, function (response) {
-                var state = response.getState();
-                if (state === "SUCCESS") {
-                    console.log('response.getReturnValue()::', response.getReturnValue());
+
+            helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+            .then(response => {
+                console.log('selectedResource response.getReturnValue()::', response);
                     component.set("v.showSpinner", false);
 
                     var evetList = [];
@@ -259,46 +218,46 @@
                     var resourceColors = component.get("v.resourceColors");
                     var selResourceColorIndex = Number(profileSymbol.split("prof_bg")[1]) - 1;
                     console.log(component.get("v.projectColorMap"))
-                    for (var itemIdx = 0; itemIdx < response.getReturnValue().projectList.length; itemIdx++) {
-                        for (var j = 0; j < response.getReturnValue().projectList[itemIdx].CalendarWrapList.length; j++) {
-                            var weekName = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekName'];
-                            var startDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdate'];
-                            var endDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddate'];
+                    for (var itemIdx = 0; itemIdx < response.projectList.length; itemIdx++) {
+                        for (var j = 0; j < response.projectList[itemIdx].CalendarWrapList.length; j++) {
+                            var weekName = response.projectList[itemIdx].CalendarWrapList[j]['weekName'];
+                            var startDate = response.projectList[itemIdx].CalendarWrapList[j]['startdate'];
+                            var endDate = response.projectList[itemIdx].CalendarWrapList[j]['enddate'];
                             if (weekName != null && weekName != undefined) {
                                 var dayNames = component.get("v.dayNames");
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); // weekName.substring(0,3);
+                                response.projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); // weekName.substring(0,3);
                             }
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
 
-                            if (projColorMap.get(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['projectId'])) {
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColorMap.get(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['projectId']);
+                            if (projColorMap.get(response.projectList[itemIdx].CalendarWrapList[j]['projectId'])) {
+                                response.projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColorMap.get(response.projectList[itemIdx].CalendarWrapList[j]['projectId']);
                             }
-                            evetList.push(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]);
+                            evetList.push(response.projectList[itemIdx].CalendarWrapList[j]);
                         }
 
                     }
 
 
                     var selectedResourceEventList = [];
-                    for (var k = 0; k < response.getReturnValue().calendarTaskList.length; k++) {
-                        if (response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList) {
-                            for (var j = 0; j < response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
-                                var weekName = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
-                                var startDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                    for (var k = 0; k < response.calendarTaskList.length; k++) {
+                        if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                            for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                                var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                                var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
                                 if (weekName != null && weekName != undefined) {
                                     var dayNames = component.get("v.dayNames");
-                                    response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
                                 }
 
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                                var endDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColors[selResourceColorIndex % 10];
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                                var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColors[selResourceColorIndex % 10];
 
-                                selectedResourceEventList.push(response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]);
+                                selectedResourceEventList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
 
                             }
                         }
@@ -306,23 +265,18 @@
                     }
                     component.set("v.eventList", selectedResourceEventList); // tasks list from selected resource
                     component.set("v.dateEventList", selectedResourceEventList);
-                    component.set("v.resourcesList", response.getReturnValue().calendarTaskList);
-                    component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
-                    component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
-
-                    var contractResourceIdList = [];
+                    component.set("v.resourcesList", response.calendarTaskList);
+                    component.set("v.areExternalResource", response.areExternalResource);
+                    component.set("v.areInternalResource", response.areInternalResource);
 
                     document.getElementById('mycalendar2').style.display = 'none';
                     document.getElementById('mycalendar').style.display = 'block';
-                    var calendarBuild = component.get("c.buildCalendar");
-                    $A.enqueueAction(calendarBuild);
-                } else {
-                    component.set("v.showSpinner", false);
-                    console.log('error', response.getError());
-                }
+                    helper.buildCalendar(component, helper);
+            })
+            .catch(error => {
+                component.set("v.showSpinner", false);
+                console.log('error', error);
             });
-            $A.enqueueAction(action);
-
         }
 
     },
@@ -392,7 +346,6 @@
                 }
             }
         }
-
     },
 
     checkContent: function (component, event, helper) {
@@ -1708,79 +1661,67 @@
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
         console.log('ans 4--->', component.get("v.newSelectedProjectId"));
-        var action = component.get("c.getScheduleItemsByProject");
-        action.setParams({
-            fromDate: newFromstr,//newFromstr.toString(),//fromdateStr,newfromdate
-            toDate: newTostr,//newTostr.toString(),//todateStr,newtodate
-            slectedTradetypeId: component.get("v.selectedTradetype").Id,
-            slectedprojectId: component.get("v.newSelectedProjectId"),
-            slectedcontactId: component.get("v.newContractResource"),
-            resourceSearch: component.get("v.searchResourceFilter"),
-            alltypeSearch: component.get("v.allFilter")
-        });
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                console.log('response.getReturnValue()::', response.getReturnValue());
-                component.set("v.showSpinner", false);
+
+
+        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+        .then(response => {
+            console.log('doTaskResourceSearch response.getReturnValue()::', response);
+                component.set("v.showSpinner", true);
 
                 //commenting projectList set attribute in order to show all projects with selected project
-                component.set("v.projectList", response.getReturnValue().projectList);
+                component.set("v.projectList", response.projectList);
 
                 var evetList = [];
                 var projColors = component.get("v.projectColors");
                 var resourceColors = component.get("v.resourceColors");
 
                 if (component.get("v.newSelectedProjectId")) {
-                    for (var k = 0; k < response.getReturnValue().calendarTaskList.length; k++) {
-                        if (response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList) {
-                            for (var j = 0; j < response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
-                                var weekName = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
-                                var startDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                    for (var k = 0; k < response.calendarTaskList.length; k++) {
+                        if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                            for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                                var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                                var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
                                 if (weekName != null && weekName != undefined) {
                                     var dayNames = component.get("v.dayNames");
-                                    response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
                                 }
 
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                                var endDate = response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColors[k % 10];
-                                evetList.push(response.getReturnValue().calendarTaskList[k].ProjectTaskRecordsList[j]);
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                                var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColors[k % 10];
+                                evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
                             }
                         }
                     }
                 } else {
-                    for (var itemIdx = 0; itemIdx < response.getReturnValue().projectList.length; itemIdx++) {
-                        for (var j = 0; j < response.getReturnValue().projectList[itemIdx].CalendarWrapList.length; j++) {
-                            var weekName = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekName'];
-                            var startDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdate'];
-                            var endDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddate'];
+                    for (var itemIdx = 0; itemIdx < response.projectList.length; itemIdx++) {
+                        for (var j = 0; j < response.projectList[itemIdx].CalendarWrapList.length; j++) {
+                            var weekName = response.projectList[itemIdx].CalendarWrapList[j]['weekName'];
+                            var startDate = response.projectList[itemIdx].CalendarWrapList[j]['startdate'];
+                            var endDate = response.projectList[itemIdx].CalendarWrapList[j]['enddate'];
                             if (weekName != null && weekName != undefined) {
                                 var dayNames = component.get("v.dayNames")
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                                response.projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
                             }
 
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); //new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                            response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx % 10];
-                            evetList.push(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]);
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); //new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx % 10];
+                            evetList.push(response.projectList[itemIdx].CalendarWrapList[j]);
                         }
 
                     }
                 }
 
-
                 component.set("v.eventList", evetList);
                 component.set("v.dateEventList", evetList);
                 component.set("v.standardEventList", evetList);
-                component.set("v.resourcesList", response.getReturnValue().calendarTaskList);
-                component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
-                component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
-
-                var contractResourceIdList = [];
+                component.set("v.resourcesList", response.calendarTaskList);
+                component.set("v.areExternalResource", response.areExternalResource);
+                component.set("v.areInternalResource", response.areInternalResource);
 
                 document.getElementById('mycalendar').style.display = 'block';
                 document.getElementById('mycalendar2').style.display = 'none';
@@ -1791,15 +1732,13 @@
                 document.getElementById('selectedContractResource').innerText = 'Resource';
                 document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
 
-                var calendarBuild = component.get("c.buildCalendar");
-                $A.enqueueAction(calendarBuild);
+                helper.buildCalendar(component, helper);
                 component.set("v.showSpinner", false);
-            } else {
-                component.set("v.showSpinner", false);
-                console.log('error', response.getError());
-            }
+        })
+        .catch(error => {
+            component.set("v.showSpinner", false);
+            console.log('error', error);
         });
-        $A.enqueueAction(action);
     },
 
     doTaskAllFilterSearch: function (component, event, helper) {
@@ -1827,111 +1766,95 @@
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
         console.log('ans 1--->', component.get("v.newSelectedProjectId"));
-        var action = component.get("c.getScheduleItemsByProject");
-        action.setParams({
-            fromDate: newFromstr,///newFromstr.toString(),//fromdateStr,newfromdate
-            toDate: newTostr,//newTostr.toString(),//todateStr,newtodate
-            slectedTradetypeId: component.get("v.selectedTradetype").Id,
-            slectedprojectId: component.get("v.newSelectedProjectId"),
-            slectedcontactId: component.get("v.newContractResource"),
-            resourceSearch: component.get("v.searchResourceFilter"),
-            alltypeSearch: component.get("v.allFilter")
-        });
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                console.log('response.getReturnValue()::', response.getReturnValue());
-                component.set("v.showSpinner", false);
 
-                //commenting projectList set attribute in order to show all projects with selected project
-                component.set("v.projectList", response.getReturnValue().projectList);
+        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+        .then(response => {
+            console.log('doTaskAllFilterSearch response.getReturnValue()::', response);
+            component.set("v.showSpinner", true);
 
-                var evetList = [];
-                var eventIds = [];
-                var projColors = component.get("v.projectColors");
-                var resourceColors = component.get("v.resourceColors");
-                if (response.getReturnValue().projectList.length) {
-                    for (var itemIdx = 0; itemIdx < response.getReturnValue().projectList.length; itemIdx++) {
-                        if (response.getReturnValue().projectList[itemIdx].CalendarWrapList) {
-                            for (var j = 0; j < response.getReturnValue().projectList[itemIdx].CalendarWrapList.length; j++) {
-                                var weekName = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekName'];
-                                var startDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdate'];
-                                var endDate = response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddate'];
-                                if (weekName != null && weekName != undefined) {
-                                    var dayNames = component.get("v.dayNames");
-                                    response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3);//weekName.substring(0,3);
-                                }
+            //commenting projectList set attribute in order to show all projects with selected project
+            component.set("v.projectList", response.projectList);
 
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy'); // new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy');// new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                                response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx % 10];
-                                if (eventIds.indexOf(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j].Id) < 0) {
-                                    evetList.push(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j]);
-                                    eventIds.push(response.getReturnValue().projectList[itemIdx].CalendarWrapList[j].Id);
-                                }
-
+            var evetList = [];
+            var eventIds = [];
+            var projColors = component.get("v.projectColors");
+            var resourceColors = component.get("v.resourceColors");
+            if (response.projectList.length) {
+                for (var itemIdx = 0; itemIdx < response.projectList.length; itemIdx++) {
+                    if (response.projectList[itemIdx].CalendarWrapList) {
+                        for (var j = 0; j < response.projectList[itemIdx].CalendarWrapList.length; j++) {
+                            var weekName = response.projectList[itemIdx].CalendarWrapList[j]['weekName'];
+                            var startDate = response.projectList[itemIdx].CalendarWrapList[j]['startdate'];
+                            var endDate = response.projectList[itemIdx].CalendarWrapList[j]['enddate'];
+                            if (weekName != null && weekName != undefined) {
+                                var dayNames = component.get("v.dayNames");
+                                response.projectList[itemIdx].CalendarWrapList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3);//weekName.substring(0,3);
                             }
+
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                            response.projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy'); // new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy');// new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                            response.projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx % 10];
+                            if (eventIds.indexOf(response.projectList[itemIdx].CalendarWrapList[j].Id) < 0) {
+                                evetList.push(response.projectList[itemIdx].CalendarWrapList[j]);
+                                eventIds.push(response.projectList[itemIdx].CalendarWrapList[j].Id);
+                            }
+
                         }
                     }
                 }
-                if (response.getReturnValue().calendarTaskList.length) {
-                    for (var itemIdx = 0; itemIdx < response.getReturnValue().calendarTaskList.length; itemIdx++) {
-                        if (response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList) {
-                            for (var j = 0; j < response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList.length; j++) {
-                                var weekName = response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['weekName'];
-                                if (weekName != null && weekName != undefined) {
-                                    var startDate = response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdate'];
-                                    var endDate = response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['enddate'];
-                                    var dayNames = component.get("v.dayNames");
-                                    response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3)//weekName.substring(0,3);
-                                }
-
-                                response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                                response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); // new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                                response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['colorName'] = projColors[itemIdx % 10];
-                                if (eventIds.indexOf(response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id) < 0) {
-                                    evetList.push(response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j]);
-                                    eventIds.push(response.getReturnValue().calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                component.set("v.eventList", evetList);
-                component.set("v.dateEventList", evetList);
-                component.set("v.standardEventList", evetList);
-                component.set("v.resourcesList", response.getReturnValue().calendarTaskList);
-                component.set("v.areExternalResource", response.getReturnValue().areExternalResource);
-                component.set("v.areInternalResource", response.getReturnValue().areInternalResource);
-
-                var contractResourceIdList = [];
-
-                document.getElementById('mycalendar').style.display = 'block';
-                document.getElementById('mycalendar2').style.display = 'none';
-
-                /*reset selected resource  */
-                document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
-                document.getElementById('resourceInitials').innerText = 'R';
-                document.getElementById('selectedContractResource').innerText = 'Resource';
-                document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
-
-                var calendarBuild = component.get("c.buildCalendar");
-                $A.enqueueAction(calendarBuild);
-                component.set("v.showSpinner", false);
-            } else {
-                component.set("v.showSpinner", false);
-                console.log('error', response.getError());
             }
+            if (response.calendarTaskList.length) {
+                for (var itemIdx = 0; itemIdx < response.calendarTaskList.length; itemIdx++) {
+                    if (response.calendarTaskList[itemIdx].ProjectTaskRecordsList) {
+                        for (var j = 0; j < response.calendarTaskList[itemIdx].ProjectTaskRecordsList.length; j++) {
+                            var weekName = response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['weekName'];
+                            if (weekName != null && weekName != undefined) {
+                                var startDate = response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdate'];
+                                var endDate = response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['enddate'];
+                                var dayNames = component.get("v.dayNames");
+                                response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3)//weekName.substring(0,3);
+                            }
+
+                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); // new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['colorName'] = projColors[itemIdx % 10];
+                            if (eventIds.indexOf(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id) < 0) {
+                                evetList.push(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]);
+                                eventIds.push(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id);
+                            }
+                        }
+                    }
+                }
+            }
+
+            component.set("v.eventList", evetList);
+            component.set("v.dateEventList", evetList);
+            component.set("v.standardEventList", evetList);
+            component.set("v.resourcesList", response.calendarTaskList);
+            component.set("v.areExternalResource", response.areExternalResource);
+            component.set("v.areInternalResource", response.areInternalResource);
+
+            document.getElementById('mycalendar').style.display = 'block';
+            document.getElementById('mycalendar2').style.display = 'none';
+
+            /*reset selected resource  */
+            document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+            document.getElementById('resourceInitials').innerText = 'R';
+            document.getElementById('selectedContractResource').innerText = 'Resource';
+            document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+
+            helper.buildCalendar(component, helper);
+            component.set("v.showSpinner", false);
+        })
+        .catch(error => {
+            component.set("v.showSpinner", false);
+            console.log('error', error);
         });
-        $A.enqueueAction(action);
     },
 
     setConflictData: function (component, event, helper) {
-        // resourceTasks
-
         var eventList = component.get("v.resourcesList");
         var weekDates = document.getElementsByClassName('monthly-list-item');
         var conflictTasks = [];
@@ -2059,6 +1982,7 @@
 
     handleAfterLoadscript: function (component, event, helper) {
         console.log("Script Loaded");
+        $A.enqueueAction(component.get("c.doInit"));
     }
 
 })
