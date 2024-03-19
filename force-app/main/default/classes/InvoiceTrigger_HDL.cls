@@ -128,8 +128,8 @@ public with sharing class InvoiceTrigger_HDL {
             Set<Id> BudgetLineToDELETESet = new Set<Id>();
             for(buildertek__Billings__c Sl : newInvoiceList){
                 if(Sl.buildertek__BT_Budget_Line__c == null && oldInvoiceMap.get(Sl.id).buildertek__BT_Budget_Line__c != null){
-                    String BlName = sl.Name + ' budget line';
-                    list<buildertek__Budget_Item__c> BLlist = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id =: oldInvoiceMap.get(Sl.id).buildertek__BT_Budget_Line__c AND Name =: BlName LIMIT 1];
+                    String BlName = '%'+sl.Name+'%';
+                    list<buildertek__Budget_Item__c> BLlist = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id =: oldInvoiceMap.get(Sl.id).buildertek__BT_Budget_Line__c AND Name LIKE :BlName LIMIT 1];
                     for(buildertek__Budget_Item__c bl : BLlist){
                         BudgetLineToDELETESet.add(bl.Id);
                         }

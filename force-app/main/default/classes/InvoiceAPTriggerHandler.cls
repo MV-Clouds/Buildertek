@@ -2,6 +2,7 @@ public class InvoiceAPTriggerHandler {
 
     public static Boolean isFirstTime = true;
     public static Boolean skipDeleteMethod = false;
+    // public static boolean skipInvoicePayableUpdate = false;
 
 
     public void OnAfterInsert(buildertek__Account_Payable_Clone__c[] invoiceList, Map<Id, buildertek__Account_Payable_Clone__c> invoiceNewMap){
@@ -33,7 +34,6 @@ public class InvoiceAPTriggerHandler {
     }
 
     public void OnAfterUpdate(buildertek__Account_Payable_Clone__c[] invoiceList, Map<Id, buildertek__Account_Payable_Clone__c> invoiceNewMap, Map<Id, buildertek__Account_Payable_Clone__c> invoiceOldMap){
-
         Set<Id> budgetIdSet = new Set<Id>();
         Set<Id> invoiceIds = new Set<Id>();
 
@@ -46,9 +46,8 @@ public class InvoiceAPTriggerHandler {
 
 
             //* Nishit suthar playground start
-            
-            if (invoice.buildertek__Budget__c != null) {
 
+            if (invoice.buildertek__Budget__c != null) {
                 //* covering scenario 1 here
                 if (invoice.buildertek__Budget__c != null && invoice.buildertek__Budget_Line__c == null && invoice.buildertek__Budget__c != oldInvoiceData.buildertek__Budget__c) {
                     AddBudgetLineItemOnPayableInvoice.createNewBudgetLineItem(invoice.Id);
@@ -56,7 +55,7 @@ public class InvoiceAPTriggerHandler {
 
                 //* covering scenario 1 a&b here
                 if (oldInvoiceData.buildertek__Budget_Line__c != invoice.buildertek__Budget_Line__c) {
-                    if (skipDeleteMethod) {
+                    if (!skipDeleteMethod) {
                         AddBudgetLineItemOnPayableInvoice.deleteBudgetItem(invoice.Id, oldInvoiceData.buildertek__Budget_Line__c);
                     }
                     AddBudgetLineItemOnPayableInvoice.updateBudgetLineSub(invoice.Id, invoice.buildertek__Budget__c, oldInvoiceData.buildertek__Budget_Line__c);
