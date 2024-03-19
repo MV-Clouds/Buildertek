@@ -307,6 +307,9 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
 
         schudleitemList = Database.query(Query);
+        System.debug('Query : ' + Query);
+        System.debug('************** schudleitemList size ************************* ' + schudleitemList.size());
+        System.debug('************** schudleitemList ************************* ' + schudleitemList);
 
         List<buildertek__Project_Task__c> tasksforalltypesearch2 = new List<buildertek__Project_Task__c>();
         String taskQuery3;
@@ -373,6 +376,8 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
         Map<String,List<buildertek__Project_Task__c>> ProjScheduleTaskMap = new Map<String,List<buildertek__Project_Task__c>>();
         List<String> projectIdList = new List<String>();
+        System.debug('schudleitemList size : ' + schudleitemList.size());
+        System.debug('schudleitemList : ' + schudleitemList);
         for(buildertek__Project_Task__c schItemTask : schudleitemList){
 
             if(schItemTask.buildertek__Schedule__r.buildertek__Project__c != null){
@@ -392,6 +397,10 @@ public without sharing class NewResourceScheduleDashnoardCls{
 
         //will get only schedule items of schedule that is linked to project
         projectRecordList = [Select Id,Name, buildertek__Customer__c,buildertek__Customer__r.Name From buildertek__Project__c WHERE ID IN: projectIdList];
+        System.debug('size of projectRecordList : ' + projectRecordList.size());
+        System.debug(' projectRecordList : ' + projectRecordList);
+        System.debug(' projectIdList : ' + projectIdList);
+
 
         Map<Id, string> tradeTypenamemap = new Map<Id, string>();
         Map<Id, string> contactAccountMap = new Map<Id, string>();
