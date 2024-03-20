@@ -46,6 +46,9 @@ public class InvoiceAPTriggerHandler {
 
 
             //* Nishit suthar playground start
+            if (invoice.buildertek__Budget__c == null && invoice.buildertek__Budget_Line__c == null && oldInvoiceData.buildertek__Budget__c != null && oldInvoiceData.buildertek__Budget_Line__c != null ) {
+                AddBudgetLineItemOnPayableInvoice.updateBudgetLineSub(invoice.Id, oldInvoiceData.buildertek__Budget__c, oldInvoiceData.buildertek__Budget_Line__c);
+            }
 
             if (invoice.buildertek__Budget__c != null) {
                 //* covering scenario 1 here
