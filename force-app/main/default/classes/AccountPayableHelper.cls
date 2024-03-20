@@ -299,8 +299,8 @@ public with sharing class AccountPayableHelper {
 
         for(buildertek__Account_Payable__c invoicePo : newInvoiceList){
             if(invoicePo.buildertek__BT_Budget_Line__c == null && oldInvoiceMap.get(invoicePo.id).buildertek__BT_Budget_Line__c != null){
-                String BlName = invoicePo.Name + ' budget line';
-                list<buildertek__Budget_Item__c> BLlist = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id =: oldInvoiceMap.get(invoicePo.id).buildertek__BT_Budget_Line__c AND Name =: BlName LIMIT 1];
+                String BlName = '%'+invoicePo.Name+'%';
+                list<buildertek__Budget_Item__c> BLlist = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id =: oldInvoiceMap.get(invoicePo.id).buildertek__BT_Budget_Line__c AND Name LIKE :BlName LIMIT 1];
                 for(buildertek__Budget_Item__c bl : BLlist){
                     BudgetLineToDELETESet.add(bl.Id);
                     }
