@@ -39,7 +39,9 @@
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
         for(var i = 0; i < timeSheetEntries.length; i++){
-            if(timeSheetEntries[i].Name == ''){
+            var timeSheetEntryName = timeSheetEntries[i].Name;
+            timeSheetEntryName = timeSheetEntryName.replace(/\s/g, '');
+            if(timeSheetEntries[i].Name == '' &&  timeSheetEntryName == ''){
                 component.set("v.Spinner", false);
                 isValid = false;
                 window.onload = showToast();        // Show  toast message on VF page --> Aura
@@ -51,6 +53,22 @@
                     });
                 }     
                 break;
+            }
+
+            if(timeSheetEntries[i].buildertek__Start_Date__c != '' && timeSheetEntries[i].buildertek__End_Date__c != ''){
+                if(timeSheetEntries[i].buildertek__Start_Date__c > timeSheetEntries[i].buildertek__End_Date__c){
+                    component.set("v.Spinner", false);
+                    isValid = false;
+                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Error!",
+                            "message": "Start Date should be less than End Date on row " + (i + 1),
+                            "type": "error"
+                        });
+                    }     
+                    break;
+                }
             }
         }
         if(isValid){
