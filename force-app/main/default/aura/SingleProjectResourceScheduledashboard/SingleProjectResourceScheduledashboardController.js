@@ -102,10 +102,10 @@
             }
 
             newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
-            newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
+            newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd");
+            console.log('component.get("v.project").Id ',component.get("v.project").Id);
 
-
-            helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+            helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), component.get("v.project").Name, component.get("v.searchResourceFilter"), component.get("v.allFilter"))
             .then(response => {
                 console.log('selectedResource response.getReturnValue()::', response);
                     component.set("v.showSpinner", false);
@@ -1558,9 +1558,10 @@
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
         console.log('ans 4--->', component.get("v.newSelectedProjectId"));
+        console.log('component.get("v.project").Id ',component.get("v.project").Id);
 
 
-        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), component.get("v.project").Name, component.get("v.searchResourceFilter"), component.get("v.allFilter"))
         .then(response => {
             console.log('doTaskResourceSearch response.getReturnValue()::', response);
                 component.set("v.showSpinner", true);
@@ -1629,6 +1630,7 @@
                 document.getElementById('selectedContractResource').innerText = 'Resource';
                 document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
 
+                helper.colorFullTasks(component, helper, response);
                 helper.buildCalendar(component, helper);
                 component.set("v.showSpinner", false);
         })
@@ -1663,8 +1665,9 @@
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
         console.log('ans 1--->', component.get("v.newSelectedProjectId"));
+        console.log('component.get("v.project").Id ',component.get("v.project").Id);
 
-        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), component.get("v.project").Name, component.get("v.searchResourceFilter"), component.get("v.allFilter"))
         .then(response => {
             console.log('doTaskAllFilterSearch response.getReturnValue()::', response);
             component.set("v.showSpinner", true);
