@@ -42,9 +42,7 @@
             var name = timeSheetEntries[i].Name;
             name = name.replace(/^\s+|\s+$/g, '');
 
-            var timeSheetEntryName = timeSheetEntries[i].Name;
-            timeSheetEntryName = timeSheetEntryName.replace(/\s/g, '');
-            if(timeSheetEntries[i].Name == '' &&  timeSheetEntryName == '' || timeSheetEntries[i].Name == undefined || timeSheetEntries[i].Name == null || name == '' || name == undefined || name == null){
+            if(timeSheetEntries[i].Name == '' || timeSheetEntries[i].Name == undefined || timeSheetEntries[i].Name == null || name == '' || name == undefined || name == null){
                 component.set("v.Spinner", false);
                 isValid = false;
                 window.onload = showToast();        // Show  toast message on VF page --> Aura
