@@ -39,7 +39,10 @@
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
         for(var i = 0; i < timeSheetEntries.length; i++){
-            if(timeSheetEntries[i].Name == ''){
+            var name = timeSheetEntries[i].Name;
+            name = name.replace(/^\s+|\s+$/g, '');
+
+            if(timeSheetEntries[i].Name == '' || timeSheetEntries[i].Name == undefined || timeSheetEntries[i].Name == null || name == '' || name == undefined || name == null){
                 component.set("v.Spinner", false);
                 isValid = false;
                 window.onload = showToast();        // Show  toast message on VF page --> Aura
@@ -52,8 +55,30 @@
                 }     
                 break;
             }
+
+            //start time <= end time
+            if(timeSheetEntries[i].buildertek__Start_Time__c != '' && timeSheetEntries[i].buildertek__Start_Time__c != undefined && timeSheetEntries[i].buildertek__Start_Time__c != null && timeSheetEntries[i].buildertek__End_Time__c != '' && timeSheetEntries[i].buildertek__End_Time__c != undefined && timeSheetEntries[i].buildertek__End_Time__c != null){
+                var startTime = new Date(timeSheetEntries[i].buildertek__Start_Time__c);
+                var endTime = new Date(timeSheetEntries[i].buildertek__End_Time__c);
+                console.log('startTime', startTime);
+                console.log('endTime', endTime);
+                if(startTime > endTime){
+                    component.set("v.Spinner", false);
+                    isValid = false;
+                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Error!",
+                            "message": "Start Time cannot be greater than End Time on row " + (i + 1),
+                            "type": "error"
+                        });
+                    }     
+                    break;
+                }
+            }
         }
         if(isValid){
+            debugger;
             helper.updateTimeSheetEntries(component, event, helper);
         }
     },
