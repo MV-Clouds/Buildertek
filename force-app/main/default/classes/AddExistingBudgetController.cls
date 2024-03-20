@@ -26,11 +26,11 @@ public with sharing class AddExistingBudgetController {
     }
     
     @AuraEnabled
-    public static ErrorMessages updateBudgetItemRecordMethod(buildertek__Budget_Item__c BudgetItems){
+    public static ErrorMessages updateBudgetItemRecordMethod(buildertek__Budget_Item__c BudgetItems, String recordId){
         ErrorMessages ErrorMessagesrecord = new ErrorMessages();
         try{
             system.debug('BudgetItems ***************' + BudgetItems);
-            string groupId;
+            String groupId;
             if(BudgetItems.buildertek__Budget_Line_Group__c == null){
                 List<buildertek__Quote_Line_Group__c> budgetGroup;
                 if(Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isAccessible()){
@@ -57,7 +57,13 @@ public with sharing class AddExistingBudgetController {
                 && Schema.sObjectType.buildertek__Budget_Item__c.fields.buildertek__Budget__c.isCreateable()
                 && Schema.sObjectType.buildertek__Budget_Item__c.fields.buildertek__Description__c.isCreateable()) {
                 
-                BudgetLineToInsert.Name = BudgetItems.buildertek__Description__c;
+                if (BudgetItems.buildertek__Description__c.length() > 80){
+                    BudgetLineToInsert.Name = BudgetItems.buildertek__Description__c.left(80);
+                    BudgetLineToInsert.buildertek__Description__c = BudgetItems.buildertek__Description__c;
+                } else{
+                    BudgetLineToInsert.Name = BudgetItems.buildertek__Description__c;
+                }
+                // BudgetLineToInsert.Name = BudgetItems.buildertek__Description__c;
                 BudgetLineToInsert.buildertek__Budget_Line_Group__c = groupId;
                 BudgetLineToInsert.buildertek__Unit_Price__c = BudgetItems.buildertek__Unit_Price__c;
                 BudgetLineToInsert.buildertek__Quantity__c = BudgetItems.buildertek__Quantity__c;
@@ -66,6 +72,15 @@ public with sharing class AddExistingBudgetController {
             }
             
             insert BudgetLineToInsert;
+
+            List<buildertek__Purchase_Order__c> PORecord = [SELECT Id, Name, buildertek__Budget__c, buildertek__Budget_Line__c FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
+            if (!PORecord.isEmpty()){
+
+                PORecord[0].buildertek__Budget__c = BudgetItems.buildertek__Budget__c;
+                PORecord[0].buildertek__Budget_Line__c = BudgetLineToInsert.Id;
+
+                update PORecord;
+            }
             ErrorMessagesrecord.status = 'Success';
             ErrorMessagesrecord.Message = 'Budget Item Inserted Successfully';
             
