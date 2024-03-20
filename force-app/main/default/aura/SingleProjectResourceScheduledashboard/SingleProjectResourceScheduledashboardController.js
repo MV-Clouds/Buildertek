@@ -28,10 +28,11 @@
             });
 
             action.setCallback(this, function (response) {
-                var state = response.getState();
                 if (response.getState() === 'SUCCESS') {
-                    component.set("v.newSelectedProjectId", response.getReturnValue());
-                    component.set("v.newSelectedProjectIdClone", response.getReturnValue());
+                    let result = JSON.parse(response.getReturnValue());
+                    component.set("v.project", result);
+                    component.set("v.newSelectedProjectId", result.Id);
+                    component.set("v.newSelectedProjectIdClone", result.Id);
                     helper.getTasksByProjects(component, helper, Datevalue);
                 } else {
                     helper.getTasksByProjects(component, helper, Datevalue);
@@ -47,109 +48,6 @@
 
     handleAfterLoad: function (component, event, helper) {
         helper.handleAfterScriptsLoaded(component, helper);
-    },
-
-    handleSelectedProject: function (component, event, helper) {
-
-        event.stopPropagation();
-        var toggleText = event.currentTarget;
-        var activeEle = document.getElementsByClassName('nav-link active')[0];
-
-        if (toggleText.classList.contains('active')) {
-            toggleText.classList.remove('active');
-            if (component.get("v.recordId") != '' && component.get("v.recordId") != undefined && component.get("v.recordId") != null) {
-                component.set("v.newSelectedProjectId", component.get("v.newSelectedProjectIdClone"));
-            } else {
-                component.set("v.newSelectedProjectId", "");
-            }
-            component.set("v.newContractResource", "");
-            component.set("v.selectedContractResourceIndex", -1);
-            component.set("v.showSpinner", true);
-            helper.getTasksByProjects(component, helper, component.get("v.dateval"));
-        } else {
-            if (activeEle) {
-                activeEle.classList.remove('active');
-            }
-            $A.util.toggleClass(toggleText, "active");
-            component.set("v.showSpinner", true);
-
-            if (event.currentTarget.dataset.projid) {
-                component.set("v.newSelectedProjectId", event.currentTarget.dataset.projid);
-                component.set("v.newSelectedProjectIdClone", event.currentTarget.dataset.projid);
-            } else {
-                component.set("v.newSelectedProjectId", "");
-            }
-
-            component.set("v.newContractResource", "");
-            component.set("v.selectedContractResourceIndex", "-1");
-            var todayDate = new Date(component.get("v.dateval"));
-            var newfromdate = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
-            var newtodate;
-            if (todayDate.getMonth() == 11) {
-                newtodate = new Date(todayDate.getFullYear() + 1, 0, 0);
-            } else {
-                newtodate = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0);
-            }
-
-            var newFromstr, newTostr;
-
-            newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
-            newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-            console.log('ans 2--->', component.get("v.newSelectedProjectId"));
-
-            helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
-            .then(function (response) {
-                console.log('response.getReturnValue()::', response);
-
-                var evetList = [];
-                var projColors = component.get("v.projectColors");
-                var resourceColor = component.get("v.resourceColors");
-                var projResColorMap = new Map();
-
-                for (var k = 0; k < response.calendarTaskList.length; k++) {
-                    if (response.calendarTaskList[k].ProjectTaskRecordsList) {
-                        for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
-                            var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
-                            var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
-                            if (weekName != null && weekName != undefined) {
-                                var dayNames = component.get("v.dayNames");
-                                response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
-                            }
-
-                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                            var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
-                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
-                            evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
-
-                        }
-                    }
-                }
-                component.set("v.eventList", evetList);
-                component.set("v.dateEventList", evetList);
-                component.set("v.standardEventList", evetList);
-                component.set("v.resourcesList", response.calendarTaskList);
-                component.set("v.areExternalResource", response.areExternalResource);
-                component.set("v.areInternalResource", response.areInternalResource);
-
-                document.getElementById('mycalendar').style.display = 'block';
-                document.getElementById('mycalendar2').style.display = 'none';
-
-                /*reset selected resource  */
-                document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
-                document.getElementById('resourceInitials').innerText = 'R';
-                document.getElementById('selectedContractResource').innerText = 'Resource';
-                document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
-
-                helper.buildCalendar(component, helper);
-            })
-            .catch(function (error) {
-                component.set("v.showSpinner", false);
-                console.log('error', error);
-            });
-        }
-
     },
 
     selectedResource: function (component, event, helper) {
@@ -1983,6 +1881,10 @@
     handleAfterLoadscript: function (component, event, helper) {
         console.log("Script Loaded");
         $A.enqueueAction(component.get("c.doInit"));
-    }
+    },
+
+    handleSelectedProject: function (component, event, helper) {
+        helper.handleSelectedProject(component, event, helper);
+    },
 
 })

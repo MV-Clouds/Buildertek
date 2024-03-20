@@ -32,7 +32,6 @@
 
 
     <lightning:workspaceAPI aura:id="workspace" />
-    <aura:handler event="aura:locationChange" action="{!c.destoryCmp}" />
 
     <aura:attribute name="recordId" type="String" access="public" />
     <aura:attribute name="selectedProjColor" type="String" default="" />
@@ -58,6 +57,10 @@
         default='["#E98FC3", "#8058D6", "#C3DD2E", "#FD6D00", "#6997FD", "#62D0CB", "#FFBC00","#3BBF65","#9CC4E8","#43A6EE","#BFCE80"]' />
 
     <aura:attribute name="isFirst" type="Boolean" />
+
+    <!--** object type for project **-->
+    <aura:attribute name="project" type="object" default="{}"/>
+
     <aura:attribute name="newSelectedProjectId" type="String" default="" />
     <aura:attribute name="newSelectedProjectIdClone" type="String" default="" />
     <aura:attribute name="newContractResource" type="String" default="" />
@@ -88,7 +91,7 @@
     <aura:attribute type="String" name="calendarView" default="Dayview" />
     <aura:attribute name="showSpinner" type="boolean" default="false" />
     <aura:attribute type="String" name="displayView" default="project" />
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <!-- <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> -->
     <aura:attribute name="type" type="String" default="info" />
     <aura:attribute name="color" type="String" default="white" />
     <aura:attribute name="index" type="String" default="" />
@@ -190,52 +193,22 @@
                     </a>
                     <div class="scrollarea">
                         <ul class="nav nav-pills flex-column mb-auto left-nav">
-                            <aura:if isTrue="{!v.projectList.length}">
-                                <aura:iteration items="{!v.projectList}" var="projectItem">
-                                    <li id="{!projectItem.projectRecId}">
-                                        <aura:if isTrue="{!projectItem.projectRecId == v.newSelectedProjectId}">
-                                            <a href="javascript:void(0);" class="nav-link active" aria-current="true"
-                                                onclick="{!c.handleSelectedProject}"
-                                                data-projid="{!projectItem.projectRecId}"
-                                                style="justify-content: space-between;">
-                                                <div
-                                                    style="display: flex; align-items: center;justify-content: space-between;">
-                                                    <div class="Proj_profile_name "
-                                                        style="margin-right:1rem !important"> <!-- prof_bg1 -->
-                                                        <i class="marColor far fa-building"></i>
-                                                    </div>
-                                                    <div class="lh-sm">
-                                                        <label>{!projectItem.projectRecName}</label>
-                                                        <span class="menu-sub-text">Account:
-                                                            {!projectItem.projectRecAccName}</span>
-                                                    </div>
+                            <aura:if isTrue="{!v.project.Id}">
+                                    <li id="{!v.project.Id}">
+                                        <a href="javascript:void(0);" class="nav-link active" aria-current="true" data-projid="{!v.project.Id}" style="justify-content: space-between;">
+                                            <div style="display: flex; align-items: center;justify-content: space-between;">
+                                                <div class="Proj_profile_name " style="margin-right:1rem !important"> <!-- prof_bg1 -->
+                                                    <i class="marColor far fa-building"></i>
                                                 </div>
-                                                <i class="fas fa-chevron-right ms-2"></i>
-                                            </a>
-                                            <aura:set attribute="else">
-                                                <a href="javascript:void(0);" class="nav-link" aria-current="true"
-                                                    onclick="{!c.handleSelectedProject}"
-                                                    data-projid="{!projectItem.projectRecId}"
-                                                    style="justify-content: space-between;">
-                                                    <div
-                                                        style="display: flex; align-items: center;justify-content: space-between;">
-                                                        <div class="Proj_profile_name "
-                                                            style="margin-right:1rem !important"> <!-- prof_bg1 -->
-                                                            <i class="far fa-building marColor"></i>
-                                                        </div>
-                                                        <div class="lh-sm">
-                                                            <label>{!projectItem.projectRecName}</label>
-                                                            <span class="menu-sub-text">Account:
-                                                                {!projectItem.projectRecAccName}</span>
-                                                        </div>
-                                                    </div>
-                                                    <i class="fas fa-chevron-right ms-2"></i>
-                                                </a>
-                                            </aura:set>
-                                        </aura:if>
-
+                                                <div class="lh-sm">
+                                                    <label>{!v.project.Name}</label>
+                                                    <span class="menu-sub-text">Account:
+                                                        {!v.project.AccountName}</span>
+                                                </div>
+                                            </div>
+                                            <i class="fas fa-chevron-right ms-2"></i>
+                                        </a>
                                     </li>
-                                </aura:iteration>
                                 <aura:set attribute="else">
                                     No Projects Found
                                 </aura:set>
@@ -258,13 +231,8 @@
                             <aura:if isTrue="{!v.areExternalResource}">
                                 <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
                                     <aura:if isTrue="{!resourceListItem.resourceType == 'external'}">
-                                        <aura:if
-                                            isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
-                                            <a href="javascript:void(0);"
-                                                class="list-group-item list-group-item-action py-2 lh-tight activeResource"
-                                                aria-current="true" onclick="{!c.selectedResource}"
-                                                data-contractresourceid="{!resourceListItem.ContractresourceId}"
-                                                data-resourceindex="{!idx}">
+                                        <aura:if isTrue="{!resourceListItem.ContractresourceId == v.newContractResource}">
+                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight activeResource" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}" data-resourceindex="{!idx}">
                                                 <div class="d-flex w-100 align-items-center">
                                                     <div class="profile_name me-3">
                                                         <span
@@ -280,22 +248,15 @@
                                                 </div>
                                             </a>
                                             <aura:set attribute="else">
-                                                <a href="javascript:void(0);"
-                                                    class="list-group-item list-group-item-action py-2 lh-tight"
-                                                    aria-current="true" onclick="{!c.selectedResource}"
-                                                    data-contractresourceid="{!resourceListItem.ContractresourceId}"
-                                                    data-resourceindex="{!idx}">
+                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}" data-resourceindex="{!idx}">
                                                     <div class="d-flex w-100 align-items-center">
                                                         <div class="profile_name me-3"> <!-- prof_bg1 -->
-                                                            <span
-                                                                style="width:5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                            <span style="width:5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
                                                         <div>
-                                                            <strong
-                                                                class="mb-1">{!resourceListItem.ContractresourceName}</strong>
+                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                             <br />
-                                                            <small>{!resourceListItem.Companyname} -
-                                                                {!resourceListItem.TradeType}</small>
+                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -321,35 +282,25 @@
                                                 data-resourceindex="{!idx}">
                                                 <div class="d-flex w-100 align-items-center">
                                                     <div class="profile_name me-3">
-                                                        <span
-                                                            style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                        <span style="width: 5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                     </div>
                                                     <div>
-                                                        <strong
-                                                            class="mb-1">{!resourceListItem.ContractresourceName}</strong>
+                                                        <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                         <br />
-                                                        <small>{!resourceListItem.Companyname} -
-                                                            {!resourceListItem.TradeType}</small>
+                                                        <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                     </div>
                                                 </div>
                                             </a>
                                             <aura:set attribute="else">
-                                                <a href="javascript:void(0);"
-                                                    class="list-group-item list-group-item-action py-2 lh-tight"
-                                                    aria-current="true" onclick="{!c.selectedResource}"
-                                                    data-contractresourceid="{!resourceListItem.ContractresourceId}"
-                                                    data-resourceindex="{!idx}">
+                                                <a href="javascript:void(0);" class="list-group-item list-group-item-action py-2 lh-tight" aria-current="true" onclick="{!c.selectedResource}" data-contractresourceid="{!resourceListItem.ContractresourceId}" data-resourceindex="{!idx}">
                                                     <div class="d-flex w-100 align-items-center">
                                                         <div class="profile_name me-3"> <!-- prof_bg1 -->
-                                                            <span
-                                                                style="width:5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
+                                                            <span style="width:5rem;text-align: center;">{!resourceListItem.FirstLetterofContractresourceName}</span>
                                                         </div>
                                                         <div>
-                                                            <strong
-                                                                class="mb-1">{!resourceListItem.ContractresourceName}</strong>
+                                                            <strong class="mb-1">{!resourceListItem.ContractresourceName}</strong>
                                                             <br />
-                                                            <small>{!resourceListItem.Companyname} -
-                                                                {!resourceListItem.TradeType}</small>
+                                                            <small>{!resourceListItem.Companyname} - {!resourceListItem.TradeType}</small>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -375,22 +326,10 @@
                             <div class="input-group pt-1">
                                 <input type="text" class="form-control brd-r-0"
                                     aria-label="Dollar amount (with dot and two decimal places)"
-                                    placeholder="Search by Project, Trade Type, Resource"
+                                    placeholder="Search by Trade Type, Resource"
                                     onchange="{!c.FilterTradeTypeTasks}" />
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                             </div>
-                        </div>
-                        <div class="col-md-6 col-xl-5 col-xxl-4 text-end">
-                            <ul class="cal_tabs">
-                                <li>
-                                    <a class="calendarView active" href="javascript:void(0);"
-                                        onclick="{!c.standardViewCalendar}">Standard</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="calendarView"
-                                        onclick="{!c.conflictsViewCalendar}">Conflicts</a>
-                                </li>
-                            </ul>
                         </div>
                     </div>
 

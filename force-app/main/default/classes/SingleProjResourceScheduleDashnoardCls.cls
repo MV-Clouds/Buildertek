@@ -1,8 +1,18 @@
 public with sharing class SingleProjResourceScheduleDashnoardCls {
     @AuraEnabled
-    public static string getProjectId(string scheduleId){
-        List<buildertek__Schedule__c> schdelelist = [select id,buildertek__Project__c from buildertek__Schedule__c where id=:scheduleId];
-        return schdelelist[0].buildertek__Project__c;
+    public static String getProjectId(string scheduleId){
+        List<buildertek__Schedule__c> schdelelist = [select id,buildertek__Project__c, buildertek__Project__r.Name, buildertek__Project__r.buildertek__Customer__r.name from buildertek__Schedule__c  where id=:scheduleId];
+        projectWrapper prj = new projectWrapper();
+
+        if (schdelelist.size() > 0){
+            prj.Id = schdelelist[0].buildertek__Project__c;
+            prj.Name = schdelelist[0].buildertek__Project__r.Name;
+            prj.AccountName = schdelelist[0].buildertek__Project__r.buildertek__Customer__r.name;
+        }
+
+        String result = JSON.serialize(prj);
+        System.debug('result : '+result);
+        return result;
     }
 
     @AuraEnabled
@@ -1022,5 +1032,12 @@ public with sharing class SingleProjResourceScheduleDashnoardCls {
 
         @AuraEnabled
         public Boolean areInternalResource{ get; set; }
+    }
+
+    public class projectWrapper{
+        @AuraEnabled
+        public String Id { get; set; }
+        public String Name { get; set; }
+        public String AccountName { get; set; }
     }
 }

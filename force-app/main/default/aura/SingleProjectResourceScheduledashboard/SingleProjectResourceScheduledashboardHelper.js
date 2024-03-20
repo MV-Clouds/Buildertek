@@ -213,7 +213,6 @@
     getTasksByProjects : function(component,helper,Datevalue){
         component.set("v.showSpinner", true);
         var today = new Date(Datevalue);
-        var actionCal = component.get("c.getScheduleItemsByProject");
         var newfromdate = new Date(today.getFullYear(), today.getMonth(),1);
 
         var newtodate;
@@ -227,9 +226,6 @@
 
         newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
         newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
-
-        console.log('currentWeekDates from ========> ' ,newFromstr);
-        console.log('currentWeekDates to ========> ',newTostr);
 
         helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
         .then(response => {
@@ -252,13 +248,12 @@
                     response.projectList[itemIdx].CalendarWrapList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
                     response.projectList[itemIdx].CalendarWrapList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
                     response.projectList[itemIdx].CalendarWrapList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); //new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                    response.projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx%10];
+                    response.projectList[itemIdx].CalendarWrapList[j]['colorName'] = projColors[itemIdx % 10];
                     if(!projColorMap.has(response.projectList[itemIdx].CalendarWrapList[j]['projectId'])){
                         projColorMap.set(response.projectList[itemIdx].CalendarWrapList[j]['projectId'],projColors[itemIdx%10]);
                     }
                     evetList.push(response.projectList[itemIdx].CalendarWrapList[j]);
                 }
-
             }
             component.set("v.eventList", evetList);
             component.set("v.dateEventList",evetList);
@@ -283,7 +278,6 @@
 
             var monthlyArray = [];
 
-            var baseURL = component.get("v.BaseURLs");
             for(var i=0; i<evetList.length; i++){
                 var task = evetList[i];
                 console.log('task : ', task);
@@ -407,19 +401,15 @@
 
             // Changes for BUIL-3936
             // To set yellow circle on selected date;
-            var selectDate = new Date(component.get("v.startDt"));
             var seletedDateClass = 'dateV'+today.getFullYear() +'-'+ String(today.getMonth() + 1).padStart(2,'0')+ '-' + String(today.getDate() -1).padStart(2,'0');
-            console.log('selected date : ', seletedDateClass);
-
             var monthDate = document.getElementsByClassName('m-d monthly-day monthly-day-event');
-            console.log('monthDate.length : ', monthDate.length);
+
             if(monthDate.length){
                 for(var i=0; i<monthDate.length; i++){
                     if(monthDate[i].classList.contains(seletedDateClass)){
                         var numberDiv = monthDate[i].querySelector('.monthly-day-number');
                         if(!numberDiv.classList.contains('selected-Date') && !monthDate[i].classList.contains('monthly-today')){
                             numberDiv.classList.add('selected-Date');
-                            console.log(`monthDate ${[i]} : `, monthDate[i].classList);
                         }
                     }
                     else{
@@ -429,6 +419,48 @@
                     }
                 }
             }
+
+
+            var evetList = [];
+            var resourceColor = component.get("v.resourceColors");
+
+            for (var k = 0; k < response.calendarTaskList.length; k++) {
+                if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                    for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                        var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                        var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                        if (weekName != null && weekName != undefined) {
+                            var dayNames = component.get("v.dayNames");
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                        }
+
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                        var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
+                        evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
+
+                    }
+                }
+            }
+            component.set("v.eventList", evetList);
+            component.set("v.dateEventList", evetList);
+            component.set("v.standardEventList", evetList);
+            component.set("v.resourcesList", response.calendarTaskList);
+            component.set("v.areExternalResource", response.areExternalResource);
+            component.set("v.areInternalResource", response.areInternalResource);
+
+            document.getElementById('mycalendar').style.display = 'block';
+            document.getElementById('mycalendar2').style.display = 'none';
+
+            /*reset selected resource  */
+            document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+            document.getElementById('resourceInitials').innerText = 'R';
+            document.getElementById('selectedContractResource').innerText = 'Resource';
+            document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+
+            helper.buildCalendar(component, helper);
 
             component.set("v.showSpinner", false);
             component.resetEventListeners();
@@ -508,7 +540,6 @@
                 showAnim: 'fold',
                     onSelect: function(dateText, inst) {
                         // Handle the selected date
-                        console.log('Selected date:', dateText);
                         component.set("v.startDt" ,dateText);
                         $(`#datepickerPlaceholder`).hide();
                         helper.handleSaveDates(component,event,helper);
@@ -521,15 +552,93 @@
                 component.set("v.isDatePickerLoaded", true);
             }
 
-            // Toggle the visibility of the date picker
-            console.log('is date picker visible :  ', $(`#datepickerPlaceholder`).is(":visible"));
-
             $(`#datepickerPlaceholder`).toggle();
             component.set("v.isBackShadow", $(`#datepickerPlaceholder`).is(":visible"));
         } catch (error) {
             console.log('error in  openDatePickerHelper : ', error.stack);
 
         }
+    },
+
+    handleSelectedProject: function (component, event, helper) {
+
+        event.stopPropagation();
+        component.set("v.showSpinner", true);
+
+        if (event.currentTarget.dataset.projid) {
+            component.set("v.newSelectedProjectId", event.currentTarget.dataset.projid);
+            component.set("v.newSelectedProjectIdClone", event.currentTarget.dataset.projid);
+        } else {
+            component.set("v.newSelectedProjectId", "");
+        }
+
+        component.set("v.newContractResource", "");
+        component.set("v.selectedContractResourceIndex", "-1");
+        var todayDate = new Date(component.get("v.dateval"));
+        var newfromdate = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
+        var newtodate;
+        if (todayDate.getMonth() == 11) {
+            newtodate = new Date(todayDate.getFullYear() + 1, 0, 0);
+        } else {
+            newtodate = new Date(todayDate.getFullYear(), todayDate.getMonth() + 1, 0);
+        }
+
+        var newFromstr, newTostr;
+
+        newFromstr = $A.localizationService.formatDate(newfromdate, "yyyy-MM-dd");
+        newTostr = $A.localizationService.formatDate(newtodate, "yyyy-MM-dd")
+        console.log('ans 2--->', component.get("v.newSelectedProjectId"));
+
+        helper.getScheduleItems(component, newFromstr, newTostr, component.get("v.selectedTradetype").Id, component.get("v.newSelectedProjectId"), component.get("v.newContractResource"), '', component.get("v.searchResourceFilter"), component.get("v.allFilter"))
+        .then(function (response) {
+            console.log('response.getReturnValue()::', response);
+
+            var evetList = [];
+            var resourceColor = component.get("v.resourceColors");
+
+            for (var k = 0; k < response.calendarTaskList.length; k++) {
+                if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                    for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                        var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                        var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                        if (weekName != null && weekName != undefined) {
+                            var dayNames = component.get("v.dayNames");
+                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                        }
+
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                        var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
+                        evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
+
+                    }
+                }
+            }
+            component.set("v.eventList", evetList);
+            component.set("v.dateEventList", evetList);
+            component.set("v.standardEventList", evetList);
+            component.set("v.resourcesList", response.calendarTaskList);
+            component.set("v.areExternalResource", response.areExternalResource);
+            component.set("v.areInternalResource", response.areInternalResource);
+
+            document.getElementById('mycalendar').style.display = 'block';
+            document.getElementById('mycalendar2').style.display = 'none';
+
+            /*reset selected resource  */
+            document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+            document.getElementById('resourceInitials').innerText = 'R';
+            document.getElementById('selectedContractResource').innerText = 'Resource';
+            document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+
+            helper.buildCalendar(component, helper);
+        })
+        .catch(function (error) {
+            component.set("v.showSpinner", false);
+            console.log('error', error);
+        });
+
     },
 
     getScheduleItems: function(component, fromDate, toDate, slectedTradetypeId, slectedprojectId, slectedcontactId, projectSearch, resourceSearch, alltypeSearch) {
