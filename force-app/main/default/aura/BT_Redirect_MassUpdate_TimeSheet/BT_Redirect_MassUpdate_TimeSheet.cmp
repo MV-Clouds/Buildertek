@@ -1,0 +1,13 @@
+<aura:component controller="BT_MassUpdate_TimeSheet"  implements="force:appHostable,lightning:isUrlAddressable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
+    <aura:attribute name="recordId" type="String" />
+	<aura:html tag="style">
+        .slds-modal__content {
+        display:none;
+        }   
+        .modal-container.slds-modal__container{
+        display:none;
+        }
+    </aura:html>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:workspaceAPI aura:id="workspace" />
+</aura:component>
