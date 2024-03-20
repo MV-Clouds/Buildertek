@@ -342,8 +342,7 @@
                                     </div>
                                     <div>
                                         <strong class="mb-1" id="selectedContractResource">Resource</strong> <br />
-                                        <small class="text-black-50" id="selectedContractResourceTradeType">Trade
-                                            Type</small>
+                                        <small class="text-black-50" id="selectedContractResourceTradeType">Trade Type</small>
                                     </div>
                                 </div>
                             </div>

@@ -81,7 +81,7 @@
             document.getElementById('profileBgSymbol').className = "profile_name me-3 " + profileSymbol;
             document.getElementById('resourceInitials').innerText = resources[resourceIndex].FirstLetterofContractresourceName;
             document.getElementById('selectedContractResource').innerText = resources[resourceIndex].ContractresourceName;
-            document.getElementById('selectedContractResourceTradeType').innerText = resources[resourceIndex].TradeType;
+            document.getElementById('selectedContractResourceTradeType').innerText = resources[resourceIndex].TradeType ? resources[resourceIndex].TradeType : 'None';
 
             var todayDate = new Date(component.get("v.dateval"));
             var newfromdate = new Date(todayDate.getFullYear(), todayDate.getMonth(), 1);
@@ -1530,7 +1530,6 @@
     },
 
     FilterTradeTypeTasks: function (component, event, helper) {
-        console.log(event.target.value);
         component.set("v.allFilter", event.target.value);
     },
 
@@ -1717,7 +1716,7 @@
                             response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
                             response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(startDate)), 'MM-dd-yyyy');//new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(startDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
                             response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(new Date(Date.parse(endDate)), 'MM-dd-yyyy'); // new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+(new Date(Date.parse(endDate)).getMonth()+1).toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['colorName'] = projColors[itemIdx % 10];
+                            response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]['colorName'] = resourceColors[itemIdx % 10];
                             if (eventIds.indexOf(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id) < 0) {
                                 evetList.push(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j]);
                                 eventIds.push(response.calendarTaskList[itemIdx].ProjectTaskRecordsList[j].Id);
@@ -1743,6 +1742,7 @@
             document.getElementById('selectedContractResource').innerText = 'Resource';
             document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
 
+            helper.colorFullTasks(component, helper, response);
             helper.buildCalendar(component, helper);
             component.set("v.showSpinner", false);
         })

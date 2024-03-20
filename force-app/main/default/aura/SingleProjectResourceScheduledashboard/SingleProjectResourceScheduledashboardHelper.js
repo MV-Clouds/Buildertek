@@ -421,45 +421,7 @@
             }
 
 
-            var evetList = [];
-            var resourceColor = component.get("v.resourceColors");
-
-            for (var k = 0; k < response.calendarTaskList.length; k++) {
-                if (response.calendarTaskList[k].ProjectTaskRecordsList) {
-                    for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
-                        var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
-                        var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
-                        if (weekName != null && weekName != undefined) {
-                            var dayNames = component.get("v.dayNames");
-                            response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
-                        }
-
-                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
-                        var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
-                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
-                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
-                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
-                        evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
-
-                    }
-                }
-            }
-            component.set("v.eventList", evetList);
-            component.set("v.dateEventList", evetList);
-            component.set("v.standardEventList", evetList);
-            component.set("v.resourcesList", response.calendarTaskList);
-            component.set("v.areExternalResource", response.areExternalResource);
-            component.set("v.areInternalResource", response.areInternalResource);
-
-            document.getElementById('mycalendar').style.display = 'block';
-            document.getElementById('mycalendar2').style.display = 'none';
-
-            /*reset selected resource  */
-            document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
-            document.getElementById('resourceInitials').innerText = 'R';
-            document.getElementById('selectedContractResource').innerText = 'Resource';
-            document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
-
+            helper.colorFullTasks(component, helper, response);
             helper.buildCalendar(component, helper);
 
             component.set("v.showSpinner", false);
@@ -671,6 +633,46 @@
 
             $A.enqueueAction(action);
         });
-    }
+    },
+
+    colorFullTasks: function(component, helper, response) {
+        var evetList = [];
+        var resourceColor = component.get("v.resourceColors");
+
+        for (var k = 0; k < response.calendarTaskList.length; k++) {
+            if (response.calendarTaskList[k].ProjectTaskRecordsList) {
+                for (var j = 0; j < response.calendarTaskList[k].ProjectTaskRecordsList.length; j++) {
+                    var weekName = response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekName'];
+                    var startDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdate'];
+                    if (weekName != null && weekName != undefined) {
+                        var dayNames = component.get("v.dayNames");
+                        response.calendarTaskList[k].ProjectTaskRecordsList[j]['weekSubStr'] = dayNames[new Date(Date.parse(startDate)).getDay()].substring(0, 3); //weekName.substring(0,3);
+                    }
+
+                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateNum'] = new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0");
+                    var endDate = response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddate'];
+                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['startdateFormatted'] = $A.localizationService.formatDate(startDate, 'MM-dd-yyyy');// new Date(Date.parse(startDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(startDate)).getFullYear();
+                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['enddateFormatted'] = $A.localizationService.formatDate(endDate, 'MM-dd-yyyy');//new Date(Date.parse(endDate)).getDate().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getMonth().toString().padStart(2, "0")+'-'+new Date(Date.parse(endDate)).getFullYear();
+                    response.calendarTaskList[k].ProjectTaskRecordsList[j]['colorName'] = resourceColor[k % 10];
+                    evetList.push(response.calendarTaskList[k].ProjectTaskRecordsList[j]);
+                }
+            }
+        }
+        component.set("v.eventList", evetList);
+        component.set("v.dateEventList", evetList);
+        component.set("v.standardEventList", evetList);
+        component.set("v.resourcesList", response.calendarTaskList);
+        component.set("v.areExternalResource", response.areExternalResource);
+        component.set("v.areInternalResource", response.areInternalResource);
+
+        document.getElementById('mycalendar').style.display = 'block';
+        document.getElementById('mycalendar2').style.display = 'none';
+
+        /*reset selected resource  */
+        document.getElementById('profileBgSymbol').className = "profile_name me-3 prof_bg2";
+        document.getElementById('resourceInitials').innerText = 'R';
+        document.getElementById('selectedContractResource').innerText = 'Resource';
+        document.getElementById('selectedContractResourceTradeType').innerText = 'Trade Type';
+    },
 
 })
