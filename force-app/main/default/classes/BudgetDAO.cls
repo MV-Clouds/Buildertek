@@ -2320,6 +2320,50 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return response;
     }
 
+    @AuraEnabled
+    public static string updateContractorInvoicePrice(String recordId, String budgeLineIds){
+        List<String> strList = budgeLineIds.split(',');
+        List<String> strRecordId = recordId.split(',');
+
+        String response;
+        if (strRecordId.size() > 0) {
+            try {
+                List<buildertek__Account_Payable__c> invoiceAPList =  [SELECT Id, Name, buildertek__Net_Amount__c, buildertek__Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__Account_Payable__c WHERE Id =:strRecordId];
+                buildertek__Budget_Item__c budgetItem = [SELECT Id, Name, buildertek__Invoice_PO__c, buildertek__Budget__c FROM buildertek__Budget_Item__c WHERE Id IN :strList LIMIT 1];
+                List<buildertek__Account_Payable__c> updateInvoiceAPList = new  List<buildertek__Account_Payable__c>();
+                Decimal Value = 0;
+
+                if (strList.size() > 0) {
+                    for(buildertek__Account_Payable__c invoiceAp: invoiceAPList){
+                        invoiceAP.buildertek__Budget__c = budgetItem.buildertek__Budget__c;
+                        invoiceAP.buildertek__BT_Budget_Line__c = budgetItem.Id;
+                        Value += invoiceAP.buildertek__Net_Amount__c;
+
+                        updateInvoiceAPList.add(invoiceAP);
+                    }
+                    update updateInvoiceAPList;
+
+                    if(budgetItem.buildertek__Invoice_PO__c != null){
+                        budgetItem.buildertek__Invoice_PO__c += Value;
+
+                    }else{
+                        budgetItem.buildertek__Invoice_PO__c = Value;
+                    }
+
+                    update budgetItem;
+                }
+
+                response = 'Success';
+            } catch (Exception e) {
+                throw new AuraHandledException(e.getMessage());
+                response = 'Error';
+            }
+        }else{
+            response = 'null';
+        }
+        return response;
+    }
+
     public class BudgetDataTableWrapper{
         @AuraEnabled
         public Integer pageSize{ get; set; }
