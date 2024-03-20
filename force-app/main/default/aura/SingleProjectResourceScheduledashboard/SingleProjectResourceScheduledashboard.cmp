@@ -60,6 +60,8 @@
 
     <!--** object type for project **-->
     <aura:attribute name="project" type="object" default="{}"/>
+    <aura:attribute name="isDisable" type="Boolean" />
+
 
     <aura:attribute name="newSelectedProjectId" type="String" default="" />
     <aura:attribute name="newSelectedProjectIdClone" type="String" default="" />
@@ -221,12 +223,12 @@
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                         <input type="text" class="form-control brd-l-0"
                             aria-label="Dollar amount (with dot and two decimal places)" placeholder="Search Name"
-                            onchange="{!c.FilterResourceTasks}" />
+                            onchange="{!c.FilterResourceTasks}" disabled="{!v.isDisable}"/>
                     </div>
                     <div class="list-group list-group-flush scrollarea p-2 pt-0">
                         <aura:if isTrue="{!v.resourcesList.length}">
                             <!-- External Reosurces View -->
-                            <div class="resourceHeader" style="margin-block: 0rem 0.25rem;"> External Resources</div>
+                            <div class="resourceHeader" style="margin-block: 0rem 0.25rem;"> {!v.isDisable} External Resources</div>
                             <aura:if isTrue="{!v.areExternalResource}">
                                 <aura:iteration items="{!v.resourcesList}" var="resourceListItem" indexVar="idx">
                                     <aura:if isTrue="{!resourceListItem.resourceType == 'external'}">
@@ -326,7 +328,7 @@
                                 <input type="text" class="form-control brd-r-0"
                                     aria-label="Dollar amount (with dot and two decimal places)"
                                     placeholder="Search by Trade Type, Resource"
-                                    onchange="{!c.FilterTradeTypeTasks}" />
+                                    onchange="{!c.FilterTradeTypeTasks}" disabled="{!v.isDisable}" />
                                 <span class="input-group-text"><i class="fas fa-search"></i></span>
                             </div>
                         </div>

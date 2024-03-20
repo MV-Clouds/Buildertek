@@ -29,13 +29,20 @@
 
             action.setCallback(this, function (response) {
                 if (response.getState() === 'SUCCESS') {
+                    debugger
                     let result = JSON.parse(response.getReturnValue());
-                    component.set("v.project", result);
-                    component.set("v.newSelectedProjectId", result.Id);
-                    component.set("v.newSelectedProjectIdClone", result.Id);
-                    helper.getTasksByProjects(component, helper, Datevalue);
+                    if (result.Id != undefined && result.Id != null) {
+                        component.set("v.project", result);
+                        component.set("v.newSelectedProjectId", result.Id);
+                        component.set("v.newSelectedProjectIdClone", result.Id);
+                        component.set("v.isDisable", false);
+                        helper.getTasksByProjects(component, helper, Datevalue);
+                    } else {
+                        component.set("v.isDisable", true);
+                    }
                 } else {
-                    helper.getTasksByProjects(component, helper, Datevalue);
+                    component.set("v.isDisable", true);
+                    // helper.getTasksByProjects(component, helper, Datevalue);
                 }
             });
             $A.enqueueAction(action);
