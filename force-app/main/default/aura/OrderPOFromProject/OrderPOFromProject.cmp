@@ -1,41 +1,41 @@
 <aura:component controller="OrderPOFromProjectController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global" >
     <aura:attribute name="masterBudgetsList" type="object" />
-    
+
     <aura:attribute name="searchItemFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchItemFilter}" action="{!c.doSearch}" />
-    
+
     <aura:attribute name="searchProductFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchProductFilter}" action="{!c.doSearch}" />
 
     <aura:attribute name="searchDescriptionFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchDescriptionFilter}" action="{!c.doSearch}" />
-    
+
     <aura:attribute name="searchPermitFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchPermitFilter}" action="{!c.doSearch}" />
 
     <aura:attribute name="searchTradeTypeFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchTradeTypeFilter}" action="{!c.doSearch}" />
-    
+
     <aura:attribute name="searchProjectFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchProjectFilter}" action="{!c.doSearch}" />
 
     <aura:attribute name="searchStatusFilter" type="String" default="" />
     <aura:handler name="change" value="{!v.searchStatusFilter}" action="{!c.doSearch}" />
-    
+
     <aura:attribute name="isSave" type="Boolean" default = "false"/>
     <aura:attribute name="isSelected" type="Boolean" default = "true"/>
-    
+
      <aura:attribute name="isNextDisable" type="Boolean" default = "false"/>
-    
+
     <aura:attribute name="UnitCostValue" type="Integer" />
-    
-    
+
+
     <lightning:workspaceAPI aura:id="workspace"/>
     <aura:attribute name="Spinner" type="Boolean" />
     <aura:attribute name="Spinner2" type="Boolean" />
     <aura:attribute name="showMessage" type="Boolean" default="false" />
-    <aura:attribute name="selectedobjInfo" type="list"   /> 
-    <!-- Attribute Declration For Pagination --> 
+    <aura:attribute name="selectedobjInfo" type="list"   />
+    <!-- Attribute Declration For Pagination -->
     <aura:attribute name="PaginationList" type="Object"/>
     <aura:attribute name="PageNumber" type="integer" default="1"/>
     <aura:attribute name="TotalPages" type="integer" default="0"/>
@@ -62,9 +62,9 @@
     <aura:attribute name="totalRemainingAmount" type="decimal" default="0"/>
     <aura:attribute name="orderedPercent" type="decimal" default="0"/>
     <aura:attribute name="paidPercent" type="decimal" default="0"/>
-    
+
     <aura:attribute name="enableMassUpdate" type="Boolean" />
-    
+
     <!--  Attributes for Header Details   -->
     <!--   Attributes to attach documents  Start   -->
     <aura:attribute name="fileData2" type="List" access="global"/>
@@ -75,22 +75,22 @@
     <aura:attribute name="orgCurr" type="string" />
 
     <aura:attribute name="disableOrder" type="Boolean" default="false" />
-    
-    
+
+
     <!--   Attributes to attach documents  End   -->
-    <aura:handler name="init" value="{!this}" action="{!c.doInit}" /> 
-    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> 
-    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+
     <aura:attribute name="isExpanded" type="Boolean" default = "false"/>
-    
-    
-    
+
+
+
     <div style = "position : sticky; top:5.6rem; background : white; z-index : 1">
 
         <div class="slds-modal__header" style="font-size:17px;">
             <div class="slds-p-around_xx-small">
                 <lightning:layout multipleRows="true" class="leftClass">
-                    
+
                     <lightning:layoutItem size="5">
                         <table>
                             <tbody>
@@ -112,7 +112,7 @@
                             </tbody>
                         </table>
                     </lightning:layoutItem>
-                    
+
                     <!-- <lightning:layoutItem size="4"> </lightning:layoutItem> -->
 
                     <lightning:layoutItem size="7" class="rightClass">
@@ -136,17 +136,17 @@
                             </tbody>
                         </table>
                     </lightning:layoutItem>
-                    
+
                 </lightning:layout>
             </div>
         </div>
 
         <lightning:layout multipleRows="true" class="searchbarList">
-     
+
             <lightning:layoutItem padding="around-small" size="2">
                 <lightning:input autocomplete="off" type="search" placeholder="Purchase Order" variant="label-hidden" value="{!v.searchItemFilter}" />
             </lightning:layoutItem>
-            
+
             <lightning:layoutItem padding="around-small" size="2">
                 <lightning:input autocomplete="off" type="search" placeholder="Product Code" variant="label-hidden" value="{!v.searchProductFilter}" />
             </lightning:layoutItem>
@@ -162,26 +162,26 @@
             <lightning:layoutItem padding="around-small" size="2">
                 <lightning:input autocomplete="off" type="search" placeholder="Trade Type" variant="label-hidden" value="{!v.searchTradeTypeFilter}" />
             </lightning:layoutItem>
-            
+
             <lightning:layoutItem padding="around-small" size="2">
                 <lightning:input autocomplete="off" type="search" placeholder="Vendor" variant="label-hidden" value="{!v.searchProjectFilter}" />
             </lightning:layoutItem>
 
         </lightning:layout>
-        
-        
-        
+
+
+
         <div style = "text-align:right;margin-right:8px;">
-            
+
             <lightning:layout multipleRows="true">
-                
+
                 <lightning:layoutItem padding="around-small" size="2">
                     <div style = "text-align:left">
                     <lightning:icon class = "Mainexpand-icon" size="x-small" onclick="{!c.maintoggle}"  iconName="{!v.isExpanded?'utility:chevrondown':'utility:chevronright'}" />
                     </div>
                 </lightning:layoutItem>
-                
-                <lightning:layoutItem padding="around-small" size="10">  
+
+                <lightning:layoutItem padding="around-small" size="10">
 
                     <aura:if isTrue="{!v.enableMassUpdate}">
                         <span style = "display:inline-block; font-weight: 900">
@@ -205,22 +205,22 @@
 
                     <button style="margin-left:10px; width:100px;" class="slds-button slds-button--brand" onclick="{!c.orderPO}" disabled="{!v.isdisabled}"> Order</button>
 
-                 </lightning:layoutItem>  
+                 </lightning:layoutItem>
 
             </lightning:layout>
         </div>
-        
+
     </div>
-    
+
     <div class="slds-modal__content slds-p-around_xx-small">
         <div class="slds slds-scope">
             <table class="slds-table slds-table_bordered " role="grid">
                 <thead>
                     <tr class="slds-text-title_caps">
-                        
+
                         <th class="firstCol tHeader"> </th>
                         <th scope="col" class="firstCol tHeader">
-                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />		
+                            <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" />
                         </th>
                         <th class="tHeader"> Vendor </th>
                         <th class="tHeader"> PO # </th>
@@ -236,12 +236,12 @@
                         <aura:if isTrue="{!rec.poRecInner}">
                             <aura:if isTrue="{!rec.groupName != null}">
                                 <tr class="groupHeader" style = "background : #f3f3f3; color:#000" >
-                                    
+
                                     <td title = "{!rec.groupName}" colspan="9">
                                         <div class="slds-grid slds-gutters">
                                             <div class="slds-col slds-size_6-of-12"
                                                  data-index='{!parentGroupIndex}'>
-                                                <b>{!rec.groupName} </b> 
+                                                <b>{!rec.groupName} </b>
                                             </div>
                                             <div class="slds-col slds-size_6-of-12 slds-float_right">
                                             </div>
@@ -251,12 +251,12 @@
                                             </div>
                                         </div>
                                     </td>
-                                    
+
                                 </tr>
-                                
+
                                 <aura:set attribute="else">
                                     <tr class="groupHeader" style = "background : #f3f3f3; color:#000" >
-                                      
+
                                         <td title = "{!rec.groupName}" colspan="9">
                                             <div class="slds-grid slds-gutters">
                                                 <div class="slds-col slds-size_6-of-12"
@@ -271,11 +271,11 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        
+
                                     </tr>
                                 </aura:set>
                             </aura:if>
-                            <aura:iteration items="{!rec.poRecInner}" var="record" indexVar="index"> 
+                            <aura:iteration items="{!rec.poRecInner}" var="record" indexVar="index">
 
                                     <aura:if isTrue="{!record.poRecord.Id != null}">
                                        <aura:if isTrue="{! (record.poRecord.buildertek__Status__c == 'Ordered' || record.poRecord.buildertek__Status__c == 'Canceled' || record.poRecord.buildertek__Status__c == 'Paid' || record.poRecord.buildertek__Status__c == 'Partially Paid') || record.poRecord.buildertek__Status__c == 'Vendor Accepted' }">
@@ -283,19 +283,19 @@
                                                 <td class="firstCol" >
                                                     <lightning:icon class = "expand-icon" size="x-small" value="{!recordIndex}" onclick="{!c.toggle}" title = "{!index+'_'+groupIndex}" iconName="{!record.expanded?'utility:chevrondown':'utility:chevronright'}" />
                                                 </td>
-                                                <td> </td> 
+                                                <td> </td>
                                                 <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Vendor__r.Name}" >
                                                     <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Vendor__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Vendor__r.Name}" />
                                                 </td>
-                                                
+
                                                 <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Phase__c}" >
                                                     <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.Id + '/view'}" target="_blank" label="{!record.poRecord.Name}" />
                                                 </td>
-                                                
+
                                                 <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Status__c}">
-                                                    <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />  
-                                                </td> 
-                                                
+                                                    <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />
+                                                </td>
+
                                                 <!-- <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Permit__r.Name}" >
                                                     <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Permit__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Permit__r.Name}" />
                                                 </td> -->
@@ -322,18 +322,18 @@
                                                     </td>
                                                     <td>
                                                         <lightning:input aura:id="checkContractor" type="checkbox" checked="{record.poCheck}" name="{!record.poRecord.Id}" id="{!index+'_'+groupIndex}" onchange="{!c.handleCheck}"/>
-                                                    </td> 
+                                                    </td>
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Vendor__r.Name}" >
                                                         <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.buildertek__Vendor__c + '/view'}" target="_blank" label="{!record.poRecord.buildertek__Vendor__r.Name}" />
                                                     </td>
-                                                    
+
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Phase__c}" >
                                                         <ui:outputURL value="{!'/one/one.app?#/sObject/'+ record.poRecord.Id + '/view'}" target="_blank" label="{!record.poRecord.Name}" />
                                                     </td>
-                                                    
+
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__Status__c}">
-                                                        <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />  
-                                                    </td> 
+                                                        <ui:outputText value="{!record.poRecord.buildertek__Status__c}" />
+                                                    </td>
                                                     <td role="gridcell" class="slds-truncate" title = "{!record.poRecord.buildertek__PO_Total__c}">
                                                         <!-- <ui:outputText value="{!record.poRecord.buildertek__PO_Total__c}" /> -->
                                                         <lightning:formattedNumber value="{!record.poRecord.buildertek__PO_Total__c}" style="currency" />
@@ -359,16 +359,16 @@
                                             <th class="firstCol subHeader"> </th>
                                             <th class="firstCol subHeader"> </th>
                                             <!-- <th scope="col" class="subHeader" style="padding-left:30px;">
-                                                <ui:inputCheckbox aura:id="checkPOLines"  change="{!c.selectAllPOLines}" name = "{!index+'_'+groupIndex}" />		
+                                                <ui:inputCheckbox aura:id="checkPOLines"  change="{!c.selectAllPOLines}" name = "{!index+'_'+groupIndex}" />
                                             </th> -->
-                                            <th class="subHeader">  </th> 
-                                            <th class="subHeader subData"> Name </th> 
-                                            <th class="subHeader subData"> Quantity </th> 
-                                            <th class="subHeader subData"> Unit Cost   </th> 
+                                            <th class="subHeader">  </th>
+                                            <th class="subHeader subData"> Name </th>
+                                            <th class="subHeader subData"> Quantity </th>
+                                            <th class="subHeader subData"> Unit Cost   </th>
                                             <th class="subHeader subData"> Tax Rate </th>
-                                            <th class="subHeader subData" colspan="2"> Total Cost </th> 
+                                            <th class="subHeader subData" colspan="2"> Total Cost </th>
                                         </tr>
-                                        
+
                                         <aura:iteration items="{!record.poLinesWrapper}" var="item1" indexVar="inx">
                                             <aura:if isTrue="{!item1.PORow}">
                                                 <tr class="slds-scrollable" style = "background:#fff ">
@@ -384,7 +384,7 @@
                                                     </td>
                                                 </tr>
                                                 <aura:set attribute="else">
-    
+
                                                     <tr class="slds-scrollable" style="background: #fcfcfc;">
                                                         <td class="firstCol"></td>
                                                         <td class="firstCol"></td>
@@ -402,34 +402,34 @@
                                                             </div>
                                                             <!-- <lightning:input aura:id="checkPOLine" type="checkbox" checked="{!item1.poLineCheck}" name="{!rec.RecordId}" onchange="{!c.handleCheckPoLine}"/> -->
                                                         </td>
-                                                        
+
                                                         <td role="gridcell" class="slds-truncate subData" title="{!item1.Name}" style = "width: 30px;">
-                                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ item1.RecordId + '/view'}" target="_blank" label="{!item1.Name}" /> 
+                                                            <ui:outputURL value="{!'/one/one.app?#/sObject/'+ item1.RecordId + '/view'}" target="_blank" label="{!item1.Name}" />
                                                         </td>
-                                                        
+
                                                         <td role="gridcell" class="slds-truncate subData" title="{!item1.Quantity}" >
                                                             {!item1.Quantity}
                                                         </td>
-    
+
                                                         <td role="gridcell" class="slds-truncate subData" title="{!item1.UnitCost}" >
                                                             <lightning:formattedNumber value="{!item1.UnitCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
                                                         </td>
-                                                        
+
                                                         <td role="gridcell" class="slds-truncate subData" title="{!item1.TaxRate}" >
                                                             {!item1.TaxRate}
                                                             <aura:if isTrue="{!not(empty(item1.TaxRate))}">
                                                                 %
                                                             </aura:if>
                                                         </td>
-                                                        
+
                                                         <td role="gridcell" class="slds-truncate subData" title="{!item1.TotalCost}" colspan="2" >
                                                             <lightning:formattedNumber value="{!item1.TotalCost}" style="currency" currencyCode="{!v.orgCurr}" currencyDisplayAs="code"/>
                                                         </td>
-    
+
                                                          <!-- <td role="gridcell" class="slds-truncate subData" title="{!item1.ProductCode}" >
                                                             {!item1.ProductCode}
                                                         </td> -->
-                                                        
+
                                                     </tr>
                                                 </aura:set>
                                             </aura:if>
@@ -442,16 +442,16 @@
                                             <th colspan="9" style="text-align: center; font-weight: 600; font-family: system-ui; font-size: 14px;">This PO does not have any PO line</th>
                                         </tr>
                                     </aura:set>
-                                    </aura:if>     
+                                    </aura:if>
                                 </aura:if>
                             </aura:iteration>
                         </aura:if>
-                        
+
                     </aura:iteration>
                 </tbody>
             </table>
             <br/>
-        </div> 
+        </div>
         <aura:if isTrue="{!v.Spinner}">
             <div aura:id="spinnerId" class="slds-spinner_container">
                 <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -466,17 +466,17 @@
         </aura:if>
     </div>
     <div class="slds-modal__footer" style = "height:60px; display: flex; justify-content:center;">
-        <lightning:button label="Previous" disabled="{!v.PageNumber == 1}"  
+        <lightning:button label="Previous" disabled="{!v.PageNumber == 1}"
                           onclick="{!c.previous}" variant="brand"
                           iconName='utility:back' iconPosition='left' class = 'slds-float_left'/>
         &nbsp; &nbsp; &nbsp;
-        <lightning:button label="Next" disabled="{!v.PageNumber >= v.TotalPages}" 
+        <lightning:button label="Next" disabled="{!v.PageNumber >= v.TotalPages}"
                           onclick="{!c.next}" variant="brand"
                           iconName='utility:forward' iconPosition='left' class = 'slds-float_left' />
-        
+
       <!--  <button class="slds-button slds-button-brand" onclick="{!c.orderPO}" disabled="{!v.isdisabled}"> Order</button>  -->
-    </div>	
-    
+    </div>
+
     <aura:if isTrue="{!v.selectedPOList}">
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                  aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
@@ -487,7 +487,7 @@
                     }
                     .slds-p-around--medium {
                     padding: 0rem !important;
-                    }       
+                    }
                     .slds-modal__content{
                     overflow-y:hidden !important;
                     height:unset !important;
@@ -499,7 +499,7 @@
                         <b>Are you sure you want to Order these Purchase Orders ? </b>
                     </h2>
                 </header>
-                
+
                 <div class="slds-modal__content " id="modal-content-id-1" style = "margin-top:-9px; margin-bottom : -9px">
                     <div class="slds-card__body slds-scrollable left-screen" style="max-height:450px" >
                         <table class="slds-table slds-table--bordered">
@@ -525,20 +525,20 @@
                                         </td> -->
                                         <td>
                                             <aura:if isTrue="{!row.buildertek__Vendor__c}">
-                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.buildertek__Vendor__c + '/view'}" target="_blank" label="{!row.buildertek__Vendor__r.Name}" />  
+                                                <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.buildertek__Vendor__c + '/view'}" target="_blank" label="{!row.buildertek__Vendor__r.Name}" />
                                                 <aura:set attribute="else">
                                                     <h1 style = "color:red;">
                                                         There is no Vendor assigned to this PO
                                                     </h1>
                                                 </aura:set>
-                                            </aura:if> 
+                                            </aura:if>
                                         </td>
                                         <td>
                                             <ui:outputURL value="{!'/one/one.app?#/sObject/'+ row.Id + '/view'}" target="_blank" label="{!row.Name}" />
                                         </td>
                                         <td>
                                             <aura:if isTrue="{!row.buildertek__Status__c}">
-                                                <ui:outputText value="{!row.buildertek__Status__c}" />  
+                                                <ui:outputText value="{!row.buildertek__Status__c}" />
                                                 <aura:set attribute="else">
                                                     <span></span>
                                                 </aura:set>
@@ -565,15 +565,15 @@
                                                 </aura:set>
                                             </aura:if>
                                         </td>
-                                        
+
                                         <td>
                                             <aura:if isTrue="{!row.buildertek__Vendor__c}">
                                                 <aura:if isTrue="{!row.buildertek__Vendor__r.buildertek__Email_Address__c}">
-                                                    <ui:outputText value="{!row.buildertek__Vendor__r.buildertek__Email_Address__c}" /> 
-                                                    
+                                                    <ui:outputText value="{!row.buildertek__Vendor__r.buildertek__Email_Address__c}" />
+
                                                     <aura:set attribute="else">
                                                         <h1 style = "color:red;">
-                                                            There is no Email for this Vendor                                                        
+                                                            There is no Email for this Vendor
                                                         </h1>
                                                     </aura:set>
                                                 </aura:if>
@@ -583,18 +583,16 @@
                                             </aura:if>
                                         </td>
 
-                                        
-                                        
                                         <td>
                                             <div class="slds-file-selector__dropzone">
                                                 <input type="file" class="slds-file-selector__input slds-assistive-text" data-index = "{!row.Id}" id="{!row.Id}" onchange="{!c.handleFilesChange2}" aria-labelledby="file-selector-primary-label file-selector-secondary-label"  multiple="true"/>
-                                                
-                                                <label class="slds-file-selector__body" for="{!row.Id}" id="file-selector-secondary-label2"> 
+
+                                                <label class="slds-file-selector__body" for="{!row.Id}" id="file-selector-secondary-label2">
                                                     <span class="slds-file-selector__button slds-button slds-button_neutral">
                                                         Upload Files
                                                     </span>
                                                 </label>
-                                                
+
                                                 <aura:iteration items="{!v.FileNameList}" var="sr" indexVar="fileindex">
                                                     <aura:if isTrue="{!sr.poId == row.Id}">
                                                         <div>
@@ -609,16 +607,10 @@
                                                     </aura:if>
                                                 </aura:iteration>
                                             </div>
-                                        </td> 
+                                        </td>
 
                                         <td class="tdcls">
-                                            <aura:if isTrue="{!row.buildertek__Vendor__c}">
-                                                <aura:if isTrue="{!row.buildertek__Vendor__r.buildertek__Email_Address__c}">                                         
-                                                    <aura:set attribute="else">
-                                                            <div class="wrongs" data-index = "{!row.Id}"  onclick="{!c.removePO}"><lightning:icon iconName="utility:delete" alternativeText="Delete" size="small" title="Delete" /></div>
-                                                    </aura:set>
-                                                </aura:if>
-                                            </aura:if>
+                                            <span class="wrongs" data-index = "{!row.Id}"  onclick="{!c.removePO}"><lightning:icon iconName="utility:delete" alternativeText="Delete" size="small" title="Delete" /></span>
                                         </td>
                                     </tr>
                                 </aura:iteration>
@@ -631,7 +623,7 @@
                     <button class="slds-button slds-button--brand" onclick="{!c.confirmOrderPO}" disabled="{!v.disableOrder}"> Yes</button>
                 </footer>
             </div>
-            
+
             <aura:if isTrue="{!v.Spinner2}">
                 <div aura:id="spinnerId" class="slds-spinner_container">
                     <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -645,8 +637,8 @@
                 </div>
             </aura:if>
         </section>
-        
+
         <div class="slds-backdrop slds-backdrop_open"></div>
-    </aura:if> 
-    
+    </aura:if>
+
 </aura:component>
