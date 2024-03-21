@@ -2770,7 +2770,6 @@
                                             </aura:iteration>
                                         </tbody>
                                     </table>
-                                    <!-- under development -->
                                     <!-- <p>
                                         <center style=" font-size: medium ">Under Development</center>
                                     </p> -->
@@ -2778,7 +2777,7 @@
                                 </div>
                                 <footer class="slds-modal__footer">
                                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
-                                    <!-- <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBudgetLine}" /> -->
+                                    <!-- <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.}" /> -->
                                 </footer>
                             </div>
                         </div>
