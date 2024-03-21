@@ -2110,6 +2110,19 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }
 
     @AuraEnabled
+    public static List<buildertek__BT_Time_Sheet__c> getTimeSheetData(String RecId){
+        buildertek__Budget__c BudgetRec = [SELECT Id, Name, buildertek__Project__c
+                                        FROM buildertek__Budget__c
+                                        where Id = :RecId];
+        
+        List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null and buildertek__BT_Budget__c = null];
+
+        return timeSheetList;
+
+        
+    }
+
+    @AuraEnabled
     public static BudgetDataTableWrapperClone getTimeCardData(Integer pageNumber, Integer pageSize, string RecId){
         buildertek__Budget__c RFQRec = [SELECT Id, Name, buildertek__Project__c
                                         FROM buildertek__Budget__c

@@ -461,6 +461,7 @@
                                 var pageSize = component.get("v.pageSize");
                                 component.set("v.isExistingTc", true);
                                 helper.gettcList(component, pageNumber, pageSize);
+                                helper.gettsList(component, pageNumber, pageSize);
                             }
                         }
                     });
@@ -505,6 +506,7 @@
                 var pageSize = component.get("v.pageSize");
                 component.set("v.isExistingTc", true);
                 helper.gettcList(component, pageNumber, pageSize);
+                helper.gettsList(component, pageNumber, pageSize);
     
             }
         }
@@ -2043,6 +2045,11 @@
 
         component.set('v.addInvoicePOSection', false);
 
+        component.set("v.chooseLabor", true);
+        component.set("v.selectedLabor", "");
+        component.set("v.chooseTimeCard", false);
+        component.set("v.chooseTimeSheet", false);
+
 
         // $A.get('e.force:refreshView').fire();
     },
@@ -2073,10 +2080,37 @@
         component.set("v.addcosection", false);
         component.set("v.addExpenseSection", false);
 
+        
+        
+
 
         // $A.get('e.force:refreshView').fire();
 
         helper.getBudgetGroups(component, event, helper, page, function () { });
+    },
+
+    movetoLabor: function (component, event, helper) {
+        var selectedLabor = component.get("v.selectedLabor");
+        console.log('selectedLabor--->>>'+  selectedLabor);
+        if(selectedLabor == 'Time Sheet'){
+            component.set("v.chooseTimeCard", false);
+            component.set("v.chooseTimeSheet", true);
+            component.set("v.chooseLabor", false);
+            var selectedRec = component.get('v.selectedRecs');
+            console.log('selectedRec--->>>'+  selectedRec);
+        }else if(selectedLabor == 'Time Card'){
+            component.set("v.chooseTimeCard", true);
+            component.set("v.chooseTimeSheet", false);
+            component.set("v.chooseLabor", false);
+        }else{
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: "Error",
+                message: "Please Select Labor",
+                type: "error"
+            });
+            toastEvent.fire();
+        }
     },
     onSaveSuccess: function (component, event, helper) {
         if (event) {
