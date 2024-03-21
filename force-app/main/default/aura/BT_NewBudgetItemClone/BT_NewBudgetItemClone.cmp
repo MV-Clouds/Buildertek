@@ -70,6 +70,12 @@
     <aura:attribute name="selectedExistingTC" type="List" default="" access="public" />
     <!-- end-->
 
+    <!-- check existing ts -->
+    <aura:attribute name="isExistingTs" type="Boolean" default="false" access="public" />
+    <aura:attribute name="selectedExistingTS" type="List" default="" access="public" />
+    <!-- end-->
+    
+
     <!-- check existing tc -->
     <aura:attribute name="isExistingInvo" type="Boolean" default="false" access="public" />
     <aura:attribute name="selectedExistingINVO" type="List" default="" access="public" />
@@ -2768,6 +2774,11 @@
                                                     </td>
                                                 </tr>
                                             </aura:iteration>
+                                            <aura:if isTrue="{!empty(v.timeSheetList)}">
+                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                No Records Found
+                                            </td>
+                                        </aura:if>
                                         </tbody>
                                     </table>
                                     <!-- <p>
@@ -2776,8 +2787,8 @@
 
                                 </div>
                                 <footer class="slds-modal__footer">
-                                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
-                                    <!-- <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.}" /> -->
+                                    <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                    <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateTimesheet}" />
                                 </footer>
                             </div>
                         </div>
