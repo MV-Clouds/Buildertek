@@ -320,7 +320,7 @@
 							$A.get("e.force:closeQuickAction").fire();
 							window.setTimeout(
 								$A.getCallback(function () {
-									//document.location.reload(true);   
+									//document.location.reload(true);
 									var action1 = component.get("c.getMasterBudgets");
 									action1.setParams({
 										recId: component.get("v.recordId"),
@@ -383,7 +383,7 @@
 		var record = component.get("v.recordId");
 		var select = component.get("v.selectedobjInfo");
 		var budgetsList = component.get("v.masterBudgetsList");
-		console.log({ budgetsList });
+		console.log('masterBudgetsList',{ budgetsList });
 		var budgetIds = [];
 		var budgetId = [];
 		if (budgetsList != null) {
@@ -868,6 +868,9 @@
 			}
 		}
 		component.set("v.SelectedPurchaseOrders", updatedVendorList);
+
+		helper.updatePoCheck(component, helper, POId);
+
 		var disableBtn = false;
 		if (updatedVendorList.length > 0) {
 			console.log('in if');

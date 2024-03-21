@@ -583,8 +583,6 @@
                                             </aura:if>
                                         </td>
 
-
-
                                         <td>
                                             <div class="slds-file-selector__dropzone">
                                                 <input type="file" class="slds-file-selector__input slds-assistive-text" data-index = "{!row.Id}" id="{!row.Id}" onchange="{!c.handleFilesChange2}" aria-labelledby="file-selector-primary-label file-selector-secondary-label"  multiple="true"/>
