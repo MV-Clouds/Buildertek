@@ -25,10 +25,14 @@
             //     console.log({parentRecordId});
             //     component.set("v.parentRecordId", parentRecordId);
             // }
-
-            var myPageRef = component.get("v.pageReference");
-            var parentRecordId = myPageRef.state.buildertek__parentId;
-            component.set("v.parentRecordId", parentRecordId);
+            if (!component.get("v.isCalledFromParent")) {
+                var myPageRef = component.get("v.pageReference");
+                var parentRecordId = myPageRef.state.buildertek__parentId;
+                component.set("v.parentRecordId", parentRecordId);
+            } else {
+                var parentRecordId = component.get("v.parentId");
+                component.set("v.parentRecordId", parentRecordId);
+            }
 
 
 

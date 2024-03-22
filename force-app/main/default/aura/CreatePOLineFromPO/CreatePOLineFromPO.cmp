@@ -1,7 +1,7 @@
 <aura:component controller="PreviewPurchaseOrderController" implements="lightning:actionOverride,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" access="global">
    
     <div>
-        <c:New_Purchase_Order_Item_Override  isCalledFromParent="true"/>
+        <c:New_Purchase_Order_Item_Override isCalledFromParent="true" parentId="{!v.recordId}" />
     </div>
     <aura:html tag="style">
         .slds-modal__container {

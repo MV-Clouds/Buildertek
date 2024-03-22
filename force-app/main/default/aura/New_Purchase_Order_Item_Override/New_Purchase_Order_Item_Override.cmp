@@ -19,8 +19,7 @@
     <aura:attribute name="isLoading" type="Boolean" default="false" />
     <aura:attribute name="isDisabled" type="Boolean" default="false" />
     <aura:attribute name="Message" type="String"  />
-
-
+    <aura:attribute name="parentId" type="Id"  />
 
 
 
