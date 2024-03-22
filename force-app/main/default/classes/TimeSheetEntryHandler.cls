@@ -39,8 +39,10 @@ public with sharing class TimeSheetEntryHandler {
             if (total == null) {
                 total = 0;
             }
+            if( tse.buildertek__Duration__c != null){
             total += tse.buildertek__Duration__c;
             timeSheetTotals.put(tse.buildertek__BT_Time_Sheet__c, total);
+            }
 
             Decimal billableRate = timesheetBillableRate.get(tse.buildertek__BT_Time_Sheet__c);
             if (billableRate == null) {
@@ -68,8 +70,10 @@ public with sharing class TimeSheetEntryHandler {
             
             for(Id timeSheetId : timeSheetBudgetItem.keySet()) {
                 String budgetLineId = timeSheetBudgetItem.get(timeSheetId);
-                Decimal total = timeSheetTotals.get(timeSheetId);
-                Decimal billableRate = timesheetBillableRate.get(timeSheetId);
+                Decimal total = timeSheetTotals.get(timeSheetId) == null ? 0 : timeSheetTotals.get(timeSheetId);
+                System.debug(total);
+                Decimal billableRate = timesheetBillableRate.get(timeSheetId) == null ? 0 : timesheetBillableRate.get(timeSheetId) ;
+                System.debug(billableRate);
                 Decimal amount = total * billableRate;
                 for(buildertek__Budget_Item__c budgetLineItem : budgetLineItems) {
                     if(budgetLineItem.Id == budgetLineId) {
