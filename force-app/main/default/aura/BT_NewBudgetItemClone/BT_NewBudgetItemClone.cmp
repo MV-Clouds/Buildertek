@@ -322,7 +322,7 @@
     <aura:attribute name="displayRecordList" type="List" />
 
     <aura:attribute name="chooseLabor" type="Boolean" default="true" />
-    <aura:attribute name="selectedLabor" type="String" default="" />
+    <aura:attribute name="selectedLabor" type="String" default="Time Card" />
     <aura:attribute name="chooseTimeCard" type="Boolean" default="false" />
     <aura:attribute name="chooseTimeSheet" type="Boolean" default="false" />
     <aura:attribute name="timeSheetList" type="List" default="[]" />
@@ -2652,9 +2652,9 @@
                                 </header>
                                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
                                     <lightning:select name="timeCardType" value="{!v.selectedLabor}">
-                                        <option value="" selected="true" disabled="true">Choose One</option>
+                                        <!-- <option value="" selected="true" disabled="true">Choose One</option> -->
+                                        <option value="Time Card" selected="true">Time Card</option>
                                         <option value="Time Sheet">Time Sheet</option>
-                                        <option value="Time Card">Time Card</option>
                                     </lightning:select>
                                 </div>
                                 <footer class="slds-modal__footer">

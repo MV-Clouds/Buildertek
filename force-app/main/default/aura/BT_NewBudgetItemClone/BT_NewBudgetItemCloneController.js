@@ -2098,19 +2098,20 @@
             component.set("v.chooseLabor", false);
             var selectedRec = component.get('v.selectedRecs');
             console.log('selectedRec--->>>'+  selectedRec);
-        }else if(selectedLabor == 'Time Card'){
+        }else{
             component.set("v.chooseTimeCard", true);
             component.set("v.chooseTimeSheet", false);
             component.set("v.chooseLabor", false);
-        }else{
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                title: "Error",
-                message: "Please Select Labor",
-                type: "error"
-            });
-            toastEvent.fire();
         }
+        // }else{
+        //     var toastEvent = $A.get("e.force:showToast");
+        //     toastEvent.setParams({
+        //         title: "Error",
+        //         message: "Please Select Labor",
+        //         type: "error"
+        //     });
+        //     toastEvent.fire();
+        // }
     },
     onSaveSuccess: function (component, event, helper) {
         if (event) {
