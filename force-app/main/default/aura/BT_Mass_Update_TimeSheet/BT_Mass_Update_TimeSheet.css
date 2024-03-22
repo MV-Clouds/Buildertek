@@ -40,3 +40,8 @@
 .THIS td {
     padding-block: 3px !important;
 }
+
+.THIS #error-message-17, .THIS #error-message-14, .THIS #error-message-22, .THIS #error-message-25 {
+    display: none;
+}
+
