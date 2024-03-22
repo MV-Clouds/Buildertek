@@ -164,8 +164,8 @@
                         </button>
                     </div>
                     <div class="popup__body">
-                        <template for:each={conflictingSchedules} for:item="conflict">
-                            <lightning-card key={conflict.resourceId} class="popup__custom-card">
+                        <template for:each={groupedConflictingItems} for:item="conflict">
+                            <lightning-card key={conflict.resourceName} class="popup__custom-card">
                                 <div class="slds-p-around_medium tableContainer">
                                     <div class="resource-header">
                                         <p class="resource-name">{conflict.resourceName}</p>
@@ -191,7 +191,7 @@
                                         </div>
                                     </div>
                                     <div class="popup__recordValues">
-                                        <template for:each={conflict.schedules} for:item="scheduleItem">
+                                        <template for:each={conflict.items} for:item="scheduleItem">
                                             <div key={scheduleItem.id} data-id={scheduleItem.id}
                                                 class="popup__data-row">
                                                 <div class="slds-col slds-truncate">

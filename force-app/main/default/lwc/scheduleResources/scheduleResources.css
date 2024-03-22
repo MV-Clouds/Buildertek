@@ -143,7 +143,7 @@
 
 .popup__data-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr 0.25fr;
+    grid-template-columns: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 0.25fr;
     gap: 0.5rem;
     padding: 0.5rem 1rem 0.5rem 1rem;
     border-bottom: 1px solid #d3d3d3;
@@ -217,7 +217,7 @@
 
 .popup__header-row {
     display: grid;
-    grid-template-columns: repeat(3, 1fr) 0.5fr 0.5fr 0.25fr;
+    grid-template-columns: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 0.25fr;
     gap: 0.5rem;
     background-color: #4a90e2;
     color: #ffffff;
@@ -239,7 +239,7 @@
 
 .popup__record-value {
     max-height: 300px;
-    overflow-y: auto;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
