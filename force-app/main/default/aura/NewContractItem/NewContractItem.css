@@ -229,3 +229,8 @@
 .THIS .tableRow{
     background-color: #f3f3f3;
 }
+
+.THIS .btn{
+    margin: auto 5px;
+    border-radius: 2px !important;
+}
