@@ -32,3 +32,11 @@
 .THIS .some-indicator {
     background-color: indianred !important;
 }
+
+.THIS .alignment {
+    margin-top: 18px;
+}
+
+.THIS td {
+    padding-block: 3px !important;
+}
