@@ -88,6 +88,7 @@ export default class importScheduleLine extends LightningElement {
             "Cost Code",
             "Trade Type",
             "Vendor",
+            "Category",
         ];
         const columnDivider = ",";
         let csvStringResult = "";
@@ -127,7 +128,8 @@ export default class importScheduleLine extends LightningElement {
                 headers[9] !== "Lag" ||
                 headers[10] !== "Cost Code" ||
                 headers[11] !== "Trade Type" ||
-                headers[12] !== "Vendor\r" 
+                headers[12] !== "Vendor" ||
+                headers[13] !== "Category\r" 
             ) {
                 this.Spinner = false;
                 this.isErrorOccured = true;
