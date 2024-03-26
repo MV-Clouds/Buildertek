@@ -10,7 +10,8 @@
                 label: "Schedule Calendar"
             })
         })
-     },
+    },
+
     getActiveProjects : function(component, event, helper){
         component.set("v.Spinner", true);
         var projectInputVal; //= document.getElementById('projectId').value;
@@ -19,91 +20,42 @@
 
         var tradeTypeId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedTradetype")))) ? JSON.parse(JSON.stringify(component.get("v.selectedTradetype"))).Id  : '';
         var vendorId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedVendor")))) ? JSON.parse(JSON.stringify(component.get("v.selectedVendor"))).Id : '';
-        var projectId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Id : '';
+        let flag = component.get("v.isSingleProject");
+        if (flag) {
+            var projectId = component.get("v.RecordId");
+        } else {
+            var projectId = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Id : '';
+            projectInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Name : '';
+            component.set("v.selectedProjectIdName",projectInputVal);
+        }
 
-
-        projectInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedproject")))) ? JSON.parse(JSON.stringify(component.get("v.selectedproject"))).Name : '';
         tradeTypeInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedTradetype")))) ? JSON.parse(JSON.stringify(component.get("v.selectedTradetype"))).Name  : '';
         vendorInputVal = Object.keys(JSON.parse(JSON.stringify(component.get("v.selectedVendor")))) ? JSON.parse(JSON.stringify(component.get("v.selectedVendor"))).Name : '';
 
         component.set("v.selectedProjectId",projectId);
         component.set("v.selectedTradeTypeId",tradeTypeId);
         component.set("v.selectedVendorId",vendorId);
-
-
-
         component.set("v.selectedVendorIdName",vendorInputVal);
         component.set("v.selectedTradeTypeIdName",tradeTypeInputVal);
-        component.set("v.selectedProjectIdName",projectInputVal);
 
-        /*if(projectInputVal == ""){
-            component.set("v.selectedProjectId","All");
-            component.set("v.selectedProjectIdName",'All');
+        var projectId;
+        var projectIdList = [];
+
+        if (flag) {
+            projectId = component.get("v.RecordId");
+            projectIdList.push(projectId);
+        } else {
+            projectId = component.get("v.selectedProjectId");
+            var ProjectRecordList = component.get("v.ProjectRecordList");
+            ProjectRecordList.forEach(element => {
+                projectIdList.push(element.Id);
+            });
         }
-        if(tradeTypeInputVal == ""){
-            component.set("v.selectedTradeTypeId",'All');
-            component.set("v.selectedTradeTypeIdName",'All');
-        }
-        if(vendorInputVal == ""){
-            component.set("v.selectedVendorId",'All');
-            component.set("v.selectedVendorIdName",'All');
-        }*/
-
-        //if without selecting from dropdown and click filter, then check for value and set.
-
-
-        /*for(var i=0;i<component.get("v.projectsList").length;i++){
-            var project = component.get("v.projectsList")[i];
-            if(project.Name == projectInputVal){
-                component.set("v.selectedProjectId",project.Id);
-                component.set("v.selectedProjectIdName",projectInputVal);
-            }else if(projectInputVal.toLowerCase() == "all"){
-                component.set("v.selectedProjectId",'All');
-                component.set("v.selectedProjectIdName",'All');
-                break;
-            }
-        }
-        for(var i=0;i<component.get("v.tradeTypesList").length;i++){
-            var tradeType = component.get("v.tradeTypesList")[i];
-            if(tradeType.Name == tradeTypeInputVal){
-                component.set("v.selectedTradeTypeId",tradeType.Id);
-                component.set("v.selectedTradeTypeIdName",tradeTypeInputVal);
-            }else if(tradeTypeInputVal.toLowerCase() == "all"){
-                component.set("v.selectedTradeTypeId",'All');
-                component.set("v.selectedTradeTypeIdName",'All');
-                break;
-            }
-        }
-        for(var i=0;i<component.get("v.vendorsList").length;i++){
-            var vendor = component.get("v.vendorsList")[i];
-            if(vendor.Name == vendorInputVal){
-                component.set("v.selectedVendorId",vendor.Id);
-                component.set("v.selectedVendorIdName",vendorInputVal);
-            }else if(vendorInputVal.toLowerCase() == "all"){
-                component.set("v.selectedVendorId",'All');
-                component.set("v.selectedVendorIdName",'All');
-                break;
-            }
-        }*/
-
-        // var status = component.get("v.selectedScheduleStatus");
-        var projectId = component.get("v.selectedProjectId");
         var tradeTypeId = component.get("v.selectedTradeTypeId");
         var vendorId = component.get("v.selectedVendorId");
-        //alert('status -------> '+status);
-        //alert('projectId -------> '+projectId);
-       // alert('tradeTypeId -------> '+tradeTypeId);
-       // alert('vendorId -------> '+vendorId);
-
-       var projectIdList = [];
-       var ProjectRecordList = component.get("v.ProjectRecordList");
-       ProjectRecordList.forEach(element => {
-            projectIdList.push(element.Id);
-       });
-
-       console.log('projectIdList ==> ',{projectIdList});
         var defaultDate = component.get("v.defaultDate");
     	var action = component.get("c.getProjects");
+
         action.setParams({
             // 'scheduleItemsStatus' : status,
             'projectIdList' : projectIdList,
@@ -111,6 +63,7 @@
             'tradeTypeId' : tradeTypeId ? tradeTypeId : '' /*!= "" ? tradeTypeId:"All"*/,
             'vendorId' : vendorId ? vendorId : ''/*!= "" ? vendorId:"All"*/,
         });
+
         action.setCallback(this, function(response){
             if(response.getState() === "SUCCESS"){
                 var result = response.getReturnValue();
@@ -139,25 +92,13 @@
                 );
                 var projectsList = [];
                 var scheduleItemsList = [];
-                /*for(var i=0;i<result.ScheduleWrapperList.length;i++){
-                    console.log('Id -------> '+result.ScheduleWrapperList[i].projectList.Id);
-                    console.log('Name -------> '+result.ScheduleWrapperList[i].projectList.Name);
-                    projectsList.push({
-                        'Id' : result.ScheduleWrapperList[i].projectList.Id,
-                        'Name' : result.ScheduleWrapperList[i].projectList.Name
-                    });
-                    if(result.ScheduleWrapperList[i].scheduleItemList.length > 0){
-                        for(var j=0;j<result.ScheduleWrapperList[i].scheduleItemList.length;j++){
-                        	scheduleItemsList.push(result.ScheduleWrapperList[i].scheduleItemList[j]);
-                        }
-                    }
-                }*/
-                //component.set("v.projectsList", projectsList);
+
                 component.set("v.scheduleItemsList", result);
                 var eventArr = [];
                 var color;
                 console.log('projectsList in sch ------> '+JSON.stringify(component.get("v.projectsList")));
                 var projectsList = component.get("v.projectsList")
+                console.log('ProjectList',projectsList);
                 result.forEach(function(key) {
                     for (var i = 0; i < projectsList.length; i++) {
                         if(key.buildertek__Schedule__r.buildertek__Project__c == projectsList[i].Id){
@@ -207,6 +148,7 @@
         });
         $A.enqueueAction(action);
     },
+
     getAllActiveProjects : function(component, event, helper){
         component.set("v.Spinner", true);
     	var action = component.get("c.getAllProjects");
@@ -217,12 +159,10 @@
                 var projectsList = [];
                 var red, green, blue, col;
                 for(var i=0;i<result.length;i++){
-                    // var max = 250;
-        			// var min = 150;
-        			// var green = Math.floor(Math.random() * (max - min + 1)) + min;
-                    red = Math.floor(Math.random() * 150) + 100; 
+
+                    red = Math.floor(Math.random() * 150) + 100;
                     green = Math.floor(Math.random() * 150) + 100;
-                    blue = Math.floor(Math.random() * 150) + 100; 
+                    blue = Math.floor(Math.random() * 150) + 100;
                     col = 'rgb(' + red + ', ' + green + ', ' + blue + ')'
                     console.log('color:::',col);
                     projectsList.push({
@@ -230,7 +170,7 @@
                         'Name': result[i].Name,
                         'Color': col
                     });
-       
+
                 }
                 console.log('projectsList ---------> '+JSON.stringify(projectsList));
                 component.set("v.projectsList", projectsList);
@@ -239,6 +179,7 @@
         });
         $A.enqueueAction(action);
     },
+
     getAllVendors : function(component, event, helper){
         component.set("v.Spinner", true);
     	var action = component.get("c.getVendors");
@@ -250,6 +191,7 @@
         });
         $A.enqueueAction(action);
     },
+
     getAllTradeTypes : function(component, event, helper){
         component.set("v.Spinner", true);
     	var action = component.get("c.getTradeTypes");
@@ -261,6 +203,7 @@
         });
         $A.enqueueAction(action);
     },
+
     loadCalendar :function(component, events, helper,data, eventItemDate){
         //alert('load calendar');
         var defaultDate;

@@ -10,7 +10,7 @@
     <aura:attribute name="selectedTradeTypeIdName" type="String" default=""/>  <!-- All -->
     <aura:attribute name="selectedVendorIdName" type="String" default=""/>  <!-- All -->
 
-
+    <aura:attribute name="isSingleProject" type="Boolean" default="false" access="PUBLIC" description="for bypassing the filter for selecting multi projects"/>
     <aura:attribute name="selectedTask" type="sObject" default="{}"/>
     <aura:attribute name="selectedVendor" type="sObject" default="{}"/>
     <aura:attribute name="selectedproject" type="sObject" default="{}"/>
@@ -27,8 +27,9 @@
     <aura:attribute name="defaultDate" type="Date" />
     <aura:attribute name="ProjectRecordList" type="sObject[]" />
 
-    <!-- <aura:handler name="selectedSearchValue" event="c:BT_SelectedSearchValue" action="{!c.handleComponentEvent}"/> -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
+    <!-- <aura:handler name="selectedSearchValue" event="c:BT_SelectedSearchValue" action="{!c.handleComponentEvent}"/> -->
      <aura:handler name="oSelectedRecordEvent" event="c:selectedsObjectRecordEvent" action="{!c.handleComponentEvent}"/>
 
     <aura:handler  event="c:ClearLookupvalueEvent" action="{!c.ClearhandleComponentEvent}"/>
@@ -70,28 +71,50 @@
                             </ui:inputSelect>
                         </div>
                     </div> -->
-                    <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
-                        <div class="slds-form-element__control" style="margin:0.5rem;">
-                            <b> Project :</b>   <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
-                            <!-- <c:BT_SearchWithDropDown label="Project" inputValue="All" results="{!v.projectsList}" myInputId="projectId" myULId="projectULId" selectedOption="{!v.selectedProjectId}"/> -->
+                    <aura:if isTrue="{!v.isSingleProject}">
+                        <!-- Code when is true -->
+                        <div class="slds-col slds-size_2.5-of-12">
+                            <div class="slds-form-element__control" style="margin:0.5rem;">
+                                <b> Trade Type : </b> <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
+                                <!-- <c:BT_SearchWithDropDown label="Trade Type" inputValue="All" results="{!v.tradeTypesList}" myInputId="tradeTypeId" myULId="tradeTypeULId" selectedOption="{!v.selectedTradeTypeId}"/> -->
+                            </div>
                         </div>
-                    </div>
-                    <div class="slds-col slds-size_2.5-of-12">
-                        <div class="slds-form-element__control" style="margin:0.5rem;">
-                            <b> Trade Type : </b> <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
-                            <!-- <c:BT_SearchWithDropDown label="Trade Type" inputValue="All" results="{!v.tradeTypesList}" myInputId="tradeTypeId" myULId="tradeTypeULId" selectedOption="{!v.selectedTradeTypeId}"/> -->
+                        <div class="slds-col slds-size_2.5-of-12">
+                            <div class="slds-form-element__control" style="margin:0.5rem;">
+                                <b> Vendor : </b> <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedVendor}" fromComp="resourceCenter" />
+                                <!-- <c:BT_SearchWithDropDown label="Vendor" inputValue="All" results="{!v.vendorsList}" myInputId="vendorId" myULId="vendorULId" selectedOption="{!v.selectedVendorId}"/> -->
+                            </div>
                         </div>
-                    </div>
-                    <div class="slds-col slds-size_2.5-of-12">
-                        <div class="slds-form-element__control" style="margin:0.5rem;">
-                            <b> Vendor : </b> <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedVendor}" fromComp="resourceCenter" />
-                            <!-- <c:BT_SearchWithDropDown label="Vendor" inputValue="All" results="{!v.vendorsList}" myInputId="vendorId" myULId="vendorULId" selectedOption="{!v.selectedVendorId}"/> -->
-                        </div>
-                    </div>
 
-                    <div class="slds-col slds-size_1.5-of-12">
-                    	<lightning:button class="slds-m-top_large slds-m-left_medium" variant="brand" label="Filter" title="Filter" onclick="{!c.filterRecords}" />
-                    </div>
+                        <div class="slds-col slds-size_1.5-of-12">
+                            <lightning:button class="slds-m-top_large slds-m-left_medium" variant="brand" label="Filter" title="Filter" onclick="{!c.filterRecords}" />
+                        </div>
+
+                        <aura:set attribute="else">
+                            <!-- Code when is false -->
+                            <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
+                                <div class="slds-form-element__control" style="margin:0.5rem;">
+                                    <b> Project :</b>   <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_2.5-of-12">
+                                <div class="slds-form-element__control" style="margin:0.5rem;">
+                                    <b> Trade Type : </b> <c:customLookup aura:id="tradetypeid" objectAPIName="buildertek__Trade_Type__c" IconName="custom:custom67" selectedRecord="{!v.selectedTradetype}" fromComp="resourceCenter" />
+                                    <!-- <c:BT_SearchWithDropDown label="Trade Type" inputValue="All" results="{!v.tradeTypesList}" myInputId="tradeTypeId" myULId="tradeTypeULId" selectedOption="{!v.selectedTradeTypeId}"/> -->
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_2.5-of-12">
+                                <div class="slds-form-element__control" style="margin:0.5rem;">
+                                    <b> Vendor : </b> <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedVendor}" fromComp="resourceCenter" />
+                                    <!-- <c:BT_SearchWithDropDown label="Vendor" inputValue="All" results="{!v.vendorsList}" myInputId="vendorId" myULId="vendorULId" selectedOption="{!v.selectedVendorId}"/> -->
+                                </div>
+                            </div>
+
+                            <div class="slds-col slds-size_1.5-of-12">
+                                <lightning:button class="slds-m-top_large slds-m-left_medium" variant="brand" label="Filter" title="Filter" onclick="{!c.filterRecords}" />
+                            </div>
+                        </aura:set>
+                    </aura:if>
                 </div>
             </div>
         </div>
