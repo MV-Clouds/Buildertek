@@ -2113,6 +2113,27 @@
         //     toastEvent.fire();
         // }
     },
+
+    backtoChooseLabor: function (component, event, helper) {
+        component.set("v.chooseTimeCard", false);
+        component.set("v.chooseTimeSheet", false);
+        component.set("v.chooseLabor", true);
+        component.set("v.selectedLabor", "Time Card");
+
+        //make check box false
+        var recordList = component.get("v.recordList");
+        recordList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.recordList", recordList);
+
+        var timeSheetList = component.get("v.timeSheetList");
+        timeSheetList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.timeSheetList", timeSheetList);
+    },
+
     onSaveSuccess: function (component, event, helper) {
         if (event) {
             if (event.getParams().message && event.getParams().message.indexOf('Budget Item') != -1 && event.getParams().message.indexOf('was saved') != -1) {

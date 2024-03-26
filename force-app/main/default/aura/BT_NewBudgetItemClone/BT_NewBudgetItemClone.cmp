@@ -2722,6 +2722,7 @@
                                 </div>
                                 <footer class="slds-modal__footer">
                                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                    <lightning:button variant="neutral" title="Back" label="Back" onclick="{! c.backtoChooseLabor }" />
                                     <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBudgetLine}" />
                                 </footer>
                             </div>
@@ -2788,6 +2789,7 @@
                                 </div>
                                 <footer class="slds-modal__footer">
                                     <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.doCancel }" />
+                                    <lightning:button variant="neutral" title="Back" label="Back" onclick="{! c.backtoChooseLabor }" />
                                     <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateTimesheet}" />
                                 </footer>
                             </div>
