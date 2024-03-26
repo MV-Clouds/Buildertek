@@ -10,28 +10,40 @@
         // helper.getActiveProjects(component, event, helper);
         //helper.gettabname(component);
 	},
+
+    doinit : function(component, event, helper) {
+        let recordId = component.get("v.recordId");
+        if(recordId){
+            helper.getSingleProject(component, event, helper, recordId);
+        }
+    },
     // onScheduleItemChange : function(component, event, helper) {
         //$('#calendar').fullCalendar('removeEvents', function () { return true; });
         //helper.getActiveProjects(component, event, helper);
     // },
     onProjectChange : function(component, event, helper) {
-    	 
+
+    },
+
+    returnSingleProject : function(component, event, helper, recordId) {
+
+
     },
     /*handleComponentEvent : function(component, event, helper) {
         var valueFromChild = event.getParam("seletcedOption");
         var value = valueFromChild.split("_")[0];
         var selectBox = valueFromChild.split("_")[2];
         var selecetedName = valueFromChild.split("_")[1];
-        
-        
-        
+
+
+
         /*component.set("v.selectedProjectId",'');
         component.set("v.selectedProjectIdName",'');
         component.set("v.selectedTradeTypeId",'');
         component.set("v.selectedTradeTypeIdName",'');
         component.set("v.selectedVendorId",'');
         component.set("v.selectedVendorIdName",'');*/
-        
+
         /*if(selectBox == "projectULId" || selectBox == "projectId"){
             if(value == '' && selecetedName== ''){
                 document.getElementById("projectId").value = '';
@@ -42,7 +54,7 @@
                 component.set("v.selectedProjectId",value);
                 component.set("v.selectedProjectIdName",selecetedName);
             }
-            
+
         }else if(selectBox == "tradeTypeULId" || selectBox == "tradeTypeId"){
             if(value == '' && selecetedName== ''){
                 document.getElementById("tradeTypeId").value = '';
@@ -53,7 +65,7 @@
                 component.set("v.selectedTradeTypeId",value);
                 component.set("v.selectedTradeTypeIdName",selecetedName);
             }
-            
+
         }else if(selectBox == "vendorULId" || selectBox == "vendorId"){
             if(value == '' && selecetedName== ''){
                 document.getElementById("vendorId").value = '';
@@ -64,74 +76,74 @@
                 component.set("v.selectedVendorId",value);
                 component.set("v.selectedVendorIdName",selecetedName);
             }
-            
+
         }
-        
+
         //$('#calendar').fullCalendar('removeEvents', function () { return true; });
-        //helper.getActiveProjects(component, event, helper);   
+        //helper.getActiveProjects(component, event, helper);
     },*/
-    
-    
-    
+
+
+
      handleComponentEvent: function (component, event, helper) {
-        // get the selected Account record from the COMPONETN event 
-        
+        // get the selected Account record from the COMPONETN event
+
         //var selectedAccountGetFromEvent = event.getParam("recordByEvent");
         //component.set("v.selectedContact", selectedAccountGetFromEvent.Id);
         var slectedaccountId = JSON.stringify(component.get("v.selectedVendor").Id);
         var slectedprojectId = JSON.stringify(component.get("v.selectedproject").Id);
         var slectedTradetypeId = JSON.stringify(component.get("v.selectedTradetype").Id);
-        
+
     },
-    
+
     ClearhandleComponentEvent: function (component, event, helper) {
-        
-        
+
+
     },
-    
+
     filterRecords : function(component, event, helper) {
-    	$('#calendar').fullCalendar('removeEvents', function () { return true; });
-        helper.getActiveProjects(component, event, helper);	    
+        helper.filterRecords(component, event, helper);
     },
+
     startDateChange : function(component, event, helper) {
         component.set("v.Spinner", true);
         var recordId = component.get("v.recordId");
         var eventDate = component.get("v.finishDate");
-        var action = component.get("c.updateDate"); 
+        var action = component.get("c.updateDate");
         action.setParams({
             'recordId' : recordId,
             'endDate' : eventDate
         });
         action.setCallback(this, function(response){
             if(response.getState() === "SUCCESS"){
-            	component.set("v.defaultDate", response.getReturnValue());  
+            	component.set("v.defaultDate", response.getReturnValue());
                 $('#calendar').fullCalendar('removeEvents', function () { return true; });
-        		helper.getActiveProjects(component, event, helper);	 
+        		helper.getActiveProjects(component, event, helper);
                 //component.set("v.Spinner", false);
-            }    
+            }
         });
         $A.enqueueAction(action);
     },
-    
+
     endDateChange : function(component, event, helper) {
     	component.set("v.Spinner", true);
         var recordId = component.get("v.recordId");
         var eventDate = component.get("v.endDate");
-        var action = component.get("c.updateEndDate"); 
+        var action = component.get("c.updateEndDate");
         action.setParams({
             'recordId' : recordId,
             'endDate' : eventDate
         });
         action.setCallback(this, function(response){
             if(response.getState() === "SUCCESS"){
-            	component.set("v.defaultDate", response.getReturnValue());  
+            	component.set("v.defaultDate", response.getReturnValue());
                 $('#calendar').fullCalendar('removeEvents', function () { return true; });
-        		helper.getActiveProjects(component, event, helper);	 
+        		helper.getActiveProjects(component, event, helper);
                 //component.set("v.Spinner", false);
-            }    
+            }
         });
-        $A.enqueueAction(action);    
-    }, 
+        $A.enqueueAction(action);
+    },
 
     handleRecordListEvent : function(component, event, helper){
 
@@ -142,6 +154,6 @@
         console.log('recordListByEvent => ',{recordListByEvent});
 
     }
-    
-    
+
+
 })
