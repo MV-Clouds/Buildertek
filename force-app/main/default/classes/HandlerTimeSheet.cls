@@ -1,4 +1,7 @@
 public with sharing class HandlerTimeSheet {
+
+    public static boolean blnSkipTimeSheetUpdateTrigger = false;
+
     public HandlerTimeSheet() {
 
     }
@@ -109,7 +112,7 @@ public with sharing class HandlerTimeSheet {
                     toDeleteBudgetItems.remove(bi.Id);
                 }
             }
-            if(toDeleteBudgetLine.size() > 0){
+            if(toDeleteBudgetLine.size() > 0 && blnSkipTimeSheetUpdateTrigger == false){
                 delete toDeleteBudgetLine;
             }
         }

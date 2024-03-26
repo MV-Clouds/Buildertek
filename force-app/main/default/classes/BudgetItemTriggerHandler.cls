@@ -61,6 +61,18 @@ public with sharing class BudgetItemTriggerHandler {
  	public void OnBeforeDelete(Budget_Item__c[] BudgetItemToDelete, Map<ID, Budget_Item__c> BudgetItemMap){
 		Set<Id> budgetLineIds = BudgetItemMap.keySet();
 		
+		//* for TimeSheet
+		List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Time_Sheet__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
+		for (buildertek__BT_Time_Sheet__c timeSheet : timeSheetList) {
+			timeSheet.buildertek__BT_Budget__c = null;
+			timeSheet.buildertek__BT_Budget_Line__c = null;
+		}
+		if (timeSheetList.size() > 0) {
+			HandlerTimeSheet.blnSkipTimeSheetUpdateTrigger = true;
+			update timeSheetList;
+			HandlerTimeSheet.blnSkipTimeSheetUpdateTrigger = false;
+		}
+
 		//* for expense
      	List<buildertek__Expense__c> expenseList = [SELECT Id, Name, buildertek__Budget__c, buildertek__Budget_Line__c FROM buildertek__Expense__c WHERE buildertek__Budget_Line__c IN: budgetLineIds];
 		for (buildertek__Expense__c expense : expenseList) {
