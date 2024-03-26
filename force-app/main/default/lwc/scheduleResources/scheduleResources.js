@@ -177,8 +177,8 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
         if (selectedRecord.isEditing) {
             this.selectedVendorId = currentVendorId ? this.vendorOptions.find(option => option.label === selectedRecord.vendor)?.value : '';
 
+            this.vendorResourcesOptions = [{ label: 'None', value: '' }];
             if (this.selectedVendorId) {
-                this.vendorResourcesOptions = [{ label: 'None', value: '' }];
                 if (this.vendorResourcesMap[this.selectedVendorId]) {
                     this.vendorResourcesOptions = this.vendorResourcesOptions.concat(
                         this.vendorResourcesMap[this.selectedVendorId].map(ele => ({
