@@ -12,9 +12,9 @@
                  <apex:inputcheckbox value="{!CreateInvoiceApproval}" label="Create Invoice on Approval">
                 </apex:inputcheckbox>
 
-                 <apex:selectList label="Custom New Button" value="{!CreatePO}" multiselect="false" size="1">
-                    <apex:selectOption itemValue="Without PO Lines" itemLabel="Standard Button"/>
-                    <apex:selectOption itemValue="With PO Lines	" itemLabel="Custom Button"/>
+                <apex:selectList label="Custom New Button" value="{!CreatePO}" multiselect="false" size="1">
+                    <apex:selectOption itemValue="Without PO Lines" itemLabel="Standard Button" />
+                    <apex:selectOption itemValue="With PO Lines" itemLabel="Custom Button" />
                 </apex:selectList>
 
                 <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
