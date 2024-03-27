@@ -45,8 +45,6 @@
                            )}"
                   afterScriptsLoaded="{!c.afterScriptsLoaded}" />
 
-    <aura:handler  name="init" value="{!this}" action="{!c.doinit}"/>
-
     <ltng:require styles="{!$Resource.FontAwesome}"/>
     <ltng:require styles="{!$Resource.DateTimePicker}"/>
     <lightning:workspaceAPI aura:id="workspacecalendar" />
@@ -74,10 +72,7 @@
                     </div> -->
                     <div class="slds-col slds-size_2.5-of-12" style="padding-left: 1rem;">
                         <div class="slds-form-element__control" style="margin:0.5rem;">
-                            <b> Project :</b>
-                            <aura:if isTrue="{!v.selectedproject}">
-                                <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
-                            </aura:if>
+                            <b> Project :</b>   <c:customLookup aura:id="projectId"  objectAPIName="buildertek__Project__c" IconName="custom:custom24" selectedRecord="{!v.selectedproject}" fromComp="resourceCenter" SelectMultiRecord="true"/>
                             <!-- <c:BT_SearchWithDropDown label="Project" inputValue="All" results="{!v.projectsList}" myInputId="projectId" myULId="projectULId" selectedOption="{!v.selectedProjectId}"/> -->
                         </div>
                     </div>

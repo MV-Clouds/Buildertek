@@ -11,30 +11,6 @@
             })
         })
      },
-
-     getSingleProject : function(component, event, helper, recordId){
-        var action = component.get("c.getSingleProject");
-        action.setParams({
-            'projectId' : recordId
-        });
-        action.setCallback(this, function(response){
-            if(response.getState() === "SUCCESS" && response.getReturnValue() != null){
-                var result = response.getReturnValue();
-                console.log('result -------> '+JSON.stringify(result));
-                component.set("v.selectedproject", result);
-                component.set("v.selectedProjectId", result.Id);
-                component.set("v.selectedProjectIdName", result.Name);
-                // helper.filterRecords(component, event, helper);
-            }
-        });
-        $A.enqueueAction(action);
-     },
-
-    filterRecords : function(component, event, helper) {
-    	$('#calendar').fullCalendar('removeEvents', function () { return true; });
-        helper.getActiveProjects(component, event, helper);
-    },
-
     getActiveProjects : function(component, event, helper){
         component.set("v.Spinner", true);
         var projectInputVal; //= document.getElementById('projectId').value;
@@ -244,9 +220,9 @@
                     // var max = 250;
         			// var min = 150;
         			// var green = Math.floor(Math.random() * (max - min + 1)) + min;
-                    red = Math.floor(Math.random() * 150) + 100;
+                    red = Math.floor(Math.random() * 150) + 100; 
                     green = Math.floor(Math.random() * 150) + 100;
-                    blue = Math.floor(Math.random() * 150) + 100;
+                    blue = Math.floor(Math.random() * 150) + 100; 
                     col = 'rgb(' + red + ', ' + green + ', ' + blue + ')'
                     console.log('color:::',col);
                     projectsList.push({
@@ -254,7 +230,7 @@
                         'Name': result[i].Name,
                         'Color': col
                     });
-
+       
                 }
                 console.log('projectsList ---------> '+JSON.stringify(projectsList));
                 component.set("v.projectsList", projectsList);
