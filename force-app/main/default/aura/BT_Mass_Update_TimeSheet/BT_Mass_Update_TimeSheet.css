@@ -32,3 +32,16 @@
 .THIS .some-indicator {
     background-color: indianred !important;
 }
+
+.THIS .alignment {
+    margin-top: 18px;
+}
+
+.THIS td {
+    padding-block: 3px !important;
+}
+
+.THIS #error-message-17, .THIS #error-message-14, .THIS #error-message-22, .THIS #error-message-25 {
+    display: none;
+}
+

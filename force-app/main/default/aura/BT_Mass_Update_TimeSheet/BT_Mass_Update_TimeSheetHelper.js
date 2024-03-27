@@ -76,11 +76,39 @@
                     break;
                 }
             }
+            let starttime = this.isValidDateFormat(timeSheetEntries[i].buildertek__Start_Time__c);
+            let endtime = this.isValidDateFormat(timeSheetEntries[i].buildertek__End_Time__c);
+            console.log(timeSheetEntries[i].buildertek__Start_Time__c);
+            console.log(timeSheetEntries[i].buildertek__End_Time__c);
+            console.log('st-->'+starttime);
+            console.log('et-->'+endtime);
+            if(starttime == false || endtime == false || timeSheetEntries[i].buildertek__Start_Time__c == null || timeSheetEntries[i].buildertek__End_Time__c == null || timeSheetEntries[i].buildertek__Start_Time__c == undefined || timeSheetEntries[i].buildertek__End_Time__c == undefined) {
+                component.set("v.Spinner", false);
+                    isValid = false;
+                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Error!",
+                            "message": "Format is incorrect on row " + (i + 1),
+                            "type": "error"
+                        });
+                    }     
+                    break;
+            }
+
+
+            
         }
         if(isValid){
             debugger;
             helper.updateTimeSheetEntries(component, event, helper);
         }
+    },
+
+    isValidDateFormat: function(dateString) {
+        // Define regular expression for date format (MMM D, YYYY)
+        var parsedDate = new Date(dateString);
+        return !isNaN(parsedDate.getTime());
     },
 
     updateTimeSheetEntries : function(component, event, helper) {
