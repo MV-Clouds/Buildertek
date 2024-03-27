@@ -30,6 +30,9 @@
         component.set("v.selectedProjectId",projectId);
         component.set("v.selectedTradeTypeId",tradeTypeId);
         component.set("v.selectedVendorId",vendorId);
+
+
+
         component.set("v.selectedVendorIdName",vendorInputVal);
         component.set("v.selectedTradeTypeIdName",tradeTypeInputVal);
         // component.set("v.selectedProjectIdName",projectInputVal);
