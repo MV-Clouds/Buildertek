@@ -1,7 +1,31 @@
 public with sharing class walkthroughlinetriggerhandler {
     private static Boolean isExecuting = false;
-    //Test in Git
-    public static void onAfterInsert(List<buildertek__Walk_Through_Line_Items__c> newWalkThroughLineItems) {
+
+        public static void updateDescriptionFromProduct(List<buildertek__Walk_Through_Line_Items__c> walkThroughLineItems) {
+    Set<Id> productIds = new Set<Id>();
+        System.debug('triggered');
+    for (buildertek__Walk_Through_Line_Items__c item : walkThroughLineItems) {
+        if (item.buildertek__Product__c != null) {
+            productIds.add(item.buildertek__Product__c);
+        }
+    }
+    System.debug(productIds);
+    Map<Id, String> productIdToNameMap = new Map<Id, String>();
+    for (buildertek__Product__c product : [SELECT Id, buildertek__Product_Name__c FROM buildertek__Product__c WHERE Id IN :productIds]) {
+        productIdToNameMap.put(product.Id, product.buildertek__Product_Name__c);
+    }
+    System.debug(productIdToNameMap);
+    for (buildertek__Walk_Through_Line_Items__c item : walkThroughLineItems) { 
+        if (item.buildertek__Product__c != null) {
+            String productName = productIdToNameMap.get(item.buildertek__Product__c);
+            if (productName != null) {
+                item.buildertek__Description__c = productName;
+            }
+        }
+    }
+}
+
+     public static void onAfterInsert(List<buildertek__Walk_Through_Line_Items__c> newWalkThroughLineItems) {
         if (!isExecuting) {
             isExecuting = true;
             Set<Id> rfqLineIds = new Set<Id>();
