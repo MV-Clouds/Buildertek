@@ -67,7 +67,7 @@ public with sharing class BudgetItemTriggerHandler {
 			timeSheet.buildertek__BT_Budget__c = null;
 			timeSheet.buildertek__BT_Budget_Line__c = null;
 		}
-		if (timeSheetList.size() > 0) {
+		if (timeSheetList.size() > 0 && blnSkipBudgetItemTrigger == false) {
 			HandlerTimeSheet.blnSkipTimeSheetUpdateTrigger = true;
 			update timeSheetList;
 			HandlerTimeSheet.blnSkipTimeSheetUpdateTrigger = false;
@@ -91,7 +91,7 @@ public with sharing class BudgetItemTriggerHandler {
 			timeCard.buildertek__Budget__c = null;
 			timeCard.buildertek__Budget_Line__c = null;
 		}
-		if (timeCardList.size() > 0) {
+		if (timeCardList.size() > 0 ) {
 			TimeCardTriggerHandler.blnSkipTrigger = true;
 			update timeCardList;
 			TimeCardTriggerHandler.blnSkipTrigger = false;

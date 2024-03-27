@@ -49,7 +49,9 @@ public with sharing class HandlerTimeSheet {
     public void afterInsert(List<buildertek__BT_Time_Sheet__c> newTimeSheets) {
         Set<Id> timeSheetIds = new Set<Id>();
         for (buildertek__BT_Time_Sheet__c ts : newTimeSheets) {
-            timeSheetIds.add(ts.Id);
+            if(ts.buildertek__BT_Budget_Line__c != null){
+                timeSheetIds.add(ts.Id);
+            }
         }
         TimeSheetEntryHandler.recalculateTimeSheetTotals(timeSheetIds);
     }
@@ -113,7 +115,9 @@ public with sharing class HandlerTimeSheet {
                 }
             }
             if(toDeleteBudgetLine.size() > 0 && blnSkipTimeSheetUpdateTrigger == false){
+                BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = true;
                 delete toDeleteBudgetLine;
+                BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = false;
             }
         }
         if(toDeleteBudgetItems.size() > 0){
@@ -128,7 +132,9 @@ public with sharing class HandlerTimeSheet {
     public void afterUpdate(List<buildertek__BT_Time_Sheet__c> newTimeSheets, Map<Id, buildertek__BT_Time_Sheet__c> oldTimeSheets) {
         Set<Id> timeSheetIds = new Set<Id>();
         for (buildertek__BT_Time_Sheet__c ts : newTimeSheets) {
-            timeSheetIds.add(ts.Id);
+            if(ts.buildertek__BT_Budget_Line__c != null){
+                timeSheetIds.add(ts.Id);
+            }
         }
         TimeSheetEntryHandler.recalculateTimeSheetTotals(timeSheetIds);
     }
