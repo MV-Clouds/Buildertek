@@ -92,20 +92,20 @@
                     <div style="float:right;padding-right:10px;">
                         <lightning:buttonGroup>
                             <aura:if isTrue="{!v.enableMassUpdate}">
-                    <lightning:button iconName="utility:save"  iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Save" class="sldsButtonGroup"/>
-                    <lightning:button iconName="utility:close"  iconPosition="left" onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup"/>
+                    <lightning:button iconName="utility:save"  iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Save" class="sldsButtonGroup btn"/>
+                    <lightning:button iconName="utility:close"  iconPosition="left" onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup btn"/>
                     <aura:set attribute="else">
-                        <lightning:button iconName="utility:edit"  iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup"/>
+                        <lightning:button iconName="utility:edit"  iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup btn"/>
                             <!-- <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/> -->
                         </aura:set>
                 </aura:if>
-					<lightning:button label="Delete" onclick="{!c.deleteSelectedContractItem}" class="sldsButtonGroup"/>
+					<lightning:button label="Delete" onclick="{!c.deleteSelectedContractItem}" class="sldsButtonGroup btn"/>
                         </lightning:buttonGroup>
                     </div>
                     <br/>
                     
                     <!-- inline Quote Editing -->
-                    <div aura:id="inlineEditQuote" style="margin-top:25px; margin-bottom:25px;padding:10px;">
+                    <div aura:id="inlineEditQuote" style="margin-top:15px; padding:10px;">
                         <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
                             <thead >
                                 <tr class="slds-text-title_caps">
@@ -158,19 +158,19 @@
                                             </ui:inputSelect>
                                             
                                         </td>
-                                    <td style="width: 20%;">
+                                    <td style="width:20%; ">
                                         <aura:html tag="style">
-                                            .mainDiv{
-                                                padding-top:1.3% !important;
-                                                max-width:27vw;
+                                                    .mainDiv{
+                                                        padding-top:1.3% !important;
+                                                        max-width:27vw;
 
-                                            }
-                                            .pillSize{
+                                                    }
+                                                    .pillSize{
 
-                                                padding-top: 1.3% !important;
-                                                padding-bottom: 1.3% !important;
-                                            }
-                                        </aura:html>
+                                                        padding-top: 1.3% !important;
+                                                        padding-bottom: 1.3% !important;
+                                                    }
+                                                </aura:html>
                                         <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" />
                                     </td>
                                     <td>

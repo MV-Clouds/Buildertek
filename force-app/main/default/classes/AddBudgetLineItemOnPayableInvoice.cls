@@ -36,17 +36,19 @@ public with sharing class AddBudgetLineItemOnPayableInvoice {
     }
     
     public static void deleteBudgetItem(Id payInvoice, Id BudgetLineId){
+        buildertek__Account_Payable_Clone__c payableInvoice = [Select Id, Name, buildertek__Description__c, buildertek__Budget__c,buildertek__Total_Amount__c , buildertek__Budget_Line__c from buildertek__Account_Payable_Clone__c where Id =:payInvoice limit 1];
+        
+        // List<buildertek__Budget_Item__c> budgetitem = [Select Id, Name from buildertek__Budget_Item__c where Id =:BudgetLineId limit 1];
 
-        buildertek__Account_Payable_Clone__c payableInvoice = [Select Id, buildertek__Description__c, buildertek__Budget__c,buildertek__Total_Amount__c , buildertek__Budget_Line__c from buildertek__Account_Payable_Clone__c where Id =:payInvoice limit 1];
-        
-        List<buildertek__Budget_Item__c> budgetitem = [Select Id, Name from buildertek__Budget_Item__c where Id =:BudgetLineId limit 1];
-        
-        
+        String BlName = '%'+payableInvoice.Name+'%';
+
+        list<buildertek__Budget_Item__c> budgetitem = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id =: BudgetLineId AND Name LIKE :BlName LIMIT 1];
+
         if (budgetitem.size() > 0) {
 
             List<buildertek__Account_Payable_Clone__c> payableInvoiceList = [Select Id, buildertek__Budget_Line__c, buildertek__Description__c from buildertek__Account_Payable_Clone__c where buildertek__Budget_Line__c =:budgetitem[0].Id];
-            
-            if(payableInvoice.buildertek__Description__c == budgetitem[0].Name && payableInvoiceList.size() == 0){
+
+            if(payableInvoiceList.size() == 0){
                 delete budgetitem;
             } 
         }

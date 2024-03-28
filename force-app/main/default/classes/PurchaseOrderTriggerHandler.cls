@@ -93,19 +93,17 @@ public with sharing class PurchaseOrderTriggerHandler{
                         PO.buildertek__Status__c = 'Open';
                     }
                 }
-                System.debug('In po status update');
-                System.debug('Received--->'+PO.buildertek__Received__c);
-                System.debug('Remaining--->'+PO.buildertek__Remaining__c);
                 if (PO.buildertek__Received__c > 0 && PO.buildertek__Remaining__c < 100 && PO.buildertek__Received__c != 100 && PO.buildertek__Remaining__c != 0) {
-                    System.debug('In Inventory');
                     if (PO.buildertek__Inventory_Status__c != 'Partially Filled'){
                         PO.buildertek__Inventory_Status__c = 'Partially Filled';
                     }
                 } else if(PO.buildertek__Received__c == 100 && PO.buildertek__Remaining__c == 0){
-                    System.debug('Else In Inventory');
                     if (PO.buildertek__Inventory_Status__c != 'Filled'){
                         PO.buildertek__Inventory_Status__c = 'Filled';
                     }
+                }
+                if(PO.buildertek__Budget_Line__c == null && PO.buildertek__Budget__c != null){
+                    PO.buildertek__Budget__c = null;
                 }
                 //made process builder inactive and added
                  PO.buildertek__Date_Created__c = System.today();
@@ -512,11 +510,35 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
         }
     }
 
+    public void updateprojectonpodelete(Purchase_Order__c[] oldPurchaseOrders) {
+        try {
+            // Collect unique project IDs from the updated purchase orders
+            Set<Id> projectIds = new Set<Id>();
+            for (buildertek__Purchase_Order__c po : oldPurchaseOrders) {
+                if (po.buildertek__Project__c != null) {
+                    projectIds.add(po.buildertek__Project__c);
+                }
+            }
+
+            // Calculate and update aggregated values for each project
+            updateProjectAggregatedValues(projectIds);
+        } catch (Exception ex) {
+            System.debug('Error--> '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
     public boolean hasFieldsChanged(buildertek__Purchase_Order__c newPO, buildertek__Purchase_Order__c oldPO) {
         return newPO.buildertek__Status__c != oldPO.buildertek__Status__c ||
                newPO.buildertek__Paid_Amount__c != oldPO.buildertek__Paid_Amount__c ||
                newPO.buildertek__PO_Total__c != oldPO.buildertek__PO_Total__c ||
-               newPO.buildertek__Project__c != oldPO.buildertek__Project__c;
+               newPO.buildertek__Project__c != oldPO.buildertek__Project__c ||
+               newPO.buildertek__SubTotal_with_Tax__c != oldPO.buildertek__SubTotal_with_Tax__c ||
+               newPO.buildertek__PO_Amount__c != oldPO.buildertek__PO_Amount__c ||
+               newPO.buildertek__Tax__c != oldPO.buildertek__Tax__c;
     }
 
     public void updateProjectAggregatedValues(Set<Id> projectIds) {
@@ -563,6 +585,43 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
             System.debug('Error--> ' + ex.getMessage());
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
             if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
+
+    public void removePOFromBudgetLine(Purchase_Order__c[] newPurchaseOrders, Map<ID, Purchase_Order__c> oldPurchaseOrderMap) {
+        try {
+            // Set<Id> budgetLineIdsToUpdate = new Set<Id>();
+            Map<Id, Id> poToBudgetLineMap = new Map<Id, Id>();
+
+            for (buildertek__Purchase_Order__c newPO : newPurchaseOrders) {
+                buildertek__Purchase_Order__c oldPO = oldPurchaseOrderMap.get(newPO.Id);
+
+                if (newPO.buildertek__Budget_Line__c != oldPO.buildertek__Budget_Line__c && oldPO.buildertek__Budget_Line__c != null) {
+                    // budgetLineIdsToUpdate.add(oldPO.buildertek__Project__c);
+                    poToBudgetLineMap.put(newPO.Id, oldPO.buildertek__Budget_Line__c);
+                }
+            }
+
+            if (!poToBudgetLineMap.isEmpty()) {
+                Set<Id> poIds = poToBudgetLineMap.keySet();
+                Set<Id> budgetLineIds = new Set<Id>(poToBudgetLineMap.values());
+                
+                List<buildertek__PO_Item_To_Budget_Item_Link__c> POItemToBudgetItemLink = [
+                    SELECT Id, buildertek__PO_Item__r.buildertek__Purchase_Order__c, buildertek__Budget_Item__c 
+                    FROM buildertek__PO_Item_To_Budget_Item_Link__c 
+                    WHERE buildertek__PO_Item__r.buildertek__Purchase_Order__c IN :poIds 
+                    AND buildertek__Budget_Item__c IN :budgetLineIds
+                ];
+
+                delete POItemToBudgetItemLink;
+            }
+
+        } catch (Exception ex) {
+            System.debug('Error--> '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(ex);
             }
         }

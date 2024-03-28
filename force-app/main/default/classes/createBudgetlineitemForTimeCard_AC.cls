@@ -28,6 +28,7 @@ public with sharing class createBudgetlineitemForTimeCard_AC {
     public static MessageClass createBudgetLinerecs(List<String> budgetIds, String recordId){
         system.debug('hello'+budgetIds);
         MessageClass msg = new MessageClass();
+        String groupId;
      //   try{
             
             List<buildertek__Time_Cards__c>  resloglist = [select id,
@@ -40,7 +41,21 @@ public with sharing class createBudgetlineitemForTimeCard_AC {
                                                              where Id =:recordId];                                        
             list<buildertek__Budget__c> budlstrec = [SELECT Id,Name from buildertek__Budget__c where Id IN:budgetIds];
             List<buildertek__Budget_Item__c> BudgetItemlist =  new List<buildertek__Budget_Item__c>();
-            buildertek__Budget_Line_Group__c linegroup =[select id ,Name from buildertek__Budget_Line_Group__c where Name =:'Labor' limit 1];
+            // buildertek__Budget_Line_Group__c linegroup =[select id ,Name from buildertek__Budget_Line_Group__c where Name =:'Labor' limit 1];
+            List<buildertek__Budget_Line_Group__c> budgetGroup;
+            if(Schema.sObjectType.buildertek__Budget_Line_Group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Budget_Line_Group__c.fields.Name.isAccessible()){
+                budgetGroup = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name =: 'Labor' LIMIT 1];     
+            }
+            if(budgetGroup.size() > 0){
+                groupId = budgetGroup[0].Id;   
+            } else {
+                buildertek__Budget_Line_Group__c budGroup = new buildertek__Budget_Line_Group__c();
+                if (Schema.sObjectType.buildertek__Budget_Line_Group__c.fields.Name.isCreateable()){
+                    budGroup.Name = 'Labor';    
+                }
+                insert budGroup;
+                groupId = budGroup.Id;
+            }
             
             if(!resloglist.isEmpty()){
                 for(buildertek__Budget__c bud: budlstrec){
@@ -48,7 +63,7 @@ public with sharing class createBudgetlineitemForTimeCard_AC {
                     BudgetItem.Name = resloglist[0].buildertek__Resource__r.Name +'  '/*+ resloglist[0].buildertek__Log_Date__c*/ ;
                     
                     BudgetItem.buildertek__Budget__c = bud.id;
-                    BudgetItem.buildertek__Group__c = linegroup.Id;
+                    BudgetItem.buildertek__Group__c = groupId;
                     BudgetItem.buildertek__Cost_Type__c = 'Labor';
                     
                     //BudgetItem.buildertek__Quantity__c = resloglist[0].buildertek__Hours_Worked_Formula__c;

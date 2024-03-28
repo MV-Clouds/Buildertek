@@ -8,7 +8,6 @@ public with sharing class ImportMasterProjectTakeoff{
                                    WHERE buildertek__Type__c = 'Master' AND Name LIKE:searchString AND ID != :recordId ORDER BY Name ASC];
 
 
-
         List<MasterProjectTakeoffClass> MasterProjectTakeoffClassList = new List<MasterProjectTakeoffClass>();
         for (buildertek__Project_Takeoff__c masterptakeoff : masterProjecttakeofflst){
             MasterProjectTakeoffClass MasterProjectTakeoffClassRecord = new MasterProjectTakeoffClass();
@@ -25,7 +24,7 @@ public with sharing class ImportMasterProjectTakeoff{
         try{
             List<buildertek__Project_Takeoff_Lines__c> takeoffitemslst;
 
-            takeoffitemslst = [SELECT Id, Name, buildertek__Description__c, buildertek__Build_Phase__c, buildertek__Cost_Code__c, buildertek__Product__c, buildertek__UOM_PL__c, buildertek__Location__c, buildertek__Quantity__c, buildertek__Sq_Ft__c, buildertek__Category__c, buildertek__Scale__c, buildertek__Project_Takeoff__c, buildertek__Plan_Type__c, buildertek__Trade_Type__c, buildertek__Product_Type__c, buildertek__Categories__c, buildertek__UOM__c
+            takeoffitemslst = [SELECT Id, Name, buildertek__Description__c, buildertek__Build_Phase__c, buildertek__Tax__c, buildertek__Cost_Code__c, buildertek__Product__c, buildertek__UOM_PL__c, buildertek__Location__c, buildertek__Quantity__c, buildertek__Sq_Ft__c, buildertek__Category__c, buildertek__Scale__c, buildertek__Project_Takeoff__c, buildertek__Plan_Type__c, buildertek__Trade_Type__c, buildertek__Product_Type__c, buildertek__Categories__c, buildertek__UOM__c
                                FROM buildertek__Project_Takeoff_Lines__c
                                WHERE buildertek__Project_Takeoff__c IN :takeofflIds];
 
@@ -40,6 +39,7 @@ public with sharing class ImportMasterProjectTakeoff{
                     projecttakeoffItemToInsert.buildertek__Description__c = takeoffitem.buildertek__Description__c;
                     projecttakeoffItemToInsert.buildertek__Location__c = takeoffitem.buildertek__Location__c;
                     projecttakeoffItemToInsert.buildertek__Quantity__c = takeoffitem.buildertek__Quantity__c;
+                    projecttakeoffItemToInsert.buildertek__Tax__c = takeoffitem.buildertek__Tax__c;
                     projecttakeoffItemToInsert.buildertek__Sq_Ft__c = takeoffitem.buildertek__Sq_Ft__c;
                     projecttakeoffItemToInsert.buildertek__Category__c = takeoffitem.buildertek__Category__c;
                     projecttakeoffItemToInsert.buildertek__Scale__c = takeoffitem.buildertek__Scale__c;

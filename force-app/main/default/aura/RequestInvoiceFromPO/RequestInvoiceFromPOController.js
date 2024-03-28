@@ -1,10 +1,12 @@
 ({
+
     sendmailtovendor: function (component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({"action": "SHOW"}).fire();
         var recordId = component.get("v.recordId");
         var action = component.get("c.sendMailtoVendor");
         action.setParams({
-            recordId: recordId
+            recordId: recordId,
+            quickActionName: 'RequestInvoice'
         });
         action.setCallback(this, function (response) {
             var result = response.getReturnValue();

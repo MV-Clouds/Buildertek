@@ -17,6 +17,9 @@ public class AddExistingBudgetControllerTest {
             buildertek__Type__c = 'Standard'
         );
        insert budget;
+        Purchase_Order__c po = new Purchase_Order__c();
+        po.Description__c = 'test';
+        insert po;
         buildertek__Budget_Item__c BudgetLineToInsert = new buildertek__Budget_Item__c();
         BudgetLineToInsert.Name = 'Test';
         BudgetLineToInsert.buildertek__Budget_Line_Group__c = null;
@@ -25,7 +28,7 @@ public class AddExistingBudgetControllerTest {
         BudgetLineToInsert.buildertek__Budget__c = budget.Id;
         BudgetLineToInsert.buildertek__Description__c = 'Test Description';
         insert BudgetLineToInsert;
-       AddExistingBudgetController.updateBudgetItemRecordMethod(BudgetLineToInsert);
+       AddExistingBudgetController.updateBudgetItemRecordMethod(BudgetLineToInsert, po.Id);
        AddExistingBudgetController.getContractDetails(contract.Id, 'Contract__c', 'Id,Name,Contract_Amount__c');
        System.assertEquals('Test','Test');
     }

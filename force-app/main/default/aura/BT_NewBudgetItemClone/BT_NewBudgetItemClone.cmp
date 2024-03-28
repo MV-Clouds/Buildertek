@@ -75,7 +75,6 @@
     <aura:attribute name="selectedExistingTS" type="List" default="" access="public" />
     <!-- end-->
     
-
     <!-- check existing tc -->
     <aura:attribute name="isExistingInvo" type="Boolean" default="false" access="public" />
     <aura:attribute name="selectedExistingINVO" type="List" default="" access="public" />
