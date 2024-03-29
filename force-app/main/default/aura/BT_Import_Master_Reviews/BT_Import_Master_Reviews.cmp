@@ -1,0 +1,139 @@
+<aura:component controller="ImportMasterReviews"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:attribute name="masterReviewsList" type="object" />
+    <aura:attribute name="Spinner" type="Boolean" />
+
+    <!-- Attribute Declration For Pagination -->
+
+    <aura:attribute name="PaginationList" type="Object" />
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer" />
+    <aura:attribute name="totalRecords" type="Integer" />
+    <aura:attribute name="pageSize" type="Integer" default="10" />
+    <aura:attribute name="searchKeyword" type="String" default="" />
+    <aura:attribute name="rfqs" type="List" />
+    <aura:attribute name="disableBtn" type="Boolean" default="false" />
+
+    <aura:attribute name="HaveCreateAccess" type="boolean" default="true" />
+
+    <!-- Attribute Declration For Pagination End-->
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Master Vendor Reviews
+    </div>
+
+    <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/> -->
+    <!-- *** if we use static_resource for css, it also override other standard component's css. So please use aura:html for css *** -->
+    <aura:html tag="style">
+        .lbl .slds-form-element__label{
+        display: none;
+        }
+
+        .slds-modal__container {
+        max-width: 52rem !important;
+        width: 52% !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }
+        .slds-modal__content {
+        height: unset !important;
+        max-height: unset !important;
+        box-shadow: none !important;
+        }
+        .slds-modal__container {
+        max-width: 72rem !important;
+        width: 72% !important;
+        }
+        .scrollable {
+        height: 400px;
+        overflow-y: auto;
+        }
+    </aura:html>
+
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope">
+            <lightning:layoutItem padding="around-small" size="12">
+                <lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Review Name..."
+                    name="searchField" onchange="{! c.onSearch }" />
+            </lightning:layoutItem>
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: middle;line-height: 2; width:30px;">
+                            <!-- <ui:inputCheckbox aura:id="checkContractors" change="{!c.selectAll}" /> -->
+                        </th>
+                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Vendor Review Name
+                        </th>
+                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Project
+                        </th>
+                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+    						Type
+    					</th>
+                        <th style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Total Score
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <aura:if isTrue="{!rec.masterReviewRecord != null}">
+                                <td style="width:50px;">
+                                    <ui:inputCheckbox aura:id="checkContractor" value="{!rec.reviewCheck}" text="{!rec.masterReviewRecord.Id}" change="{!c.handleCheck}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.masterReviewRecord.Name}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.masterReviewRecord.buildertek__Project__r.Name}" />
+                                </td>
+                                <td role="gridcell">
+        			                <ui:outputText value="{!rec.masterReviewRecord.buildertek__Type__c}" />
+        			            </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.masterReviewRecord.buildertek__Total_Score__c}" />
+                                </td>
+                            </aura:if>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br />
+        </div>
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+    </div>
+    <div class="slds-modal__footer">
+        <div class="slds-button-group" style="float:left;">
+            <lightning:buttonGroup>
+                <lightning:button label="Previous" disabled="{!or(v.startPage == 0, v.disableBtn)}" onclick="{!c.previous}" variant="brand" iconName='utility:back' />
+                &nbsp; &nbsp; &nbsp;
+                <lightning:button label="Next" disabled="{!or(v.endPage >= v.totalRecords, v.disableBtn)}" onclick="{!c.next}" variant="brand" iconName='utility:forward' iconPosition='right' />
+            </lightning:buttonGroup>
+        </div>
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.ImportReview}">Import Master Review</button>
+    </div>
+
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+</aura:component>
