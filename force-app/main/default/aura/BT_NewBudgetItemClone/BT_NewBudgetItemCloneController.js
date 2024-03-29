@@ -461,6 +461,7 @@
                                 var pageSize = component.get("v.pageSize");
                                 component.set("v.isExistingTc", true);
                                 helper.gettcList(component, pageNumber, pageSize);
+                                helper.gettsList(component, pageNumber, pageSize);
                             }
                         }
                     });
@@ -505,6 +506,7 @@
                 var pageSize = component.get("v.pageSize");
                 component.set("v.isExistingTc", true);
                 helper.gettcList(component, pageNumber, pageSize);
+                helper.gettsList(component, pageNumber, pageSize);
     
             }
         }
@@ -2043,6 +2045,11 @@
 
         component.set('v.addInvoicePOSection', false);
 
+        component.set("v.chooseLabor", true);
+        component.set("v.selectedLabor", "");
+        component.set("v.chooseTimeCard", false);
+        component.set("v.chooseTimeSheet", false);
+
 
         // $A.get('e.force:refreshView').fire();
     },
@@ -2073,11 +2080,60 @@
         component.set("v.addcosection", false);
         component.set("v.addExpenseSection", false);
 
+        
+        
+
 
         // $A.get('e.force:refreshView').fire();
 
         helper.getBudgetGroups(component, event, helper, page, function () { });
     },
+
+    movetoLabor: function (component, event, helper) {
+        var selectedLabor = component.get("v.selectedLabor");
+        console.log('selectedLabor--->>>'+  selectedLabor);
+        if(selectedLabor == 'Time Sheet'){
+            component.set("v.chooseTimeCard", false);
+            component.set("v.chooseTimeSheet", true);
+            component.set("v.chooseLabor", false);
+            var selectedRec = component.get('v.selectedRecs');
+            console.log('selectedRec--->>>'+  selectedRec);
+        }else{
+            component.set("v.chooseTimeCard", true);
+            component.set("v.chooseTimeSheet", false);
+            component.set("v.chooseLabor", false);
+        }
+        // }else{
+        //     var toastEvent = $A.get("e.force:showToast");
+        //     toastEvent.setParams({
+        //         title: "Error",
+        //         message: "Please Select Labor",
+        //         type: "error"
+        //     });
+        //     toastEvent.fire();
+        // }
+    },
+
+    backtoChooseLabor: function (component, event, helper) {
+        component.set("v.chooseTimeCard", false);
+        component.set("v.chooseTimeSheet", false);
+        component.set("v.chooseLabor", true);
+        component.set("v.selectedLabor", "Time Card");
+
+        //make check box false
+        var recordList = component.get("v.recordList");
+        recordList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.recordList", recordList);
+
+        var timeSheetList = component.get("v.timeSheetList");
+        timeSheetList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.timeSheetList", timeSheetList);
+    },
+
     onSaveSuccess: function (component, event, helper) {
         if (event) {
             if (event.getParams().message && event.getParams().message.indexOf('Budget Item') != -1 && event.getParams().message.indexOf('was saved') != -1) {
@@ -4524,8 +4580,251 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         component.find("selectAllTimeCards").set("v.checked", checkedAll);
         component.set("v.selectedExistingTC", existingId);
 
+    },
+
+    checkAllTimeSheets: function(component, event, helper){
+        var value = component.find("selectAllTimeSheets").get("v.checked");
+        console.log('value', value);
+        let listOfRecords = component.get("v.timeSheetList");
+        console.log('listOfRecords ', listOfRecords);
+        var existingId = [];
+
+        listOfRecords.forEach(function (element) {
+            element.Selected = value;
+            existingId.push(element.Id);
+
+        });
+        console.log('listOfRecords ', listOfRecords);
+        console.log('existingId ', existingId);
+        component.set("v.timeSheetList", listOfRecords);
+        component.set("v.selectedExistingTS", existingId);
+
+    },
+
+    checkTimeSheet: function(component, event, helper) {
+        let listOfRecords = component.get("v.timeSheetList");
+        let checkedAll = true;
+        var existingId = [];
+
+        listOfRecords.forEach(function (element) {
+            if (!element.Selected) {
+                checkedAll = false;
+            } else {
+                existingId.push(element.Id);
+                console.log(existingId);
+            }
+        });
+        component.find("selectAllTimeSheets").set("v.checked", checkedAll);
+        component.set("v.selectedExistingTS", existingId);
+
+    },
+
+    updateTimesheet: function (component, event, helper){
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
 
 
+        var selectedTimeSheetRecords = component.get("v.timeSheetList");
+        console.log('selectedTimeSheetRecords ', selectedTimeSheetRecords);
+        let selectedTimeSheetList = [];
+        selectedTimeSheetRecords.forEach(element => {
+            if (element.Selected) {
+                selectedTimeSheetList.push(element);
+            }
+        });
+        console.log('selectedTimeSheetList', selectedTimeSheetList);
+
+        if (selectedTimeSheetList.length > 0) {
+
+            var timeSheetId = component.get("v.selectedExistingTS");
+            console.log('timeSheetId ', timeSheetId);
+            var budget = component.get("v.recordId");
+            timeSheetId = timeSheetId.toString();
+            var selectedRecords = component.get('v.selectedRecs');
+            if (selectedRecords.length > 0) {
+
+                selectedRecords = selectedRecords.toString();
+                var action = component.get("c.updateTimeSheetBudget");
+                action.setParams({
+                    recordId: timeSheetId,
+                    budgetlineId: selectedRecords,
+                    budgetId: budget
+                });
+                action.setCallback(this, function (response) {
+                        var state = response.getState();
+                        var result = response.getReturnValue();
+                        if (result === 'Success') {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Success', 'Labor Price updated successfully', 'success');
+
+                        }
+                        else if (result === 'null') {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Error', 'Please Select Time Sheet', 'error');
+                        }
+                        else {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Error', 'something goes wrong', 'error');
+                        }
+                    });
+                    $A.enqueueAction(action);
+    
+                    var a = component.get('c.doCancel');
+                    $A.enqueueAction(a);
+
+                // var action = component.get("c.updateLaborPrice");
+                // action.setParams({
+                //     recordId: timeCardId,
+                //     budgeLineIds: selectedRecords
+                // });
+                // action.setCallback(this, function (response) {
+                //     var state = response.getState();
+                //     var result = response.getReturnValue();
+                //     console.log(state, ':::::::::::::::::STATE::::::::::::');
+                //     console.log(response.getReturnValue());
+                //     if (result === 'Success') {
+                //         $A.get("e.c:BT_SpinnerEvent").setParams({
+                //             "action": "HIDE"
+                //         }).fire();
+                //         helper.showToast(component, event, helper, 'Success', 'Labor Price updated successfully', 'success');
+                //     } else if (result === 'null') {
+                //         $A.get("e.c:BT_SpinnerEvent").setParams({
+                //             "action": "HIDE"
+                //         }).fire();
+                //         helper.showToast(component, event, helper, 'Error', 'Please Select Time Card', 'error');
+                //     }
+                //     else {
+                //         $A.get("e.c:BT_SpinnerEvent").setParams({
+                //             "action": "HIDE"
+                //         }).fire();
+                //         helper.showToast(component, event, helper, 'Error', 'something goes wrong', 'error');
+                //     }
+                //     console.log('selectedRecords --> ', { selectedRecords });
+                // });
+                // $A.enqueueAction(action);
+
+                // var a = component.get('c.doCancel');
+                // $A.enqueueAction(a);
+            } else {
+                var timeSheetId = component.get("v.selectedExistingTS");
+                console.log('timeSheetId ', timeSheetId);
+                var budget = component.get("v.recordId");
+                console.log('timesheet id-->'+timeSheetId);
+                console.log('budget lines -->'+ selectedRecords);
+                console.log('budget id -->'+budget);
+                if (selectedRecords && selectedRecords.length > 0) {
+                    selectedRecords = selectedRecords.toString();
+                } else {
+                    selectedRecords = null; // or any default value you prefer
+                } 
+                timeSheetId = timeSheetId.toString();               
+                var action = component.get("c.updateTimeSheetBudget");
+                action.setParams({
+                    recordId: timeSheetId,
+                    budgetlineId: '',
+                    budgetId: budget
+                });
+                action.setCallback(this, function (response) {
+                        var state = response.getState();
+                        var error = response.getError();
+                        console.log('error -->',error);
+                        console.log(state);
+                        var result = response.getReturnValue();
+                        console.log('result',result);
+                        debugger;
+                        if (result === 'Success') {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Success', 'Labor Price updated successfully', 'success');
+
+                        }
+                        else if (result === null) {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Error', 'Please Select Time Sheet', 'error');
+                        }
+                        else {
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
+                            helper.showToast(component, event, helper, 'Error', 'something goes wrong', 'error');
+                        }
+                    });
+                    $A.enqueueAction(action);
+
+                    var a = component.get('c.doCancel');
+                    $A.enqueueAction(a);
+
+                // debugger;
+                // var recId = component.get("v.recordId");
+                // var action = component.get("c.CreateLineAddLabor");
+                // action.setParams({
+                //     selectedTimeCard: selectedTimeCardList,
+                //     RecId: recId
+                // });
+                // action.setCallback(this, function (result) {
+                //     $A.get("e.c:BT_SpinnerEvent").setParams({
+                //         "action": "HIDE"
+                //     }).fire();
+                //     var state = result.getState();
+                //     if (state === "SUCCESS") {
+                //         component.set('v.selectedRecs', []);
+                //         var toastEvent = $A.get("e.force:showToast");
+                //         toastEvent.setParams({
+                //             type: 'SUCCESS',
+                //             message: 'Labor added Successfully',
+                //             duration: '5000',
+                //         });
+                //         toastEvent.fire();
+
+                //         let getValue=component.get('v.displayGrouping')
+                //         if (getValue) {
+                //             helper.getBudgetGrouping(component, event, helper); 
+                //         } else{
+                //             var action1 = component.get("c.doInit");
+                //             $A.enqueueAction(action1);
+
+                //         }
+
+                       
+                //     } else {
+                //         var toastEvent = $A.get("e.force:showToast");
+                //         toastEvent.setParams({
+                //             type: 'ERROR',
+                //             message: 'Something Went Wrong',
+                //             duration: '5000',
+                //         });
+                //         toastEvent.fire();
+                //     }
+                //     component.set("v.addtcsection", false);
+                //     var a = component.get('c.doCancel');
+                //     $A.enqueueAction(a);
+                // });
+                // $A.enqueueAction(action);
+            }
+        } else {
+
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                type: 'ERROR',
+                message: 'please select records.',
+                duration: '5000',
+            });
+            toastEvent.fire();
+        }
     },
 
     updateBLPO: function (component, event, helper) {

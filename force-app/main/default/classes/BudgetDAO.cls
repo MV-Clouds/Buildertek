@@ -2110,6 +2110,19 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }
 
     @AuraEnabled
+    public static List<buildertek__BT_Time_Sheet__c> getTimeSheetData(String RecId){
+        buildertek__Budget__c BudgetRec = [SELECT Id, Name, buildertek__Project__c
+                                        FROM buildertek__Budget__c
+                                        where Id = :RecId];
+        
+        List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
+
+        return timeSheetList;
+
+        
+    }
+
+    @AuraEnabled
     public static BudgetDataTableWrapperClone getTimeCardData(Integer pageNumber, Integer pageSize, string RecId){
         buildertek__Budget__c RFQRec = [SELECT Id, Name, buildertek__Project__c
                                         FROM buildertek__Budget__c
@@ -2196,6 +2209,8 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
                             OFFSET :offset];*/
         return objDT;
     }
+
+
 
     @AuraEnabled
     public static string updateLaborPrice(String recordId, String budgeLineIds){
@@ -3411,5 +3426,47 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return fieldsetWrapperList;
     }
 
-
+    @AuraEnabled
+    public static string updateTimeSheetBudget(String recordId, String budgetlineId, String budgetId){
+        System.debug('1');
+        List<String> strRecordId = recordId.split(',');
+        String response;
+        try {
+            if(budgetlineId != ''){
+                System.debug('2');
+                List<buildertek__BT_Time_Sheet__c> timesheetList =[SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c	 FROM buildertek__BT_Time_Sheet__c WHERE Id IN: strRecordId];
+                    List<buildertek__Budget_Item__c> budgetItemList =[SELECT Id, Name, buildertek__Budget__c FROM buildertek__Budget_Item__c WHERE Id =: budgetlineId];
+                    List<buildertek__BT_Time_Sheet__c> updateTimeSheet = new List<buildertek__BT_Time_Sheet__c>();
+                    if (budgetItemList.size() > 0) {
+                        for(buildertek__BT_Time_Sheet__c timeSheet : timesheetList){
+                            timeSheet.buildertek__BT_Budget__c = budgetItemList[0].buildertek__Budget__c;
+                            timeSheet.buildertek__BT_Budget_Line__c = budgetItemList[0].Id;
+                            updateTimeSheet.add(timeSheet);
+                        }
+                        update updateTimeSheet;
+                    }
+                response = 'Success';
+            }
+            else{
+                System.debug('3');
+                List<buildertek__BT_Time_Sheet__c> timesheetList =[SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c	 FROM buildertek__BT_Time_Sheet__c WHERE Id IN: strRecordId];
+                List<buildertek__BT_Time_Sheet__c> updateTimeSheet = new List<buildertek__BT_Time_Sheet__c>();
+                    for(buildertek__BT_Time_Sheet__c timeSheet : timesheetList){
+                        timeSheet.buildertek__BT_Budget__c = budgetId;
+                        updateTimeSheet.add(timeSheet);
+                    }
+                    update updateTimeSheet;
+                response = 'Success';
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            response = 'Error';
+            return response;
+        }
+        return response;
+    }
 }

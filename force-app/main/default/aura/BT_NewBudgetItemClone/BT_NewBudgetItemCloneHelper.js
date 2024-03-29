@@ -1630,6 +1630,27 @@
         });
         $A.enqueueAction(action);
     },
+
+    gettsList: function (component, pageNumber, pageSize) {
+        var recId = component.get("v.recordId");
+        var action = component.get("c.getTimeSheetData");
+        action.setParams({
+            RecId: recId
+        });
+        action.setCallback(this, function (result) {
+            var state = result.getState();
+            if (component.isValid() && state === "SUCCESS") {
+                var resultData = result.getReturnValue();
+                //iterate through the list of records and add selected field with default value false
+                for (var i in resultData) {
+                    resultData[i].Selected = false;
+                }
+                console.log('Jaimin resultData --> ',{resultData});
+                component.set("v.timeSheetList", resultData);
+            }
+        });
+        $A.enqueueAction(action);
+    },
       doSave: function (component, event, helper) {
           $A.get("e.c:BT_SpinnerEvent").setParams({
               "action": "SHOW"
