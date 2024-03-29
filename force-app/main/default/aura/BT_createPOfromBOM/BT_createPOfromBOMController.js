@@ -18,7 +18,7 @@
         var BOMName = component.get("v.BTBOMtype")["Name"];
         component.set("v.BOMName", BOMName)
     },
-    
+
 
     onClickCreatePOhadler: function(component, event, helper){
       try {
@@ -33,7 +33,7 @@
 
           groupData[groupIndex].isCreatePOEnable = true;
           component.set("v.GroupByVendors", groupData);
-          
+
         }
         else{
           var SelecetdLinesId = [];
@@ -43,9 +43,9 @@
           if(group){
             SelecetdLinesId = group.SelecetdLinesId;
           }
-          
+
           // To check wheather all BOM line for the perticular vendor are associted with PO or Not...
-          var is_AllLinesHavePO = groupData[groupIndex].sObjectList.every(line => line.buildertek__Purchase_Order__c);               
+          var is_AllLinesHavePO = groupData[groupIndex].sObjectList.every(line => line.buildertek__Purchase_Order__c);
           console.log('is_AllLinesHavePO : ', is_AllLinesHavePO);
 
           if(is_AllLinesHavePO){
@@ -60,7 +60,7 @@
             helper.createPOHelper(component, event, helper, groupIndex);
           }
         }
-        
+
       } catch (error) {
         console.log('error in onClickCreatePOhadler : ', error.stack);
       }
@@ -89,14 +89,14 @@
     },
 
     redirect: function (component, event, helper) {
-  
+
       var navEvt = $A.get("e.force:navigateToSObject");
       navEvt.setParams({
         recordId: component.get("v.recordId"),
         slideDevName: "related",
       });
       navEvt.fire();
-  
+
       var workspaceAPI = component.find("workspace");
       workspaceAPI
         .getFocusedTabInfo()
@@ -120,7 +120,7 @@
             var groupIndex = rowId.split("_")[1];
             var rowIndex = rowId.split("_")[2];
 
-            
+
             // var SelecetdLinesId = component.get("v.selectdLinesId");
             // if(isChecked){
             //   SelecetdLinesId.push(lineId);
@@ -130,9 +130,9 @@
             //   SelecetdLinesId = SelecetdLinesId.filter((ele) => ele !== lineId);
             //   component.set("v.selectdLinesId", SelecetdLinesId);
             // }
-            
+
             var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
-            // create Vendor(group) againt Selected Line Ids Object.... 
+            // create Vendor(group) againt Selected Line Ids Object....
             if(vendorVsselectdLinesId.length > 0){
               for(var i in vendorVsselectdLinesId){
                 if(vendorVsselectdLinesId[i].groupIndex == groupIndex){
@@ -184,34 +184,28 @@
 
     redirectToObjectTab: function (component, event, helper) {
     try {
-      
-      console.log('Button Title : ', event.currentTarget.title);
 
-      
       var navEvt = $A.get("e.force:navigateToSObject");
       navEvt.setParams({
         recordId: component.get("v.recordId"),
         slideDevName: "related",
       });
       navEvt.fire();
-  
-      if(event.currentTarget.title == undefined){
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI
-          .getFocusedTabInfo()
-          .then(function (response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.closeTab({
-              tabId: focusedTabId,
-            });
-          })
-          .catch(function (error) {
-            // console.log("Error", error);
+
+      var workspaceAPI = component.find("workspace");
+      workspaceAPI
+        .getFocusedTabInfo()
+        .then(function (response) {
+          var focusedTabId = response.tabId;
+          workspaceAPI.closeTab({
+            tabId: focusedTabId,
           });
-      }
+        })
+        .catch(function (error) {
+          // console.log("Error", error);
+        });
     } catch (error) {
       console.log('error in redirectToObjectTab : ', error.stack);
-      
     }
     },
 
