@@ -37,16 +37,18 @@
     },
 
     handleCheck: function (component, event, helper) {
-        var checkbox = event.getSource();
+        var checkbox1 = event.getSource().get("v.value");
+        var checkbox = event.getSource().get("v.text");
         var Submittals = component.get("v.masterReviewsList");
+        var getAllId = component.find("checkContractor");
 
         for (var i = 0; i < Submittals.length; i++) {
             if (Submittals[i].masterReviewRecord != null) {
-                if (Submittals[i].masterReviewRecord.Id == checkbox.get("v.text") && Submittals[i].reviewCheck == false) {
-                    Submittals[i].reviewCheck = true;
-                }
-                else if (Submittals[i].masterReviewRecord.Id == checkbox.get("v.text") && Submittals[i].reviewCheck == true) {
+                if (Submittals[i].masterReviewRecord.Id == checkbox && Submittals[i].reviewCheck == false) {
                     Submittals[i].reviewCheck = false;
+                }
+                else if (Submittals[i].masterReviewRecord.Id == checkbox && Submittals[i].reviewCheck == true) {
+                    Submittals[i].reviewCheck = true;
                 }
             }
 
@@ -70,7 +72,6 @@
                     if (selectedHeaderCheck == true) {
                         for (var i = 0; i < getAllId.length; i++) {
                             component.find("checkContractor")[i].set("v.value", true);
-                            var checkbox = component.find("checkContractor")[i].get("v.text");
                             Submittals[i].reviewCheck = true;
 
                         }
@@ -78,8 +79,6 @@
                     else {
                         for (var i = 0; i < getAllId.length; i++) {
                             component.find("checkContractor")[i].set("v.value", false);
-
-                            var checkbox = component.find("checkContractor")[i].get("v.text");
                             var Submittals = component.get("v.masterReviewsList");
                             Submittals[i].reviewCheck = false;
                         }
@@ -90,15 +89,12 @@
                 var i = 0;
                 if (selectedHeaderCheck == true) {
                     component.find("checkContractor").set("v.value", true);
-                    var checkbox = component.find("checkContractor").get("v.text");
                     Submittals[i].reviewCheck = true;
 
 
                 }
                 else {
                     component.find("checkContractor").set("v.value", false);
-
-                    var checkbox = component.find("checkContractor").get("v.text");
                     var Submittals = component.get("v.masterReviewsList");
                     Submittals[i].reviewCheck = false;
 
@@ -189,6 +185,7 @@
     },
 
     next: function (component, event, helper) {
+        console.log('Next calling');
         var sObjectList = component.get("v.masterReviewsList");
         var end = component.get("v.endPage");
         var start = component.get("v.startPage");
