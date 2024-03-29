@@ -97,7 +97,7 @@
                                                     <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
                                                 </aura:if>
                                                 <aura:if isTrue="{!field.name=='buildertek__Vendor__c'}" >
-                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.customerId}" />
+                                                    <lightning:inputField fieldName="{!field.name}" value="{!v.customerId}" required="true"/>
                                                 </aura:if>
                                             </aura:set>
                                         </aura:if>
