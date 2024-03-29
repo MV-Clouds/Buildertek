@@ -59,7 +59,13 @@ public class createAllPOfromBOM_controller {
                             }
                         }
                     }
+                    Map<String, Id> recordTypeMap = new Map<String, Id>();
+                    for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                        recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+                    }
 
+                    Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
+                    
                     system.debug('VenodrId_CostCode : ' + VenodrId_Phase);
                     system.debug('VenodrId_Phase : ' + VenodrId_Phase);
                     system.debug('VenodrId_Category : ' + VenodrId_Category);
@@ -76,6 +82,7 @@ public class createAllPOfromBOM_controller {
                             POtoCreate.buildertek__Vendor__c = VendorId;
                             POtoCreate.buildertek__Cost_Code__c = VenodrId_CostCode.containsKey(VendorId) ? VenodrId_CostCode.get(VendorId) : null;      // Assign cost code...
                             POtoCreate.buildertek__BT_Build_Phase__c = VenodrId_Phase.containsKey(VendorId) ? VenodrId_Phase.get(VendorId) : null;    // Assign Phase...
+                            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                             
                         }
@@ -159,9 +166,9 @@ public class createAllPOfromBOM_controller {
                                         // schedule item category == PO categorty (first BOM category)
                                         // get first schedule items that match above conditions....
 
-                                        if( SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c
+                                        if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c //SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c
                                             // && schItemPhaseName == poPhaseName 
-                                            && SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
+                                            //&& SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
                                             && !PO_to_matchedSchItems.containsKey(PO.Id))
                                         {
