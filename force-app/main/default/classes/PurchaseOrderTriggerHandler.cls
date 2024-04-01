@@ -288,6 +288,8 @@ public with sharing class PurchaseOrderTriggerHandler{
                 Messaging.sendEmail(msgListToBeSend);
             }
         }
+        // remove PO from schedule item  
+        removePOFromScheduleItem(updatedPurchaseOrders, oldPurchaseOrdersMap);
     }
     /*  public void afterUpdate(Purchase_Order__c[] oldPurchaseOrders, Purchase_Order__c[] updatedPurchaseOrders, Map<ID, Purchase_Order__c> PurchaseOrderMap, Map<Id, Purchase_Order__c> oldPurchaseOrdersMap){
 list<Id> purchaseIds = new list<Id>();
@@ -627,6 +629,31 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
         }
     }
     
+    public void removePOFromScheduleItem(List<buildertek__Purchase_Order__c> newPurchaseOrders, Map<ID, buildertek__Purchase_Order__c> oldPurchaseOrderMap) {
+        try {
+            Set<Id> scheduleItemIds = new Set<Id>();
+            for (buildertek__Purchase_Order__c newPO : newPurchaseOrders) {
+                if (newPO.buildertek__Schedule_Item__c == null && oldPurchaseOrderMap.containsKey(newPO.Id) && oldPurchaseOrderMap.get(newPO.Id).buildertek__Schedule_Item__c != null) {
+                    scheduleItemIds.add(oldPurchaseOrderMap.get(newPO.Id).buildertek__Schedule_Item__c);
+                }
+            }
+            
+            List<buildertek__Project_Task__c> scheduleItems = [SELECT Id, buildertek__Purchase_Order__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
+
+            if (!scheduleItems.isEmpty()) {
+                for (buildertek__Project_Task__c scheduleItem : scheduleItems) {
+                    scheduleItem.buildertek__Purchase_Order__c = null;
+                }
+                update scheduleItems;
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+    }
     
     
 }
