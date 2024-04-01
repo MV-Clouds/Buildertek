@@ -49,11 +49,11 @@
                     max-height:unset !important;
                     }
                     .custom-center {
-                    height: 30rem;
-                    width: 45%;
+                    height: 55vh;
+                    width: 55%;
                     position: absolute;
-                    top: 45%;
-                    left: 50%;
+                    top: 43%;
+                    left: 47%;
                     transform: translate(-50%, -50%);
                     }
                 </aura:html>
