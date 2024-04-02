@@ -44,21 +44,22 @@
                                     <lightning:input type="text" value="{!vrl.Name}" class="alignment" />
                                 </td>
                                 <td>
-                                    <lightning:input type="percent" value="{!vrl.buildertek__Weighting__c}"
-                                        class="alignment" onchange="recalculateScore"/>
+                                    <lightning:input type="number" value="{!vrl.buildertek__Weighting__c}"
+                                        class="alignment" onchange="{!c.recalculateScore}" name="{!index}"/>
                                 </td>
                                 <td>
                                     <lightning:input type="number" value="{!vrl.buildertek__Rating__c}"
-                                        class="alignment" />
+                                        class="alignment" onchange="{!c.recalculateScore}" name="{!index}" />
                                 </td>
                                 <td>
-                                    <lightning:input type="number" value="{!vrl.buildertek__Score__c}"
-                                        class="alignment" disabled="true"/>
+                                    <lightning:input type="number" value="{!vrl.buildertek__Score__c}" class="alignment"
+                                        disabled="true" />
                                 </td>
                                 <td>
                                     <span onclick="{!c.deleteRecord}" data-index='{!index}'>
                                         <lightning:icon iconName="action:close" alternativeText="Delete"
-                                            class="some-indicator alignment" size="x-small" title="Delete" style="margin-top: 10px !important;"/>
+                                            class="some-indicator alignment" size="x-small" title="Delete"
+                                            style="margin-top: 10px !important;" />
                                     </span>
                                 </td>
                             </tr>

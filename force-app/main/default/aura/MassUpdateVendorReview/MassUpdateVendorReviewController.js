@@ -59,28 +59,24 @@
     },
 
     closeScreen: function (component, event, helper) {
-        let vendorReviewId = component.get("v.recordId");
-        component.set("v.isCancelModalOpen", false);
-        var workspaceAPI = component.find("workspace");
-        workspaceAPI.getFocusedTabInfo().then(function (response) {
-            var focusedTabId = response.tabId;
-            workspaceAPI.closeTab({ tabId: focusedTabId });
-        }).catch(function (error) {
-            console.log(error);
-        });
-        var navEvt = $A.get("e.force:navigateToSObject");
-        navEvt.setParams({
-            "recordId": vendorReviewId,
-            "slideDevName": "detail"
-        });
-        navEvt.fire();
+        helper.closeScreenAndRedirect(component, event, helper);
     },
 
     closeCancelModal: function (component, event, helper) {
         component.set("v.isCancelModalOpen", false);
     },
 
-    recalculateScore : function(component, event, helper) {
-        
-    }      
+    recalculateScore: function (component, event, helper) {
+        var index = event.getSource().get("v.name");
+        var vendorReviewLines = component.get('v.vendorReviewLines');
+        var vrl = vendorReviewLines[index];
+
+        var weighting = vrl.buildertek__Weighting__c || 0;
+        var rating = vrl.buildertek__Rating__c || 0;
+        var score = (weighting * rating / 100).toFixed(2);
+
+        vrl.buildertek__Score__c = score;
+
+        component.set('v.vendorReviewLines', vendorReviewLines);
+    }
 })

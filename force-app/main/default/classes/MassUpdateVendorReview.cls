@@ -31,6 +31,11 @@ public with sharing class MassUpdateVendorReview {
             if (!toUpdate.isEmpty()) {
                 update toUpdate;
             }
+
+            if (!toDelete.isEmpty()) {
+                delete toDelete;
+            }
+            
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];

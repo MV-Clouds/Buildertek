@@ -16,21 +16,35 @@
 
     validateVendorReviewLines: function (component, event, helper) {
         var vendorReviewLines = component.get('v.vendorReviewLines');
-        var isValid = true;
+        var isEmptyNameError = false;
+        var isInvalidWeightError = false;
+        var errorMessages = [];
+
         for (var i = 0; i < vendorReviewLines.length; i++) {
             var name = vendorReviewLines[i].Name || '';
+            var weight = vendorReviewLines[i].buildertek__Weighting__c || 0;
             name = name.trim();
-            console.log(`name: ${name}`);
-            console.log(`vendorReviewLines[i] ${JSON.stringify(vendorReviewLines[i])}`);
+
             if (!name) {
-                isValid = false;
-                break;
+                isEmptyNameError = true;
+            }
+            if (isNaN(weight) || weight < 0 || weight > 100) {
+                isInvalidWeightError = true;
             }
         }
 
-        if (!isValid) {
+        if (isEmptyNameError) {
+            errorMessages.push("Name cannot be empty");
+        }
+
+        if (isInvalidWeightError) {
+            errorMessages.push("Weight must be a valid percentage between 0 and 100");
+        }
+
+        if (errorMessages.length > 0) {
             component.set("v.Spinner", false);
-            this.showToast("Error!", "Name cannot be empty", "error");
+            var toastMessage = "Please fix the following errors:\n" + errorMessages.join("\n");
+            this.showToast("Error!", toastMessage, "error");
         } else {
             this.updateVendorReviewLines(component, event, helper);
         }
@@ -62,18 +76,32 @@
                 var result = response.getReturnValue();
                 console.log('result', result);
                 if (result == 'Success') {
-                    var navEvt = $A.get("e.force:navigateToSObject");
-                    navEvt.setParams({
-                        "recordId": component.get("v.recordId"),
-                        "slideDevName": "detail"
-                    });
-                    navEvt.fire();
+                    this.showToast("Success!", "Record updated successfully", "success");
+                    this.closeScreenAndRedirect(component, event, helper);
                 } else {
                     this.showToast("Error!", "An error occurred while updating the record", "error");
                 }
             }
         });
         $A.enqueueAction(action);
-    }
+    },
+
+    closeScreenAndRedirect: function (component, event, helper) {
+        let vendorReviewId = component.get("v.recordId");
+        component.set("v.isCancelModalOpen", false);
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI.getFocusedTabInfo().then(function (response) {
+            var focusedTabId = response.tabId;
+            workspaceAPI.closeTab({ tabId: focusedTabId });
+        }).catch(function (error) {
+            console.log(error);
+        });
+        var navEvt = $A.get("e.force:navigateToSObject");
+        navEvt.setParams({
+            "recordId": vendorReviewId,
+            "slideDevName": "detail"
+        });
+        navEvt.fire();
+    },
 
 })

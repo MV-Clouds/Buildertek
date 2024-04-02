@@ -34,3 +34,16 @@
 .THIS td {
     padding-block: 3px !important;
 }
+
+.THIS th {
+    padding-left: 10px;
+}
+
+.THIS .slds-has-error .slds-form-element__help {
+    display: none;
+}
+
+.THIS .slds-has-error .slds-input {
+    --slds-c-input-shadow: #000000 !important;
+    --slds-c-input-color-border: #000000 !important;
+}
