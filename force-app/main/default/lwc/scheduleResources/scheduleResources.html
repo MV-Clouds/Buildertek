@@ -160,7 +160,7 @@
                         <h2 class="popup__header-title">⚠️ Conflict Detected</h2>
                         <button class="closeIcon" title="Close" onclick={handleCloseModal}>
                             <lightning-icon icon-name="utility:close" alternative-text="Close"
-                                size="x-small"></lightning-icon>
+                                size="small"></lightning-icon>
                         </button>
                     </div>
                     <div class="popup__body">
@@ -209,7 +209,7 @@
                                                 <div class="slds-col slds-truncate">
                                                     <p class="popup__record-value">{scheduleItem.endDate}</p>
                                                 </div>
-                                                <div class="slds-col" style="margin: auto;">
+                                                <div class="slds-col" style="margin: auto 25%;">
                                                     <lightning-icon icon-name="utility:open" alternative-text="Redirect"
                                                         size="xx-small" title="Redirect"
                                                         data-id={scheduleItem.scheduleId} onclick={handleFixConflict}

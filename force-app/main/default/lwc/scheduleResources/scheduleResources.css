@@ -116,6 +116,8 @@
     padding: 1.5rem;
     max-height: 70vh;
     overflow-y: auto;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
 }
 
 .tableContainer {
@@ -165,6 +167,7 @@
     margin: 0;
     margin-bottom: 1rem;
     color: #3a3a3a;
+    font: caption;
 }
 
 .accept-button {
@@ -195,13 +198,14 @@
 
 .closeIcon {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: -2.5rem;
+    right: -2.5rem;
     width: 32px;
     height: 32px;
     border: none;
     cursor: pointer;
     z-index: 9999;
+    background: none;
     --slds-c-icon-color-foreground-default: black !important;
 }
 
