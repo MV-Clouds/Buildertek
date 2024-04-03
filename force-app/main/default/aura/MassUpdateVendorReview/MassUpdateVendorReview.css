@@ -36,7 +36,7 @@
 }
 
 .THIS th {
-    padding-left: 10px;
+    padding-left: 10px !important;
 }
 
 .THIS .slds-has-error .slds-form-element__help {

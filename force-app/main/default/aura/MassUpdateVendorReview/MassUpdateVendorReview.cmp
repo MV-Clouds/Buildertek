@@ -5,7 +5,6 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
 
-    <aura:attribute name="Spinner" type="boolean" />
     <aura:attribute name="recordId" type="String" />
     <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
     <aura:attribute name="vendorReviewLines" type="List" default="[]" />
@@ -13,9 +12,7 @@
 
     <lightning:workspaceAPI aura:id="workspace" />
 
-    <aura:if isTrue="{!v.Spinner}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
-    </aura:if>
+    <c:BT_Spinner />
 
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Vendor Review Lines">
         <aura:set attribute="actions">
@@ -31,8 +28,8 @@
                     <thead>
                         <tr style="height:35px; !important">
                             <th> Name </th>
-                            <th> Weighting </th>
                             <th> Rating </th>
+                            <th> Weighting </th>
                             <th> Score </th>
                             <th></th>
                         </tr>
@@ -44,11 +41,11 @@
                                     <lightning:input type="text" value="{!vrl.Name}" class="alignment" />
                                 </td>
                                 <td>
-                                    <lightning:input type="number" value="{!vrl.buildertek__Weighting__c}"
-                                        class="alignment" onchange="{!c.recalculateScore}" name="{!index}"/>
+                                    <lightning:input type="number" value="{!vrl.buildertek__Rating__c}"
+                                        class="alignment" onchange="{!c.recalculateScore}" name="{!index}" />
                                 </td>
                                 <td>
-                                    <lightning:input type="number" value="{!vrl.buildertek__Rating__c}"
+                                    <lightning:input type="number" value="{!vrl.buildertek__Weighting__c}"
                                         class="alignment" onchange="{!c.recalculateScore}" name="{!index}" />
                                 </td>
                                 <td>

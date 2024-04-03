@@ -1,6 +1,8 @@
 ({
     doInit: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var pageRef = component.get("v.pageReference");
         if (pageRef != undefined) {
             var state = pageRef.state;
@@ -50,7 +52,9 @@
     },
 
     onMassUpdate: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         helper.validateVendorReviewLines(component, event, helper);
     },
 
