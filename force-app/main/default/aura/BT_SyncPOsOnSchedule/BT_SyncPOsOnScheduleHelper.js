@@ -109,6 +109,7 @@
                 let result = response.getReturnValue();
                 console.log('result: ' + JSON.stringify(result));
                 this.showToast('Success', 'Success', 'POs are successfully synced', '3000');
+                window.location.reload();
                 this.closeModel(component);
             } else {
                 let error = response.getError();
