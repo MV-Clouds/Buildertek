@@ -1,75 +1,48 @@
 public without sharing class BT_SyncPOsOnScheduleController {
     
     @AuraEnabled
-    public static List<buildertek__Project_Task__c> fetchScheduleItem(String scheduleId){
+    public static POAndScheduleItemWrapper fetchPOAndScheduleItem(String scheduleId){
+        POAndScheduleItemWrapper poAndScheduleItemWrapper = new POAndScheduleItemWrapper();
         try {
-            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Type__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' AND buildertek__Purchase_Order__c = null ORDER BY Name ASC];
-            return scheduleItemList;
-        } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
-                BT_ExceptionHandler.Store_Exception(e);
+            if (String.isBlank(scheduleId)) {
+                poAndScheduleItemWrapper.Message = 'id-blank';
+                return poAndScheduleItemWrapper;
             }
-            return null;
-        }
-    }
-    
-    @AuraEnabled
-    public static List<buildertek__Purchase_Order__c> fetchAllPOs(String scheduleId){
-        try {
-            Id projectId = [SELECT Id, buildertek__Project__c FROM buildertek__Schedule__c WHERE Id = :scheduleId].buildertek__Project__c;
-            if (projectId == null) {
-                return null;
+            List<buildertek__Schedule__c> scheduleList = [SELECT Id, Name, buildertek__Project__c FROM buildertek__Schedule__c WHERE Id = :scheduleId];
+            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Contractor__c, buildertek__BT_Category__c, buildertek__Cost_Code__c, buildertek__Schedule__r.buildertek__Project__c FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' AND buildertek__Purchase_Order__c = null ORDER BY Name ASC];
+            
+            String projectId;
+            if (!scheduleList.isEmpty()) {
+                projectId = scheduleList[0].buildertek__Project__c;
             }
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = null AND buildertek__Project__c =:projectId ORDER BY Name ASC];
-            return poList;
-        } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
-                BT_ExceptionHandler.Store_Exception(e);
-            }
-            return null;
-        }
-    }
-    
-    @AuraEnabled
-    public static String setPOForScheduleItem(String schedulePO, String scheduleId) {
-        try {
-            List<SchedulePOWrapper> schedulePOList = (List<SchedulePOWrapper>)JSON.deserialize(schedulePO, List<SchedulePOWrapper>.class);
-            Set<Id> poIds = new Set<Id>();
-            Set<Id> scheduleItemIds = new Set<Id>();
-    
-            for (SchedulePOWrapper schedulePOItem : schedulePOList) {
-                poIds.add(schedulePOItem.poId);
-                scheduleItemIds.add(schedulePOItem.scheduleItemId);
+
+            List<buildertek__Purchase_Order__c> poList = new List<buildertek__Purchase_Order__c>();
+            if (projectId != null) {
+                poAndScheduleItemWrapper.poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Vendor__c, buildertek__PO_Total__c, buildertek__Projected_Start_Date__c, buildertek__Projected_Completion_Date__c, buildertek__Completion__c, buildertek__Schedule__c,buildertek__Schedule_Item__c,buildertek__Category__c, buildertek__Cost_Code__c FROM buildertek__Purchase_Order__c WHERE buildertek__Schedule_Item__c = null AND buildertek__Project__c =:projectId AND (buildertek__Category__c != null OR buildertek__Cost_Code__c != null)];
+
+                poAndScheduleItemWrapper.scheduleItemList = [SELECT Id, Name, buildertek__Contractor__c, buildertek__BT_Category__c, buildertek__Cost_Code__c, buildertek__Completion__c, buildertek__Start__c,buildertek__Finish__c, buildertek__Schedule__c  FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c = :scheduleId AND buildertek__Type__c = 'Task' AND buildertek__Purchase_Order__c = null AND (buildertek__Cost_Code__c != null OR buildertek__Contractor__c != null OR buildertek__BT_Category__c != null) ORDER BY Name ASC];
+                
+                poAndScheduleItemWrapper.Message = 'Success';
+                
+                return poAndScheduleItemWrapper;
+            } else {
+                poAndScheduleItemWrapper.Message = 'project-id-blank';
+                return poAndScheduleItemWrapper;
             }
             
-            List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c, buildertek__Schedule__c, buildertek__Completion__c, buildertek__Schedule_Item__c,buildertek__Projected_Start_Date__c, buildertek__Projected_Completion_Date__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
-            List<buildertek__Project_Task__c> scheduleItemList = [SELECT Id, Name, buildertek__Completion__c, buildertek__Purchase_Order__c, buildertek__Start__c, buildertek__Finish__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
-            Map<Id, buildertek__Project_Task__c> scheduleItemMap = new Map<Id, buildertek__Project_Task__c>();
-            for (SchedulePOWrapper schedulePOItem : schedulePOList) {
-                
-                for (buildertek__Project_Task__c scheduleItem : scheduleItemList) {
-                    if (schedulePOItem.scheduleItemId == scheduleItem.Id) {
-                        scheduleItem.buildertek__Purchase_Order__c = schedulePOItem.poId;
-                        scheduleItemMap.put(scheduleItem.Id, scheduleItem);
-                        System.debug('scheduleItem: ' + scheduleItem);
-                    }
-                }
-
-                for (buildertek__Purchase_Order__c po : poList) {
-                    if (schedulePOItem.poId == po.Id) {
-                        po.buildertek__Schedule__c = scheduleId;
-                        po.buildertek__Schedule_Item__c = schedulePOItem.scheduleItemId;
-                        po.buildertek__Completion__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Completion__c; 
-                        po.buildertek__Projected_Start_Date__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Start__c;
-                        po.buildertek__Projected_Completion_Date__c = scheduleItemMap.get(schedulePOItem.scheduleItemId).buildertek__Finish__c; 
-                        System.debug('po: ' + po);
-                    }
-                }
-
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
             }
+            poAndScheduleItemWrapper.Message = 'An error occurred: ' + e.getMessage();
+        }
+        return poAndScheduleItemWrapper;
+    }
 
+    @AuraEnabled
+    public static String updateScheduleItemAndPOList( List<buildertek__Project_Task__c> scheduleItemList, List<buildertek__Purchase_Order__c> poList){
+        try {
             if (!poList.isEmpty()) {
                 update poList;
             }
@@ -80,20 +53,24 @@ public without sharing class BT_SyncPOsOnScheduleController {
     
             return 'Success';
         } catch (Exception e) {
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return 'Error: ' + e.getMessage();
         }
+
     }
-    
-    public class SchedulePOWrapper {
+
+    public class POAndScheduleItemWrapper {
         @AuraEnabled
-        public String scheduleItemId;
-    
+        public List<buildertek__Project_Task__c> scheduleItemList;
+
         @AuraEnabled
-        public String poId;
+        public List<buildertek__Purchase_Order__c> poList;
+
+        @AuraEnabled
+        public String Message;
     }
     
 
