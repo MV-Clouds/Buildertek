@@ -141,7 +141,7 @@ public with sharing class BudgetItemTriggerHandler {
 			invoicePo.buildertek__BT_Budget_Line__c = null;
 			invoicePo.buildertek__Budget__c = null;
 		}
-		if(invoicePOList.size() > 0){
+		if(invoicePOList.size() > 0 && blnSkipBudgetItemTrigger == false){
 			AccountPayableHelper.skipInvoicePOUpdate = true;
 			update invoicePOList;
 			AccountPayableHelper.skipInvoicePOUpdate = false;
