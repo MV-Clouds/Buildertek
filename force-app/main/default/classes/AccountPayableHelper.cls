@@ -98,7 +98,11 @@ public with sharing class AccountPayableHelper {
                 if(oldInvoice == null || oldInvoice.buildertek__BT_Budget_Line__c == null){
                     buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
                     if (invoice.buildertek__Description__c != '' && invoice.buildertek__Description__c != null) {
-                        budgetItem.Name = invoice.Name + ' ' + invoice.buildertek__Description__c;
+                        if(invoice.Name.length() + invoice.buildertek__Description__c.length() <= 80){
+                            budgetItem.Name = invoice.Name + ' ' + invoice.buildertek__Description__c;
+                        } else {
+                            budgetItem.Name = invoice.Name.substring(0, 80 - invoice.buildertek__Description__c.length()) + ' ' + invoice.buildertek__Description__c;
+                        }
                     } else {
                         budgetItem.Name = invoice.Name;
                     }
@@ -308,7 +312,11 @@ public with sharing class AccountPayableHelper {
             if(invoice.buildertek__Budget__c != null){
                 buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
                 if (invoice.buildertek__Description__c != '' && invoice.buildertek__Description__c != null) {
-                    budgetItem.Name = invoice.Name + ' ' + invoice.buildertek__Description__c;
+                    if(invoice.Name.length() + invoice.buildertek__Description__c.length() <= 80){
+                        budgetItem.Name = invoice.Name + ' ' + invoice.buildertek__Description__c;
+                    } else {
+                        budgetItem.Name = invoice.Name.substring(0, 80 - invoice.buildertek__Description__c.length()) + ' ' + invoice.buildertek__Description__c;
+                    }
                 } else {
                     budgetItem.Name = invoice.Name;
                 }
@@ -452,7 +460,14 @@ public with sharing class AccountPayableHelper {
                 if(invoicePo.buildertek__BT_Budget_Line__c==null && invoicePo.buildertek__Budget__c != oldInvoiceMap.get(invoicePo.Id).buildertek__Budget__c && invoicePo.buildertek__Budget__c!=null){
                         buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
                         if (invoicePo.buildertek__Description__c != '' && invoicePo.buildertek__Description__c != null) {
-                            budgetLine.Name = invoicePo.Name + ' ' + invoicePo.buildertek__Description__c;
+                            // budgetLine.Name = invoicePo.Name + ' ' + invoicePo.buildertek__Description__c;
+
+                            //if the above combination is not less than 80 characters
+                            if(invoicePo.Name.length() + invoicePo.buildertek__Description__c.length() <= 80){
+                                budgetLine.Name = invoicePo.Name + ' ' + invoicePo.buildertek__Description__c;
+                            } else {
+                                budgetLine.Name = invoicePo.Name.substring(0, 80 - invoicePo.buildertek__Description__c.length()) + ' ' + invoicePo.buildertek__Description__c;
+                            }
                         } else {
                             budgetLine.Name = invoicePo.Name;
                         }
