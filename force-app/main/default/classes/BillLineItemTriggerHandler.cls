@@ -22,7 +22,7 @@ public class BillLineItemTriggerHandler {
 			invoiceLineids.add(invoiceLine.Id);
 		}
 		System.debug(invoiceLineids);
-		quickBookCallout(invoiceLineids);
+		// quickBookCallout(invoiceLineids);
  	}
      
  	public void OnAfterUpdate(buildertek__Account_Payable_Item__c[] oldBillLineItem, buildertek__Account_Payable_Item__c[] updatedBillLineItem, Map<ID, buildertek__Account_Payable_Item__c> BillLineItemMap, Map<Id, buildertek__Account_Payable_Item__c> oldBillLineItemMap){
