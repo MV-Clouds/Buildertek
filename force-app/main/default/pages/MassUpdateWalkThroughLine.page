@@ -6,6 +6,14 @@
         <span class="slds-assistive-text">Loading...</span>
         <div class="slds-spinner__dot-a"></div>
         <div class="slds-spinner__dot-b"></div>
+        <div class="custom-loading-text" style="transform: rotate(-90deg);
+        position: absolute;
+        top: -0.5rem;
+        left: 1rem;
+        white-space: nowrap;
+        font-size: 20px;">
+            <b>Processing, Please Wait</b>
+        </div>        
     </div>
 
     <div id="LightningCompContainer" />

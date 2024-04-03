@@ -22,7 +22,7 @@
     <lightning:workspaceAPI aura:id="workspace" />
 
     <aura:if isTrue="{!v.Spinner}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
+        <c:BT_Spinner />
     </aura:if>
 
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Walk Through Line Items">
