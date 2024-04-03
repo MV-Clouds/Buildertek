@@ -10,7 +10,7 @@
 
 
 
-    <aura:attribute name="Spinner" type="boolean" />
+    <aura:attribute name="Spinner" type="boolean" default="false"/>
     <aura:attribute name="recordId" type="String" />
     <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
     <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
@@ -21,9 +21,7 @@
 
     <lightning:workspaceAPI aura:id="workspace" />
 
-    <aura:if isTrue="{!v.Spinner}">
-        <c:BT_Spinner />
-    </aura:if>
+    <c:BT_Spinner />
 
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Walk Through Line Items">
         <aura:set attribute="actions">

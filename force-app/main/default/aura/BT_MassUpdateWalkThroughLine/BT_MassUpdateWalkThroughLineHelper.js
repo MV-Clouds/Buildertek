@@ -64,7 +64,6 @@
     },
 
     updateWalkThroughLines: function (component, event, helper) {
-        component.set("v.Spinner", true);
         console.log('updateWalkThroughLines');
         var walkThroughLines = component.get('v.walkThroughLine');
         var deletedWalkThroughLines = component.get('v.deletedWalkThroughLine');
@@ -79,6 +78,14 @@
                 var result = response.getReturnValue();
                 console.log('result', result);
                 if (result == 'Success') {
+                    window.onload = showToast();
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Success",
+                            "message": "Success in updating Walk Through Lines",
+                            "type": "success"
+                        });
+                    }
                     var appEvent = $A.get("e.c:myEvent");
                     appEvent.setParams({
                         "message": "Event fired"

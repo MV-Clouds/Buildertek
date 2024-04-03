@@ -1,7 +1,8 @@
 ({
     doInit: function (component, event, helper) {
-        component.set("v.Spinner", true);
-        window.setTimeout(
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();        window.setTimeout(
             $A.getCallback(function () {
                 console.log('recordId', component.get('v.recordId'));
                 helper.getWalkThroughLines(component, event, helper);
@@ -9,6 +10,9 @@
             }),
             2000
         );
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire();
     },
 
     onAddClick: function (component, event, helper) {
@@ -42,7 +46,9 @@
     },
 
     onMassUpdate: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         helper.validateWalkThroughLines(component, event, helper);
     },
 
@@ -52,6 +58,9 @@
 
     closeScreen: function (component, event, helper) {
         component.set("v.isCancelModalOpen", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var appEvent = $A.get("e.c:myEvent");
         appEvent.setParams({
             "message": "Event fired"
