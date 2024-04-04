@@ -1,95 +1,120 @@
 import { LightningElement, api, track } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getDataForDataTable from "@salesforce/apex/fileUploadAndRenameController.getDataForDataTable";
-import { CloseActionScreenEvent } from "lightning/actions";
-import { loadStyle } from 'lightning/platformResourceLoader';
-import CustomDatatableResource from '@salesforce/resourceUrl/CustomDatatable'
+import updateFileName from "@salesforce/apex/fileUploadAndRenameController.updateFileName";
+import deleteFiles from "@salesforce/apex/fileUploadAndRenameController.deleteFiles";
 
 
 const COLUMNS = [
-    { label: 'Title', initialWidth: 500, fieldName: 'title', editable: true, hideDefaultActions: true },
+    { label: 'Title', initialWidth: 300, fieldName: 'title', editable: true, hideDefaultActions: true },
     { label: 'Image', fieldName: 'image', type: 'customImage', hideDefaultActions: true },
 ];
 
 export default class FileUploadAndRename extends LightningElement {
     columns = COLUMNS;
     loaded = false;
-    @track isFirstPage = true;
-    @track isFileNotUpload = true;
-    @track label = 'Next';
-    @track fileList;
+    @track showDataTable = false;
+    @track fileNotUpload = true;
     @api recordId;
     @track files = [];
-    @api thumbnail;
-    @track documentIds = [];
     saveDraftValues = [];
     rowOffset = 0;
     hasLoadedStyle = false;
 
     get acceptedFormats() {
-        return [".heic", ".png", ".jpg", ".jpeg"];
-    }
-
-    renderedCallback() {
-
-        if (!this.hasLoadedStyle) {
-            this.hasLoadedStyle = true;
-            Promise.all([
-                loadStyle(this, CustomDatatableResource),
-            ]).then(() => { })
-        }
+        return [".heic", ".png", ".jpg", ".jpeg", ".pdf", ".gif", ".doc", ".docx"];
     }
 
     handleUploadFinished(event) {
+        this.showDataTable = true;
+        this.fileNotUpload = false;
         const uploadedFiles = event.detail.files;
-        console.log('uploaded Files ', { uploadedFiles });
-        // this.files = uploadedFiles;
-        this.isFileNotUpload = false;
+
         let documentIds = [];
         for (let i = 0; i < uploadedFiles.length; i++) {
-            console.log('documentId ', uploadedFiles[i].documentId);
             documentIds.push(uploadedFiles[i].documentId);
         }
-        console.log('documentIds ', documentIds);
-        this.documentIds = [...documentIds];
-        console.log('this.documentIds ', JSON.parse(JSON.stringify(this.documentIds)));
-        this.dispatchEvent(
-            new ShowToastEvent({
-                title: "Success!",
-                message: uploadedFiles.length + " Files Uploaded Successfully.",
-                variant: "success"
+
+        getDataForDataTable({ contentDocumentIds: documentIds })
+            .then(result => {
+                this.files = result;
             })
-        );
+            .catch(error => {
+                console.log('error ', error);
+            })
     }
 
     closeAction() {
-        this.dispatchEvent(new CloseActionScreenEvent());
+        if (this.files.length > 0) {
+            let docIds = [];
+
+            this.files.forEach(file => {
+                docIds.push(file.ContentDocumentId);
+            });
+
+            deleteFiles({ docIds: docIds, recordId: this.recordId})
+                .then(result => {
+
+                })
+                .catch(error => {
+                    console.log('error ', error);
+                })
+        }
+
+        const closeEvent = new CustomEvent('closequickaction', {
+            bubbles: true,
+            composed: true,
+            detail: { payload: 'Close Action Payload' }
+        });
+
+        this.dispatchEvent(closeEvent);
     }
 
     nextPage() {
         try {
-            if (this.label != 'Save') {
-                this.isFirstPage = false;
-                this.label = 'Save';
-                getDataForDataTable({ contentDocumentIds: this.documentIds })
-                    .then(result => {
-                        console.log('result ', result);
-                        this.files = result;
-                    })
-                    .catch(error => {
-                        console.log('error ', error);
-                    })
-            } else {
-                let draftValues = this.template.querySelector('lightning-datatable').draftValues;
-                console.log('draftValues ', draftValues);
-            }
-        } catch (error) {
-            console.log('error ',error);
-        }
-    }
 
-    handleSave(event) {
-        console.log('handleSave is calling ');
-        this.saveDraftValues = event.detail.draftValues;
+            let draftValues = this.template.querySelector('c-custom-image-data-table').draftValues;
+            for (let i = 0; i < draftValues.length; i++) {
+                if (draftValues[i].title === '' || draftValues[i].title === null || draftValues[i].title === undefined) {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: "Error!",
+                            message: "Please Enter Title.",
+                            variant: "error"
+                        })
+                    );
+                    return;
+                }
+            }
+
+            let updatedFiles = [];
+            draftValues.forEach(row => {
+                updatedFiles.push({
+                    Id: row.id,
+                    Title: row.title
+                });
+            });
+
+            let updatedFilesInString = JSON.stringify(updatedFiles);
+
+            updateFileName({ listData: updatedFilesInString })
+                .then(result => {
+                    console.log('result ', result);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: "Success!",
+                            message: "Files Updated Successfully.",
+                            variant: "success"
+                        })
+                    );
+                    this.closeAction();
+                })
+                .catch(error => {
+                    console.log('error ', error);
+                })
+
+        } catch (error) {
+            console.log('error ', error);
+        }
     }
 }
