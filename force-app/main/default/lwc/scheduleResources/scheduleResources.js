@@ -37,6 +37,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     @track conflictingSchedules = [];
     @track intialConflictList = [];
     @track existingConflictScheduleMap = {};
+    @track isShowConflictCalled = false;
 
     connectedCallback() {
         loadStyle(this, myResource)
@@ -543,6 +544,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     handleCloseModal() {
         this.isLoading = false;
         this.isConflict = false;
+        this.isShowConflictCalled = false;
         this.tableData = this.tableData.map(row => {
             return { ...row, isEditing: false };
         });
@@ -551,34 +553,38 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     // * Method to Accept conflict and update the resource
     handleAcceptConflict() {
         this.isConflict = false;
+        console.log(`ishowConflictCalled: ${this.isShowConflictCalled}`);
+        if (!this.isShowConflictCalled) {
+            // Update the conflictingSchedules list based on the accepted changes
+            this.conflictingSchedules = this.conflictingSchedules.map(conflict => {
+                return {
+                    ...conflict,
+                    vendor: this.vendorOptions.find(option => option.value === this.selectedVendorId)?.label,
+                    vendorResources1: this.selectedVendorResources1 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources1)?.label : '',
+                    vendorResources2: this.selectedVendorResources2 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources2)?.label : '',
+                    vendorResources3: this.selectedVendorResources3 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources3)?.label : '',
+                    internalResource: this.internalResourcesOption.find(option => option.value === this.selectedInternalResourceId)?.label
+                };
+            });
 
-        // Update the conflictingSchedules list based on the accepted changes
-        this.conflictingSchedules = this.conflictingSchedules.map(conflict => {
-            return {
-                ...conflict,
-                vendor: this.vendorOptions.find(option => option.value === this.selectedVendorId)?.label,
-                vendorResources1: this.selectedVendorResources1 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources1)?.label : '',
-                vendorResources2: this.selectedVendorResources2 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources2)?.label : '',
-                vendorResources3: this.selectedVendorResources3 !== '' ? this.vendorResourcesOptions.find(option => option.value === this.selectedVendorResources3)?.label : '',
-                internalResource: this.internalResourcesOption.find(option => option.value === this.selectedInternalResourceId)?.label
-            };
-        });
+            // Call the updateResourceOnScheduleItem method to persist the changes
+            this.updateResourceOnScheduleItem();
 
-        // Call the updateResourceOnScheduleItem method to persist the changes
-        this.updateResourceOnScheduleItem();
+            // Update hasConflict to true for the current task
+            this.tableData = this.tableData.map(row => {
+                return row.id === this.editRecordId ? { ...row, hasConflict: true } : row;
+            });
 
-        // Update hasConflict to true for the current task
-        this.tableData = this.tableData.map(row => {
-            return row.id === this.editRecordId ? { ...row, hasConflict: true } : row;
-        });
-
-        // Update the bg color for the current task
-        setTimeout(() => {
-            const taskElement = this.template.querySelector(`div[data-id="${this.editRecordId}"]`);
-            if (taskElement) {
-                taskElement.style.backgroundColor = '#ffbabc';
-            }
-        }, 0);
+            // Update the bg color for the current task
+            setTimeout(() => {
+                const taskElement = this.template.querySelector(`div[data-id="${this.editRecordId}"]`);
+                if (taskElement) {
+                    taskElement.style.backgroundColor = '#ffbabc';
+                }
+            }, 0);
+        } else {
+            this.isShowConflictCalled = false;
+        }
     }
 
     // * Redirect to the current schedule
@@ -744,6 +750,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     }
 
     showCurrentConflict(event) {
+        this.isShowConflictCalled = true;
         this.conflictingSchedules = [];
         const taskId = event.currentTarget.dataset.id;
         this.editRecordId = event.currentTarget.dataset.id;
@@ -818,7 +825,11 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
             if (!groups[resourceName]) {
                 groups[resourceName] = [];
             }
-            groups[resourceName].push(item);
+            // Remove duplicates from the list of conflicting items
+            const existingItemIndex = groups[resourceName].findIndex(groupItem => groupItem.id === item.id);
+            if (existingItemIndex === -1) {
+                groups[resourceName].push(item);
+            }
             return groups;
         }, {});
 
