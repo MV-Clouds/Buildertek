@@ -43,6 +43,8 @@ public with sharing class fileUploadAndRenameController{
 
     @AuraEnabled
     public static void updateFileName(String listData){
+
+        System.debug('listData: ' + listData);
         try{
             List<wrpClass> wrpList = (List<wrpClass>)JSON.deserialize(listData, List<wrpClass>.class);
 

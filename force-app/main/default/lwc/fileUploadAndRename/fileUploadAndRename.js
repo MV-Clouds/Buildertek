@@ -13,6 +13,7 @@ const COLUMNS = [
 export default class FileUploadAndRename extends LightningElement {
     columns = COLUMNS;
     loaded = false;
+    deleteFiles = true;
     @track showDataTable = false;
     @track fileNotUpload = true;
     @api recordId;
@@ -45,7 +46,7 @@ export default class FileUploadAndRename extends LightningElement {
     }
 
     closeAction() {
-        if (this.files.length > 0) {
+        if (this.files.length > 0 && this.deleteFiles) {
             let docIds = [];
 
             this.files.forEach(file => {
@@ -95,11 +96,10 @@ export default class FileUploadAndRename extends LightningElement {
                 });
             });
 
-            let updatedFilesInString = JSON.stringify(updatedFiles);
-
-            updateFileName({ listData: updatedFilesInString })
+            updateFileName({ listData: JSON.stringify(updatedFiles) })
                 .then(result => {
-                    console.log('result ', result);
+                    this.deleteFiles = false;
+
                     this.dispatchEvent(
                         new ShowToastEvent({
                             title: "Success!",
@@ -107,6 +107,7 @@ export default class FileUploadAndRename extends LightningElement {
                             variant: "success"
                         })
                     );
+
                     this.closeAction();
                 })
                 .catch(error => {
