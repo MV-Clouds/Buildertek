@@ -26,7 +26,7 @@ trigger BillLineItemTrigger on buildertek__Account_Payable_Item__c (after delete
 		}
 		
 		else if(Trigger.isDelete && Trigger.isAfter){
-		//	handler.OnAfterDelete(Trigger.old); 
+			handler.OnAfterDelete(Trigger.old); 
 		}
     }
 
