@@ -141,10 +141,22 @@ public with sharing class BudgetItemTriggerHandler {
 			invoicePo.buildertek__BT_Budget_Line__c = null;
 			invoicePo.buildertek__Budget__c = null;
 		}
-		if(invoicePOList.size() > 0){
+		if(invoicePOList.size() > 0 && blnSkipBudgetItemTrigger == false){
 			AccountPayableHelper.skipInvoicePOUpdate = true;
 			update invoicePOList;
 			AccountPayableHelper.skipInvoicePOUpdate = false;
+		}
+
+		//for Payment 
+		List<buildertek__BT_Payment__c> paymentList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Payment__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
+		for (buildertek__BT_Payment__c payment : paymentList) {
+			payment.buildertek__BT_Budget__c = null;
+			payment.buildertek__BT_Budget_Line__c = null;
+		}
+		if (paymentList.size() > 0 && blnSkipBudgetItemTrigger == false) {
+			PaymentTriggerHandler.isSkipExecution = true;
+			update paymentList;
+			PaymentTriggerHandler.isSkipExecution = false;
 		}
  	}
      
