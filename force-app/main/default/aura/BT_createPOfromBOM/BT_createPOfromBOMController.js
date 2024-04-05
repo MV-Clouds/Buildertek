@@ -120,17 +120,6 @@
             var groupIndex = rowId.split("_")[1];
             var rowIndex = rowId.split("_")[2];
 
-
-            // var SelecetdLinesId = component.get("v.selectdLinesId");
-            // if(isChecked){
-            //   SelecetdLinesId.push(lineId);
-            //   component.set("v.selectdLinesId", SelecetdLinesId);
-            // }
-            // else{
-            //   SelecetdLinesId = SelecetdLinesId.filter((ele) => ele !== lineId);
-            //   component.set("v.selectdLinesId", SelecetdLinesId);
-            // }
-
             var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
             // create Vendor(group) againt Selected Line Ids Object....
             if(vendorVsselectdLinesId.length > 0){

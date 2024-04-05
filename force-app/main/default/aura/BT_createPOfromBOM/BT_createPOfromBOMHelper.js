@@ -57,61 +57,14 @@
 
             var formatedData = [];
             var Vendors = JSON.parse(JSON.stringify(result.vendorList));
-
-            console.log('my logs');
-            console.log('result.vendorList: ',result.vendorList);
-            console.log('JSON.stringify(result.vendorList): ',JSON.stringify(result.vendorList));
-            console.log(Vendors);
-
             var Costcode = JSON.parse(JSON.stringify(result.costCodeList));
-            console.log('cost code list:  ',Costcode);
-            
             var BOMlines = JSON.parse(JSON.stringify(result.BOMLines))
-            console.log('result.BOMLines: ',result.BOMLines);
-            console.log(BOMlines);
-            // for(var i in Vendors){
-            //     formatedData.push({"groupName" : Vendors[i], 'isCreatePOEnable' :  false, "sObjectList" : [] });
-            // }
-
-            // for(var i in BOMlines){
-            //     for(var j in formatedData){
-            //         if(BOMlines[i].buildertek__Vendor__r == undefined || BOMlines[i].buildertek__Vendor__r.Name == undefined || BOMlines[i].buildertek__Vendor__r.Name == ''){
-            //             if(formatedData[j].groupName == 'No Vendor'){
-            //                 formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
-            //             }
-            //         }
-            //         else{
-            //             if(formatedData[j].groupName == BOMlines[i].buildertek__Vendor__r.Name){
-            //                 formatedData[j].sObjectList = [...formatedData[j].sObjectList, BOMlines[i]];
-            //             }
-            //         }
-            //     }
-            // }
-
-            // Vendors.forEach(vendor => {
-            //     formatedData.push({
-            //         "groupName": vendor,
-            //         "isCreatePOEnable": false,
-            //         "sObjectList": [],
-            //     });
-            // });
-            
-            // BOMlines.forEach(line => {
-            //     const vendorName = line.buildertek__Vendor__c ? line.buildertek__Vendor__r.Name : 'No Vendor';
-            //     const group = formatedData.find(group => group.groupName === vendorName);
-            //     if (group) {
-            //         group.sObjectList.push(line);
-            //     }
-            // });
-
-            // console.log('formatedData after sObject List : ', formatedData);
-            // component.set("v.GroupByVendors", formatedData);
+ 
 Vendors.forEach((vendor, index) => {
-    // Initialize an empty costCodes array for each group
-    const group = {
+     const group = {
         "groupName": vendor,
         "isCreatePOEnable": false,
-        "costCodes": [] // Initialize an empty array to hold cost codes
+        "costCodes": []  
     };
     formatedData.push(group);
 });
@@ -121,23 +74,17 @@ BOMlines.forEach(line => {
     const group = formatedData.find(group => group.groupName === vendorName);
     if (group) {
         const costCode = line.buildertek__Cost_Code__r ? line.buildertek__Cost_Code__r.Name : 'No Cost Code';
-        
-        // Create a unique key for the costCode
-        const costCodeKey = costCode;
-
-        // Check if the costCodeKey exists in the group object
+         
+        const costCodeKey = costCode; 
         let costCodeObj = group.costCodes.find(obj => obj.costCode === costCodeKey);
-        if (!costCodeObj) {
-            // If not, initialize it with an object containing the costCode and an empty sObjectList
+        if (!costCodeObj) { 
             costCodeObj = {
                 "costCode": costCodeKey,
                 "sObjectList": []
             };
             group.costCodes.push(costCodeObj);
         }
-        
-        // Push the line object to the sObjectList of the corresponding costCode
-        costCodeObj.sObjectList.push(line);
+         costCodeObj.sObjectList.push(line);
     }
 });
 
@@ -225,8 +172,7 @@ component.set("v.GroupByVendors", formatedData);
                     helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
                 }
               }
-              // console.log('response : ', result);
-          });
+           });
           $A.enqueueAction(action);
 
             

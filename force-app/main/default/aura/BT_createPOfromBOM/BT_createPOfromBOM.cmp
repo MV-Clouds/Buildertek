@@ -53,30 +53,7 @@
                                 </h2>
                             </span>
                         </div>
-                        <!-- <div>
-                            <span>
-                                <span style=" color: #6b6d70;">Total Cost</span>
-                                <h2 class="slds-card__header-title">
-                                    <aura:if isTrue="{!and(v.totalCost != null,v.totalCost != undefined)}">
-                                        <span style="color:#0176d3;cursor:pointer;">
-                                            <lightning:formattedNumber value="{!v.totalCost}" style="currency" currencyCode="USD" currencyDisplayAs="code"/>
-                                        </span>
-                                    </aura:if>
-                                </h2>
-                            </span>
-                        </div>
-                        <div>
-                            <span>
-                                <span style=" color: #6b6d70;">Total Sales Price</span>
-                                <h2 class="slds-card__header-title">
-                                    <aura:if isTrue="{!and(v.totalSalesPrice != null,v.totalSalesPrice != undefined)}">
-                                        <span style="color:#0176d3;cursor:pointer;">
-                                            <lightning:formattedNumber value="{!v.totalSalesPrice}" style="currency" currencyCode="USD" currencyDisplayAs="code"/>
-                                        </span>
-                                    </aura:if>
-                                </h2>
-                            </span>
-                        </div> -->
+
                     </div>
                 </div>
                 <div class="slds-col slds-size_2-of-8" style="text-align: right;">
@@ -88,20 +65,23 @@
 
 <div class="searchContainer" style="background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242)); padding: 1rem 1rem; overflow-x: auto; white-space: nowrap; margin-top: 8px; border-radius: 4px;">
     <aura:iteration items="{!v.GroupByVendors}" var="groupItem" indexVar="phaseIndex">
-        <div class="slds-grid slds-gutters slds-wrap" style="border-block: 4px solid #2a77d4; margin: 30px 0px 8px 0px!important; padding-block: 4px; background: white;">
+        <div class="slds-grid slds-gutters slds-wrap" style="border-block: 6px solid #2d2d2d; margin: 30px 0px 8px 0px!important; padding-block: 4px; background-color: rgb(255, 255, 255);">
 <div class="slds-modal__header slds-p-around_xx-small GroupHeader slds-col slds-size_6-of-8" style="font-size:20px; border-block: 0px !important; font-weight:bold; display: flex; align-items: center;">
-    <div style="flex: 1; text-align: left;">
+    <div style="flex: 1; text-align: left; color:#0176d3    ">
         {!groupItem.groupName}
     </div>
-</div>         <div class="slds-col slds-size_2-of-8" style="text-align: right;">
+</div>
+     <div class="slds-col slds-size_2-of-8" style="text-align: right;">
+        <aura:if isTrue="{!groupItem.groupName == 'No Vendor'}">
                 <lightning:button iconName="utility:save" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onClickCreatePOhadler}"
                 label="{!groupItem.isCreatePOEnable==true?'Save':'Create PO'}" class="" />
                 <aura:if isTrue="{!groupItem.isCreatePOEnable}">
                     <lightning:button iconName="utility:close" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onCancelCreatePOhadler}" label="Cancel" />
                 </aura:if>
-            </div>
+            </aura:if>
         </div>
-        <aura:iteration items="{!groupItem.costCodes}" var="costCode" indexVar="costCodeIndex">
+    </div>
+<aura:iteration items="{!groupItem.costCodes}" var="costCode" indexVar="costCodeIndex">
 <div class="slds-grid slds-gutters slds-wrap" style="border-block: 2px solid #44484d71; margin: 8px 0px!important; padding-block: 0px; background: white;font-weight:650">                <div class="slds-modal__header slds-p-around_xx-small GroupHeader slds-col slds-size_6-of-8" style="font-size:12px; border-block: 0px !important;">
                     <div style="flex: 1; text-align: left;margin-left: 20px;">
                          {!costCode.costCode}
@@ -130,7 +110,8 @@
                                 </aura:iteration>
                             </tr>
                         </thead>
-                        <tbody>
+        <tbody style="{!'background-color: ' + (groupItem.groupName == 'No Vendor' ? 'white' : '#e0e0e0') + (groupItem.groupName != 'No Vendor' ? '; pointer-events: none;' : '')}">
+
                             <aura:iteration items="{!costCode.sObjectList}" var="row" indexVar="dataIndex">
                                 <tr>
                                     <aura:if isTrue="{!groupItem.isCreatePOEnable}">
