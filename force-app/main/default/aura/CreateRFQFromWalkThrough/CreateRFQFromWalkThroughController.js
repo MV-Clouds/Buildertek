@@ -1,6 +1,5 @@
 ({
     doInit: function (component, event, helper) {
-        // helper.createRFQ(component, helper);
         var options = [
             { value: 'all', label: 'All' },
             { value: 'tradeType', label: 'Trade Type' },
@@ -10,12 +9,13 @@
         component.set("v.statusOptions", options);
     },
 
-    handleOptionSelected: function (cmp, event) {
+    handleOptionSelected: function (cmp, event, helper) {
         cmp.set("v.optionSelected", true);
         let selectedOptionValue = event.getParam("value");
+        console.log('selectedOptionValue: ', selectedOptionValue);
         switch (selectedOptionValue) {
             case 'all':
-                //   calling apex for all
+                helper.createRFQ(cmp, helper);
                 break;
             case 'tradeType':
                 // calling apex for tradeType

@@ -20,6 +20,11 @@ public class CreateRFQFromWalkThroughController{
 
                 insert newRFQrecord;
 
+                buildertek__Walk_Through_List__c existingWalkThrough = new buildertek__Walk_Through_List__c();
+                existingWalkThrough.Id = walkThroughId;
+                existingWalkThrough.buildertek__BT_RFQ__c = newRFQrecord.Id;
+                update existingWalkThrough;
+
                 if (walkthroughlines.size() > 0){
                     for (buildertek__Walk_Through_Line_Items__c walkthroughline : walkthroughlines){
                         buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
@@ -27,12 +32,19 @@ public class CreateRFQFromWalkThroughController{
                         newRFQLine.Name = walkthroughline.buildertek__Description__c;
                         newRFQLine.buildertek__Quantity__c = 1;
                         newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
+                        newRFQLine.buildertek__BT_Walk_Through_Line_Item__c = walkthroughline.Id;
 
                         newRFQLines.add(newRFQLine);
                     }
 
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
+
+                        Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
+                        for (buildertek__RFQ_Item__c rfqLineItem : newRFQLines) {
+                            mapOfWalkThroughLineIdAndRfqLineId.put(rfqLineItem.buildertek__BT_Walk_Through_Line_Item__c, rfqLineItem.Id);
+                        }
+                        addFilesOnRfqLines(mapOfWalkThroughLineIdAndRfqLineId);
                         msg.Status = 'Success';
                         msg.Message = 'RFQ is Created Successfully';
                         msg.newRecordId = newRFQrecord.Id;
@@ -62,18 +74,22 @@ public class CreateRFQFromWalkThroughController{
         }
     }
 
-    public static addFilesOnRfqLines(Map<String, String> mapOfRFQLineIdAndWalkThroughLineId){
+    public static void groupRrqTradeType() {
+
+    }
+
+    public static void addFilesOnRfqLines(Map<String, String> mapOfWalkThroughLineIdAndRfqLineId){
         list<ContentDocumentLink> allCdLinks = new list<ContentDocumentLink>();
 
         allCdLinks = [SELECT Id, LinkedEntityId, ContentDocumentId, ShareType, Visibility
                       FROM ContentDocumentLink
-                      WHERE LinkedEntityId IN:mapOfRFQLineIdAndWalkThroughLineId.keySet()];
+                      WHERE LinkedEntityId IN:mapOfWalkThroughLineIdAndRfqLineId.keySet()];
 
         list<ContentDocumentLink> allCdLinksToInsert = new list<ContentDocumentLink>();
 
         for (ContentDocumentLink cdl : allCdLinks){
             cdl.Id = null;
-            cdl.LinkedEntityId = mapOfRFQLineIdAndWalkThroughLineId.get(cdl.LinkedEntityId);
+            cdl.LinkedEntityId = mapOfWalkThroughLineIdAndRfqLineId.get(cdl.LinkedEntityId);
             allCdLinksToInsert.add(cdl);
         }
 
