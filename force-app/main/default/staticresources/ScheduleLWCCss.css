@@ -1,0 +1,9 @@
+.comboHideLabel .slds-form-element__label {
+    display: none;
+}
+
+.popup__custom-card article {
+    background: none;
+    border-style: none;
+    box-shadow: none;
+}
