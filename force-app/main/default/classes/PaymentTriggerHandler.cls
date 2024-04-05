@@ -3,10 +3,10 @@ public class PaymentTriggerHandler {
 
     public void onBeforeInsert(List<buildertek__BT_Payment__c> newPaymentline, Map<Id, buildertek__BT_Payment__c> newPaymentlineMap){
         String budgetLineGroupId ;
-        List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'Labor' LIMIT 1];
+        List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
         if(budgetLineGroups.size() == 0){
             buildertek__Budget_Line_Group__c budgetLineGroup = new buildertek__Budget_Line_Group__c();
-            budgetLineGroup.Name = 'Labor';
+            budgetLineGroup.Name = 'No Grouping';
             insert budgetLineGroup;
             budgetLineGroupId = budgetLineGroup.Id;
         }else{
@@ -81,10 +81,10 @@ public class PaymentTriggerHandler {
 
     public void onBeforeUpdate(List<buildertek__BT_Payment__c> oldPayment, List<buildertek__BT_Payment__c> newPayment, Map<Id, buildertek__BT_Payment__c> oldPaymentMap, Map<Id, buildertek__BT_Payment__c> newPaymentMap){
         String budgetLineGroupId ;
-        List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'Labor' LIMIT 1];
+        List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
         if(budgetLineGroups.size() == 0){
             buildertek__Budget_Line_Group__c budgetLineGroup = new buildertek__Budget_Line_Group__c();
-            budgetLineGroup.Name = 'Labor';
+            budgetLineGroup.Name = 'No Grouping';
             insert budgetLineGroup;
             budgetLineGroupId = budgetLineGroup.Id;
         }else{

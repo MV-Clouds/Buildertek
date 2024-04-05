@@ -147,7 +147,7 @@ public with sharing class BudgetItemTriggerHandler {
 			AccountPayableHelper.skipInvoicePOUpdate = false;
 		}
 
-		//for Payment 
+		//* for Payment 
 		List<buildertek__BT_Payment__c> paymentList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Payment__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
 		for (buildertek__BT_Payment__c payment : paymentList) {
 			payment.buildertek__BT_Budget__c = null;
@@ -157,6 +157,18 @@ public with sharing class BudgetItemTriggerHandler {
 			PaymentTriggerHandler.isSkipExecution = true;
 			update paymentList;
 			PaymentTriggerHandler.isSkipExecution = false;
+		}
+
+		//* for cash disbursement
+		List<buildertek__Payment__c> cashDisbursementList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__Payment__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
+		for (buildertek__Payment__c cashDisbursement : cashDisbursementList) {
+			cashDisbursement.buildertek__BT_Budget__c = null;
+			cashDisbursement.buildertek__BT_Budget_Line__c = null;
+		}
+		if (cashDisbursementList.size() > 0 && blnSkipBudgetItemTrigger == false) {
+			CashDisbursementTriggerHandler.isSkipExecution = true;
+			update cashDisbursementList;
+			CashDisbursementTriggerHandler.isSkipExecution = false;
 		}
  	}
      
