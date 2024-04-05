@@ -6,10 +6,13 @@ public class createPOfromBOM_controller {
         responseWrapper returnValue = new responseWrapper();
         try {
             system.debug('BOMiD : ' + BOMiD);
-        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Tax_Percent__c, buildertek__Cost_Type__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
+
+        List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Tax_Percent__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c,buildertek__Cost_Code__r.Name, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
+
                                                       FROM buildertek__Select_Sheet__c 
                                                       WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD ORDER BY buildertek__Vendor__r.Name ASC NULLS LAST, Name ASC];
         Set<String> vendorList = new Set<String>();
+        Set<String> costCodeList = new Set<String>();
 
         if(BOMLines.size() > 0){
             for(buildertek__Select_Sheet__c line : BOMLines){
@@ -19,12 +22,19 @@ public class createPOfromBOM_controller {
                 else{
                     vendorList.add('No Vendor');
                 }
-            }
+                if(line.buildertek__Cost_Code__c != null){ 
+                    costCodeList.add(line.buildertek__Cost_Code__r.Name);
+                }
+                else{
+                    costCodeList.add('No Cost-code');
+                }
+            } 
         }
 
         returnValue.state = 'success';
         returnValue.BOMLines = BOMLines;
         returnValue.vendorList = new List<String>(vendorList);
+        returnValue.costCodeList = new List<String>(costCodeList);
         return returnValue;
         } catch (Exception e) {
             System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
@@ -293,6 +303,7 @@ public class createPOfromBOM_controller {
         @AuraEnabled public List<String> vendorList;
         @AuraEnabled public String FieldSetValues;
         @AuraEnabled public string POid;
+        @AuraEnabled public List<String> costCodeList;
     }
    
 }
