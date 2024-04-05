@@ -74,6 +74,7 @@ trigger ProjectTaskTrigger on buildertek__Project_Task__c(after insert, after up
         if (Trigger.isUpdate){
             ProjectTaskTriggerHandler.populateCompletionOnBudgetLine(Trigger.new , Trigger.oldMap);
             ProjectTaskTriggerHandler.populateCompletionOnPurchaseOrder(Trigger.new, Trigger.oldMap);
+            ProjectTaskTriggerHandler.removeScheduleItemFromPO(Trigger.new, Trigger.oldMap);
         }
         
         if(Trigger.isDelete){

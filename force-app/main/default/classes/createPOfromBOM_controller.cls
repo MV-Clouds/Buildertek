@@ -6,7 +6,9 @@ public class createPOfromBOM_controller {
         responseWrapper returnValue = new responseWrapper();
         try {
             system.debug('BOMiD : ' + BOMiD);
+
         List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Tax_Percent__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c,buildertek__Cost_Code__r.Name, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Category__c
+
                                                       FROM buildertek__Select_Sheet__c 
                                                       WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD ORDER BY buildertek__Vendor__r.Name ASC NULLS LAST, Name ASC];
         Set<String> vendorList = new Set<String>();
@@ -126,7 +128,7 @@ public class createPOfromBOM_controller {
                                                                   WHERE Id =: BOMiD];
 
                                 
-            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Tax_Percent__c,buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
+            List<buildertek__Select_Sheet__c> BOMlines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Cost_Type__c, buildertek__Tax_Percent__c,buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
                                                                   buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
                                                           FROM buildertek__Select_Sheet__c 
                                                           WHERE Id IN : slectedLinesId];
@@ -136,6 +138,12 @@ public class createPOfromBOM_controller {
             String Phase;
             String Category;
             Boolean assign_flag = true;
+            Map<String, Id> recordTypeMap = new Map<String, Id>();
+            for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+            }
+
+            Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
 
             // if cost code, phase and category are not null. Assign first BOM line's Cost code, phase and category to newly created PO.
             for(buildertek__Select_Sheet__c line : BOMlines){
@@ -156,6 +164,7 @@ public class createPOfromBOM_controller {
             POtoCreate.buildertek__Vendor__c = VendorId;
             POtoCreate.buildertek__BT_Build_Phase__c = Phase;
             POtoCreate.buildertek__Cost_Code__c = CostCode;
+            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
             insert POtoCreate;
 
             system.debug('created PO : ' + POtoCreate.Id);
@@ -174,6 +183,8 @@ public class createPOfromBOM_controller {
                     Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;                   
                     Poline.buildertek__Tax__c = line.buildertek__Tax_Percent__c;                                        
                     Poline.buildertek__Purchase_Order__c = CreatedPOs.Id;
+                    Poline.buildertek__Tax__c = line.buildertek__Tax_Percent__c;     
+                    Poline.buildertek__Cost_Type__c = line.buildertek__Cost_Type__c;                                                                           
                     
                     POlinesToCreate.add(Poline);
                     LineId_POlines.put(line.Id, Poline);
@@ -217,9 +228,9 @@ public class createPOfromBOM_controller {
                         // schedule item phase == PO phase (first BOM phase)
                         // schedule item cost code == PO cost code (first BOM cost code)
                         // schedule item category == PO categorty (first BOM category)
-                        if( SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c
+                        if( SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c  //SchItem.buildertek__Contractor__c == CreatedPOs.buildertek__Vendor__c
                             // && schItemPhaseName == poPhaseName 
-                            && SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
+                            //&& SchItem.buildertek__Cost_Code__c == CreatedPOs.buildertek__Cost_Code__c 
                             && SchItem.buildertek__BT_Category__c == Category
                             && matchedSchItems.size() == 0)
                         {
