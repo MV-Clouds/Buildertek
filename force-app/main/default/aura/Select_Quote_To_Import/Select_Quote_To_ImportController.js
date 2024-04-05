@@ -27,7 +27,7 @@
                 component.set("v.masterQuotesList",result);
                 component.set("v.totalRecords", component.get("v.masterQuotesList").length);
                 component.set("v.startPage",0);
-                component.set("v.endPage",pageSize-1);
+                component.set("v.endPage",pageSize);
                 var PaginationList = [];
                 for(var i=0; i< pageSize; i++){
                     if(component.get("v.masterQuotesList").length> i)
@@ -231,7 +231,7 @@
         var pageSize = component.get("v.pageSize");
         var Paginationlist = [];
         var counter = 0;
-        for(var i=end+1; i<end+pageSize+1; i++){
+        for(var i=end; i<end+pageSize; i++){
             if(sObjectList.length > i){
                 Paginationlist.push(sObjectList[i]);
             }

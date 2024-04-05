@@ -26,6 +26,8 @@
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
 
+    <aura:attribute name="productFamilySet" type="List" default="[]" />
+
     <aura:html tag="style">
         .slds-input{
             height: 36px !important;

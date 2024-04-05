@@ -2110,6 +2110,19 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }
 
     @AuraEnabled
+    public static List<buildertek__BT_Time_Sheet__c> getTimeSheetData(String RecId){
+        buildertek__Budget__c BudgetRec = [SELECT Id, Name, buildertek__Project__c
+                                        FROM buildertek__Budget__c
+                                        where Id = :RecId];
+        
+        List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
+
+        return timeSheetList;
+
+        
+    }
+
+    @AuraEnabled
     public static BudgetDataTableWrapperClone getTimeCardData(Integer pageNumber, Integer pageSize, string RecId){
         buildertek__Budget__c RFQRec = [SELECT Id, Name, buildertek__Project__c
                                         FROM buildertek__Budget__c
@@ -2196,6 +2209,8 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
                             OFFSET :offset];*/
         return objDT;
     }
+
+
 
     @AuraEnabled
     public static string updateLaborPrice(String recordId, String budgeLineIds){
@@ -2305,6 +2320,50 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
                         budgetItem.buildertek__Invoice_total__c = Value;
                     }
 
+
+                    update budgetItem;
+                }
+
+                response = 'Success';
+            } catch (Exception e) {
+                throw new AuraHandledException(e.getMessage());
+                response = 'Error';
+            }
+        }else{
+            response = 'null';
+        }
+        return response;
+    }
+
+    @AuraEnabled
+    public static string updateContractorInvoicePrice(String recordId, String budgeLineIds){
+        List<String> strList = budgeLineIds.split(',');
+        List<String> strRecordId = recordId.split(',');
+
+        String response;
+        if (strRecordId.size() > 0) {
+            try {
+                List<buildertek__Account_Payable__c> invoiceAPList =  [SELECT Id, Name, buildertek__Net_Amount__c, buildertek__Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__Account_Payable__c WHERE Id =:strRecordId];
+                buildertek__Budget_Item__c budgetItem = [SELECT Id, Name, buildertek__Invoice_PO__c, buildertek__Budget__c FROM buildertek__Budget_Item__c WHERE Id IN :strList LIMIT 1];
+                List<buildertek__Account_Payable__c> updateInvoiceAPList = new  List<buildertek__Account_Payable__c>();
+                Decimal Value = 0;
+
+                if (strList.size() > 0) {
+                    for(buildertek__Account_Payable__c invoiceAp: invoiceAPList){
+                        invoiceAP.buildertek__Budget__c = budgetItem.buildertek__Budget__c;
+                        invoiceAP.buildertek__BT_Budget_Line__c = budgetItem.Id;
+                        Value += invoiceAP.buildertek__Net_Amount__c;
+
+                        updateInvoiceAPList.add(invoiceAP);
+                    }
+                    update updateInvoiceAPList;
+
+                    if(budgetItem.buildertek__Invoice_PO__c != null){
+                        budgetItem.buildertek__Invoice_PO__c += Value;
+
+                    }else{
+                        budgetItem.buildertek__Invoice_PO__c = Value;
+                    }
 
                     update budgetItem;
                 }
@@ -2846,7 +2905,11 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         Map<Id, buildertek__Budget_Item__c> budgetItemMap = new Map<Id, buildertek__Budget_Item__c>();
         for (buildertek__Account_Payable_Clone__c invoiceAP : selectedInvoices) {
             buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
-            budgetItem.Name = invoiceAP.buildertek__Description__c;
+            if (invoiceAP.buildertek__Description__c != '' && invoiceAP.buildertek__Description__c != null) {
+                budgetItem.Name = invoiceAP.Name + ' ' + invoiceAP.buildertek__Description__c;
+            } else {
+                budgetItem.Name = invoiceAP.Name;
+            }
             budgetItem.buildertek__Budget__c = RecId;
             budgetItem.buildertek__Group__c = groupId;
             budgetItemMap.put(invoiceAP.Id, budgetItem);
@@ -3232,7 +3295,7 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             }
         }
         String query = 'SELECT Id, '+apiString;
-        query += 'buildertek__Sub_Grouping__c, buildertek__Sub_Grouping__r.Name, buildertek__Group__c, buildertek__Group__r.Name ';
+        query += 'buildertek__Sub_Grouping__c, buildertek__Sub_Grouping__r.Name, buildertek__Group__c, buildertek__Group__r.Name, buildertek__Category__c, buildertek__Category__r.Name ';
         query += 'FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =\''+budgetId+'\''+' ORDER BY '+groupingList[0];
         if (groupingList.size() > 1) {
             query += ', '+groupingList[1];
@@ -3363,5 +3426,47 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
         return fieldsetWrapperList;
     }
 
-
+    @AuraEnabled
+    public static string updateTimeSheetBudget(String recordId, String budgetlineId, String budgetId){
+        System.debug('1');
+        List<String> strRecordId = recordId.split(',');
+        String response;
+        try {
+            if(budgetlineId != ''){
+                System.debug('2');
+                List<buildertek__BT_Time_Sheet__c> timesheetList =[SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c	 FROM buildertek__BT_Time_Sheet__c WHERE Id IN: strRecordId];
+                    List<buildertek__Budget_Item__c> budgetItemList =[SELECT Id, Name, buildertek__Budget__c FROM buildertek__Budget_Item__c WHERE Id =: budgetlineId];
+                    List<buildertek__BT_Time_Sheet__c> updateTimeSheet = new List<buildertek__BT_Time_Sheet__c>();
+                    if (budgetItemList.size() > 0) {
+                        for(buildertek__BT_Time_Sheet__c timeSheet : timesheetList){
+                            timeSheet.buildertek__BT_Budget__c = budgetItemList[0].buildertek__Budget__c;
+                            timeSheet.buildertek__BT_Budget_Line__c = budgetItemList[0].Id;
+                            updateTimeSheet.add(timeSheet);
+                        }
+                        update updateTimeSheet;
+                    }
+                response = 'Success';
+            }
+            else{
+                System.debug('3');
+                List<buildertek__BT_Time_Sheet__c> timesheetList =[SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c	 FROM buildertek__BT_Time_Sheet__c WHERE Id IN: strRecordId];
+                List<buildertek__BT_Time_Sheet__c> updateTimeSheet = new List<buildertek__BT_Time_Sheet__c>();
+                    for(buildertek__BT_Time_Sheet__c timeSheet : timesheetList){
+                        timeSheet.buildertek__BT_Budget__c = budgetId;
+                        updateTimeSheet.add(timeSheet);
+                    }
+                    update updateTimeSheet;
+                response = 'Success';
+            }
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            response = 'Error';
+            return response;
+        }
+        return response;
+    }
 }

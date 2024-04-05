@@ -35,13 +35,22 @@
             .catch(function (error) {
                 console.log(error);
             });
-            $A.get("e.force:closeQuickAction").fire();
+
             component.set("v.isOpen", false);
-            window.setTimeout(
-                $A.getCallback(function () {
-                     $A.get('e.force:refreshView').fire();
-                }), 1000
-            );
+
+            var navEvt = $A.get("e.force:navigateToSObject");
+                navEvt.setParams({
+                "recordId": component.get("v.parentRecordId"),
+                "slideDevName": "detail"
+                });
+            navEvt.fire();
+
+            $A.get("e.force:closeQuickAction").fire();
+            // window.setTimeout(
+            //     $A.getCallback(function () {
+            //          $A.get('e.force:refreshView').fire();
+            //     }), 1000
+            // );
 
         }else{
             $A.get("e.force:closeQuickAction").fire();

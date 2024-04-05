@@ -111,7 +111,7 @@
     
     importSelections : function(component, event, helper){
         var toastEvent = $A.get("e.force:showToast");
-        component.set('v.loading',true);
+        component.set('v.Spinner',true);
         var selectedSelectionId = [];
         var selections =  component.get('v.selectionList');
         if(selections!=undefined ){
@@ -124,7 +124,7 @@
         if(selectedSelectionId.length>0){
             helper.importMasterSelections(component, event, helper,selectedSelectionId);            
         }else{
-            component.set('v.loading',false);
+            component.set('v.Spinner',false);
             toastEvent.setParams({
                 "type" : 'error',
                 "title": "Error!",
@@ -133,4 +133,7 @@
             toastEvent.fire();
         }
     },
+    onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+   },
 })

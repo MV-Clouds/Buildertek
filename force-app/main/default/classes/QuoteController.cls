@@ -2,10 +2,27 @@ public with sharing class QuoteController {
     @AuraEnabled
     public static string createQuote(String recordId) {
         
-        try {            
+        try {           
+            Id groupingId; 
             Opportunity opp = [SELECT Id, Name, AccountId, Account.Name, Account.Billingcity, Account.Billingstate, Account.Billingcountry, Account.Billingstreet, 
                                 Account.buildertek__Email_Address__c, Account.Phone, Account.Billingpostalcode FROM Opportunity WHERE Id =: recordId]; 
             System.debug('Opportunity =>'+opp);
+            List<buildertek__Quote_Line_Group__c> QuoteGroup;
+            if (Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isAccessible()){
+                QuoteGroup = [select Id
+                              from buildertek__Quote_Line_Group__c
+                              where Name = 'No Grouping'];
+            }
+            if (QuoteGroup.size() > 0){
+                groupingId = QuoteGroup[0].Id;
+            } else{
+                buildertek__Quote_Line_Group__c qutGroup = new buildertek__Quote_Line_Group__c();
+                if (Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isCreateable()){
+                    qutGroup.Name = 'No Grouping';
+                }
+                insert qutGroup;
+                groupingId = qutGroup.Id;
+            }
 
             buildertek__Quote__c quoteRecord = new buildertek__Quote__c();
             quoteRecord.buildertek__Opportunity__c = opp.Id;
@@ -21,7 +38,7 @@ public with sharing class QuoteController {
             insert quoteRecord; 
             System.debug('quoteRecord => '+quoteRecord);
             
-            List<OpportunityLineItem> oppProdList = [SELECT id,Name,TotalPrice, Quantity, ListPrice FROM OpportunityLineItem WHERE OpportunityId=:recordId];
+            List<OpportunityLineItem> oppProdList = [SELECT Id, Name, Product2.Name, TotalPrice, Quantity, ListPrice FROM OpportunityLineItem WHERE OpportunityId=:recordId];
             System.debug('OpportunityLineItem====>' + oppProdList);
 
             List<buildertek__Quote_Item__c> quoteItemList=new List<buildertek__Quote_Item__c>();
@@ -29,7 +46,13 @@ public with sharing class QuoteController {
             for (OpportunityLineItem prod : oppProdList) {
                 buildertek__Quote_Item__c quoteLine = new buildertek__Quote_Item__c();
                 quoteLine.buildertek__Quote__c = quoteRecord.Id;
-                quoteLine.Name = prod.Name;
+                if (prod.Product2.Name != null && prod.Product2.Name.length() > 80){
+                    quoteLine.Name = prod.Product2.Name.left(80);
+                    quoteLine.buildertek__Description__c = prod.Product2.Name;
+                } else{
+                    quoteLine.Name = prod.Product2.Name;
+                }
+                quoteLine.buildertek__Grouping__c = groupingId;
                 quoteLine.buildertek__Quantity__c = prod.Quantity;
                 quoteLine.buildertek__Unit_Price__c = prod.ListPrice;   
                                                           
@@ -44,8 +67,12 @@ public with sharing class QuoteController {
                 insert quoteItemList;
             }            
             return quoteRecord.Id;
-        }catch (Exception e) {
-            System.debug('Error => '+e.getMessage());
+        }catch (Exception ex) {
+            System.debug('Error => '+ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
             return 'Error';
         }
     }

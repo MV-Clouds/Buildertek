@@ -1,7 +1,7 @@
 ({
 	//showSpinner: this will call on aura waiting hendler 
     showSpinner: function (component, event, helper) {
-        var spinner = component.find("BTSpinner");
+        var spinner = component.find("w");
         $A.util.addClass(spinner, "slds-show");
         $A.util.removeClass(spinner, "slds-hide");
     },

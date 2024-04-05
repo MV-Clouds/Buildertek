@@ -4,7 +4,7 @@
         try {
             var action = component.get("c.getFieldSetValues");
             action.setCallback(this, function (response) {
-                var result = response.getReturnValue();
+                var result =response.getReturnValue();
                 if(result.state == 'success'){
                     console.log('fieldSetvalues : ', JSON.parse([result.FieldSetValues]));
                     component.set('v.fieldSetValues', JSON.parse([result.FieldSetValues]));
@@ -57,7 +57,18 @@
 
             var formatedData = [];
             var Vendors = JSON.parse(JSON.stringify(result.vendorList));
+
+            console.log('my logs');
+            console.log('result.vendorList: ',result.vendorList);
+            console.log('JSON.stringify(result.vendorList): ',JSON.stringify(result.vendorList));
+            console.log(Vendors);
+
+            var Costcode = JSON.parse(JSON.stringify(result.costCodeList));
+            console.log('cost code list:  ',Costcode);
+            
             var BOMlines = JSON.parse(JSON.stringify(result.BOMLines))
+            console.log('result.BOMLines: ',result.BOMLines);
+            console.log(BOMlines);
             // for(var i in Vendors){
             //     formatedData.push({"groupName" : Vendors[i], 'isCreatePOEnable' :  false, "sObjectList" : [] });
             // }
@@ -77,24 +88,62 @@
             //     }
             // }
 
-            Vendors.forEach(vendor => {
-                formatedData.push({
-                    "groupName": vendor,
-                    "isCreatePOEnable": false,
-                    "sObjectList": []
-                });
-            });
+            // Vendors.forEach(vendor => {
+            //     formatedData.push({
+            //         "groupName": vendor,
+            //         "isCreatePOEnable": false,
+            //         "sObjectList": [],
+            //     });
+            // });
             
-            BOMlines.forEach(line => {
-                const vendorName = line.buildertek__Vendor__c ? line.buildertek__Vendor__r.Name : 'No Vendor';
-                const group = formatedData.find(group => group.groupName === vendorName);
-                if (group) {
-                    group.sObjectList.push(line);
-                }
-            });
+            // BOMlines.forEach(line => {
+            //     const vendorName = line.buildertek__Vendor__c ? line.buildertek__Vendor__r.Name : 'No Vendor';
+            //     const group = formatedData.find(group => group.groupName === vendorName);
+            //     if (group) {
+            //         group.sObjectList.push(line);
+            //     }
+            // });
 
-            console.log('formatedData after sObject List : ', formatedData);
-            component.set("v.GroupByVendors", formatedData);
+            // console.log('formatedData after sObject List : ', formatedData);
+            // component.set("v.GroupByVendors", formatedData);
+Vendors.forEach((vendor, index) => {
+    // Initialize an empty costCodes array for each group
+    const group = {
+        "groupName": vendor,
+        "isCreatePOEnable": false,
+        "costCodes": [] // Initialize an empty array to hold cost codes
+    };
+    formatedData.push(group);
+});
+
+BOMlines.forEach(line => {
+    const vendorName = line.buildertek__Vendor__c ? line.buildertek__Vendor__r.Name : 'No Vendor';
+    const group = formatedData.find(group => group.groupName === vendorName);
+    if (group) {
+        const costCode = line.buildertek__Cost_Code__r ? line.buildertek__Cost_Code__r.Name : 'No Cost Code';
+        
+        // Create a unique key for the costCode
+        const costCodeKey = costCode;
+
+        // Check if the costCodeKey exists in the group object
+        let costCodeObj = group.costCodes.find(obj => obj.costCode === costCodeKey);
+        if (!costCodeObj) {
+            // If not, initialize it with an object containing the costCode and an empty sObjectList
+            costCodeObj = {
+                "costCode": costCodeKey,
+                "sObjectList": []
+            };
+            group.costCodes.push(costCodeObj);
+        }
+        
+        // Push the line object to the sObjectList of the corresponding costCode
+        costCodeObj.sObjectList.push(line);
+    }
+});
+
+console.log('formatedData after grouping : ', formatedData);
+component.set("v.GroupByVendors", formatedData);
+
 
             component.set("v.isSpinner", false);
         } catch (error) {
@@ -169,7 +218,12 @@
               }
               else if(result.state == 'error'){
                 component.set("v.isSpinner", false);
-                helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
+                if(result.isCustomeValidation){
+                    helper.ToastMessageUtilityMethod(component, '', 'Custom validation error : ' + result.returnMessage, 'error', 6000);
+                }
+                else{
+                    helper.ToastMessageUtilityMethod(component, '', 'Something Went Wrong', 'error', 3000);
+                }
               }
               // console.log('response : ', result);
           });

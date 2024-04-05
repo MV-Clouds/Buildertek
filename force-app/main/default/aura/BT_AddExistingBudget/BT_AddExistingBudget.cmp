@@ -18,44 +18,56 @@
     <aura:method name="refreshData" action="{!c.init}"></aura:method>
     <aura:attribute name="groupFilter" type="string" />
    
-    <ltng:require styles="{!$Resource.MOdalPreviewWidth62}"/>
-    <div class="slds-modal__header" style="font-size:17px;">
-	Add To Existing Budget
-    </div>
-    <div class="slds-modal__content slds-p-around--medium">
-    	<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Budget_Item__c">
-    		<lightning:layout multipleRows="true">
-                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-    				<label>Description</label>
-    				<ui:inputText  value="{!v.BudgetLines.buildertek__Description__c}" />
-    			</lightning:layoutItem>
-    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-    				<lightning:inputField fieldName="buildertek__Budget__c" value="{!v.BudgetLines.buildertek__Budget__c}" label="Budget"/>
-    				<!--<c:BT_LightningLookup objectAPIName="buildertek__Budget__c" IconName="standard:Budget" />-->
-    			</lightning:layoutItem>
-    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-    			    <lightning:inputField fieldName="buildertek__Budget_Line_Group__c" value="{!v.BudgetLines.buildertek__Budget_Line_Group__c}" label="Group"/>
-    				<!--<c:BT_LookUp _field="buildertek__Group__c" 
-    									  _sobject="buildertek__Budget_Item__c" 
-    									  _value="{!v.BudgetLines.buildertek__Group__c}"
-    									  _label=""
-    									  _filter=""
-    									  />-->
-    			</lightning:layoutItem>
-    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-    				<label>Quantity</label>
-    				<ui:inputText value="{!v.BudgetLines.buildertek__Quantity__c}"/>
-    			</lightning:layoutItem>
-    			<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-    				<label>Unit Price</label>
-    				<ui:inputText  value="{!v.BudgetLines.buildertek__Unit_Price__c}" />
-    			</lightning:layoutItem>
-    		</lightning:layout>
-    		
-    	</lightning:recordEditForm>
-    </div>
-    <div class="slds-modal__footer" style="margin-top:15px">
-		<button class="slds-button slds-button--neutral" onclick="{!c.closeModel}" >Cancel</button>
-		<button class="slds-button slds-button--brand" onclick="{!c.updateBudgetItemRecord}">Save</button>
+	<!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth62}"/> -->
+	<aura:HTML tag="style">
+		.cuf-content {
+			padding: 0 0rem !important;
+		}
+		.slds-p-around--medium {
+			padding: 0rem !important;
+		}
+		.slds-modal__content {
+			height: unset !important;
+			max-height: unset !important;
+		} 
+		.slds-modal__container{
+		   max-width: 62rem !important;
+		   width: 62% !important;
+		}
+	</aura:HTML>
+	<div class="ExitingBudget">
+		<header class="slds-modal__header">
+			<h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Add To Existing Budget</h2>
+		</header>   
+		<div class="slds-modal__content" id="modal-content-id-1"  >
+			<lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Budget_Item__c" density="Comfy" >
+				<div class="" style="height:auto;width:100%;overflow: auto;">
+					<div class="slds-p-around_medium" style="background-color:white;">
+							<lightning:layout multipleRows="true">
+								<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+									<lightning:inputField fieldName="buildertek__Description__c" value="{!v.BudgetLines.buildertek__Description__c}" label="Budget"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+									<lightning:inputField fieldName="buildertek__Budget__c" value="{!v.BudgetLines.buildertek__Budget__c}" label="Budget"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+									<lightning:inputField fieldName="buildertek__Budget_Line_Group__c" value="{!v.BudgetLines.buildertek__Budget_Line_Group__c}" label="Group"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+									<lightning:inputField fieldName="buildertek__Quantity__c" value="{!v.BudgetLines.buildertek__Quantity__c}" label="Budget"/>
+								</lightning:layoutItem>
+								<lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+									<lightning:inputField fieldName="buildertek__Unit_Price__c" value="{!v.BudgetLines.buildertek__Unit_Price__c}" label="Budget"/>
+								</lightning:layoutItem>
+						</lightning:layout>
+					</div>
+				</div>
+				<footer aura:id="footer" class="slds-modal__footer">
+					<lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{!c.closeModel}" />
+					<lightning:button variant="brand" title="Save" label="Save" onclick="{!c.updateBudgetItemRecord}" />
+				</footer>
+			</lightning:recordEditForm>
+		</div> 
 	</div>
+	<c:BT_Spinner />
 </aura:component>

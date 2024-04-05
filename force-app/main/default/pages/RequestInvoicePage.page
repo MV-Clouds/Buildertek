@@ -1,0 +1,425 @@
+<apex:page controller="RequestInvoicePageController"   showheader="false" id="pageId">
+    <apex:slds />
+    <apex:includeLightning />
+    <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
+        importJqGrid="false" importEasyTooltip="true" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
+        importLightningDesign="true" />
+        
+    <style>
+        .bPageBlock {
+            border-top: unset;
+        }
+
+        .customMargin{
+            margin-top: 6px;
+        }
+        #buttonWidth{
+            width: 164px;
+        }
+
+        .pbHeader {
+            display: none;
+        }
+
+        .helpOrb {
+            display: none;
+        }
+
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody .pbSubheader .hideListButton {
+        background-position: 1px -36px;
+        display: none !important;
+        }
+
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody .pbSubheader {
+        border-top: 0;
+        color: white;
+        background-color: rgba(27, 82, 151, 1.0) !important;
+        }
+
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        
+        .modal-content {
+            /* background-color: #fefefe; */
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 15px;
+            /* border: 1px solid #888; */
+            width: 40%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .rkheader{
+            text-align: center;
+            border-bottom: 1px solid gray;
+            font-size: large;
+            font-family: monospace;
+        }
+
+        .rkbody{
+            height: 10vh;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .rkfooter{
+            border-top: 1px solid gray;
+            padding-top: 5px;
+            text-align: center;
+        }
+    </style>
+    <script>
+        function submitQuote() {
+            var input = document.getElementById('fileToUpload');
+            var filelength = input.files.length;
+            var agreeFunction;
+            var confirmPromptOptions;
+            if (filelength > 0) {
+                agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); multiFiles(); return false;");
+                confirmPromptOptions = {
+                    'modalPopupId': 'lightningInfoPopup',
+                    'title': 'Confirm',
+                    'message': 'Are you sure you want to submit the Invoice?',
+                    'agreeButtonLabel': 'Yes',
+
+                    'discardButtonLabel': '{!JSENCODE($Label.buildertek__Cancel)}',
+                    'agreeFunction': agreeFunction
+                }
+            } else {
+                document.getElementById('myModal1').style.display = 'block';
+            }
+            Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
+        }
+
+        var uploadFileData = [];
+
+        function removeFiles(ind) {
+            console.log('uploadFileData ==> ',{uploadFileData});
+            var filelst = uploadFileData;
+            var newFileList = [];
+            document.getElementById('fileToUpload').disabled = false;
+
+            for (var index = 0; index < filelst.length; index++) {
+                if(ind != index) {
+                    newFileList.push(filelst[index]);
+                }
+            }
+            console.log({newFileList});
+
+            uploadFileData = newFileList;
+            document.getElementById('fileNameFieldId').innerHTML = null;
+
+            for (let index = 0; index < newFileList.length; index++) {
+
+                var file = newFileList[index]
+                console.log('newFileList ==> ',{file});
+                document.getElementById('fileError').style.display = 'none';
+                document.getElementById('fileNameFieldId').innerHTML += `<img class="slds-button__icon slds-button__icon--left" src="{!$Resource.Close_Icon}" alt="remove" onclick="removeFiles(`+ index +`)"/>`+newFileList[index].name+`<br/>` ;
+                document.getElementById('fileNameFieldId').style.display = 'block';
+
+            }
+            
+            document.getElementById('fileToUpload').value = '';
+        }
+
+        function fileSelected() {
+    var temp = event.target;
+    console.log('Event Data == >', {
+        temp
+    });
+    var size = document.getElementById('fileToUpload');
+    if (size.files.length > 0) {
+        // Check file size
+        var fileSize = size.files[0].size;
+        var maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (fileSize > maxSize) {
+            // Show error message if file size exceeds 5MB
+            document.getElementById('fileError').innerHTML = 'File size exceeds 5MB. Please select a smaller file.';
+            document.getElementById('fileError').style.display = 'block';
+            document.getElementById('fileToUpload').value = '';
+            document.getElementById('fileNameFieldId').style.display = 'none';
+            return;
+        }
+
+        // Reset error message
+        document.getElementById('fileError').style.display = 'none';
+
+        // Proceed with displaying selected files
+        uploadFileData = size.files;
+        document.getElementById('fileNameFieldId').innerHTML = '';
+        document.getElementById('fileNameFieldId').style.display = 'block';
+
+        // Display selected files
+        for (let index = 0; index < size.files.length; index++) {
+            var file = document.getElementById('fileToUpload').files[index];
+            if (file) {
+                document.getElementById('fileNameFieldId').innerHTML += `<img class="slds-button__icon slds-button__icon--left" src="{!$Resource.Close_Icon}" alt="remove" onclick="removeFiles(${index})"/> ${file.name} <br/>`;
+            }
+        }
+    }
+}
+
+
+        function multiFiles() {
+            if (uploadFileData != undefined && uploadFileData.length > 0) {
+                console.log('uploadFileData @@ ',{uploadFileData});
+                var fileData = uploadFileData[0];
+                var reader = new FileReader();
+                reader.onload = multiFilesLoad;
+                reader.onerror = errorHandler;
+                reader.readAsDataURL(fileData);
+            }
+        }
+
+        function multiFilesLoad(evt) {
+            var fileData = uploadFileData[0];
+            console.log('fileData ',{fileData});
+            var filename = fileData.name;
+            var fileType = fileData.type;
+            var fileSize = fileData.size;
+            var fileContent = String(evt.target.result);
+
+            console.log('fileContent ==> '+fileContent);
+            fileContent = fileContent.substr(fileContent.indexOf(',') + 1);
+            uploadContentVersion(filename, fileContent);
+        }
+
+        function errorHandler(evt) {
+            if (evt.target.error.name == 'NotReadableError') {
+                alert('File could not be read');
+            }
+            else {
+                alert(evt.target.error);
+            }
+        }
+
+        function uploadContentVersion(filename, filecontent, fileSize, fileType) {
+            uploadFileToPurchaseorder(filename, encodeURIComponent(filecontent));
+        }
+
+        function closeModal() {
+            document.getElementById('myModal').style.display = 'none';
+            document.getElementById('myModal1').style.display = 'none';
+        }
+    </script>
+    <apex:form id="form" html-autocomplete="off">
+
+        <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
+
+        <apex:actionFunction name="uploadFileToPurchaseorder" action="{!uploadFileToPurchaseorder}" status="splashStatus" rerender="form,iserrorMessage">
+            <apex:param name="firstParam" value="" assignTo="{!latestFileName}"/>
+            <apex:param name="secondParam" value="" assignTo="{!fileContents}"/>
+        </apex:actionFunction>
+
+        <div class="slds slds-scope">
+            <div id="splashDiv" class="apInitiallyDivDisplayNone" style="z-index:9998;">
+                <div class="slds-spinner_container apLightningSpinnerContainer">
+                    <div role="status" class="slds-spinner slds-spinner--medium slds-spinner--brand">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <apex:outputPanel rendered="{!iserrorMessage == true}" id="iserrorMessage">
+            <apex:outputPanel rendered="{!iserrorMessage == true}">
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <h2>
+                        {!errorMessage}
+                    </h2>
+                </div>
+            </apex:outputPanel>
+        </apex:outputPanel>
+
+        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 10px 50px;">
+            <div class="slds-box">
+                <apex:outputPanel >
+                    <div>
+                        <span>
+                            <c:DisplayImageInTemplate />
+                        </span>
+                        <span>
+                            <center>
+                                <b>
+                                    <ul>
+                                        <h2 style="font-size: 1.3rem;text-transform: uppercase;text-decoration: underline;margin-top: -25px;">SUBMIT YOUR INVOICE TO {!purchaseOrderRecord[0].Name}</h2>
+                                    </ul>
+                                </b>
+                            </center>
+                        </span>
+                    </div>
+                </apex:outputPanel>
+
+
+                <apex:pageBlock title="PO Page">
+                    <div>
+                        <apex:pageBlockSection title="PO Details" columns="2">
+                            <apex:outputField value="{!purchaseOrderRecord[0].buildertek__Project__r.Name}" />
+                            <apex:outputField value="{!purchaseOrderRecord[0].Name}" />
+                            <apex:outputField value="{!purchaseOrderRecord[0].buildertek__Vendor__r.Name}" />
+                            <apex:outputField value="{!purchaseOrderRecord[0].buildertek__PO_Total__c}" />
+                            <apex:outputField value="{!purchaseOrderRecord[0].buildertek__Description__c}" />
+                        </apex:pageBlockSection>
+                    </div>
+                    <br/>
+                    <div class="slds-box" style="overflow:auto;max-height: 42vh !important;">
+                        <b>
+                            <div class="slds-badge" style="font-size: 0.8rem;border-radius: 0 !important;">PO Lines</div>
+                        </b>
+
+                        <table width="100%" class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col" width="35%">
+                                        Line Item
+                                    </th>
+                                    <!-- <th scope="col" width="23%">
+                                        Product
+                                    </th> -->
+                                    <th scope="col" width="35%">
+                                        Description
+                                    </th>
+                                    <th scope="col" width="10%">
+                                        Quantity
+                                    </th>
+                                    <th scope="col" width="10%">
+                                        Unit Price({!companycurrency})
+                                    </th>
+                                    <th scope="col" width="10%">
+                                        Total Price({!companycurrency})
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:variable value="{!0}" var="rowNum" />
+                                <apex:repeat value="{!poLineRecord}" var="item">
+                                    <tr>
+                                        <td style="white-space: normal" width="35%">
+                                            <apex:outputField value="{!item.Name}"/>
+                                        </td>
+                                        <!-- <td style="white-space: normal">
+                                            <apex:outputField value="{!item.buildertek__Product__c}" />
+                                        </td> -->
+                                        <td style="white-space: normal" width="35%">
+                                            <apex:outputField value="{!item.Description__c}"/>
+                                        </td>
+                                        <td width="10%">
+                                            <apex:outputField value="{!item.Quantity__c}"/>
+                                        </td>
+                                        <td width="10%">
+                                            <apex:outputField value="{!item.Unit_Price__c}"/>
+                                        </td>
+                                        <td width="10%">
+                                            <apex:outputField value="{!item.Total_Price__c}"/>
+                                        </td>
+                                    </tr>
+                                </apex:repeat>
+                            </tbody>
+                        </table>
+                    </div>
+                </apex:pageBlock>
+                <apex:outputPanel id="pb2">
+                    <br/>
+                    <div class="slds-box">
+                        <b>
+                        <div class="slds-badge" style="background-color: #e0e5ee;font-size: 0.8rem;border-radius: 0 !important;">Vendor Invoice</div>
+
+                        <div class="slds-file-selector__dropzone customMargin">
+                            <input id="fileToUpload" type="file" name="file" class="slds-file-selector__input slds-assistive-text"
+                                     aria-describedby="fileLabel" onchange="fileSelected()" />
+                            <label class="slds-file-selector__body" for="fileToUpload">
+                                <div class="slds-file-selector__button slds-button slds-button_brand" id="buttonWidth">
+                                    <img class="slds-button__icon slds-button__icon--left" src="{!$Resource.RequestImageUploaderImg}"/>
+                                    Upload New Files
+                                </div>
+                                <div styleClass="slds-file-selector__text">
+                                    <!-- or Drop Files -->
+                                </div>
+                            </label>
+                            <div id="fileNameFieldId" style="display: none" class="slds-text-body_small slds-text-color_success"></div>
+                            <div id="fileError" style="display:none;" class="slds-text-body_small slds-text-color_error">{!$Label.Please_Select_File}</div>
+                        </div>
+                    </b>
+                    </div>
+                    <br/>
+                    <center>
+                        <button type="button" class="slds-button slds-button_neutral" onclick="window.close();">Close</button>
+                        <button type="button" class="{!if(HideSubmitButton,'slds-hide','slds-button slds-button_brand')}" onclick="submitQuote();">Submit</button>
+                    </center>
+                </apex:outputPanel>
+            </div>
+
+            <apex:outputPanel layout="block" id="lightningInfoPopup" style="display: none; z-index: 8552;">
+                <div class="apModal" style="z-index: 8551;">
+                    <div class="apModalContainer">
+                        <div class="apModalHeader">
+                            <button id="lightningInfoPopupCloseIcon" class="slds-button slds-modal__close slds-button--icon-inverse" onClick="Appurin.lightning.hideModalPopup({'modalPopupId':'{!JSENCODE($Component.lightningInfoPopup)}'}); return false;"
+                                title="{!$Label.Close}">
+                                <!-- <c:BT_LightningSvg parentId="lightningInfoPopupCloseIcon" styleClass="slds-button__icon slds-button__icon--large" path="/assets/icons/utility-sprite/svg/symbols.svg#close"/> -->
+                                <span class="slds-assistive-text">{!$Label.Close}</span>
+                            </button>
+                            <h2 class="apModalHeading" id="lightningInfoPopupHeader">{$Label.Warning}</h2>
+                        </div>
+                        <div class="apModalContent">
+                            <div class="apNotifyContainer" style="position: relative; text-align:center;">
+                                <div>
+                                    <h2 id="lightningInfoPopupMessage"></h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="apModalFooter">
+                            <button id="lightningInfoPopupOkButton">{!$Label.Ok}</button>
+                            <button id="lightningInfoPopupCloseButton">{!$Label.Close}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop--open" style="z-index: 5881;"></div>
+            </apex:outputPanel>
+            <div id="myModal1" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="rkheader slds-modal__header">
+                        <h2 style="margin-bottom: 1px;" class="slds-text-heading--medium">Error</h2>
+                    </div>
+                    <div class="rkbody slds-modal__content slds-p-around--medium">
+                        <p>Please upload an Invoice</p>
+                    </div>
+                    <div class="rkfooter slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_neutral" onclick="closeModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+            <div id="myModal" class="modal" style="{!IF(isModalVisible, 'display: block;', 'display: none;')}">
+                <div class="modal-content">
+                    <div class="rkheader slds-modal__header">
+                        <h2 style="margin-bottom: 1px;" class="slds-text-heading--medium">{!modalTitle}</h2>
+                    </div>
+                    <div class="rkbody slds-modal__content slds-p-around--medium">
+                        <p>{!modalMessage}</p>
+                    </div>
+                    <div class="rkfooter slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_neutral" onclick="closeModal()">{!modalButtonLabel}</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="slds-modal-backdrop slds-modal-backdrop--close" id="idBackDrop"></div> -->
+        </div>
+
+
+        <!-- <div class="slds-modal-backdrop slds-modal-backdrop--close" id="idBackDrop1"></div> -->
+    </apex:form>
+</apex:page>

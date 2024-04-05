@@ -1,15 +1,16 @@
 public with sharing class ImportmasterInspectionClass {
 
     @AuraEnabled
-    public static object getMasterInspection(){
+    public static object getMasterInspection(String recordId, String searchKeyword){
 
         //Inspection List
         list<buildertek__Inspection__c> masterInspectionList;
+        String searchString = '%' + searchKeyword + '%';
         If(Schema.sObjectType.buildertek__Inspection__c.fields.Name.isAccessible() &&
               Schema.sObjectType.buildertek__Inspection__c.fields.Id.isAccessible() &&
               Schema.sObjectType.buildertek__Inspection__c.fields.buildertek__Type_Clone__c.isAccessible()) {
                 masterInspectionList = [SELECT Id, Name, buildertek__Type_Clone__c, buildertek__Details__c, buildertek__Name__c FROM buildertek__Inspection__c 
-                                            WHERE buildertek__Type_Clone__c = 'Master'
+                                            WHERE buildertek__Type_Clone__c = 'Master' AND ID != :recordId AND buildertek__Name__c LIKE:searchString
                                             ORDER BY Name
                                             ASC limit 50000]; 
               } 

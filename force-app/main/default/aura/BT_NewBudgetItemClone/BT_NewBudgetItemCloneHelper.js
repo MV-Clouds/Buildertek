@@ -594,6 +594,17 @@
                                         totalObj['grossMarginKey'] = '';
                                         totalObj['labor'] = 0;
                                         totalObj['laborKey'] = '';
+                                        totalObj['material'] = 0;
+                                        totalObj['materialKey'] = '';
+                                        totalObj['laborBudget'] = 0;
+                                        totalObj['laborBudgetKey'] = '';
+                                        totalObj['subcontractor'] = 0;
+                                        totalObj['subcontractorKey'] = '';
+                                        totalObj['equipment'] = 0;
+                                        totalObj['equipmentKey'] = '';
+                                        totalObj['misc'] = 0;
+                                        totalObj['miscKey'] = '';
+                                        
 
                                     
 
@@ -1065,6 +1076,16 @@
                         totalObj['grossMarginKey'] = '';
                         totalObj['labor'] = 0;
                         totalObj['laborKey'] = '';
+                        totalObj['material'] = 0;
+                        totalObj['materialKey'] = '';
+                        totalObj['laborBudget'] = 0;
+                        totalObj['laborBudgetKey'] = '';
+                        totalObj['subcontractor'] = 0;
+                        totalObj['subcontractorKey'] = '';
+                        totalObj['equipment'] = 0;
+                        totalObj['equipmentKey'] = '';
+                        totalObj['misc'] = 0;
+                        totalObj['miscKey'] = '';
                         
 
                         result.tarTable.ListOfEachRecord.forEach(element => {
@@ -1609,6 +1630,27 @@
         });
         $A.enqueueAction(action);
     },
+
+    gettsList: function (component, pageNumber, pageSize) {
+        var recId = component.get("v.recordId");
+        var action = component.get("c.getTimeSheetData");
+        action.setParams({
+            RecId: recId
+        });
+        action.setCallback(this, function (result) {
+            var state = result.getState();
+            if (component.isValid() && state === "SUCCESS") {
+                var resultData = result.getReturnValue();
+                //iterate through the list of records and add selected field with default value false
+                for (var i in resultData) {
+                    resultData[i].Selected = false;
+                }
+                console.log('Jaimin resultData --> ',{resultData});
+                component.set("v.timeSheetList", resultData);
+            }
+        });
+        $A.enqueueAction(action);
+    },
       doSave: function (component, event, helper) {
           $A.get("e.c:BT_SpinnerEvent").setParams({
               "action": "SHOW"
@@ -1910,6 +1952,16 @@
                 totalObj['grossMarginKey'] = '';
                 totalObj['labor'] = 0;
                 totalObj['laborKey'] = '';
+                totalObj['material'] = 0;
+                totalObj['materialKey'] = '';
+                totalObj['laborBudget'] = 0;
+                totalObj['laborBudgetKey'] = '';
+                totalObj['subcontractor'] = 0;
+                totalObj['subcontractorKey'] = '';
+                totalObj['equipment'] = 0;
+                totalObj['equipmentKey'] = '';
+                totalObj['misc'] = 0;
+                totalObj['miscKey'] = '';
                 
 
 
@@ -2033,6 +2085,26 @@
                 totalObj['labor'] += e.originalValue;
                 totalObj['laborKey'] = 'buildertek__Labor__c'
             }
+            if (e.fieldName == "buildertek__Material_Budget__c") {
+                totalObj['material'] += e.originalValue;
+                totalObj['materialKey'] = 'buildertek__Material_Budget__c'
+            }
+            if (e.fieldName == "buildertek__Labor_Budget__c") {
+                totalObj['laborBudget'] += e.originalValue;
+                totalObj['laborBudgetKey'] = 'buildertek__Labor_Budget__c'
+            }
+            if (e.fieldName == "buildertek__Subcontractor_Budget__c") {
+                totalObj['subcontractor'] += e.originalValue;
+                totalObj['subcontractorKey'] = 'buildertek__Subcontractor_Budget__c'
+            }
+            if (e.fieldName == "buildertek__Equipment_Budget__c") {
+                totalObj['equipment'] += e.originalValue;
+                totalObj['equipmentKey'] = 'buildertek__Equipment_Budget__c'
+            }
+            if (e.fieldName == "buildertek__Misc_Budget__c") {
+                totalObj['misc'] += e.originalValue;
+                totalObj['miscKey'] = 'buildertek__Misc_Budget__c'
+            }
 
 
             totalObj['fieldType'] = "currency";
@@ -2083,6 +2155,21 @@
 
             obj['labor'] = 0;
             obj['laborKey'] = '';
+
+            obj['material'] = 0;
+            obj['materialKey'] = '';
+
+            obj['laborBudget'] = 0;
+            obj['laborBudgetKey'] = '';
+
+            obj['subcontractor'] = 0;
+            obj['subcontractorKey'] = '';
+
+            obj['equipment'] = 0;
+            obj['equipmentKey'] = '';
+
+            obj['misc'] = 0;
+            obj['miscKey'] = '';
 
             // obj['amountIn'] = 0;
             // obj['amountInKey'] = '';
@@ -2170,6 +2257,30 @@
                             obj['laborKey'] = 'buildertek__Labor__c'
                         }
 
+                        if (recList[k].fieldName == "buildertek__Material_Budget__c") {
+                            obj['material'] += recList[k].originalValue;
+                            obj['materialKey'] = 'buildertek__Material_Budget__c'
+                        }
+
+                        if (recList[k].fieldName == "buildertek__Labor_Budget__c") {
+                            obj['laborBudget'] += recList[k].originalValue;
+                            obj['laborBudgetKey'] = 'buildertek__Labor_Budget__c'
+                        }
+
+                        if (recList[k].fieldName == "buildertek__Subcontractor_Budget__c") {
+                            obj['subcontractor'] += recList[k].originalValue;
+                            obj['subcontractorKey'] = 'buildertek__Subcontractor_Budget__c'
+                        }
+
+                        if (recList[k].fieldName == "buildertek__Equipment_Budget__c") {
+                            obj['equipment'] += recList[k].originalValue;
+                            obj['equipmentKey'] = 'buildertek__Equipment_Budget__c'
+                        }
+
+                        if (recList[k].fieldName == "buildertek__Misc_Budget__c") {
+                            obj['misc'] += recList[k].originalValue;
+                            obj['miscKey'] = 'buildertek__Misc_Budget__c'
+                        }
 
                         
 
@@ -2630,6 +2741,9 @@
                         }
                         if (element.buildertek__Group__c != undefined) {
                             element.buildertek__Group__c = element.buildertek__Group__r.Name;
+                        }
+                        if (element.buildertek__Category__c != undefined) {
+                            element.buildertek__Category__c = element.buildertek__Category__r.Name;
                         }
                     });
                     var group1Wrapper = [];

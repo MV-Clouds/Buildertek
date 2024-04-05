@@ -189,6 +189,14 @@ export default base => class GanttToolbar extends base {
                         {
                             type       : 'button',
                             color      : 'b-blue',
+                            ref        : 'saveDataButton',
+                            icon       : 'b-fa b-fa-save',
+                            text       : 'Save Changes',
+                            onAction : 'up.onSaveClick'
+                        },
+                        {
+                            type       : 'button',
+                            color      : 'b-blue',
                             ref        : 'featuresButton',
                             icon       : 'b-fa b-fa-tasks',
                             text       : 'Features',
@@ -218,26 +226,26 @@ export default base => class GanttToolbar extends base {
                                         feature : 'nonWorkingTime',
                                         checked : false
                                     },
-                                    {
-                                        text    : 'Enable cell editing',
-                                        feature : 'cellEdit',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show baselines',
-                                        feature : 'baselines',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show rollups',
-                                        feature : 'rollups',
-                                        checked : false
-                                    },
-                                    {
-                                        text    : 'Show progress line',
-                                        feature : 'progressLine',
-                                        checked : false
-                                    },
+                                    // {
+                                    //     text    : 'Enable cell editing',
+                                    //     feature : 'cellEdit',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show baselines',
+                                    //     feature : 'baselines',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show rollups',
+                                    //     feature : 'rollups',
+                                    //     checked : false
+                                    // },
+                                    // {
+                                    //     text    : 'Show progress line',
+                                    //     feature : 'progressLine',
+                                    //     checked : false
+                                    // },
                                     {
                                         text    : 'Hide schedule',
                                         cls     : 'b-separator',
@@ -297,22 +305,6 @@ export default base => class GanttToolbar extends base {
                         //     }
                         // },
                         {
-                            type       : 'button',
-                            color      : 'b-blue',
-                            ref        : 'saveDataButton',
-                            icon       : 'b-fa b-fa-save',
-                            text       : 'Save Changes',
-                            onAction : 'up.onSaveClick'
-                        },
-                        {
-                            type     : 'button',
-                            text     : 'Export Schedule',
-                            color    : 'b-blue',
-                            ref      : 'excelExportBtn',
-                            icon     : 'b-fa-file-export',
-                            onAction : 'up.onExportclick'
-                        },
-                        {
                             type     : 'button',
                             text     : 'Import Schedule',
                             color    : 'b-blue',
@@ -322,11 +314,11 @@ export default base => class GanttToolbar extends base {
                         },
                         {
                             type     : 'button',
-                            text     : 'Set Original Dates',
+                            text     : 'Export Schedule',
                             color    : 'b-blue',
-                            ref      : 'editOriginalDate',
+                            ref      : 'excelExportBtn',
                             icon     : 'b-fa-file-export',
-                            onAction : 'up.onEditOriginalDate'
+                            onAction : 'up.onExportclick'
                         },
                         // {
                         //     type       : 'button',

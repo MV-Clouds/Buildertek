@@ -57,5 +57,4 @@ public with sharing class scheduleResourceController {
         @AuraEnabled public List<User> internalResourcesList;
         @AuraEnabled public List<Account> contractorAndResourcesList;
         @AuraEnabled public List<buildertek__Project_Task__c> conflictingSchedulesList;
-    }
 }

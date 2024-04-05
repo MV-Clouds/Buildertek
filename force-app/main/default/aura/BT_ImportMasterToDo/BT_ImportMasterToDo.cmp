@@ -14,6 +14,7 @@
     <aura:attribute name="totalRecords" type="Integer" />
     <aura:attribute name="pageSize" type="Integer" default="10" />
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="searchKeyword" type="String" default="" />
 
     <lightning:overlayLibrary aura:id="overlayLib" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
@@ -21,37 +22,40 @@
     <div class="slds-modal__header" style="font-size:17px;">
         Import Master To Do
     </div>
-
+    <aura:html tag="style">
+		.lbl .slds-form-element__label{
+			display: none;
+		}
+	</aura:html>
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope">
+            <lightning:layoutItem padding="around-small" size="12">
+				<lightning:input class="lbl" value="{!v.searchKeyword}" placeholder="Search By Description or Account..." name="searchField" onchange="{! c.onSearch }"/>
+			</lightning:layoutItem>
             <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                 <thead>
                     <tr class="slds-text-title_caps">
-                        <th width="10%" scope="col"
+                        <th width="5%" scope="col"
                             style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;vertical-align: top;line-height: 2;">
-                            <ui:inputCheckbox aura:id="checkSelecteds" value="{!v.isAllSelected}"
-                                name="{!v.isAllSelected}" change="{!c.selectAll}" />
+                            <!-- <ui:inputCheckbox aura:id="checkSelecteds" value="{!v.isAllSelected}"
+                                name="{!v.isAllSelected}" change="{!c.selectAll}" /> -->
                         </th>
-                        <th width="20%"
+                        <th width="45%"
                             style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                            Title
-                        </th>
-                        <th width="20%"
-                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                            Project
-                        </th>
-                        <th width="20%"
-                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                            Due Date
+                            Description
                         </th>
                         <th width="25%"
                             style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                            Description
+                            Customer Account
+                        </th>
+                        <th width="25%"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Vendor Account
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <aura:iteration items="{!v.recordList}" var="rec">
+                    <aura:iteration items="{!v.PaginationList}" var="rec">
                         <tr class="slds-hint-parent">
                             <aura:if isTrue="{!rec.Id != null}">
                                 <td style="width: 30px;">
@@ -59,51 +63,37 @@
                                         text="{!rec.Id}" change="{!c.onChangeHandler}" />
                                 </td>
                                 <td role="gridcell">
-                                    <ui:outputText value="{!rec.Name}" />
-                                </td>
-                                <td role="gridcell">
-                                    <ui:outputText value="{!rec.buildertek__Project__r.Name}" />
-                                </td>
-                                <td role="gridcell">
-                                    <ui:outputText value="{!rec.buildertek__Due_Date__c}" />
-                                </td>
-                                <td role="gridcell">
                                     <span style="white-space: initial;">{!rec.buildertek__Description__c}</span>
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.buildertek__Customer_Account__r.Name}" />
+                                </td>
+                                <td role="gridcell">
+                                    <ui:outputText value="{!rec.buildertek__Assigned_Vendor__r.Name}" />
                                 </td>
                             </aura:if>
                         </tr>
                     </aura:iteration>
                 </tbody>
             </table>
-            <br />
-            <lightning:buttonGroup>
-                <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
-                    variant="brand" iconName='utility:back' />
-                &nbsp; &nbsp; &nbsp;
-                <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
-                    variant="brand" iconName='utility:forward' iconPosition='right' />
-            </lightning:buttonGroup>
         </div>
-        <aura:if isTrue="{!v.Spinner}">
-            <div aura:id="spinnerId" class="slds-spinner_container">
-                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
-                    <span class="slds-assistive-text">Loading</span>
-                    <div class="slds-spinner__dot-a"></div>
-                    <div class="slds-spinner__dot-b"></div>
-                    <div class="custom-loading-text">
-                           <b>Processing, Please Wait</b>
-                       </div>
-                </div>
-            </div>
-        </aura:if>
     </div>
     <div class="slds-modal__footer">
-        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
-        <button class="slds-button slds-button--brand" onclick="{!c.importRecords}">Import Master To Do</button>
+        <div class="slds-clearfix">
+            <div class="slds-float_left">
+                <lightning:buttonGroup>
+                    <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
+                        variant="brand" iconName='utility:back' />
+                    &nbsp; &nbsp; &nbsp;
+                    <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
+                        variant="brand" iconName='utility:forward' iconPosition='right' />
+                </lightning:buttonGroup>            
+            </div>
+            <div class="slds-float_right">
+                <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+                <button class="slds-button slds-button--brand" onclick="{!c.importRecords}">Import Master To Do</button>            
+            </div>
+        </div>
     </div>
-    <div class="loading_wheel">
-        <aura:if isTrue="{! v.loading }">
-            <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
-        </aura:if>
-    </div>
+    <c:BT_Spinner/>
 </aura:component>

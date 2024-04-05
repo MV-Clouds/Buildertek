@@ -1,7 +1,7 @@
 public with sharing class NewVendorController{
     @AuraEnabled
 	public static String getobjectName(Id recordId){
-        String sObjName = recordId.getSObjectType().getDescribe().getName();  
+        String sObjName = recordId.getSObjectType().getDescribe().getName();
         return sObjName;
     }
 	@AuraEnabled
@@ -57,7 +57,6 @@ public with sharing class NewVendorController{
 		return pickListValuesList;
 	}
 
-	
     @AuraEnabled
 	public static Map<Id, String> getNames(String RecordId){
 		Map<Id, String> poNames= new Map<Id, String>();
@@ -67,21 +66,5 @@ public with sharing class NewVendorController{
 		poNames.put(purchaseRec.buildertek__Project__c , 'Project');
         return poNames;
     }
-	@AuraEnabled
-    public static String saveRecord(String vendorReviewData){
-        buildertek__Vendor_Review__c vendorReview = (buildertek__Vendor_Review__c)JSON.deserialize(vendorReviewData, buildertek__Vendor_Review__c.class);
-        insert vendorReview;
-        return vendorReview.Id;
-    }
 
-	
-   /* @AuraEnabled
-    public static  buildertek__Purchase_Order__c Name(buildertek__Purchase_Order__c field)
-    { 
-        system.debug('vemdor-->'+vemdor);
-        if(vemdor != null){
-            insert vemdor;
-        }
-        return vemdor;
-    }  */
 }

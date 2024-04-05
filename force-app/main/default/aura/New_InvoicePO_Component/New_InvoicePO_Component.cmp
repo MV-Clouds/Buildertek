@@ -12,6 +12,7 @@
 <aura:attribute name="poList" type="List" />
 <aura:attribute name="allPORecords" type="List" />
 <aura:attribute name="selectedPOId" type="Id" default="" />
+<aura:attribute name="isDisabled" type="Boolean" default="false"/>
 
 
 
@@ -88,7 +89,7 @@
                                                             
                                                                     
                                                                     <aura:if isTrue="{!empty(v.poList)}">
-                                                                        <aura:if isTrue="{!empty(v.selectedPOName)}">
+                                                                        <aura:if isTrue="{!empty(v.parentRecordId)}">
                                                                             <span>
                                                                                 <p class="blank-lst" style="text-align: center; padding:10px">
                                                                                     Please select the Project first

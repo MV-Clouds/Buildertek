@@ -82,3 +82,7 @@
     border: 0px;
     padding: 0px;
 }
+
+.THIS .percentCompletion{
+    margin-top: 0px !important;
+}

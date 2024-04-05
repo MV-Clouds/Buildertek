@@ -3,6 +3,7 @@
         component.set("v.isOpen", true);
         component.set("v.isLoading", true);
         var value = helper.getParameterByName(component, event, 'inContextOfRef');
+        console.log('value : ', value);
         var context = '';
         var parentRecordId = '';
         component.set("v.parentRecordId", parentRecordId);
@@ -11,16 +12,25 @@
             parentRecordId = context.attributes.recordId;
             component.set("v.parentRecordId", parentRecordId);
         } else {
-            var relatedList = window.location.pathname;
-            var stringList = relatedList.split("/");
-            parentRecordId = stringList[4];
-            console.log(parentRecordId);
-            component.set("v.parentRecordId", parentRecordId);
+            // var relatedList = window.location.pathname;
+            // console.log('relatedList : ', relatedList);
+            // var stringList = relatedList.split("/");
+            // parentRecordId = stringList[4];
+            // console.log(parentRecordId);
+            // component.set("v.parentRecordId", parentRecordId);
 
-            if (parentRecordId === 'related') {
-                var stringList = relatedList.split("/");
-                parentRecordId = stringList[3];
-                console.log({parentRecordId});
+            // if (parentRecordId === 'related') {
+            //     var stringList = relatedList.split("/");
+            //     parentRecordId = stringList[3];
+            //     console.log({parentRecordId});
+            //     component.set("v.parentRecordId", parentRecordId);
+            // }
+            if (!component.get("v.isCalledFromParent")) {
+                var myPageRef = component.get("v.pageReference");
+                var parentRecordId = myPageRef.state.buildertek__parentId;
+                component.set("v.parentRecordId", parentRecordId);
+            } else {
+                var parentRecordId = component.get("v.parentId");
                 component.set("v.parentRecordId", parentRecordId);
             }
 

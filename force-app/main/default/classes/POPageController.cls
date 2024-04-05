@@ -13,7 +13,7 @@ public class POPageController {
         System.debug('poFilter=====>'+poFilter);
         String query = 'Select COUNT() FROM buildertek__Purchase_Order__c';
         if(poFilter != ''){
-            
+            System.debug('pofilter is not empty');
             if(poFilter != '' && poFilter != null){
                 query = query+ ' Where (buildertek__Vendor__r.Name LIKE \'%'+String.escapeSingleQuotes(poFilter)+'%\')';
                 query = query+ ' or (Name LIKE \'%'+String.escapeSingleQuotes(poFilter)+'%\')';
@@ -24,22 +24,20 @@ public class POPageController {
             totalRecords = Database.countQuery(query);
             System.debug('tradeTypeFilter===============>'+tradeTypeFilter);
         }else if(tradeTypeFilter != ''){
+            System.debug('tradeTypeFilter is not empty');
             if(tradeTypeFilter != '' && tradeTypeFilter != null){
                 query = query+ ' Where (buildertek__Vendor__r.buildertek__Trade_Type_Lookup__r.Name LIKE \'%'+String.escapeSingleQuotes(tradeTypeFilter)+'%\')';
             }
             totalRecords = Database.countQuery(query);
         } else if(projectFilter != ''){
+            System.debug('projectFilter is not empty');
             if(projectFilter != '' && projectFilter != null){
                 query = query+ ' Where (buildertek__Project__r.Name LIKE \'%'+String.escapeSingleQuotes(projectFilter)+'%\')';
             }
             totalRecords = Database.countQuery(query);
-        }
-        
-        
-        
-        else{
-            totalRecords = [select COUNT()  
-                            from buildertek__Purchase_Order__c where (buildertek__Status__c != 'Ordered' AND buildertek__Status__c != 'Paid' AND buildertek__Status__c != 'Partially Paid')]; 
+        } else{
+            System.debug('In else');
+            totalRecords = [SELECT COUNT() FROM buildertek__Purchase_Order__c WHERE buildertek__Status__c NOT IN ('Ordered','Paid','Partially Paid')]; 
         }
         
         
@@ -49,9 +47,11 @@ public class POPageController {
         String queryList = 'select Id, Name, buildertek__Type__c,toLabel(buildertek__Phase__c),buildertek__Vendor__c,buildertek__Vendor__r.Name,buildertek__Vendor__r.buildertek__Trade_Type_Lookup__r.Name,buildertek__Vendor__r.buildertek__Email_Address__c,buildertek__Status__c,buildertek__Description__c,buildertek__Change_Order__c,buildertek__Change_Order__r.Name, buildertek__PO_Total__c, buildertek__Paid_Amount__c, buildertek__PO_Balance__c, buildertek__Date_Ordered__c, buildertek__Project__c, buildertek__Project__r.Name,';
         queryList = queryList +  ' (select Id, Name, buildertek__Purchase_Order__c,buildertek__Total_Price__c,buildertek__Tax__c, buildertek__Purchase_Order__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Description__c, buildertek__Total_Amount_Tax__c from Purchase_Order_Items__r) FROM buildertek__Purchase_Order__c';
         queryList = queryList+ ' Where (buildertek__Status__c != \'Ordered\' AND buildertek__Status__c != \'Paid\' AND buildertek__Status__c != \'Partially Paid\') ';
+        System.debug('queryList--->'+queryList);
         if(poFilter != '' || tradeTypeFilter != '' || projectFilter != '' || permitFilter != ''){
+            System.debug('Inside filter  condition');
             if(poFilter != ''){
-                
+                System.debug('poFilter');
                 queryList = queryList+ ' AND (buildertek__Vendor__r.Name LIKE \'%'+String.escapeSingleQuotes(poFilter)+'%\'';
                 
                 queryList = queryList+ ' or Name LIKE \'%'+String.escapeSingleQuotes(poFilter)+'%\'';
@@ -64,11 +64,13 @@ public class POPageController {
                 
             }
             if(tradeTypeFilter != ''){
+                System.debug('tradeTypeFilter');
                 if(tradeTypeFilter != '' && tradeTypeFilter != null){
                     queryList = queryList+ ' AND (buildertek__Vendor__r.buildertek__Trade_Type_Lookup__r.Name LIKE \'%'+String.escapeSingleQuotes(tradeTypeFilter)+'%\')';
                 }
             }
             if(projectFilter != ''){
+                System.debug('projectFilter');
                 if(projectFilter != '' && projectFilter != null){
                     queryList = queryList+ ' AND (buildertek__Project__r.Name LIKE \'%'+String.escapeSingleQuotes(projectFilter)+'%\')';
                 }
@@ -76,15 +78,18 @@ public class POPageController {
             }
 
             if(permitFilter != '' && permitFilter != null){
+                System.debug('permitFilter');
                 queryList = queryList+ ' AND (buildertek__Permit__r.Name LIKE \'%'+String.escapeSingleQuotes(permitFilter)+'%\') AND (buildertek__Permit__r.buildertek__Status__c = \'Completed\')';
             }
 
             queryList = queryList+ ' ORDER BY buildertek__Phase__c  DESC NULLS last, buildertek__Vendor__r.Name ASC NULLS last, Name DESC, buildertek__Status__c ASC';
+            System.debug('queryList--->>'+queryList);
             MainpoRecList = Database.query(queryList); 
 
         }
         
         else if(poLineFilter != '' || productFilter != ''){
+            System.debug('inside elseif for poline and product');
             MainpoRecList = [SELECT Id,
                              Name, 
                              buildertek__Type__c,
@@ -115,6 +120,9 @@ public class POPageController {
                                                           buildertek__Product__r.ProductCode from Purchase_Order_Items__r)
                              FROM buildertek__Purchase_Order__c where (buildertek__Status__c != 'Ordered' AND buildertek__Status__c != 'Paid' AND buildertek__Status__c != 'Partially Paid') ORDER BY buildertek__Phase__c  DESC NULLS last, buildertek__Vendor__r.Name ASC NULLS last, Name DESC, buildertek__Status__c ASC ];    
         }else {
+            System.debug('inside elseee');
+            System.debug('pageSize--->'+pageSize);
+            System.debug('offset--->'+offset);
             MainpoRecList = [SELECT Id,
                              Name, 
                              buildertek__Type__c,
@@ -150,14 +158,14 @@ public class POPageController {
         System.debug('MainpoRecList======>====='+MainpoRecList);
         for(buildertek__Purchase_Order__c POrec : MainpoRecList){
             System.debug('POrec======>'+POrec);
-            if(POrec.Purchase_Order_Items__r.size() > 0){
+            // if(POrec.Purchase_Order_Items__r.size() > 0){
                 if(GroupingMap.get(POrec.buildertek__Phase__c) == null){
                     GroupingMap.put(POrec.buildertek__Phase__c , new List<buildertek__Purchase_Order__c>());
                 }
                 GroupingMap.get(POrec.buildertek__Phase__c).add(POrec);
-            }
+            // }
         }
-        
+        System.debug('GroupingMap>>>'+GroupingMap);
         for(String PO : GroupingMap.keySet()){
             MasterBudgetsClass MasterBudgetsClassRecord = new MasterBudgetsClass(); 
             MasterBudgetsClassRecord.groupName = PO;
@@ -179,7 +187,7 @@ public class POPageController {
             
             for(buildertek__Purchase_Order__c PO1 : GroupingMap.get(PO)){
                 system.debug('varmatest--->'+PO1.Purchase_Order_Items__r.size());
-                if(PO1.Purchase_Order_Items__r.size() > 0){
+                // if(PO1.Purchase_Order_Items__r.size() > 0){
                     POInnerClass POInnerClassRecord = new POInnerClass();
                     POLinesList = new List<POLinesWrapper>();
                     for(buildertek__Purchase_Order_Item__c lines : PO1.Purchase_Order_Items__r){
@@ -290,11 +298,12 @@ public class POPageController {
                     POInnerClassRecord.poCheck = false;
                     POInnerClassRecord.poRecord = PO1;
                     POInnerClassRecord.expanded = false;
+                    POInnerClassList.add(POInnerClassRecord);
                     
-                    if(POLinesList.size() > 0){
-                        POInnerClassList.add(POInnerClassRecord); 
-                    }
-                }
+                    // if(POLinesList.size() > 0){
+                    //     // POInnerClassList.add(POInnerClassRecord); 
+                    // }
+                // }
             }
             
             system.debug('polinelist Size'+POInnerClassList.size());

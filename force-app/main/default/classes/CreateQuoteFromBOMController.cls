@@ -4,7 +4,7 @@ public with sharing class CreateQuoteFromBOMController {
     public static string createQuote(String recordId) {
         
         try {            
-            List<buildertek__Select_Sheet__c> BOMLineList = [SELECT Id, Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Product_Name__c, buildertek__Quantity__c, buildertek__BL_MARKUP__c, buildertek__BL_UNIT_COST__c, buildertek__Vendor__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Selection_Sheet_Takeoff__r.buildertek__Name__c, buildertek__Selection_Sheet_Takeoff__r.buildertek__Project__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :RecordId];
+            List<buildertek__Select_Sheet__c> BOMLineList = [SELECT Id, Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Product_Name__c, buildertek__Category__c,buildertek__Sort_Id__c, buildertek__Tax_Percent__c,buildertek__Quantity__c, buildertek__BL_MARKUP__c, buildertek__BL_UNIT_COST__c, buildertek__Vendor__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Selection_Sheet_Takeoff__r.buildertek__Name__c, buildertek__Selection_Sheet_Takeoff__r.buildertek__Project__c FROM buildertek__Select_Sheet__c WHERE buildertek__Selection_Sheet_Takeoff__c = :RecordId];
             
             List<buildertek__Quote_Line_Group__c> groupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
             
@@ -49,6 +49,9 @@ public with sharing class CreateQuoteFromBOMController {
                     quoteLine.buildertek__Unit_Cost__c = BOMLine.buildertek__BL_UNIT_COST__c;
                     quoteLine.buildertek__Vendor__c = BOMLine.buildertek__Vendor__c;
                     quoteLine.buildertek__Build_Phase__c = BOMLine.buildertek__Build_Phase__c;
+                    quoteLine.buildertek__Category__c = BOMLine.buildertek__Category__c;
+                    quoteLine.buildertek__Priority__c = BOMLine.buildertek__Sort_Id__c;  
+                    quoteLine.buildertek__Tax__c = BOMLine.buildertek__Tax_Percent__c;                                        
                     
                     if (groupMap.get(BOMLine.buildertek__Build_Phase__r.Name) != null){
                         quoteLine.buildertek__Grouping__c = groupMap.get(BOMLine.buildertek__Build_Phase__r.Name).Id;

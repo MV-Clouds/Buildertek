@@ -1,6 +1,4 @@
 <template>
-
-    <!-- Project and schedule selection component -->
     <div if:false={recordId}>
         <lightning-card title="Manage Schedule Resources" icon-name="custom:custom14">
             <div class="slds-p-around_x-small picklistcombo">
@@ -20,7 +18,6 @@
         </lightning-card>
     </div>
 
-    <!-- Schedule Item Datatable -->
     <div if:true={isScheduleSelected}>
         <lightning-card class="custom-card">
             <div class="slds-p-around_medium">
@@ -140,7 +137,6 @@
                                     <lightning-icon if:true={row.hasConflict} icon-name='utility:pop_in'
                                         alternative-text='bundle_config' size='x-small' title='show Conflict'
                                         onclick={showCurrentConflict} data-id={row.id}></lightning-icon>
-
                                 </div>
                             </template>
                         </div>

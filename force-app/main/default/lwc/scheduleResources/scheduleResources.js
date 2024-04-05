@@ -166,6 +166,7 @@ export default class ScheduleResources extends NavigationMixin(LightningElement)
     //* Method to handle click on edit button
     editResource(event) {
         this.isLoading = true;
+
         this.editRecordId = event.currentTarget.dataset.id;
         let currentVendorId = event.currentTarget.dataset.vendorid;
         // Enable the edit mode for the selected record and disable for others

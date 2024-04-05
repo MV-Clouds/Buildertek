@@ -69,7 +69,7 @@ private class ImportMasterSchedulesTest {
         schIds.add(sd.Id); 
         
 
-        ImportMasterSchedules.getMasterSchedule(recordId);
+        ImportMasterSchedules.getMasterSchedule(recordId,'');
         ImportMasterSchedules.importMasterScheduleLines(schIds, sd.Id, null, projectManagerId);
         ImportMasterSchedules.getStartDate(system.today());
         Test.stopTest();

@@ -45,7 +45,7 @@ private class ImportMasterQuotesTest {
         MQ.quoteRecord = quoteList[0];
         MQ.quoteCheck = true;
         MQList.add(MQ);
-        ImportMasterQuotes.getMasterQuotes('test');
+        ImportMasterQuotes.getMasterQuotes(masterquoteList[0].Id,'test');
         system.assertEquals('test', 'test');
 	}
 	

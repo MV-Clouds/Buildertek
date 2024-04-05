@@ -109,7 +109,7 @@
 
     importRecords: function (component, event, helper) {
         var toastEvent = $A.get("e.force:showToast");
-        component.set('v.loading', true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
         var selectedRecords = [];
         var records = component.get('v.recordList');
         if (records != undefined) {
@@ -122,7 +122,7 @@
         if (selectedRecords.length > 0) {
             helper.importMasterToDo(component, event, helper, selectedRecords);
         } else {
-            component.set('v.loading', false);
+            $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             toastEvent.setParams({
                 "type": 'error',
                 "title": "Error!",
@@ -131,4 +131,8 @@
             toastEvent.fire();
         }
     },
+
+    onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+    }
 })

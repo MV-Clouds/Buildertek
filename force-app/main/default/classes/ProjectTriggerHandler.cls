@@ -683,16 +683,16 @@ public with sharing class ProjectTriggerHandler {
 
         List<SObject> sobjListToClone = database.query(qryStr);
 
-        List<SObject> newSobjListToClone = database.query(qryStr);
-        for (SObject sObj : sobjListToClone) {
-            String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
-            if (sourceObjectMap.get(oldProjectId).contains(objName)) {
-                newSobjListToClone.add(sObj);
-            }
-        }
+        // List<SObject> newSobjListToClone = database.query(qryStr);
+        // for (SObject sObj : sobjListToClone) {
+        //     String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
+        //     if (sourceObjectMap.get(oldProjectId).contains(objName)) {
+        //         newSobjListToClone.add(sObj);
+        //     }
+        // }
 
         Map<String, SObject> cloneSObjList = new Map<String, SObject>();
-        for (SObject sObj : newSobjListToClone) {
+        for (SObject sObj : sobjListToClone) {
             String oldProjectId = (objName == 'Project Vendors') ? String.valueOf(sObj.get('buildertek__BT_Project__c')) : String.valueOf(sObj.get('buildertek__Project__c'));
             SObject obj = sobj.clone(false, true);
 
@@ -821,7 +821,6 @@ public with sharing class ProjectTriggerHandler {
         }
 
     }
-
 
     public static String prepareQuery(String sObjName, String fieldName, Set<String> recIdList){
 

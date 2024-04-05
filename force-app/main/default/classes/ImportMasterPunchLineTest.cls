@@ -36,7 +36,7 @@ public class ImportMasterPunchLineTest {
         insert pli1; 
 
 
-        ImportMasterPunchLine.getMasterPL();
+        ImportMasterPunchLine.getMasterPL(plMaster2.Id,'test2');
 
         List<String> selectedMasterPLIds = new List<String>();
         selectedMasterPLIds.add(plMaster1.Id);

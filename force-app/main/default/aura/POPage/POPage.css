@@ -62,3 +62,23 @@
 .THIS .subData{
     border-left:  1px solid #fff; 
 }
+
+.THIS .wrongs {
+    cursor: pointer;
+    width: 24px;
+    height: 25px;
+    /* background-color: #ff0000; */
+    margin: 22px 2px;
+    margin-bottom: 0px;
+    margin-top: 5px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.THIS .tdcls{
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}

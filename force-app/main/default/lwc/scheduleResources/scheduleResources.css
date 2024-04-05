@@ -36,6 +36,7 @@
     white-space: nowrap;
 }
 
+
 .data-row:nth-child(even) {
     background-color: #f0f8ff;
 }
@@ -288,4 +289,3 @@
     .editResources {
         padding-right: 5px;
     }
-}

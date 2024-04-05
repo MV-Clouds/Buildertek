@@ -15,8 +15,36 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="selectedRecordMap" type="String" />
     <lightning:workspaceAPI aura:id="workspace" />
-    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
+    <!-- <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" /> -->
+     <!-- *** if we use static_resource for css, it also override other standard component's css. So please use aura:html for css *** -->
+    <aura:html tag="style">
+        .slds-modal__container {
+            max-width: 52rem !important;
+            width: 52% !important;
+        }
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            box-shadow: none !important;
+        }
+        .slds-modal__container {
+            max-width: 72rem !important;
+            width: 72% !important;
+        }
+        .scrollable {
+            height: 400px;
+            overflow-y: auto;
+        }
+
+
+    </aura:html>
 
 
     <!-- <aura:attribute name="budgetwrap" type="Object" default="{}" /> -->
@@ -101,7 +129,7 @@
                                         </aura:iteration>
                                     </lightning:select> -->
                                 </td>
-                                <td>
+                                <td style="width: 13vw;">
                                     <aura:html tag="style">
                                         .mainDiv{
                                             <!-- CSS Chages with BUIL-3502 == Keep in master -->
@@ -114,31 +142,54 @@
                                             padding-top: 1% !important;
                                             padding-bottom: 1% !important;
                                         } -->
+                                        .pillSize{
+                                            width: 13vw !important;
+                                        }
                                         .subDiv{
                                             <!-- width:100% !important; -->
                                             margin-top:-23px !important;
                                         }
+
+                                        .phase{
+                                            width: 8vw;
+                                        }
+                                        .quantity-class{
+                                            width: 4vw;
+                                        }
+                                        .unitCost-class{
+                                            width: 4vw;
+                                        }
+                                        .description-class{
+                                            width: 12vw;
+                                        }
+
+                                        .product{
+                                            width: 13vw;
+                                        }
+                                        .vendor{
+                                            width: 9vw;
+                                        }
                                     </aura:html>
                                     
-                                    <label class="slds-form-element__label" for="lookup-348"></label>
+                                    <label class="slds-form-element__label product" for="lookup-348"></label>
                                     <c:BT_LightningLookup objectAPIName="Product2"  IconName="standard:product" selectedRecord="{!budgetLineWrapper.selectedLookUpRecord}" aura:id="productId"   parentId="{!budgetLineWrapper.pricebookEntryId}" prodctfamly="{!budgetLineWrapper.productFamily != '' ? budgetLineWrapper.productFamily : 'All Families'}" />
 
                                 </td>
-                                <td>
+                                <td class="description-class">
                                     <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.Name}" class="description-class" />
                                 </td>
-                                <td>
+                                <td class="phase">
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}">
-                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1 phase" >
                                             <aura:iteration items="{!budgetLineWrapper.GroupingOptions}" var="groupingOption">
                                                 <option name="{!budgetLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
                                             </aura:iteration>
                                         </lightning:select>
                                     </aura:if>
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
-                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Group__c}" class="grouping-class pointer1 phase" >
                                             <aura:iteration items="{!dummy}" var="groupingOption">
-                                                <option name="{!budgetLineWrapper}" value="{!groupingOption.Id}">{!groupingOption.Name}</option>
+                                                <option name="{!budgetLineWrapper}" value="{!groupingOption.Id}" >{!groupingOption.Name}</option>
                                             </aura:iteration>
                                         </lightning:select>
                                     </aura:if>
@@ -159,7 +210,7 @@
                                         </lightning:select>
                                     </aura:if> -->
                                 </td>
-                                <td>
+                                <td class="vendor">
                                     <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
                                         <!-- <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
                                         <aura:iteration items="{!v.vendorList}" var="vendorOption">
@@ -193,30 +244,30 @@
                                     
                                     <!-- <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  /> -->
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}">
-                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1">
+                                        <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1 vendor">
                                         <aura:iteration items="{!v.vendorList}" var="vendorOption">
                                                 <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
                                             </aura:iteration>
                                         </lightning:select>
                                     </aura:if>
                                     <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
-                                        <lightning:select name="" value="" class="vendor-class pointer1">
+                                        <lightning:select name="" value="" class="vendor-class pointer1 vendor">
                                             <option name="" value="">--Select Vendor--</option>
                                         </lightning:select>
                                     </aura:if>
 
                                     
                                 </td>
-                                <td>
+                                <td class="quantity-class">
                                     <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Quantity__c}" class="quantity-class"  type="number" />
                                 </td>
-                                <td>
+                                <td class="unitCost-class">
                                     <lightning:input name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Unit_Price__c}" class="unitCost-class"  type="number" step="0.01" />
                                 </td>
                                 <td>
                                     <span onclick="{!c.deleteRow}" data-index="{!index}" class="slds-icon_container slds-icon-utility-delete pointer1" title="Delete">
                                         <lightning:icon iconName="action:close" alternativeText="Delete"
-                                                            class="some-indicator" size="x-small" title="Delete" />
+                                                            class="some-indicator" size="x-small" title="Delete" style="margin-top: 1rem;" />
                                     </span>    
                                 </td>
                                 

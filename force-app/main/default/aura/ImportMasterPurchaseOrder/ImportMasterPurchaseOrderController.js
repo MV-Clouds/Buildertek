@@ -3,6 +3,10 @@
         try {
             $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
             var action = component.get("c.getMasterPO");
+            action.setParams({	
+                'recordId': component.get("v.recordId"),		
+                'searchKeyword' : ''
+            });
             action.setCallback(this, function(response){
                 var result = response.getReturnValue();
                 console.log('result---> ',result);
@@ -10,9 +14,9 @@
                 if(result != null){
                     var pageSize = component.get("v.pageSize");
                     component.set("v.masterPOList", result);
-                    component.set("v.totalRecords", component.get("v.masterPOList").length - 1);
+                    component.set("v.totalRecords", component.get("v.masterPOList").length);
                     component.set("v.startPage",0);
-                    component.set("v.endPage",pageSize - 1);
+                    component.set("v.endPage",pageSize);
                     var PaginationList = [];
                     for(var i=0; i< pageSize; i++){
                         if(component.get("v.masterPOList").length> i)
@@ -208,4 +212,7 @@
             console.log('Error---> ',error);
         }
     },
+    onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+   },
 })

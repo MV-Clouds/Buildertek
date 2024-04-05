@@ -56,6 +56,10 @@
     border-radius: 10px
 } */
 
+.b-grid-row.pavel {
+    background: #ff2c2c;
+  }
+
 .b-indicator{
     width: 16px !important;
     height: 16px !important;
@@ -97,4 +101,14 @@
 .b-pickerfield:not(.b-readonly):not(.b-disabled) input[readonly] {
     cursor: pointer;
     display: none;
+}
+.custom-cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-flow: row-reverse;
+}
+
+.b-icon-picker{
+    color:darkgray;
 }

@@ -5,7 +5,8 @@
         helper.Check_Create_User_Access(component, event, helper);
 
         var action = component.get("c.getMasterQuotes");
-        action.setParams({			
+        action.setParams({	
+            'recordId': component.get("v.recordId"),		
             'searchKeyword' : ''
         });
         action.setCallback(this, function(response){

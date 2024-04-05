@@ -1,20 +1,13 @@
 public with sharing class ImportMasterPurchaseOrderController {
 
     @AuraEnabled
-    public static object getMasterPO(){
+    public static object getMasterPO(String recordId, String searchKeyword){
         try {
             list<buildertek__Purchase_Order__c> masterPOList;
-
+            String searchString = '%' + searchKeyword + '%';
             masterPOList = [SELECT Id, Name, buildertek__Type__c, buildertek__PO_Total__c , buildertek__Description__c FROM buildertek__Purchase_Order__c 
-                                                WHERE buildertek__PO_Type__c = 'Master'
-                                                ORDER BY Name
-                                                ASC limit 50000]; 
-                                                
-            if (masterPOList.size() > 0) {
-                return masterPOList;
-            }  
-
-            return null;   
+                                                WHERE buildertek__PO_Type__c = 'Master' AND ID != :recordId AND Name LIKE:searchString ORDER BY Name ASC NULLS Last limit 50000]; 
+            return masterPOList;
         } catch (Exception e) {
             System.debug('Error--> '+e.getMessage());
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];

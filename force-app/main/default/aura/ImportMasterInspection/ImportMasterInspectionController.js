@@ -2,6 +2,10 @@
 	doInit : function(component, event, helper) {
 	    component.set("v.Spinner", true);
         var action = component.get("c.getMasterInspection");
+        action.setParams({		
+            'recordId': component.get("v.recordId"),			
+            'searchKeyword' : ''
+        });
         action.setCallback(this, function(response){
             var state = response.getState();
             if(state === "SUCCESS"){
@@ -131,7 +135,7 @@
 	    $A.get("e.force:closeQuickAction").fire();    
 	},
 	
-	importBudget : function(component, event, helper){
+	importInspection : function(component, event, helper){
 	    component.set("v.Spinner", true);
 	    var InspectionList = component.get("v.masterInspectionList");
         console.log({InspectionList});
@@ -245,4 +249,7 @@
         component.set("v.endPage",end);
         component.set('v.PaginationList', Paginationlist);
     },
+    onSearch: function (component, event, helper) {
+        helper.doSearchHelper(component, event, helper);
+   },
 })
