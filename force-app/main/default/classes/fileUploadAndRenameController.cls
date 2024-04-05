@@ -36,8 +36,12 @@ public with sharing class fileUploadAndRenameController{
                 }
             }
             return wrpList;
-        } catch (Exception e){
-            throw new AuraHandledException(e.getMessage());
+        } catch (Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            throw new AuraHandledException(ex.getMessage());
         }
     }
 
@@ -58,9 +62,13 @@ public with sharing class fileUploadAndRenameController{
                 }
                 update cvList;
             }
-        } catch (Exception e){
-            System.debug('Error: ' + e.getMessage());
-            throw new AuraHandledException(e.getMessage());
+        } catch (Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            throw new AuraHandledException(ex.getMessage());
         }
     }
 
@@ -76,9 +84,13 @@ public with sharing class fileUploadAndRenameController{
             if (listContentLink.size() > 0){
                 delete listContentLink;
             }
-        } catch (Exception e){
-            System.debug('Error: ' + e.getMessage());
-            throw new AuraHandledException(e.getMessage());
+        } catch (Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            throw new AuraHandledException(ex.getMessage());
         }
     }
 
