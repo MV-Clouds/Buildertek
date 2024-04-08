@@ -30,7 +30,7 @@ public class CreateRFQFromWalkThroughController{
                         buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                         newRFQLine.buildertek__RFQ_Package__c = newRFQrecord.Id;
                         newRFQLine.Name = sliceDescriptionForName(walkthroughline.buildertek__Description__c);
-                        newRFQLine.buildertek__Quantity__c = 1;
+                        newRFQLine.buildertek__Quantity__c  = walkthroughline.buildertek__Quantity__c;
                         newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__Instructions__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__BT_Walk_Through_Line_Item__c = walkthroughline.Id;
@@ -274,7 +274,7 @@ public class CreateRFQFromWalkThroughController{
                         buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                         newRFQLine.buildertek__RFQ_Package__c = newRFQrecordGroupingMap.get(groupName).Id;
                         newRFQLine.Name = sliceDescriptionForName(walkthroughline.buildertek__Description__c);
-                        newRFQLine.buildertek__Quantity__c = 1;
+                        newRFQLine.buildertek__Quantity__c  = walkthroughline.buildertek__Quantity__c;
                         newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__Instructions__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__BT_Walk_Through_Line_Item__c = walkthroughline.Id;
@@ -309,7 +309,7 @@ public class CreateRFQFromWalkThroughController{
                         buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                         newRFQLine.buildertek__RFQ_Package__c = newRFQrecordGroupingMap.get(groupName).Id;
                         newRFQLine.Name = sliceDescriptionForName(walkthroughline.buildertek__Description__c);
-                        newRFQLine.buildertek__Quantity__c = 1;
+                        newRFQLine.buildertek__Quantity__c  = walkthroughline.buildertek__Quantity__c;
                         newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__Instructions__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__BT_Walk_Through_Line_Item__c = walkthroughline.Id;
@@ -344,7 +344,7 @@ public class CreateRFQFromWalkThroughController{
                         buildertek__RFQ_Item__c newRFQLine = new buildertek__RFQ_Item__c();
                         newRFQLine.buildertek__RFQ_Package__c = newRFQrecordGroupingMap.get(groupName).Id;
                         newRFQLine.Name = sliceDescriptionForName(walkthroughline.buildertek__Description__c);
-                        newRFQLine.buildertek__Quantity__c = 1;
+                        newRFQLine.buildertek__Quantity__c  = walkthroughline.buildertek__Quantity__c;
                         newRFQLine.buildertek__Description__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__Instructions__c = walkthroughline.buildertek__Details__c;
                         newRFQLine.buildertek__BT_Walk_Through_Line_Item__c = walkthroughline.Id;
