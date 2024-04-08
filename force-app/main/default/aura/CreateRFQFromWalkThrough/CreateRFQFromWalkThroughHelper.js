@@ -1,13 +1,12 @@
 ({
-    createRFQ: function (component, helper) {
-        console.log('createRFQ');
+	createRFQ : function(component, helper){
         var action = component.get("c.createRFQFromWT");
-        action.setParams({ walkThroughId: component.get("v.recordId") });
+        action.setParams({ walkThroughId : component.get("v.recordId") });
 
-        action.setCallback(this, function (response) {
+        action.setCallback(this, function(response) {
             var state = response.getState();
 
-            if (state === "SUCCESS") {
+            if(state === "SUCCESS") {
                 var result = response.getReturnValue();
                 $A.get("e.force:closeQuickAction").fire();
                 if (result.Status === 'Success') {
@@ -23,7 +22,7 @@
                             }).fire();
                         }
                     });
-                } else {
+                }else{
                     component.find('notifLib').showNotice({
                         "variant": "error",
                         "header": "Error",
@@ -34,37 +33,5 @@
         });
 
         $A.enqueueAction(action);
-    },
-
-    groupTradeTypeHelper: function (component, selectedValue, helper) {
-        console.log('record Id ', component.get("v.recordId"));
-        console.log('selectedValue ', selectedValue);
-        var action = component.get("c.groupRrqTradeType");
-        action.setParams({ walkThroughId: component.get("v.recordId"), grpType: selectedValue });
-
-        action.setCallback(this, function (response) {
-            var state = response.getState();
-            console.log('state: ', state);
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
-                console.log('result: ', result);
-                $A.get("e.force:closeQuickAction").fire();
-                if (result.Status === 'Success') {
-                    component.find('notifLib').showNotice({
-                        "variant": "success",
-                        "header": "Success",
-                        "message": result.Message,
-                    });
-                } else {
-                    component.find('notifLib').showNotice({
-                        "variant": "error",
-                        "header": "Error",
-                        "message": result.Message
-                    });
-                }
-            }
-        });
-
-        $A.enqueueAction(action);
-    },
+	}
 })

@@ -1,5 +1,6 @@
 ({
     doInit: function (component, event, helper) {
+        // helper.createRFQ(component, helper);
         var options = [
             { value: 'all', label: 'All' },
             { value: 'tradeType', label: 'Trade Type' },
@@ -9,14 +10,21 @@
         component.set("v.statusOptions", options);
     },
 
-    handleOptionSelected: function (component, event, helper) {
-        component.set("v.optionSelected", true);
+    handleOptionSelected: function (cmp, event) {
+        cmp.set("v.optionSelected", true);
         let selectedOptionValue = event.getParam("value");
-        console.log('selectedOptionValue: ', selectedOptionValue);
-        if (selectedOptionValue === 'all') {
-            helper.createRFQ(component, helper);
-        } else {
-            helper.groupTradeTypeHelper(component, selectedOptionValue, helper);
+        switch (selectedOptionValue) {
+            case 'all':
+                //   calling apex for all
+                break;
+            case 'tradeType':
+                // calling apex for tradeType
+                break;
+            case 'costCode':
+                // calling apex for costCode
+                break;
+            case 'section':
+            // calling apex for section
         }
     }
 })
