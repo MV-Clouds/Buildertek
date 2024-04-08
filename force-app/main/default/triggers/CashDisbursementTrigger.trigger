@@ -7,6 +7,9 @@ trigger CashDisbursementTrigger on buildertek__Payment__c (before insert, before
         if (Trigger.isUpdate) {
             CashDisbursementTriggerHandler.onBeforeUpdate(Trigger.new, Trigger.oldMap);
         }
+        if (Trigger.isDelete) {
+            CashDisbursementTriggerHandler.onBeforeDelete(Trigger.old);
+        }
     }
     if (Trigger.isAfter) {
         if (Trigger.isInsert) {
@@ -16,7 +19,7 @@ trigger CashDisbursementTrigger on buildertek__Payment__c (before insert, before
             CashDisbursementTriggerHandler.onAfterUpdate(Trigger.new, Trigger.oldMap);
         }
         if (Trigger.isDelete) {
-            CashDisbursementTriggerHandler.onAfterDelete(Trigger.old);
+            // CashDisbursementTriggerHandler.onAfterDelete(Trigger.old);
         }
     }
 }

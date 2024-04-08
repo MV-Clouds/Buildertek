@@ -1,7 +1,7 @@
 public with sharing class CashDisbursementTriggerHandler {
     public static Boolean isSkipExecution = false;
 
-    public void onBeforeInsert(List<buildertek__Payment__c> newcashDisbursement, Map<Id, buildertek__Payment__c> newcashDisbursementMap){
+    public static void onBeforeInsert(List<buildertek__Payment__c> newcashDisbursement){
         String budgetLineGroupId ;
         
         List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
@@ -45,7 +45,7 @@ public with sharing class CashDisbursementTriggerHandler {
         }
     }
 
-    public void onBeforeUpdate(List<buildertek__Payment__c> newCashDisbursement, Map<Id, buildertek__Payment__c> oldCashDisbursementMap){
+    public static void onBeforeUpdate(List<buildertek__Payment__c> newCashDisbursement, Map<Id, buildertek__Payment__c> oldCashDisbursementMap){
         String budgetLineGroupId ;
         List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
         if(budgetLineGroups.size() == 0){
@@ -116,14 +116,13 @@ public with sharing class CashDisbursementTriggerHandler {
         if(toDeleteBudgetItems.size() > 0){
             List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name, buildertek__Contractor_Invoice_Payments__c FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
             for(buildertek__Budget_Item__c budgetItem : toDeleteBudgetItemsList){
-                budgetItem.buildertek__Contractor_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
+                budgetItem.buildertek__Contractor_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Payment_Amount__c;
             }
             update toDeleteBudgetItemsList;
         }
     }
 
-    public void onBeforeDelete(List<buildertek__Payment__c> oldCashDisbursement, Map<Id, buildertek__Payment__c> oldCashDisbursementMap){
-        
+    public static void onBeforeDelete(List<buildertek__Payment__c> oldCashDisbursement){
         Map<Id, buildertek__Payment__c> toDeleteBudgetItems = new Map<Id, buildertek__Payment__c>();
         for(buildertek__Payment__c CD : oldCashDisbursement){
             if(CD.buildertek__BT_Budget_Line__c != null){
@@ -131,7 +130,7 @@ public with sharing class CashDisbursementTriggerHandler {
             }
         }
 
-        if (toDeleteBudgetItems.size() > 0){
+        if(toDeleteBudgetItems.size() > 0){
             List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
             List<buildertek__Budget_Item__c> toDeleteBudgetLine = new List<buildertek__Budget_Item__c>();
 
@@ -142,18 +141,88 @@ public with sharing class CashDisbursementTriggerHandler {
                 }
             }
 
-            if (toDeleteBudgetItems.size() > 0){
-                delete toDeleteBudgetItemsList;
-            }
-
-            if(toDeleteBudgetLine.size() > 0){
-                List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name, buildertek__Contractor_Invoice_Payments__c FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
-                for(buildertek__Budget_Item__c budgetItem : toDeleteBudgetItemsList){
-                    budgetItem.buildertek__Contractor_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
-                }
-                update toDeleteBudgetItemsList;
+            if(toDeleteBudgetLine.size() > 0 && isSkipExecution == false){
+                BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = true;
+                delete toDeleteBudgetLine;
+                BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = false;
             }
         }
+
+        if(toDeleteBudgetItems.size() > 0){
+            List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name, buildertek__Contractor_Invoice_Payments__c FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
+            for(buildertek__Budget_Item__c budgetItem : toDeleteBudgetItemsList){
+                budgetItem.buildertek__Contractor_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Payment_Amount__c;
+            }
+            update toDeleteBudgetItemsList;
+        }
+
+    }
+
+    public static void onAfterInsert(List<buildertek__Payment__c> newCashDisbursement){
+        List<Id> budgetItemIds = new List<Id>();
+        for(buildertek__Payment__c CD : newCashDisbursement){
+            if(CD.buildertek__BT_Budget_Line__c != null){
+                budgetItemIds.add(CD.buildertek__BT_Budget_Line__c);
+            }
+        }
+
+        if(budgetItemIds.size() > 0){
+            recalculateBudgetItems(budgetItemIds);
+        }
+    }
+
+    public static void onAfterUpdate(List<buildertek__Payment__c> newCashDisbursement, Map<Id, buildertek__Payment__c> oldCashDisbursementMap){
+        List<Id> budgetItemIds = new List<Id>();
+        for(buildertek__Payment__c CD : newCashDisbursement){
+            if(CD.buildertek__BT_Budget_Line__c != null){
+                budgetItemIds.add(CD.buildertek__BT_Budget_Line__c);
+            }
+        }
+
+        for(buildertek__Payment__c CD : oldCashDisbursementMap.values()){
+            if(CD.buildertek__BT_Budget_Line__c != null){
+                budgetItemIds.add(CD.buildertek__BT_Budget_Line__c);
+            }
+        }
+
+        if(budgetItemIds.size() > 0){
+            recalculateBudgetItems(budgetItemIds);
+        }
+    }
+
+    
+
+    public static void recalculateBudgetItems(List<Id> budgetItemIds){
+        List<buildertek__Payment__c> cashDisbursements = [SELECT Id, Name, buildertek__BT_Budget_Line__c, buildertek__Payment_Amount__c FROM buildertek__Payment__c WHERE buildertek__BT_Budget_Line__c IN: budgetItemIds];
+
+        //make a map of budget item id and cash disbursement
+        Map<Id, List<buildertek__Payment__c>> budgetItemCashDisbursements = new Map<Id, List<buildertek__Payment__c>>();
+        for(buildertek__Payment__c CD : cashDisbursements){
+            if(budgetItemCashDisbursements.containsKey(CD.buildertek__BT_Budget_Line__c)){
+                budgetItemCashDisbursements.get(CD.buildertek__BT_Budget_Line__c).add(CD);
+            } else{
+                budgetItemCashDisbursements.put(CD.buildertek__BT_Budget_Line__c, new List<buildertek__Payment__c>{CD});
+            }
+        }
+
+        List<buildertek__Budget_Item__c> toUpdateBudgetItems = new List<buildertek__Budget_Item__c>();
+        for(Id budgetItemId : budgetItemCashDisbursements.keySet()){
+            List<buildertek__Payment__c> cashDisbursementsList = budgetItemCashDisbursements.get(budgetItemId);
+            Decimal totalAmount = 0;
+            for(buildertek__Payment__c CD : cashDisbursementsList){
+                totalAmount += CD.buildertek__Payment_Amount__c;
+            }
+
+            buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+            budgetItem.Id = budgetItemId;
+            budgetItem.buildertek__Contractor_Invoice_Payments__c = totalAmount;
+            toUpdateBudgetItems.add(budgetItem);
+        }
+
+        if(toUpdateBudgetItems.size() > 0){
+            update toUpdateBudgetItems;
+        }
+
     }
 
 }
