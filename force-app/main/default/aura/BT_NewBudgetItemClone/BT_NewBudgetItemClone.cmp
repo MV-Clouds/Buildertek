@@ -2748,7 +2748,7 @@
                                                     <lightning:input aura:id="selectAllTimeSheets" type="checkbox" name="checkAll" onchange="{!c.checkAllTimeSheets}" />
                                                 </th>
                                                 <th scope="col">
-                                                    <div class="slds-truncate" title="TimeSheet Name">TimeSheet Name</div>
+                                                    <div class="slds-truncate" title="TimeSheet Name">Time Sheet Entry Name</div>
                                                 </th>
                                                 <th scope="col">
                                                     <div class="slds-truncate" title="Status">Status</div>
