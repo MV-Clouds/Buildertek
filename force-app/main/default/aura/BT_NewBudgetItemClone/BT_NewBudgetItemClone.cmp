@@ -75,6 +75,7 @@
     <aura:attribute name="selectedExistingTS" type="List" default="" access="public" />
     <!-- end-->
     
+
     <!-- check existing tc -->
     <aura:attribute name="isExistingInvo" type="Boolean" default="false" access="public" />
     <aura:attribute name="selectedExistingINVO" type="List" default="" access="public" />
@@ -2653,7 +2654,7 @@
                                     <lightning:select name="timeCardType" value="{!v.selectedLabor}">
                                         <!-- <option value="" selected="true" disabled="true">Choose One</option> -->
                                         <option value="Time Card" selected="true">Time Card</option>
-                                        <option value="Time Sheet">Time Sheet</option>
+                                        <option value="Time Sheet">Time Sheet Entry</option>
                                     </lightning:select>
                                 </div>
                                 <footer class="slds-modal__footer">
@@ -2734,7 +2735,7 @@
                                 <header class="slds-modal__header">
                                     <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                     <p></p>
-                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Time Sheets
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Time Sheet Entries
                                     </h2>
                                     <p></p>
                                 </header>
@@ -2770,7 +2771,7 @@
                                                         {!item.buildertek__Status__c}
                                                     </td>
                                                     <td>
-                                                        <lightning:formattedNumber value="{!item.buildertek__Total_Labor_Cost__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                        <lightning:formattedNumber value="{!item.buildertek__Total_Labor_Costs__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                     </td>
                                                 </tr>
                                             </aura:iteration>
