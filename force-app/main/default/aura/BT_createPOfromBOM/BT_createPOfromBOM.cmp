@@ -53,7 +53,6 @@
                                 </h2>
                             </span>
                         </div>
-
                     </div>
                 </div>
                 <div class="slds-col slds-size_2-of-8" style="text-align: right;">
@@ -65,23 +64,21 @@
 
 <div class="searchContainer" style="background: var(--lwc-pageHeaderColorBackground, rgb(243, 242, 242)); padding: 1rem 1rem; overflow-x: auto; white-space: nowrap; margin-top: 8px; border-radius: 4px;">
     <aura:iteration items="{!v.GroupByVendors}" var="groupItem" indexVar="phaseIndex">
-        <div class="slds-grid slds-gutters slds-wrap" style="border-block: 6px solid #2d2d2d; margin: 30px 0px 8px 0px!important; padding-block: 4px; background-color: rgb(255, 255, 255);">
+        <div class="slds-grid slds-gutters slds-wrap" style="border-block: 6px solid #2d2d2d; margin: 60px 0px 8px 0px!important; padding-block: 4px; background-color: white">
 <div class="slds-modal__header slds-p-around_xx-small GroupHeader slds-col slds-size_6-of-8" style="font-size:20px; border-block: 0px !important; font-weight:bold; display: flex; align-items: center;">
-    <div style="flex: 1; text-align: left; color:#0176d3    ">
+    <div style="flex: 1; text-align: left; color:#0176d3">
         {!groupItem.groupName}
     </div>
-</div>
-     <div class="slds-col slds-size_2-of-8" style="text-align: right;">
-        <aura:if isTrue="{!groupItem.groupName == 'No Vendor'}">
-                <lightning:button iconName="utility:save" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onClickCreatePOhadler}"
-                label="{!groupItem.isCreatePOEnable==true?'Save':'Create PO'}" class="" />
+</div>         <div class="slds-col slds-size_2-of-8" style="text-align: right;">
+                <aura:if isTrue="{!groupItem.enableCreatePO}">
+                    <lightning:button iconName="utility:save" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onClickCreatePOhadler}" label="{!groupItem.isCreatePOEnable==true?'Save':'Create PO'}" class="" />
+                </aura:if>
                 <aura:if isTrue="{!groupItem.isCreatePOEnable}">
                     <lightning:button iconName="utility:close" title="{!phaseIndex}" iconPosition="left" onclick="{!c.onCancelCreatePOhadler}" label="Cancel" />
                 </aura:if>
-            </aura:if>
+            </div>
         </div>
-    </div>
-<aura:iteration items="{!groupItem.costCodes}" var="costCode" indexVar="costCodeIndex">
+        <aura:iteration items="{!groupItem.costCodes}" var="costCode" indexVar="costCodeIndex">
 <div class="slds-grid slds-gutters slds-wrap" style="border-block: 2px solid #44484d71; margin: 8px 0px!important; padding-block: 0px; background: white;font-weight:650">                <div class="slds-modal__header slds-p-around_xx-small GroupHeader slds-col slds-size_6-of-8" style="font-size:12px; border-block: 0px !important;">
                     <div style="flex: 1; text-align: left;margin-left: 20px;">
                          {!costCode.costCode}
@@ -110,10 +107,9 @@
                                 </aura:iteration>
                             </tr>
                         </thead>
-        <tbody style="{!'background-color: ' + (groupItem.groupName == 'No Vendor' ? 'white' : '#e0e0e0') + (groupItem.groupName != 'No Vendor' ? '; pointer-events: none;' : '')}">
-
+                        <tbody>
                             <aura:iteration items="{!costCode.sObjectList}" var="row" indexVar="dataIndex">
-                                <tr>
+                                <tr style="{!'background-color: ' + (row.buildertek__Purchase_Order__c ? '#E0E0E0' : 'white')}">
                                     <aura:if isTrue="{!groupItem.isCreatePOEnable}">
                                         <aura:if isTrue="{!or(row.buildertek__Purchase_Order__c, groupItem.groupName == 'No Vendor')}">
                                             <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:1% !important">

@@ -44,8 +44,12 @@
             SelecetdLinesId = group.SelecetdLinesId;
           }
 
-          // To check wheather all BOM line for the perticular vendor are associted with PO or Not...
-          var is_AllLinesHavePO = groupData[groupIndex].sObjectList.every(line => line.buildertek__Purchase_Order__c);
+          // To check wheather all BOM line for the particular vendor are associted with PO or Not....
+          var is_AllLinesHavePO = groupData[groupIndex].costCodes.every((costCode) => {
+            return costCode.sObjectList.every((line) => {
+              return line.POId != null;
+            });
+          });
           console.log('is_AllLinesHavePO : ', is_AllLinesHavePO);
 
           if(is_AllLinesHavePO){
@@ -62,7 +66,7 @@
         }
 
       } catch (error) {
-        console.log('error in onClickCreatePOhadler : ', error.stack);
+        console.log('error in onClickCreatePOhadler : ', error);
       }
     },
 
@@ -119,6 +123,17 @@
             var lineId = rowId.split("_")[0]
             var groupIndex = rowId.split("_")[1];
             var rowIndex = rowId.split("_")[2];
+
+
+            // var SelecetdLinesId = component.get("v.selectdLinesId");
+            // if(isChecked){
+            //   SelecetdLinesId.push(lineId);
+            //   component.set("v.selectdLinesId", SelecetdLinesId);
+            // }
+            // else{
+            //   SelecetdLinesId = SelecetdLinesId.filter((ele) => ele !== lineId);
+            //   component.set("v.selectdLinesId", SelecetdLinesId);
+            // }
 
             var vendorVsselectdLinesId = component.get("v.vendorVsselectdLinesId");
             // create Vendor(group) againt Selected Line Ids Object....
