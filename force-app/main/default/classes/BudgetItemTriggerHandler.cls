@@ -171,6 +171,7 @@ public with sharing class BudgetItemTriggerHandler {
 			CashDisbursementTriggerHandler.isSkipExecution = false;
 		}
 
+
 		//* for TimeSheetEntry
 		List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
 		for (buildertek__BT_Time_Sheet_Entry__c timeSheetEntry : timeSheetEntryList) {

@@ -15,6 +15,7 @@ public without sharing class PaymentLineTriggerHandler {
             
             if (!PaymentId.isEmpty()) {
                 updateAmountOnPayment(PaymentId);
+                recalculateTotalforBudgetLine(PaymentId);
             }
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());
@@ -48,6 +49,7 @@ public without sharing class PaymentLineTriggerHandler {
     
             if (!PaymentId.isEmpty()) {
                 updateAmountOnPayment(PaymentId);
+                recalculateTotalforBudgetLine(PaymentId);
             }
 
         } catch (Exception ex) {
@@ -73,6 +75,7 @@ public without sharing class PaymentLineTriggerHandler {
 
             if (!PaymentId.isEmpty()) {
                 updateAmountOnPayment(PaymentId);
+                recalculateTotalforBudgetLine(PaymentId);
             }
         } catch (Exception ex) {
             System.debug('Error: ' + ex.getMessage());
@@ -119,5 +122,54 @@ public without sharing class PaymentLineTriggerHandler {
                 BT_ExceptionHandler.Store_Exception(ex);
             }
         }
+    }
+
+    public static void recalculateTotalforBudgetLine(Set<Id> PaymentIds){
+
+        List<buildertek__BT_Payment__c> PaymentsList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Payment__c WHERE Id IN :PaymentIds];
+
+        Set<Id> BudgetLineIds = new Set<Id>();
+        for (buildertek__BT_Payment__c Payment : PaymentsList) {
+            if (Payment.buildertek__BT_Budget_Line__c != null) {
+                BudgetLineIds.add(Payment.buildertek__BT_Budget_Line__c);
+            }
+        }
+
+        List<buildertek__BT_Payment_Lines__c> PaymentLineList = [SELECT Id, Name, buildertek__Payment__r.buildertek__BT_Budget_Line__c, buildertek__Amount_F__c, buildertek__Payment__r.buildertek__Tax__c FROM buildertek__BT_Payment_Lines__c WHERE buildertek__Payment__r.buildertek__BT_Budget_Line__c IN :BudgetLineIds];
+        
+        //make a map where budget line id is the key and the paymentLines are the values
+        Map<Id, List<buildertek__BT_Payment_Lines__c>> budgetLineToPaymentLinesMap = new Map<Id, List<buildertek__BT_Payment_Lines__c>>();
+        for (buildertek__BT_Payment_Lines__c PaymentLine : PaymentLineList) {
+            if (!budgetLineToPaymentLinesMap.containsKey(PaymentLine.buildertek__Payment__r.buildertek__BT_Budget_Line__c)) {
+                budgetLineToPaymentLinesMap.put(PaymentLine.buildertek__Payment__r.buildertek__BT_Budget_Line__c, new List<buildertek__BT_Payment_Lines__c>());
+            }
+            budgetLineToPaymentLinesMap.get(PaymentLine.buildertek__Payment__r.buildertek__BT_Budget_Line__c).add(PaymentLine);
+        }
+
+        //iterate over the map and calculate the total amount for each budget line, total amount = sum of all payment lines + (tax * sum of all payment lines)
+        Map<Id, Decimal> budgetLineToTotalAmountMap = new Map<Id, Decimal>();
+        for (Id budgetLineId : budgetLineToPaymentLinesMap.keySet()) {
+            Decimal totalAmount = 0;
+            for (buildertek__BT_Payment_Lines__c PaymentLine : budgetLineToPaymentLinesMap.get(budgetLineId)) {
+                totalAmount += PaymentLine.buildertek__Amount_F__c;
+                if (PaymentLine.buildertek__Payment__r.buildertek__Tax__c != null) {
+                    totalAmount += (PaymentLine.buildertek__Payment__r.buildertek__Tax__c/100) * PaymentLine.buildertek__Amount_F__c;
+                }
+            }
+            budgetLineToTotalAmountMap.put(budgetLineId, totalAmount);
+        }
+
+        //update the budget line records
+        List<buildertek__Budget_Item__c> budgetLineToUpdate = new List<buildertek__Budget_Item__c>();
+        for (Id budgetLineId : budgetLineToTotalAmountMap.keySet()) {
+            buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c(Id = budgetLineId);
+            budgetLine.buildertek__Payable_Invoice_Payments__c = budgetLineToTotalAmountMap.get(budgetLineId);
+            budgetLineToUpdate.add(budgetLine);
+        }
+
+        if (!budgetLineToUpdate.isEmpty()) {
+            update budgetLineToUpdate;
+        }
+
     }
 }
