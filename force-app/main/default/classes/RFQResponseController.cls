@@ -48,9 +48,6 @@ public Boolean displayPopup1 {get;set;}
     public buildertek__RFI__c newrfi{ get; set; }
     public buildertek__RFQ__c rfqrec1{ get; set; }
 
-    public Date anticipatedStartDate { get; set; }
-    public Date anticipatedFinishDate { get; set; }
-
     public Map<Integer, Id> rfqToVendorItemMap{ get; set; }
 
     public String uploadFileURL{ get; set; }
@@ -112,9 +109,7 @@ public Boolean displayPopup1 {get;set;}
 
 
 
-    public RFQResponseController(){
-    // anticipatedStartDate = Date.today();  
-    // anticipatedFinishDate = Date.today(); 
+    public RFQResponseController(){ 
         displayPopUp = false;
         isErrorMessage = false;
         rfisaved = false;
