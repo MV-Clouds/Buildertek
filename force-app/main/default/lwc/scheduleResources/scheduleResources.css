@@ -6,7 +6,6 @@
 
 .header-row {
     display: grid;
-    /* grid-template-columns: repeat(6, 1fr) 0.5fr 0.5fr 0.25fr;*/
     grid-template-columns: 1fr 0.5fr 0.5fr repeat(5, 1fr) 0.25fr;
     gap: 0.5rem;
     background-color: #4a90e2;
@@ -15,9 +14,6 @@
     border-radius: 0.25rem;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    position: sticky;
-    top: 0;
-    z-index: 1;
 }
 
 .header-text {
@@ -26,7 +22,6 @@
 
 .data-row {
     display: grid;
-    /* grid-template-columns: repeat(6, 1fr) 0.5fr 0.5fr 0.25fr; */
     grid-template-columns: 1fr 0.5fr 0.5fr repeat(5, 1fr) 0.25fr;
     gap: 0.5rem;
     padding: 0.5rem 1rem 0.5rem 1rem;
@@ -34,6 +29,13 @@
     margin-bottom: 0.5rem;
     align-items: center;
 }
+
+.record-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 
 .data-row:nth-child(even) {
     background-color: #f0f8ff;
@@ -81,3 +83,209 @@
 .fixed-width-dropdown {
     width: 200px;
 }
+
+.link {
+    color: #4a90e2;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.redirectIcon {
+    cursor: pointer;
+}
+
+.popup__custom-card {
+    background-color: #f7f7f8;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-height: 600px;
+    overflow-y: auto;
+
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    animation: fadeIn 0.3s ease forwards;
+    width: 72rem;
+}
+
+.popup__content {
+    padding: 1.5rem;
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+}
+
+.tableContainer {
+    max-height: 300px;
+    overflow-y: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border: 1px solid #d3d3d3;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.popup__header-title {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #ff6f61;
+}
+
+.popup__data-row {
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 0.25fr;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-bottom: 1px solid #d3d3d3;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+}
+
+.popup__body {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.popup__footer {
+    text-align: center;
+}
+
+.popup__footer-text {
+    margin: 0;
+    margin-bottom: 1rem;
+    color: #3a3a3a;
+    font: caption;
+}
+
+.accept-button {
+    background-color: #4caf50;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.25rem;
+    padding: 0.7rem 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        background-color: #45a049;
+    }
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(4px);
+    z-index: 999;
+}
+
+.closeIcon {
+    position: absolute;
+    top: -2.5rem;
+    right: -2.5rem;
+    width: 32px;
+    height: 32px;
+    border: none;
+    cursor: pointer;
+    z-index: 9999;
+    background: none;
+    --slds-c-icon-color-foreground-default: black !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.popup__header-row {
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr 1fr 0.5fr 0.5fr 0.25fr;
+    gap: 0.5rem;
+    background-color: #4a90e2;
+    color: #ffffff;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.popup-container {
+    position: relative;
+}
+
+.popup-container .popup {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup__record-value {
+    max-height: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resource-name {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #333;
+    text-transform: uppercase;
+}
+
+@media only screen and (min-width: 1024px) {
+    .custom-card {
+        width: 50%;
+        margin: 0 auto;
+    }
+
+    .header-row {
+        padding: 1rem 0rem 1rem 0.1rem;
+        gap: 0.1rem;
+    }
+
+    .fixed-width-dropdown {
+        width: 150px;
+    }
+
+    .data-row {
+        padding: 0.5rem 0rem 0.5rem 0.1rem;
+        gap: 0.1rem;
+    }
+
+    .slds-gutters .slds-col {
+        padding-right: 2px;
+    }
+
+    .icons {
+        gap: 3px;
+    }
+}
+
+@media only screen and (min-width: 1920px) {
+    .editResources {
+        padding-right: 5px;
+    }

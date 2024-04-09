@@ -1,0 +1,28 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-quick-action-panel header="Add Images">
+
+        <div style="margin: 0 2%;">
+            <lightning-file-upload name="fileUploader" accept={acceptedFormats} record-id={recordId}
+                onuploadfinished={handleUploadFinished} multiple>
+            </lightning-file-upload>
+        </div>
+
+        <div>
+            <template lwc:if={showDataTable}>
+                <div class="slds-var-p-around_medium">
+                    <c-custom-image-data-table key-field="id" data={files} columns={columns} show-row-number-column
+                        row-number-offset={rowOffset} suppress-bottom-bar
+                        hide-checkbox-column="true"></c-custom-image-data-table>
+                </div>
+            </template>
+        </div>
+
+        <div slot="footer">
+            <lightning-button variant="neutral" label="Cancel" onclick={closeAction}></lightning-button>
+            <lightning-button variant="brand" label="Save" onclick={nextPage} disabled={fileNotUpload}
+                class="slds-m-left_x-small"></lightning-button>
+        </div>
+
+    </lightning-quick-action-panel>
+</template>

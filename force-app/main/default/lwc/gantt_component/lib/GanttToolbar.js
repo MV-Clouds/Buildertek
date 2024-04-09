@@ -261,7 +261,7 @@ export default base => class GanttToolbar extends base {
                             color    : 'b-blue',
                             ref      : 'importMasterSchedule',
                             icon     : 'b-fa-file-import',
-                            onAction : 'up.onImportMasterSchedule'
+                            onAction : 'up.onImportMasterSchedule',
                         },
                         // {
                         //     type       : 'button',
@@ -319,14 +319,6 @@ export default base => class GanttToolbar extends base {
                             ref      : 'excelExportBtn',
                             icon     : 'b-fa-file-export',
                             onAction : 'up.onExportclick'
-                        },
-                        {
-                            type     : 'button',
-                            text     : 'Set Baseline Dates',
-                            color    : 'b-blue',
-                            ref      : 'editOriginalDate',
-                            icon     : 'b-fa-file-export',
-                            onAction : 'up.onEditOriginalDate'
                         },
                         // {
                         //     type       : 'button',

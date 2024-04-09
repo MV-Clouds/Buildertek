@@ -44,8 +44,12 @@
             SelecetdLinesId = group.SelecetdLinesId;
           }
 
-          // To check wheather all BOM line for the perticular vendor are associted with PO or Not...
-          var is_AllLinesHavePO = groupData[groupIndex].sObjectList.every(line => line.buildertek__Purchase_Order__c);
+          // To check wheather all BOM line for the particular vendor are associted with PO or Not....
+          var is_AllLinesHavePO = groupData[groupIndex].costCodes.every((costCode) => {
+            return costCode.sObjectList.every((line) => {
+              return line.POId != null;
+            });
+          });
           console.log('is_AllLinesHavePO : ', is_AllLinesHavePO);
 
           if(is_AllLinesHavePO){
@@ -62,7 +66,7 @@
         }
 
       } catch (error) {
-        console.log('error in onClickCreatePOhadler : ', error.stack);
+        console.log('error in onClickCreatePOhadler : ', error);
       }
     },
 

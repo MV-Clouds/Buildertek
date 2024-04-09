@@ -2,3 +2,9 @@
     display: none;
 }
 
+.popup__custom-card article {
+    background: none;
+    border-style: none;
+    box-shadow: none;
+}
+
