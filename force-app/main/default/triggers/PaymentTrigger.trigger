@@ -1,6 +1,6 @@
 trigger PaymentTrigger on BT_Payment__c (before insert, after insert, before update, after update, after undelete, after delete) {
     PaymentTriggerHandler handler = new PaymentTriggerHandler();
-    PaymentTriggerHandler.isSkipExecution=true;
+    PaymentTriggerHandler.isSkipExecution=false;
 
     if (Trigger.isBefore && Trigger.isInsert){
         handler.onBeforeInsert(Trigger.new, Trigger.newMap);

@@ -143,6 +143,8 @@ public class PaymentTriggerHandler {
                 }
             }
 
+            System.debug('toDeleteBudgetLine: ' + toDeleteBudgetLine);
+
             if(toDeleteBudgetLine.size() > 0 && isSkipExecution == false){
                 BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = true;
                 delete toDeleteBudgetLine;
