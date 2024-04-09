@@ -3472,19 +3472,12 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }
 
     @AuraEnabled
-    public static string updateTimeSheetEntry(List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList, String budgetId){
+    public static string updateTimeSheetEntry(List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList){
 
         System.debug('timeSheetEntryList => ' + timeSheetEntryList);
-        System.debug('budgetId => ' + budgetId);
 
-        List<buildertek__BT_Time_Sheet_Entry__c> updateTimeSheetEntry = new List<buildertek__BT_Time_Sheet_Entry__c>();
-        for(buildertek__BT_Time_Sheet_Entry__c timeSheetEntry : timeSheetEntryList){
-            timeSheetEntry.buildertek__BT_Budget__c = budgetId;
-            updateTimeSheetEntry.add(timeSheetEntry);
-        }
-
-        if(updateTimeSheetEntry.size() > 0){
-            update updateTimeSheetEntry;
+        if(timeSheetEntryList.size() > 0){
+            update timeSheetEntryList;
             return 'Success';
         }else{
             return 'Error';
