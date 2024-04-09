@@ -39,7 +39,7 @@
 
     
     CustomerAccount: function (component, event, helper) {
-        var parentId = component.get("v.parentprojectRecordId")
+        var parentId = component.get("v.parentprojectRecordId");
         var action = component.get("c.getNames");
         action.setParams({
 					RecordId: parentId

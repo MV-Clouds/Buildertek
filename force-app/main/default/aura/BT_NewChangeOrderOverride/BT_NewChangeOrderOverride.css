@@ -34,3 +34,6 @@
     --slds-c-input-color-border: var(--lwc-borderWidthThin,1px) solid var(--slds-c-input-color-border, var(--sds-c-input-color-border, var(--slds-g-color-border-base-4, var(--lwc-colorBorderInput,rgb(201, 201, 201)))));
     --slds-c-input-shadow: var(--slds-c-input-shadow, var(--sds-c-input-shadow)) inset;
 }
+.THIS .imageAction{
+    margin-top: 10px !important;
+}

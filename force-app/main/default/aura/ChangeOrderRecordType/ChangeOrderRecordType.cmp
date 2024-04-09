@@ -7,7 +7,7 @@
     <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="recordTypes" type="List" />
     <aura:attribute name="RecordTypeId" type="String" default="" />
-
+    <aura:attribute name="ParentRecordTypeName" type="String" default="" />
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
 
