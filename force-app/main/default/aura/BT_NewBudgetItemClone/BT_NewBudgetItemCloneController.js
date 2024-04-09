@@ -4627,9 +4627,14 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
         var selectedTimeSheetRecords = component.get("v.timeSheetList");
         console.log('selectedTimeSheetRecords ', selectedTimeSheetRecords);
+        var selectedRecords = component.get('v.selectedRecs');
+        selectedRecords = selectedRecords.toString();
+        console.log('selectedRecords', selectedRecords);
         let selectedTimeSheetList = [];
         selectedTimeSheetRecords.forEach(element => {
             if (element.Selected) {
+                element.buildertek__BT_Budget__c = component.get("v.recordId");
+                element.buildertek__BT_Budget_Line__c = selectedRecords;
                 selectedTimeSheetList.push(element);
             }
         });
@@ -4640,8 +4645,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
             var action = component.get("c.updateTimeSheetEntry");
             action.setParams({
-                "timeSheetEntryList": selectedTimeSheetList,
-                "budgetId": component.get("v.recordId")
+                "timeSheetEntryList": selectedTimeSheetList
             });
             action.setCallback(this, function (response) {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
