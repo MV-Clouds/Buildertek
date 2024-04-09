@@ -64,7 +64,7 @@
                     }
                     component.set("v.parentRecordId", parentRecordId);
                 }
-                if(parentRecordId != null && parentRecordId != ''){
+                if(parentRecordId != null && parentRecordId != '' && parentRecordId != undefined){
                     var action = component.get("c.getobjectName");
                     action.setParams({
                         recordId: parentRecordId,
@@ -174,7 +174,7 @@
         if(contract != null && contract != ""){
             fields["buildertek__Contract__c"] = contract;
         }
-        if(project != null && project != ""){
+        if(project != null && project != "" && project != undefined){
             fields["buildertek__Project__c"] = project;
         }if(po != null && po != ""){
             fields["buildertek__Purchase_Order__c"] = po;
@@ -200,8 +200,7 @@
             });
             action.setCallback(this, function (response) {
                 var state = response.getState();
-                var error = response.getError();
-                console.log('Error =>',{error});
+
                 if (state === "SUCCESS") {
                     console.log('success');
                     console.log(response.getReturnValue());

@@ -29,19 +29,23 @@
         let selectedRecordTypeId = event.getSource().get("v.value");
         let selectedRecordTypeName = event.getSource().get("v.label");
         component.set("v.RecordTypeId", selectedRecordTypeId);
+        component.set("v.ParentRecordTypeName", selectedRecordTypeName);
         console.log(`${selectedRecordTypeName}: ${selectedRecordTypeId}`);
     },
 
     handleSave: function (component, event, helper) {
         let selectedRecordTypeId = component.get("v.RecordTypeId");
         let projectId = component.get("v.projectId");
+        let selectedRecordTypeName = component.get("v.ParentRecordTypeName");
+        console.log(`selectedRecordTypeName: ${selectedRecordTypeName}`);
         var evt = $A.get("e.force:navigateToComponent");
         console.log('selectedRecordTypeId:', selectedRecordTypeId);
         evt.setParams({
             componentDef: "c:BT_NewChangeOrderOverride",
             componentAttributes: {
                 RecordTypeId: selectedRecordTypeId,
-                parentprojectRecordId: projectId
+                parentprojectRecordId: projectId || '',
+                RecordTypeName: selectedRecordTypeName || ''
             }
         });
 
