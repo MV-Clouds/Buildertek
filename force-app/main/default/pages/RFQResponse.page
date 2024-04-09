@@ -147,7 +147,7 @@
     }
 
         function submitQuote() {
-            var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); return false;");
+            var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); multiFiles(); return false;");
             var confirmPromptOptions = {
                 'modalPopupId': 'lightningInfoPopup',
                 'title': 'Confirm',
@@ -314,9 +314,8 @@
 
         }
 
-        function multiFiles(isError) {
-            console.log('errorres--->',isError);
-            if (uploadFileData != undefined && uploadFileData.length > 0 && isError == 'false') {
+        function multiFiles() {
+            if (uploadFileData != undefined && uploadFileData.length > 0) {
                 console.log('uploadFileData @@ ',{uploadFileData});
                 var fileData = uploadFileData[0];
                 var reader = new FileReader();
@@ -458,7 +457,7 @@
 
   <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
 
-        <apex:actionFunction name="acfsubmintQuote" action="{!submintQuote}" oncomplete="multiFiles('{!iserrorMessage}')" status="splashStatus" rerender="form,iserrorMessage"
+        <apex:actionFunction name="acfsubmintQuote" action="{!submintQuote}" status="splashStatus" rerender="form,iserrorMessage"
         />
         <apex:actionFunction name="fileToBackEnd" action="{!submintQuote}" status="splashStatus" rerender="form,iserrorMessage"
         />
@@ -589,7 +588,13 @@
                             <!--<apex:inputField value="{!rfqToVendor.Notes__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c != 'Quote Submitted'}"/>
                             <apex:outputField value="{!rfqToVendor.Notes__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>-->
                             <apex:outputField value="{!rfqToVendor.Notes__c}" />
+                            
+                            <apex:inputField  value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c}" rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}" />
+                            <apex:inputField value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c}" rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}"/>
 
+                            
+                            <apex:outputField  value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c}" rendered="{!rfqToVendor.Status__c == 'Quote Submitted' || rfqToVendor.Status__c == 'Awarded' || rfqToVendor.Status__c == 'Accepted' || rfqToVendor.Status__c == 'Request Sent'}" />
+                            <apex:outputField value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c}" rendered="{!rfqToVendor.Status__c == 'Quote Submitted' || rfqToVendor.Status__c == 'Awarded' || rfqToVendor.Status__c == 'Accepted' || rfqToVendor.Status__c == 'Request Sent'}"/>
                             <apex:outputField value="{!rfqToVendor.Submitted_Date__c}" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
 
                         </apex:pageBlockSection>

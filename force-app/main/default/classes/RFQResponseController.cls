@@ -48,6 +48,9 @@ public Boolean displayPopup1 {get;set;}
     public buildertek__RFI__c newrfi{ get; set; }
     public buildertek__RFQ__c rfqrec1{ get; set; }
 
+    public Date anticipatedStartDate { get; set; }
+    public Date anticipatedFinishDate { get; set; }
+
     public Map<Integer, Id> rfqToVendorItemMap{ get; set; }
 
     public String uploadFileURL{ get; set; }
@@ -110,6 +113,8 @@ public Boolean displayPopup1 {get;set;}
 
 
     public RFQResponseController(){
+    // anticipatedStartDate = Date.today();  
+    // anticipatedFinishDate = Date.today(); 
         displayPopUp = false;
         isErrorMessage = false;
         rfisaved = false;
@@ -125,7 +130,8 @@ public Boolean displayPopup1 {get;set;}
         rfqrec1 = new buildertek__RFQ__c();
         files = new List<File__c>();
         try{
-            String query = 'Select RFQ__r.Due_Date__c,RFQ__r.Name,RFQ__r.RFQ_Details__c,RFQ__r.Auto_Number__c,RFQ__r.Project__c,buildertek__RFQ__r.Project__r.Name,' + BT_Utils.getQueryStringForObjectWithAllFields('buildertek__RFQ_To_Vendor__c')+',(Select id,Name,Item_Name__c,Vendor_Note__c,buildertek__Estimated_Work_Days__c,Quantity__c,Unit_Price__c,Total_Price__c,Description__c,Budget_Line_Amount__c, buildertek__RFQ_Item__c from Vendor_Items__r),(Select Id, Name, File__r.Name, File__r.File_Presigned_URL__c,File__r.Description__c,File__r.Download_Link__c,File__r.Download_Link1__c from RFQ_To_Vendor_Document_Links__r), (Select Id, Name, File_Presigned_URL__c,Description__c from Files__r) From buildertek__RFQ_To_Vendor__c where ID =:rfqVendorId order by Name';
+            String query = 'Select RFQ__r.buildertek__Anticipated_Start_Date__c, RFQ__r.buildertek__Anticipated_Finish_Date__c, RFQ__r.Due_Date__c,RFQ__r.Name,RFQ__r.RFQ_Details__c,RFQ__r.Auto_Number__c,RFQ__r.Project__c,buildertek__RFQ__r.Project__r.Name,' + BT_Utils.getQueryStringForObjectWithAllFields('buildertek__RFQ_To_Vendor__c')+',(Select id,Name,Item_Name__c,Vendor_Note__c,buildertek__Estimated_Work_Days__c,Quantity__c,Unit_Price__c,Total_Price__c,Description__c,Budget_Line_Amount__c, buildertek__RFQ_Item__c from Vendor_Items__r),(Select Id, Name, File__r.Name, File__r.File_Presigned_URL__c,File__r.Description__c,File__r.Download_Link__c,File__r.Download_Link1__c from RFQ_To_Vendor_Document_Links__r), (Select Id, Name, File_Presigned_URL__c,Description__c from Files__r) From buildertek__RFQ_To_Vendor__c where ID =:rfqVendorId order by Name';
+            System.debug(query);
             rfqToVendor = (buildertek__RFQ_To_Vendor__c)Database.query(query)[0];
             rfqId = rfqToVendor.RFQ__c;
             rfqcontact=rfqToVendor.buildertek__Contact__c;
@@ -195,9 +201,13 @@ public Boolean displayPopup1 {get;set;}
 
     public void submintQuote(){
        buildertek__RFQ__c rfqrerec;
-        rfqrerec = [SELECT Id, Name, buildertek__Due_Date__c
+        rfqrerec = [SELECT Id, Name, buildertek__Due_Date__c,buildertek__Anticipated_Start_Date__c,buildertek__Anticipated_Finish_Date__c
                                      FROM buildertek__RFQ__c
-                                     WHERE Id = :rfqToVendor.buildertek__RFQ__c];
+                                     WHERE Id = :rfqToVendor.buildertek__RFQ__c]; 
+                        rfqrerec.buildertek__Anticipated_Start_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c;
+                        rfqrerec.buildertek__Anticipated_Finish_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c;
+                            update rfqrerec;
+
         if(rfqrerec.buildertek__Due_Date__c < system.today()){
             isErrorMessage = true;
             errorMessage = 'You can not submit this RFQ , because the Due Date of this RFQ is expired. Please Contact System Administrate.';
@@ -247,6 +257,7 @@ public Boolean displayPopup1 {get;set;}
                         for (Integer i = 0; i < rfqToVendor.Vendor_Items__r.size(); i++){
                             rfqToVendor.Vendor_Items__r[i].Id = rfqToVendorItemMap.get(i);
                         }
+        
                         rfqToVendor.Submitted_Date__c = system.now();
                         rfqToVendor.Status__c = 'Quote Submitted';
                         system.debug('%%%%%%%%'+rfqToVendor.Status__c);
