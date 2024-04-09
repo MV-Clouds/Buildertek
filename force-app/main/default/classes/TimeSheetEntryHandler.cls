@@ -86,7 +86,7 @@ public with sharing class TimeSheetEntryHandler {
         List<buildertek__Budget_Item__c> toInsertBudgetItems = new List<buildertek__Budget_Item__c>();
         //iterate over the new list and check if the budget is not null and if the budget line is null, create a new budget line
         for (buildertek__BT_Time_Sheet_Entry__c tse : newTimeSheetEntries) {
-            if (tse.buildertek__BT_Time_Sheet__r.buildertek__BT_Budget_Line__c == null) {
+            if (tse.buildertek__BT_Time_Sheet__r.buildertek__BT_Budget_Line__c == null && tse.buildertek__BT_Time_Sheet__r.buildertek__BT_Budget__c != null) {
                 buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
                 budgetLine.Name = tse.Name ;
                 budgetLine.buildertek__Budget__c = tse.buildertek__BT_Time_Sheet__r.buildertek__BT_Budget__c;

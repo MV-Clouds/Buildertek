@@ -2730,7 +2730,7 @@
                     </aura:if>
 
                     <aura:if isTrue="{!v.chooseTimeSheet}">
-                        <div class="slds-modal__container" style="width: 50%;">
+                        <div class="slds-modal__container" style="width: 60%; max-width: 55rem">
                             <div aura:id="poContainer" class="c-container">
                                 <header class="slds-modal__header">
                                     <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
@@ -2740,7 +2740,6 @@
                                     <p></p>
                                 </header>
                                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
-                                    <!-- Create a table which has 3 columns, TimeSheet Name, Description, Total Labor Amount -->
                                     <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                         <thead class="slds-text-title_caps">
                                             <tr>
@@ -2752,6 +2751,12 @@
                                                 </th>
                                                 <th scope="col">
                                                     <div class="slds-truncate" title="Status">Status</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Time Shet">Time Sheet</div>
+                                                </th>
+                                                <th scope="col">
+                                                    <div class="slds-truncate" title="Project">Project</div>
                                                 </th>
                                                 <th scope="col">
                                                     <div class="slds-truncate" title="Total Labor Amount">Total Labor Amount</div>
@@ -2769,6 +2774,12 @@
                                                     </td>
                                                     <td>
                                                         {!item.buildertek__Status__c}
+                                                    </td>
+                                                    <td>
+                                                        {!item.buildertek__BT_Time_Sheet__r.Name}
+                                                    </td>
+                                                    <td>
+                                                        {!item.buildertek__BT_Project__r.Name}
                                                     </td>
                                                     <td>
                                                         <lightning:formattedNumber value="{!item.buildertek__Total_Labor_Costs__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
