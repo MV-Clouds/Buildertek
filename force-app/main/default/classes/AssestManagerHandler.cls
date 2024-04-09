@@ -128,4 +128,100 @@ public with sharing class AssestManagerHandler{
 			
  }
 
+	public void beforeInsert(List<buildertek__Asset_History__c> newAssetHistory){
+
+		String budgetLineGroupId ;
+		List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
+		if(budgetLineGroups.size() == 0){
+			buildertek__Budget_Line_Group__c budgetLineGroup = new buildertek__Budget_Line_Group__c();
+			budgetLineGroup.Name = 'No Grouping';
+			insert budgetLineGroup;
+			budgetLineGroupId = budgetLineGroup.Id;
+		}else{
+			budgetLineGroupId = budgetLineGroups[0].Id;
+		}
+
+		List<buildertek__Budget_Item__c> budgetLines = new List<buildertek__Budget_Item__c>();
+		for(buildertek__Asset_History__c assetHistory : newAssetHistory){
+			if(assetHistory.buildertek__BT_Budget__c != null && assetHistory.buildertek__BT_Budget_Line__c == null){
+				buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
+				budgetLine.Name = assetHistory.Name;
+				budgetLine.buildertek__Budget__c = assetHistory.buildertek__BT_Budget__c;
+				budgetLine.buildertek__Group__c = budgetLineGroupId;
+				budgetLines.add(budgetLine);
+			}
+		}
+		if(budgetLines.size() > 0){
+			insert budgetLines;
+		}
+
+		for(buildertek__Asset_History__c assetHistory : newAssetHistory){
+			if(assetHistory.buildertek__BT_Budget__c != null && assetHistory.buildertek__BT_Budget_Line__c == null){
+				for(buildertek__Budget_Item__c budgetLine : budgetLines){
+					if(budgetLine.buildertek__Budget__c == assetHistory.buildertek__BT_Budget__c && budgetLine.Name == assetHistory.Name){
+						assetHistory.buildertek__BT_Budget_Line__c = budgetLine.Id;
+					}
+				}
+			}
+		}
+	}
+
+	public void beforeUpdate(List<buildertek__Asset_History__c> newAssetHistory, Map<Id, buildertek__Asset_History__c> oldAssetHistry){
+		String budgetLineGroupId ;
+		List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
+		if(budgetLineGroups.size() == 0){
+			buildertek__Budget_Line_Group__c budgetLineGroup = new buildertek__Budget_Line_Group__c();
+			budgetLineGroup.Name = 'No Grouping';
+			insert budgetLineGroup;
+			budgetLineGroupId = budgetLineGroup.Id;
+		}else{
+			budgetLineGroupId = budgetLineGroups[0].Id;
+		}
+
+		List<buildertek__Budget_Item__c> budgetLines = new List<buildertek__Budget_Item__c>();
+		for(buildertek__Asset_History__c assetHistory : newAssetHistory){
+			if(assetHistory.buildertek__BT_Budget__c != null && assetHistory.buildertek__BT_Budget_Line__c == null){
+				buildertek__Asset_History__c oldAsset = oldAssetHistry.get(assetHistory.Id);
+				if(oldAsset != null && oldAsset.buildertek__BT_Budget__c == null){
+					buildertek__Budget_Item__c budgetLine = new buildertek__Budget_Item__c();
+					budgetLine.Name = assetHistory.Name;
+					budgetLine.buildertek__Budget__c = assetHistory.buildertek__BT_Budget__c;
+					budgetLine.buildertek__Group__c = budgetLineGroupId;
+					budgetLines.add(budgetLine);
+				}
+			}
+		}
+		if(budgetLines.size() > 0){
+			insert budgetLines;
+		}
+
+		for(buildertek__Asset_History__c assetHistory : newAssetHistory){
+			if(assetHistory.buildertek__BT_Budget__c != null && assetHistory.buildertek__BT_Budget_Line__c == null){
+				for(buildertek__Budget_Item__c budgetLine : budgetLines){
+					if(budgetLine.buildertek__Budget__c == assetHistory.buildertek__BT_Budget__c && budgetLine.Name == assetHistory.Name){
+						assetHistory.buildertek__BT_Budget_Line__c = budgetLine.Id;
+					}
+				}
+			}
+		}
+
+		Map<Id, buildertek__Asset_History__c> assetHistoryMap = new Map<Id, buildertek__Asset_History__c>();
+		for(buildertek__Asset_History__c assetHistory : newAssetHistory){
+			assetHistoryMap.put(assetHistory.buildertek__BT_Budget_Line__c, assetHistory);
+		}
+
+		List<buildertek__Budget_Item__c> budgetItems = [SELECT Id, Name, buildertek__Budget__c FROM buildertek__Budget_Item__c WHERE Id IN :assetHistoryMap.keySet()];
+
+		for(buildertek__Budget_Item__c budgetItem : budgetItems){
+			buildertek__Asset_History__c assetHistory = assetHistoryMap.get(budgetItem.Id);
+			
+			
+		}
+
+
+
+	}
+
+
+
 }

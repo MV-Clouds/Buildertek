@@ -22,4 +22,15 @@ trigger AssetManagerTrigger on buildertek__Asset_History__c(before insert,after 
           handler.beforeDelete(Trigger.new, Trigger.old, Trigger.newMap, Trigger.oldMap);
         }
 
+        
+        if(Trigger.isBefore && Trigger.isInsert){
+            handler.beforeInsert(Trigger.new);
+        }
+
+        if(Trigger.isBefore && Trigger.isUpdate){
+            handler.beforeUpdate(Trigger.new, Trigger.oldMap);
+        }
+
+
+
 }
