@@ -161,8 +161,9 @@ public with sharing class createSinglePOsController {
                                             MatchedScheduleItem.buildertek__Contractor_Resource_2__c = null;
                                             MatchedScheduleItem.buildertek__Contractor_Resource_3__c = null;
                                         }
-
-                                        schItemsToUpdate.add(MatchedScheduleItem);
+                                        if (!schItemsToUpdate.contains(MatchedScheduleItem)){
+                                            schItemsToUpdate.add(MatchedScheduleItem);
+                                        }
                                     }
                                 }
                                 
