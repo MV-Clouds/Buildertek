@@ -22,13 +22,85 @@ public class BillLineItemTriggerHandler {
 			invoiceLineids.add(invoiceLine.Id);
 		}
 		System.debug(invoiceLineids);
-		quickBookCallout(invoiceLineids);
+		// quickBookCallout(invoiceLineids);
+
+        Set<Id> InoviceId = new Set<Id>();
+        for(buildertek__Account_Payable_Item__c invoiceLine : newBillLineItem){
+            InoviceId.add(invoiceLine.buildertek__Account_Payable__c);
+        }
+        recalculateInvoice(InoviceId);
  	}
      
  	public void OnAfterUpdate(buildertek__Account_Payable_Item__c[] oldBillLineItem, buildertek__Account_Payable_Item__c[] updatedBillLineItem, Map<ID, buildertek__Account_Payable_Item__c> BillLineItemMap, Map<Id, buildertek__Account_Payable_Item__c> oldBillLineItemMap){
     	
       BT_CreateNewBill.RollUpBillLineItemAmount(BillLineItemMap.KeySet());
+
+        Set<Id> InoviceId = new Set<Id>();
+        for(buildertek__Account_Payable_Item__c invoiceLine : updatedBillLineItem){
+            InoviceId.add(invoiceLine.buildertek__Account_Payable__c);
+        }
+        recalculateInvoice(InoviceId);
  	}
+
+    //OnAfterDelete
+    public void OnAfterDelete(buildertek__Account_Payable_Item__c[] oldBillLineItem){
+        Set<Id> InoviceId = new Set<Id>();
+        for(buildertek__Account_Payable_Item__c invoiceLine : oldBillLineItem){
+            InoviceId.add(invoiceLine.buildertek__Account_Payable__c);
+        }
+        recalculateInvoice(InoviceId);
+
+
+    }
+
+
+
+    public static void recalculateInvoice(Set<Id> InoviceId){
+        
+        //query all the Invoice buildertek__Account_Payable__c
+        List<buildertek__Account_Payable__c> invoiceList = [SELECT Id, Name, buildertek__Budget__c, buildertek__BT_Budget_Line__c from buildertek__Account_Payable__c WHERE Id IN :InoviceId];
+
+        Set<Id> budgetLineIds = new Set<Id>();
+        for(buildertek__Account_Payable__c invoice : invoiceList){
+            if(invoice.buildertek__BT_Budget_Line__c != null){
+                budgetLineIds.add(invoice.buildertek__BT_Budget_Line__c);
+            }
+        }
+
+        List<buildertek__Account_Payable_Item__c> invoiceLineList = [SELECT Id, buildertek__Account_Payable__c, buildertek__Account_Payable__r.buildertek__Budget__c, buildertek__Account_Payable__r.buildertek__BT_Budget_Line__c, buildertek__Total_Amount_With_Tax__c from buildertek__Account_Payable_Item__c where buildertek__Account_Payable__r.buildertek__BT_Budget_Line__c IN :budgetLineIds];
+
+        //make a map where budget line id is the key and the invoice Lines are the values
+        Map<Id, List<buildertek__Account_Payable_Item__c>> budgetLineToInvoiceLineMap = new Map<Id, List<buildertek__Account_Payable_Item__c>>();
+        for(buildertek__Account_Payable_Item__c invoiceLine : invoiceLineList){
+            if(!budgetLineToInvoiceLineMap.containsKey(invoiceLine.buildertek__Account_Payable__r.buildertek__BT_Budget_Line__c)){
+                budgetLineToInvoiceLineMap.put(invoiceLine.buildertek__Account_Payable__r.buildertek__BT_Budget_Line__c, new List<buildertek__Account_Payable_Item__c>());
+            }
+            budgetLineToInvoiceLineMap.get(invoiceLine.buildertek__Account_Payable__r.buildertek__BT_Budget_Line__c).add(invoiceLine);
+        }
+
+        //iterate over the map and calculate the total amount for each budget line
+        List<buildertek__Budget_Item__c> budgetItemsToUpdate = new List<buildertek__Budget_Item__c>();
+        for(Id budgetLineId : budgetLineToInvoiceLineMap.keySet()){
+            Decimal totalAmount = 0;
+            for(buildertek__Account_Payable_Item__c invoiceLine : budgetLineToInvoiceLineMap.get(budgetLineId)){
+                totalAmount += invoiceLine.buildertek__Total_Amount_With_Tax__c;
+            }
+            buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c(Id = budgetLineId, buildertek__Invoice_PO__c = totalAmount);
+            budgetItemsToUpdate.add(budgetItem);
+        }
+
+        //update the budget items
+        if(budgetItemsToUpdate.size() > 0){
+            update budgetItemsToUpdate;
+        }
+
+
+
+
+
+
+
+    }
 
 /*------------------------- quickBookCallout ---------------------------*
 

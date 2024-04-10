@@ -17,6 +17,7 @@
             </div>
         </lightning-card>
     </div>
+
     <div if:true={isScheduleSelected}>
         <lightning-card class="custom-card">
             <div class="slds-p-around_medium">
@@ -51,7 +52,7 @@
                 </div>
                 <div class="recordValues">
                     <template for:each={tableData} for:item="row">
-                        <div key={row.id} class="slds-grid slds-gutters data-row">
+                        <div key={row.id} data-id={row.id} class="slds-grid slds-gutters data-row">
                             <template if:true={row.isEditing}>
                                 <div class="slds-col slds-truncate">
                                     <p class="record-value">{row.taskName}</p>
@@ -91,7 +92,7 @@
                                         onchange={vendorResourcesChange} placeholder="Select Vendor Resources"
                                         class="fixed-width-dropdown"></lightning-combobox>
                                 </div>
-                                <div class="icons">
+                                <div class="slds-col icons">
                                     <lightning-icon icon-name='utility:save' alternative-text='save' size='x-small'
                                         title='save' onclick={saveResource} data-id={row.id}></lightning-icon>
                                     <lightning-icon icon-name='utility:close' alternative-text='close' size='x-small'
@@ -111,22 +112,31 @@
                                 <div class="slds-col slds-truncate">
                                     <p class="record-value">{row.internalResource}</p>
                                 </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{row.vendor}</p>
+                                <div class="slds-col slds-truncate link">
+                                    <p class="record-value" data-vendorid={row.vendorId} data-name="vendor"
+                                        onclick={viewVendorResource}>{row.vendor}</p>
                                 </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{row.vendorResources1}</p>
+                                <div class="slds-col slds-truncate link">
+                                    <p class="record-value" data-vendorid={row.vendorResources1Id} data-name="resource"
+                                        onclick={viewVendorResource}>{row.vendorResources1}</p>
                                 </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{row.vendorResources2}</p>
+                                <div class="slds-col slds-truncate link">
+                                    <p class="record-value" data-vendorid={row.vendorResources2Id} data-name="resource"
+                                        onclick={viewVendorResource}>
+                                        {row.vendorResources2}</p>
                                 </div>
-                                <div class="slds-col slds-truncate">
-                                    <p class="record-value">{row.vendorResources3}</p>
+                                <div class="slds-col slds-truncate link">
+                                    <p class="record-value" data-vendorid={row.vendorResources3Id} data-name="resource"
+                                        onclick={viewVendorResource}>
+                                        {row.vendorResources3}</p>
                                 </div>
                                 <div class="slds-col">
                                     <lightning-icon icon-name='utility:edit' alternative-text='edit' size='xx-small'
-                                        title='edit' onclick={editResource} data-id={row.id}
+                                        class="editResources" title='edit' onclick={editResource} data-id={row.id}
                                         data-vendorid={row.vendor}></lightning-icon>
+                                    <lightning-icon if:true={row.hasConflict} icon-name='utility:pop_in'
+                                        alternative-text='bundle_config' size='x-small' title='show Conflict'
+                                        onclick={showCurrentConflict} data-id={row.id}></lightning-icon>
                                 </div>
                             </template>
                         </div>
@@ -136,34 +146,88 @@
         </lightning-card>
     </div>
 
+    <!-- Conflict Popup Modal -->
     <template if:true={isConflict}>
-        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
-            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open slds-modal_small">
-            <div class="slds-modal__container">
-                <header class="slds-modal__header">
-                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
-                        title="Close" onclick={handleCloseModal}>
-                        <lightning-icon icon-name="utility:close" alternative-text="Close"
-                            size="small"></lightning-icon>
-                        <span class="slds-assistive-text">Close</span>
-                    </button>
-                    <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Conflict Detected</h2>
-                </header>
-
-                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <p>A conflicting schedule has been detected. Do you want to accept the conflict or fix it?</p>
+        <div class="popup-container">
+            <div class="backdrop"></div>
+            <div class="popup">
+                <div class="popup__content">
+                    <div class="popup__header">
+                        <h2 class="popup__header-title">⚠️ Conflict Detected</h2>
+                        <button class="closeIcon" title="Close" onclick={handleCloseModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close"
+                                size="small"></lightning-icon>
+                        </button>
+                    </div>
+                    <div class="popup__body">
+                        <template for:each={groupedConflictingItems} for:item="conflict">
+                            <lightning-card key={conflict.resourceName} class="popup__custom-card">
+                                <div class="slds-p-around_medium tableContainer">
+                                    <div class="resource-header">
+                                        <p class="resource-name">{conflict.resourceName}</p>
+                                    </div>
+                                    <div class="popup__header-row">
+                                        <div class="slds-col">
+                                            <p class="header-text">Project</p>
+                                        </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">Schedule</p>
+                                        </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">Task Name</p>
+                                        </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">Start Date</p>
+                                        </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">End Date</p>
+                                        </div>
+                                        <div class="slds-col">
+                                            <p class="header-text">Resolve</p>
+                                        </div>
+                                    </div>
+                                    <div class="popup__recordValues">
+                                        <template for:each={conflict.items} for:item="scheduleItem">
+                                            <div key={scheduleItem.id} data-id={scheduleItem.id}
+                                                class="popup__data-row">
+                                                <div class="slds-col slds-truncate">
+                                                    <p class="popup__record-value">{scheduleItem.project}</p>
+                                                </div>
+                                                <div class="slds-col slds-truncate">
+                                                    <p class="popup__record-value">{scheduleItem.schedule}</p>
+                                                </div>
+                                                <div class="slds-col slds-truncate">
+                                                    <p class="popup__record-value">{scheduleItem.taskName}</p>
+                                                </div>
+                                                <div class="slds-col slds-truncate">
+                                                    <p class="popup__record-value">{scheduleItem.startDate}</p>
+                                                </div>
+                                                <div class="slds-col slds-truncate">
+                                                    <p class="popup__record-value">{scheduleItem.endDate}</p>
+                                                </div>
+                                                <div class="slds-col" style="margin: auto 25%;">
+                                                    <lightning-icon icon-name="utility:open" alternative-text="Redirect"
+                                                        size="xx-small" title="Redirect"
+                                                        data-id={scheduleItem.scheduleId} onclick={handleFixConflict}
+                                                        class="popup__record-value redirectIcon"></lightning-icon>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </lightning-card>
+                        </template>
+                    </div>
+                    <div class="popup__footer">
+                        <p class="popup__footer-text">Do you want to accept the conflict or fix it?</p>
+                        <button class="accept-button" onclick={handleAcceptConflict}>Accept Conflict</button>
+                    </div>
                 </div>
-
-                <footer class="slds-modal__footer">
-                    <button class="slds-button slds-button_neutral" onclick={handleAcceptConflict}>Accept
-                        Conflict</button>
-                    <button class="slds-button slds-button_brand" onclick={handleFixConflict}>Fix Conflict</button>
-                </footer>
             </div>
-        </section>
-        <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
     </template>
 
+    <!-- Spinner -->
     <template if:true={isLoading}>
         <div class="slds-spinner_container" style="position:fixed;">
             <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
@@ -176,5 +240,4 @@
             </div>
         </div>
     </template>
-
 </template>

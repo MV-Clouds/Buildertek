@@ -205,7 +205,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
 function dependencyLagData(dependenciesData) {
     const lagdatamap = new Map();
     dependenciesData.forEach(({ to, lag }) => {
-        if (lag) {
+        if (lag && lag > 0) {
             lagdatamap.set(to, lag);
         }
     });

@@ -170,6 +170,19 @@ public with sharing class BudgetItemTriggerHandler {
 			update cashDisbursementList;
 			CashDisbursementTriggerHandler.isSkipExecution = false;
 		}
+
+
+		//* for TimeSheetEntry
+		List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
+		for (buildertek__BT_Time_Sheet_Entry__c timeSheetEntry : timeSheetEntryList) {
+			timeSheetEntry.buildertek__BT_Budget__c = null;
+			timeSheetEntry.buildertek__BT_Budget_Line__c = null;
+		}
+		if (timeSheetEntryList.size() > 0 && blnSkipBudgetItemTrigger == false) {
+			TimeSheetEntryHandler.isExecuting = true;
+			update timeSheetEntryList;
+			TimeSheetEntryHandler.isExecuting = false;
+		}
  	}
      
  	public void OnAfterInsert(Budget_Item__c[] newBudgetItems, Map<ID, Budget_Item__c> newBudgetItemsMap){ 

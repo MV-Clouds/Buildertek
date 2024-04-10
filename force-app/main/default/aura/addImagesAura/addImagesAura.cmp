@@ -1,0 +1,22 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId">
+    <!-- Removed modal related markup -->
+    <aura:html tag="style">
+    .slds-modal__content {
+        height: unset !important;
+        max-height: unset !important;
+    }
+    .slds-modal__container {
+        max-width: 60rem !important;
+        width: 70% !important;
+    }
+    .cuf-content {
+        padding:  0rem !important;
+    }
+    .slds-p-around--medium {
+        padding: 0rem !important;
+    }
+</aura:html>
+    <aura:attribute name="recordId" type="String" />
+
+    <c:fileUploadAndRename recordId="{!v.recordId}" onclosequickaction="{!c.handleCloseAction}" />
+</aura:component>

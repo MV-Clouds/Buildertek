@@ -1,0 +1,49 @@
+.THIS lightning-icon.some-indicator {
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS lightning-icon.some-indicator>lightning-primitive-icon>svg>use {
+    fill: white;
+    background-color: #006DCC;
+    width: 2rem;
+    height: 2rem;
+}
+
+.THIS .slds-form-element__icon {
+    display: none !important;
+}
+
+.THIS .slds-form-element__label {
+    margin-top: 0px;
+}
+
+.THIS .tableDiv {
+    min-height: 90vh;
+}
+
+.THIS .some-indicator {
+    background-color: indianred !important;
+}
+
+.THIS .alignment {
+    margin-top: 0px !important;
+}
+
+.THIS td {
+    padding-block: 3px !important;
+}
+
+.THIS th {
+    padding-left: 10px !important;
+}
+
+.THIS .slds-has-error .slds-form-element__help {
+    display: none;
+}
+
+.THIS .slds-has-error .slds-input {
+    --slds-c-input-shadow: #000000 !important;
+    --slds-c-input-color-border: #000000 !important;
+}

@@ -10,6 +10,22 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('getWalkThroughLines:', result);
+                // if (result.length == 0) {
+                //     window.onload = showToast();
+                //     function showToast() {
+                //         sforce.one.showToast({
+                //             "title": "Error!",
+                //             "message": "No Walk Through Line found for this Walk Through!",
+                //             "type": "error"
+                //         });
+                //     }
+                //     var appEvent = $A.get("e.c:myEvent");
+                //     appEvent.setParams({
+                //         "message": "Event fired"
+                //     });
+                //     appEvent.fire();
+                //     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                // }
                 component.set("v.walkThroughLine", result);
             }
         });
