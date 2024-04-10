@@ -198,11 +198,39 @@ public Boolean displayPopup1 {get;set;}
        buildertek__RFQ__c rfqrerec;
         rfqrerec = [SELECT Id, Name, buildertek__Due_Date__c,buildertek__Anticipated_Start_Date__c,buildertek__Anticipated_Finish_Date__c
                                      FROM buildertek__RFQ__c
+        
                                      WHERE Id = :rfqToVendor.buildertek__RFQ__c]; 
-                        rfqrerec.buildertek__Anticipated_Start_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c;
-                        rfqrerec.buildertek__Anticipated_Finish_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c;
-                            update rfqrerec;
-
+    if ((rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c == null && rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c == null)) {
+    rfqrerec.buildertek__Anticipated_Start_Date__c = null;
+    rfqrerec.buildertek__Anticipated_Finish_Date__c = null;
+    update rfqrerec;
+    isErrorMessage = false;  
+    isReload = false; 
+}
+     else if ((rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c == null && rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c != null)) {
+        isErrorMessage = true;
+        errorMessage = 'Please fill both start date and finish date, or leave both blank.';
+        isReload = false;
+        return;
+    }
+    else if ((rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c != null && rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c == null)) {
+        isErrorMessage = true;
+        errorMessage = 'Please fill both start date and finish date, or leave both blank.';
+        isReload = false;
+        return;
+    } else if (rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c != null && rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c != null) {
+        if (rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c > rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c) {
+            isErrorMessage = true;
+            errorMessage = 'Start date cannot be greater than finish date.';
+            isReload = false;
+            return;
+        } else {
+            isErrorMessage = false;
+            rfqrerec.buildertek__Anticipated_Start_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c;
+            rfqrerec.buildertek__Anticipated_Finish_Date__c = rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c;
+            update rfqrerec;
+        }
+    }
         if(rfqrerec.buildertek__Due_Date__c < system.today()){
             isErrorMessage = true;
             errorMessage = 'You can not submit this RFQ , because the Due Date of this RFQ is expired. Please Contact System Administrate.';
