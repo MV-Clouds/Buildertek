@@ -76,6 +76,13 @@ public class PaymentTriggerHandler {
             update invoiceRecList;
         }
         system.debug('invoiceRecList----->'+invoiceRecList);
+
+        //iterate over newPaymentline and make set of id and pass to PaymentLineTriggerHandler.recalculateTotalforBudgetLine
+        Set<Id> paymentIds = new Set<Id>();
+        for(buildertek__BT_Payment__c payment : newPaymentline){
+            paymentIds.add(payment.Id);
+        }
+        PaymentLineTriggerHandler.recalculateTotalforBudgetLine(paymentIds);
         
     }
 
@@ -199,6 +206,13 @@ public class PaymentTriggerHandler {
             update invoiceRecList;
         }
         system.debug('invoiceRecList----->'+invoiceRecList);
+
+        //iterate over the newPaymentline and make set of id and pass to PaymentLineTriggerHandler.recalculateTotalforBudgetLine
+        Set<Id> paymentIds = new Set<Id>();
+        for(buildertek__BT_Payment__c payment : newPaymentline){
+            paymentIds.add(payment.Id);
+        }
+        PaymentLineTriggerHandler.recalculateTotalforBudgetLine(paymentIds);
     }
     
     public void onBeforeDelete(List<buildertek__BT_Payment__c> oldPaymentList, Map<Id, buildertek__BT_Payment__c> oldPaymentlineMap){
@@ -253,7 +267,9 @@ public class PaymentTriggerHandler {
         if(toDeleteBudgetItems.size() > 0){
             List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name, buildertek__Payable_Invoice_Payments__c FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
             for(buildertek__Budget_Item__c budgetItem : toDeleteBudgetItemsList){
-                budgetItem.buildertek__Payable_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
+                if(toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c != null && budgetItem.buildertek__Payable_Invoice_Payments__c != null){
+                    budgetItem.buildertek__Payable_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
+                }
             }
             update toDeleteBudgetItemsList;
             
