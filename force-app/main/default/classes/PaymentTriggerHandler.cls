@@ -144,6 +144,7 @@ public class PaymentTriggerHandler {
             }
 
             System.debug('toDeleteBudgetLine: ' + toDeleteBudgetLine);
+            System.debug('toDeleteBudgetItems: ' + toDeleteBudgetItems);
 
             if(toDeleteBudgetLine.size() > 0 && isSkipExecution == false){
                 BudgetItemTriggerHandler.blnSkipBudgetItemTrigger = true;
@@ -154,8 +155,11 @@ public class PaymentTriggerHandler {
 
         if(toDeleteBudgetItems.size() > 0){
             List<buildertek__Budget_Item__c> toDeleteBudgetItemsList = [SELECT Id, Name, buildertek__Payable_Invoice_Payments__c FROM buildertek__Budget_Item__c WHERE Id IN: toDeleteBudgetItems.keySet()];
+            System.debug('toDeleteBudgetItemsList: ' + toDeleteBudgetItemsList);
             for(buildertek__Budget_Item__c budgetItem : toDeleteBudgetItemsList){
-                budgetItem.buildertek__Payable_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
+                if(toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c != null && budgetItem.buildertek__Payable_Invoice_Payments__c != null){
+                    budgetItem.buildertek__Payable_Invoice_Payments__c -= toDeleteBudgetItems.get(budgetItem.Id).buildertek__Total_Amount__c;
+                }
             }
             update toDeleteBudgetItemsList;
             
