@@ -1261,5 +1261,29 @@ public without sharing class ChangeOrderTriggerHandler {
             }
         }
     }
+    
+    public void updatePicklist(buildertek__Change_Order__c[] newChangeOrder, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            Map<Id, String> recordTypeIdToNameMap = new Map<Id, String>();
+            for (RecordType rt : [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c']) {
+                recordTypeIdToNameMap.put(rt.Id, rt.Name);
+            }
 
+            for (buildertek__Change_Order__c newCO : newChangeOrder) {
+                buildertek__Change_Order__c oldCO = oldChangeOrderMap.get(newCO.Id);
+                if (oldCO != null && newCO.RecordTypeId != oldCO.RecordTypeId) {
+                    String newRecordTypeName = recordTypeIdToNameMap.get(newCO.RecordTypeId);
+                    if (newRecordTypeName != null) {
+                        newCO.buildertek__Type__c = newRecordTypeName;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
 }

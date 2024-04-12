@@ -30,7 +30,8 @@ trigger ChangeOrderTrigger on Change_Order__c (after delete, after insert, after
             handler.checkPOBeforeUpdate(Trigger.new);
             handler.checkParentPOBeforeUpdate(Trigger.new);
             handler.UpdateDateApproved(Trigger.new, trigger.oldMap);
-            //handler.BudgetLineUpdate(Trigger.new, trigger.oldMap);            
+            //handler.BudgetLineUpdate(Trigger.new, trigger.oldMap);     
+            handler.updatePicklist(Trigger.new, trigger.oldMap);
         }
         
         else if(Trigger.isUpdate && Trigger.isAfter){
