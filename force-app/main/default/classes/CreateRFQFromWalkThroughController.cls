@@ -6,7 +6,7 @@ public class CreateRFQFromWalkThroughController{
 
             List<buildertek__RFQ_Item__c> newRFQLines = new List<buildertek__RFQ_Item__c>();
 
-            List<buildertek__Walk_Through_List__c> walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c, (SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__BT_Category__c, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+            List<buildertek__Walk_Through_List__c> walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c, (SELECT Id, Name,buildertek__Quantity__c, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__BT_Category__c, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                                                                      FROM buildertek__Walk_Through_Line_Items__r)
                                                                      FROM buildertek__Walk_Through_List__c
                                                                      WHERE Id = :walkThroughId];
@@ -94,7 +94,7 @@ public class CreateRFQFromWalkThroughController{
                                                                      WHERE Id = :walkThroughId];
 
             if (grpType == 'tradeType'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Quantity__c,buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__Trade_Type__r.Name];
@@ -123,6 +123,8 @@ public class CreateRFQFromWalkThroughController{
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
 
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
+
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
                         for (buildertek__RFQ_Item__c rfqLineItem : newRFQLines){
@@ -140,7 +142,7 @@ public class CreateRFQFromWalkThroughController{
                 }
 
             } else if (grpType == 'costCode'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__BT_Cost_Code__r.Name];
@@ -167,6 +169,8 @@ public class CreateRFQFromWalkThroughController{
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
 
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
+
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
                         for (buildertek__RFQ_Item__c rfqLineItem : newRFQLines){
@@ -185,7 +189,7 @@ public class CreateRFQFromWalkThroughController{
                 }
 
             } else if (grpType == 'section'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__BT_Category__r.Name];
@@ -212,6 +216,8 @@ public class CreateRFQFromWalkThroughController{
 
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
+
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
 
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
@@ -361,6 +367,19 @@ public class CreateRFQFromWalkThroughController{
         }
 
         return newRFQLines;
+    }
+
+    public static List<buildertek__Walk_Through_Line_Items__c> assignRfqLinesOnWalkThroughLines(List<buildertek__RFQ_Item__c> rfqLineItems){
+        List<buildertek__Walk_Through_Line_Items__c> listOfWalkThroughToUpdate = new List<buildertek__Walk_Through_Line_Items__c>();
+
+        for (buildertek__RFQ_Item__c singleRfqLine : rfqLineItems){
+            buildertek__Walk_Through_Line_Items__c singleWalkThroughLine = new buildertek__Walk_Through_Line_Items__c();
+            singleWalkThroughLine.Id = singleRfqLine.buildertek__BT_Walk_Through_Line_Item__c;
+            singleWalkThroughLine.buildertek__BT_RFQ_Line__c = singleRfqLine.Id;
+            listOfWalkThroughToUpdate.add(singleWalkThroughLine);
+        }
+
+        return listOfWalkThroughToUpdate;
     }
 
     public static void addFilesOnRfqLines(Map<String, String> mapOfWalkThroughLineIdAndRfqLineId){
