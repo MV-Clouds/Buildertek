@@ -39,6 +39,8 @@
         var isValid = true;
         for (var i = 0; i < walkThroughLines.length; i++) {
             var product = walkThroughLines[i].buildertek__Product__c || '';
+            var quantity = walkThroughLines[i].buildertek__Quantity__c;
+            console.log(quantity);
             console.log(`product: ${product}`);
             console.log(`walkThroughLines[i] ${JSON.stringify(walkThroughLines[i])}`);
             if (walkThroughLines[i].buildertek__Product__c == '' || walkThroughLines[i].buildertek__Product__c == undefined || walkThroughLines[i].buildertek__Product__c == null) {
@@ -51,6 +53,21 @@
                     sforce.one.showToast({
                         "title": "Error!",
                         "message": "Product cannot be empty ",
+                        "type": "error"
+                    });
+                }
+                break;
+            }
+            if (quantity<1) {
+                isValid = false;
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+                window.onload = showToast();
+                function showToast() {
+                    sforce.one.showToast({
+                        "title": "Error!",
+                        "message": "Quantity cannot be less than 1 ",
                         "type": "error"
                     });
                 }

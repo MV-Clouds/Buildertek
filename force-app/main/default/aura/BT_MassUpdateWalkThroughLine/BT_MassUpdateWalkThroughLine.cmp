@@ -38,12 +38,12 @@
                 <table class="slds-table slds-table--bordered slds-table--edit">
                     <thead>
                         <tr style="height:35px; !important">
-                            <th> Section </th>
-                            <th> Product </th>
-                            <th> Description </th>
-                            <th> Details </th>
+                            <th style="padding-left: 15px;"> Section </th>
+                            <th style="padding-left: 10px;"> Product </th>
+                            <th style="padding-left: 10px;"> Description </th>
+                            <th style="padding-left: 10px;"> Details </th>
                             <th style="max-width: 3rem; min-width: 3rem;"> Quantity </th>
-                            <th> Notes </th>
+                            <th style="padding-left: 10px;"> Notes </th>
                             <!-- <th> Area </th>
                             <th> Location </th> -->
                             <th></th>
@@ -53,10 +53,12 @@
                         <aura:iteration items="{!v.walkThroughLine}" var="wtl" indexVar="index">
                             <tr>
                                 <td style="max-width: 11rem; min-width: 11rem;">
+                                    <div style="margin-top: 13px;">
                                     <c:BT_LookupFields selectedRecordId="{!wtl.buildertek__BT_Category__c}"
                                         childObjectName="buildertek__Walk_Through_Line_Items__c" index="{!index}"
                                         fieldName="buildertek__BT_Category__c" record="{!wtl}"
                                         callingCmpName="BT_MassUpdateWalkThroughLine" />
+                                        </div>
                                 </td>
                                 <td style="max-width: 11rem; min-width: 11rem;">
                                     <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
@@ -65,16 +67,17 @@
                                         index="{!index}" />
                                 </td>
                                 <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Description__c}" />
+                                    <lightning:input  type="text" value="{!wtl.buildertek__Description__c}" />
                                 </td>
                                 <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Details__c}" />
+                                    <lightning:input  type="text" value="{!wtl.buildertek__Details__c}" />
                                 </td>
                                 <td style="max-width: 3rem; min-width: 3rem;">
-                                    <lightning:input type="number" value="{!wtl.buildertek__Quantity__c}" />
+                                    <lightning:input  type="number" value="{!if(empty(wtl.buildertek__Quantity__c), 1, wtl.buildertek__Quantity__c)}" onchange="{!c.handleInputChange}" name="{!index}"/>
+
                                 </td>
                                 <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Notes__c}" />
+                                    <lightning:input  type="text" value="{!wtl.buildertek__Notes__c}" />
                                 </td>
                                 <!-- <td>
                                     <lightning:select name="location" value="{!wtl.buildertek__Location__c}"
@@ -95,7 +98,7 @@
                                 </td> -->
                                 <td>
                                     <span onclick="{!c.deleteRecord}" data-index='{!index}'>
-                                        <lightning:icon iconName="action:close" alternativeText="Delete"
+                                        <lightning:icon style="margin-bottom: 10px;" iconName="action:close" alternativeText="Delete"
                                             class="some-indicator alignment" size="x-small" title="Delete" />
                                     </span>
                                 </td>
