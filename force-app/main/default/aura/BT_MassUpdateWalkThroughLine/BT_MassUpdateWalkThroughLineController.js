@@ -1,7 +1,8 @@
 ({
     doInit: function (component, event, helper) {
-        component.set("v.Spinner", true);
-        window.setTimeout(
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire(); window.setTimeout(
             $A.getCallback(function () {
                 console.log('recordId', component.get('v.recordId'));
                 helper.getWalkThroughLines(component, event, helper);
@@ -9,6 +10,9 @@
             }),
             2000
         );
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "HIDE"
+        }).fire();
     },
 
     onAddClick: function (component, event, helper) {
@@ -42,7 +46,9 @@
     },
 
     onMassUpdate: function (component, event, helper) {
-        component.set("v.Spinner", true);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         helper.validateWalkThroughLines(component, event, helper);
     },
 
@@ -52,6 +58,9 @@
 
     closeScreen: function (component, event, helper) {
         component.set("v.isCancelModalOpen", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
         var appEvent = $A.get("e.c:myEvent");
         appEvent.setParams({
             "message": "Event fired"
@@ -64,4 +73,40 @@
     closeCancelModal: function (component, event, helper) {
         component.set("v.isCancelModalOpen", false);
     },
+
+    handleLookUpEvent: function (component, event, helper) {
+        var walkThroughLines = component.get('v.walkThroughLine');
+        var index = event.getParam("index");
+        var selectedRecord = event.getParam("selectedRecordId");
+        console.log(`fieldName ${event.getParam("fieldName")}: value ${event.getParam("selectedRecordId")} index: ${index}`);
+        if (event.getParam("fieldName") == 'buildertek__Product__c') {
+            walkThroughLines[index].buildertek__Product__c = selectedRecord;
+        } else if (event.getParam("fieldName") == 'buildertek__BT_Category__c') {
+            walkThroughLines[index].buildertek__BT_Category__c = selectedRecord[0];
+        }
+        component.set('v.walkThroughLine', walkThroughLines);
+    },
+
+    clearSelectedHandler: function (component, event, helper) {
+        console.log(`clearSelectedHandler`);
+        var walkThroughLines = component.get('v.walkThroughLine');
+        var index = event.getSource().get("v.index");
+        console.log(`fieldName ${event.getParam("fieldName")}: value ${event.getParam("value")} index: ${index}`);
+        if (event.getParam("fieldName") == 'buildertek__Product__c') {
+            walkThroughLines[index].buildertek__Product__c = '';
+        } else if (event.getParam("fieldName") == 'buildertek__BT_Category__c') {
+            walkThroughLines[index].buildertek__BT_Category__c = '';
+        }
+        component.set('v.walkThroughLine', walkThroughLines); x
+    },
+
+    ProductSelectHandler: function (component, event, helper) {
+        console.log(`ProductSelectHandler`);
+        var walkThroughLines = component.get('v.walkThroughLine');
+        var index = event.getSource().get("v.index");
+        let selectedRecord = event.getParam("recordByEvent");
+        console.log(`selectedRecord: ${JSON.stringify(selectedRecord)} index: ${index}`);
+        walkThroughLines[index].buildertek__Product__c = selectedRecord.Id;
+        component.set('v.walkThroughLine', walkThroughLines);
+    }
 })
