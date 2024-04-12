@@ -171,7 +171,6 @@ public with sharing class BudgetItemTriggerHandler {
 			CashDisbursementTriggerHandler.isSkipExecution = false;
 		}
 
-
 		//* for TimeSheetEntry
 		List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
 		for (buildertek__BT_Time_Sheet_Entry__c timeSheetEntry : timeSheetEntryList) {
@@ -183,6 +182,20 @@ public with sharing class BudgetItemTriggerHandler {
 			update timeSheetEntryList;
 			TimeSheetEntryHandler.isExecuting = false;
 		}
+
+		//* for Asset History (buildertek__Asset_History__c)
+		List<buildertek__Asset_History__c> assetHistoryList = [SELECT Id, Name, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c FROM buildertek__Asset_History__c WHERE buildertek__BT_Budget_Line__c IN: budgetLineIds];
+		for (buildertek__Asset_History__c assetHistory : assetHistoryList) {
+			assetHistory.buildertek__BT_Budget__c = null;
+			assetHistory.buildertek__BT_Budget_Line__c = null;
+		}
+		if (assetHistoryList.size() > 0 && blnSkipBudgetItemTrigger == false) {
+			AssestManagerHandler.blnSkipAssetHistoryTrigger = true;
+			update assetHistoryList;
+			AssestManagerHandler.blnSkipAssetHistoryTrigger = false;
+		}
+
+
  	}
      
  	public void OnAfterInsert(Budget_Item__c[] newBudgetItems, Map<ID, Budget_Item__c> newBudgetItemsMap){ 
