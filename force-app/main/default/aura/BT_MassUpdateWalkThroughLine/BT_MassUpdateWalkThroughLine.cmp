@@ -6,11 +6,8 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
     <aura:registerEvent name="myevent" type="c:myEvent" />
-    <lightning:overlayLibrary aura:id="overlayLib" />
 
 
-
-    <aura:attribute name="Spinner" type="boolean" />
     <aura:attribute name="recordId" type="String" />
     <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
     <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
@@ -18,12 +15,15 @@
     <aura:attribute name="deletedWalkThroughLine" type="List" default="[]" />
     <aura:attribute name="selectedLocation" type="String" />
     <aura:attribute name="locationOptions" type="List" />
+    <aura:attribute name="rerender" type="boolean" default="false" />
 
     <lightning:workspaceAPI aura:id="workspace" />
 
-    <aura:if isTrue="{!v.Spinner}">
-        <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
-    </aura:if>
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clearSelectedHandler}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.ProductSelectHandler}" />
+
+    <c:BT_Spinner />
 
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Walk Through Line Items">
         <aura:set attribute="actions">
@@ -38,34 +38,45 @@
                 <table class="slds-table slds-table--bordered slds-table--edit">
                     <thead>
                         <tr style="height:35px; !important">
-                            <!-- <th> Name </th> -->
+                            <th> Section </th>
+                            <th> Product </th>
                             <th> Description </th>
-                            <th> Detail </th>
+                            <th> Details </th>
+                            <th style="max-width: 3rem; min-width: 3rem;"> Quantity </th>
                             <th> Notes </th>
-                            <th> Area </th>
-                            <th> Location </th>
+                            <!-- <th> Area </th>
+                            <th> Location </th> -->
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <aura:iteration items="{!v.walkThroughLine}" var="wtl" indexVar="index">
                             <tr>
+                                <td style="max-width: 11rem; min-width: 11rem;">
+                                    <c:BT_LookupFields selectedRecordId="{!wtl.buildertek__BT_Category__c}"
+                                        childObjectName="buildertek__Walk_Through_Line_Items__c" index="{!index}"
+                                        fieldName="buildertek__BT_Category__c" record="{!wtl}"
+                                        callingCmpName="BT_MassUpdateWalkThroughLine" />
+                                </td>
+                                <td style="max-width: 11rem; min-width: 11rem;">
+                                    <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
+                                        selectedRecord="{!wtl.buildertek__Product__r}" aura:id="productId"
+                                        parentId="{!wtl.buildertek__BT_Price_Book__c}" prodctfamly="All Families"
+                                        index="{!index}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="text" value="{!wtl.buildertek__Description__c}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="text" value="{!wtl.buildertek__Details__c}" />
+                                </td>
+                                <td style="max-width: 3rem; min-width: 3rem;">
+                                    <lightning:input type="number" value="{!wtl.buildertek__Quantity__c}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="text" value="{!wtl.buildertek__Notes__c}" />
+                                </td>
                                 <!-- <td>
-                                    <lightning:input type="text" value="{!wtl.Name}" class="alignment" />
-                                </td> -->
-                                <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Description__c}"
-                                        class="alignment" />
-                                </td>
-                                <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Details__c}"
-                                        class="alignment" />
-                                </td>
-                                <td>
-                                    <lightning:input type="text" value="{!wtl.buildertek__Notes__c}"
-                                        class="alignment" />
-                                </td>
-                                <td>
                                     <lightning:select name="location" value="{!wtl.buildertek__Location__c}"
                                         class="alignment">
                                         <aura:iteration items="{!v.locationOptions}" var="Option">
@@ -81,7 +92,7 @@
                                         <option value="Floor">Floor</option>
                                         <option value="Wall">Wall</option>
                                     </lightning:select>
-                                </td>
+                                </td> -->
                                 <td>
                                     <span onclick="{!c.deleteRecord}" data-index='{!index}'>
                                         <lightning:icon iconName="action:close" alternativeText="Delete"

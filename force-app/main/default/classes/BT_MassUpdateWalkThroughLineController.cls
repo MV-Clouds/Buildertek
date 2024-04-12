@@ -2,7 +2,7 @@ public with sharing class BT_MassUpdateWalkThroughLineController {
     
     @AuraEnabled
     public static List<buildertek__Walk_Through_Line_Items__c> getWalkthroughLineItems(String walkthroughId) {
-        return [Select Id, Name, buildertek__Area__c, buildertek__Description__c, buildertek__Details__c, buildertek__Location__c, buildertek__Notes__c, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name from buildertek__Walk_Through_Line_Items__c where buildertek__Walk_Through_List__c =:walkthroughId order by buildertek__Description__c ASC];
+        return [SELECT Id, Name, buildertek__Area__c, buildertek__Description__c, buildertek__Details__c, buildertek__Location__c, buildertek__Notes__c, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__BT_Category__c, buildertek__BT_Category__r.Name FROM buildertek__Walk_Through_Line_Items__c WHERE buildertek__Walk_Through_List__c = :walkthroughId ORDER BY buildertek__BT_Category__r.Name NULLS LAST];
     }
     
     @AuraEnabled
@@ -51,11 +51,14 @@ public with sharing class BT_MassUpdateWalkThroughLineController {
 			if(toDelete.size() > 0){
 				delete toDelete;
 			}
-		} catch (Exception e){
-			throw new AuraHandledException(e.getMessage());
-		}
+		} catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
 		return 'Success';
 
 	}
 }
-
