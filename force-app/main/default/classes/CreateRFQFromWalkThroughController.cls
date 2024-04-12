@@ -123,6 +123,8 @@ public class CreateRFQFromWalkThroughController{
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
 
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
+
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
                         for (buildertek__RFQ_Item__c rfqLineItem : newRFQLines){
@@ -166,6 +168,8 @@ public class CreateRFQFromWalkThroughController{
 
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
+
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
 
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
@@ -212,6 +216,8 @@ public class CreateRFQFromWalkThroughController{
 
                     if (newRFQLines.size() > 0){
                         insert newRFQLines;
+
+                        update assignRfqLinesOnWalkThroughLines(newRFQLines);
 
                         Map<String, String> mapOfWalkThroughLineIdAndRfqLineId = new Map<String, String>();
 
@@ -361,6 +367,19 @@ public class CreateRFQFromWalkThroughController{
         }
 
         return newRFQLines;
+    }
+
+    public static List<buildertek__Walk_Through_Line_Items__c> assignRfqLinesOnWalkThroughLines(List<buildertek__RFQ_Item__c> rfqLineItems){
+        List<buildertek__Walk_Through_Line_Items__c> listOfWalkThroughToUpdate = new List<buildertek__Walk_Through_Line_Items__c>();
+
+        for (buildertek__RFQ_Item__c singleRfqLine : rfqLineItems){
+            buildertek__Walk_Through_Line_Items__c singleWalkThroughLine = new buildertek__Walk_Through_Line_Items__c();
+            singleWalkThroughLine.Id = singleRfqLine.buildertek__BT_Walk_Through_Line_Item__c;
+            singleWalkThroughLine.buildertek__BT_RFQ_Line__c = singleRfqLine.Id;
+            listOfWalkThroughToUpdate.add(singleWalkThroughLine);
+        }
+
+        return listOfWalkThroughToUpdate;
     }
 
     public static void addFilesOnRfqLines(Map<String, String> mapOfWalkThroughLineIdAndRfqLineId){
