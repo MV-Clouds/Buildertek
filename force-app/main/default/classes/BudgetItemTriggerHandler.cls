@@ -195,6 +195,7 @@ public with sharing class BudgetItemTriggerHandler {
 			AssestManagerHandler.blnSkipAssetHistoryTrigger = false;
 		}
 
+
  	}
      
  	public void OnAfterInsert(Budget_Item__c[] newBudgetItems, Map<ID, Budget_Item__c> newBudgetItemsMap){ 

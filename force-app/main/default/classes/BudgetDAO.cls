@@ -2110,14 +2110,15 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
     }
 
     @AuraEnabled
-    public static List<buildertek__BT_Time_Sheet__c> getTimeSheetData(String RecId){
+    public static List<buildertek__BT_Time_Sheet_Entry__c> getTimeSheetData(String RecId){
         buildertek__Budget__c BudgetRec = [SELECT Id, Name, buildertek__Project__c
                                         FROM buildertek__Budget__c
                                         where Id = :RecId];
         
-        List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
+        // List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
+        List<buildertek__BT_Time_Sheet_Entry__c> timesheetEntryList = [SELECT Id, Name, buildertek__BT_Project__r.Name, buildertek__Status__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__Total_Labor_Costs__c, buildertek__BT_Time_Sheet__r.Name FROM buildertek__BT_Time_Sheet_Entry__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
 
-        return timeSheetList;
+        return timesheetEntryList;
 
         
     }
@@ -3468,5 +3469,20 @@ buildertek__Budget__c budgetCopy = Database.query(query);*/
             return response;
         }
         return response;
+    }
+
+    @AuraEnabled
+    public static string updateTimeSheetEntry(List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntryList){
+
+        System.debug('timeSheetEntryList => ' + timeSheetEntryList);
+
+        if(timeSheetEntryList.size() > 0){
+            update timeSheetEntryList;
+            return 'Success';
+        }else{
+            return 'Error';
+        }
+
+
     }
 }
