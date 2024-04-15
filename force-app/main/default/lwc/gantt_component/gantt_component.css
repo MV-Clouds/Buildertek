@@ -56,9 +56,6 @@
     border-radius: 10px
 } */
 
-.b-grid-row.pavel {
-    background: #ff2c2c;
-  }
 
 .b-indicator{
     width: 16px !important;
@@ -98,10 +95,10 @@
 
 /* Spinner end */
 
-.b-pickerfield:not(.b-readonly):not(.b-disabled) input[readonly] {
+/* .b-pickerfield:not(.b-readonly):not(.b-disabled) input[readonly] {
     cursor: pointer;
     display: none;
-}
+} */
 .custom-cell {
     display: flex;
     align-items: center;
