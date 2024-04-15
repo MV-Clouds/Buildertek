@@ -594,14 +594,14 @@
                             <apex:outputField value="{!rfqToVendor.Notes__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>-->
                             <apex:outputField value="{!rfqToVendor.Notes__c}" />
                             
-                         <apex:inputField  ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c}" 
+                         <apex:inputField  ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.buildertek__Anticipated_Start_Date__c}" 
                  rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}" />
-                         <apex:inputField ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c}" 
+                         <apex:inputField ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.buildertek__Anticipated_Finish_Date__c}" 
                  rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}" />
 
                             
-                            <apex:outputField  value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Start_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
-                            <apex:outputField value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Anticipated_Finish_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>
+                            <apex:outputField  value="{!rfqToVendor.buildertek__Anticipated_Start_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
+                            <apex:outputField value="{!rfqToVendor.buildertek__Anticipated_Finish_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>
                             <apex:outputField value="{!rfqToVendor.Submitted_Date__c}" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
 
                         </apex:pageBlockSection>
