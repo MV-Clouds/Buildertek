@@ -73,7 +73,8 @@
                                     <lightning:input  type="text" value="{!wtl.buildertek__Details__c}" />
                                 </td>
                                 <td style="max-width: 3rem; min-width: 3rem;">
-                                    <lightning:input  type="number" value="{!if(empty(wtl.buildertek__Quantity__c), 1, wtl.buildertek__Quantity__c)}" onchange="{!c.handleInputChange}" name="{!index}"/>
+                                    <!-- <lightning:input  type="number" value="{!if(empty(wtl.buildertek__Quantity__c), 1, wtl.buildertek__Quantity__c)}" onchange="{!c.handleInputChange}" name="{!index}"/> -->
+                                <lightning:input type="number"  value="{!wtl.buildertek__Quantity__c}"  onchange="{!c.handleInputChange}" name="{!v.index}"/>
 
                                 </td>
                                 <td>

@@ -17,7 +17,7 @@
      handleInputChange: function(component, event, helper) {
         var newValue = event.getSource().get("v.value");
         var index = event.getSource().get("v.name"); 
-
+        console.log(newValue);
         var walkThroughLines = component.get('v.walkThroughLine'); 
         walkThroughLines[index].buildertek__Quantity__c = newValue;
         component.set("v.walkThroughLine", walkThroughLines);  

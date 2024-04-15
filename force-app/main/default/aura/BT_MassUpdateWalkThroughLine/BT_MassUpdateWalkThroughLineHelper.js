@@ -9,8 +9,14 @@
             var state = response.getState();
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
-                console.log('getWalkThroughLines:', result);
-                component.set("v.walkThroughLine", result);
+                console.log('getWalkThroughLines:', result); 
+                result.forEach(function(wtl) {
+                if (wtl.buildertek__Quantity__c == null) {
+                    wtl.buildertek__Quantity__c = 1;
+                }
+            });
+
+            component.set("v.walkThroughLine", result);
             }
         });
         $A.enqueueAction(action);
@@ -58,7 +64,7 @@
                 }
                 break;
             }
-            if (quantity<1) {
+            if (quantity<1 || quantity==null) {
                 isValid = false;
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
