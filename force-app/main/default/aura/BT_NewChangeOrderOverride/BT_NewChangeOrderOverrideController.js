@@ -1,9 +1,9 @@
 ({
     doInit: function (component, event, helper) {  
-
+        helper.getTabName(component, event, helper);
         // var recordTypeId = component.get( "v.pageReference" ).state.recordTypeId;  
         // component.set("v.RecordTypeId",recordTypeId);
-        console.log('RecordTypeId', component.get("v.RecordTypeId"));
+        // console.log('RecordTypeId', component.get("v.RecordTypeId"));
 
         // get Admin values, Does user want to create CO with or without CO lines and dispaly kayout according to it.
         var action = component.get("c.getadminvalues");
@@ -46,25 +46,26 @@
                 });
                 $A.enqueueAction(action4); 
                 
-                var value = helper.getParameterByName(component, event, 'inContextOfRef');
-                var context = '';
-                var parentRecordId = '';
-                component.set("v.parentRecordId", parentRecordId);
-                if (value != null) {
-                    context = JSON.parse(window.atob(value));
-                    parentRecordId = context.attributes.recordId;
-                    component.set("v.parentRecordId", parentRecordId);
-                } else {
-                    var relatedList = window.location.pathname;
-                    var stringList = relatedList.split("/");
-                    parentRecordId = stringList[4];
-                    if (parentRecordId == 'related') {
-                        var stringList = relatedList.split("/");
-                        parentRecordId = stringList[3];
-                    }
-                    component.set("v.parentRecordId", parentRecordId);
-                }
-                if(parentRecordId != null && parentRecordId != ''){
+                // var value = helper.getParameterByName(component, event, 'inContextOfRef');
+                // var context = '';
+                var parentRecordId = component.get("v.parentRecordId");
+                // component.set("v.parentRecordId", parentRecordId);
+                // if (value != null) {
+                //     context = JSON.parse(window.atob(value));
+                //     parentRecordId = context.attributes.recordId;
+                //     component.set("v.parentRecordId", parentRecordId);
+                // } else {
+                //     var relatedList = window.location.pathname;
+                //     var stringList = relatedList.split("/");
+                //     parentRecordId = stringList[4];
+                //     if (parentRecordId == 'related') {
+                //         var stringList = relatedList.split("/");
+                //         parentRecordId = stringList[3];
+                //     }
+                //     component.set("v.parentRecordId", parentRecordId);
+                // }
+                // console.log(`Parent Record Id: ${parentRecordId}`);
+                if(parentRecordId != null && parentRecordId != '' && parentRecordId != undefined){
                     var action = component.get("c.getobjectName");
                     action.setParams({
                         recordId: parentRecordId,
@@ -72,6 +73,8 @@
                     action.setCallback(this, function (response) {
                         if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                             var objName = response.getReturnValue();
+                            console.log(`object Name ${objName}`);
+                            debugger;
                             if(objName == 'Account'){
                                 component.set("v.CustomerAccountName", parentRecordId);
                             }else if(objName == 'buildertek__Project__c'){
@@ -86,6 +89,7 @@
                                 component.set("v.parentPurchaseOrderRecordId", parentRecordId);
                             }else if(objName == 'buildertek__Budget__c'){
                                 component.set("v.parentbudgetRecordId", parentRecordId);
+                                helper.getBudgetproject(component,event,helper);
                             }else if(objName == 'buildertek__Accounting_Period__c'){
                                 component.set("v.parentaccountingPeriodRecordId", parentRecordId);
                             }
@@ -160,6 +164,8 @@
         var rfq = component.get('v.parentRFQRecordId');
         var contract = component.get('v.parentContractRecordId');
         var project = component.get('v.parentprojectRecordId');
+        debugger
+        console.log(`Save CO Project Id: ${project}`);
         var po = component.get('v.parentPurchaseOrderRecordId');
         var budget = component.get('v.parentbudgetRecordId');
         var accountingperiod = component.get('v.parentaccountingPeriodRecordId');
@@ -174,7 +180,8 @@
         if(contract != null && contract != ""){
             fields["buildertek__Contract__c"] = contract;
         }
-        if(project != null && project != ""){
+        if(project != null && project != "" && project != undefined){
+            console.log(`condition ====> project: ${project}`);
             fields["buildertek__Project__c"] = project;
         }if(po != null && po != ""){
             fields["buildertek__Purchase_Order__c"] = po;
@@ -200,8 +207,7 @@
             });
             action.setCallback(this, function (response) {
                 var state = response.getState();
-                var error = response.getError();
-                console.log('Error =>',{error});
+
                 if (state === "SUCCESS") {
                     console.log('success');
                     console.log(response.getReturnValue());
@@ -226,12 +232,12 @@
             
                     if(saveNnew){
                         // $A.get('e.force:refreshView').fire();
-                        let parentprojectId = component.get("v.parentprojectRecordId");
+                        let parentId = component.get("v.parentRecordId");
                         var evt = $A.get("e.force:navigateToComponent");
                         evt.setParams({
                             componentDef: "c:ChangeOrderRecordType",
                             componentAttributes: {
-                                projectId: parentprojectId
+                                generalId: parentId
                             }
                         });
 
@@ -285,6 +291,7 @@
                         "message": "Something Went Wrong"
                     });
                     toastEvent.fire();
+                    component.set('v.isLoading', false);
                     console.log('error', response.getError());
                 }
             });
@@ -322,12 +329,12 @@
             
                     if(saveNnew){
                         // $A.get('e.force:refreshView').fire();
-                        let parentprojectId = component.get("v.parentprojectRecordId");
+                        let parentId = component.get("v.parentRecordId");
                         var evt = $A.get("e.force:navigateToComponent");
                         evt.setParams({
                             componentDef: "c:ChangeOrderRecordType",
                             componentAttributes: {
-                                projectId: parentprojectId
+                                generalId: parentId
                             }
                         });
                         evt.fire();

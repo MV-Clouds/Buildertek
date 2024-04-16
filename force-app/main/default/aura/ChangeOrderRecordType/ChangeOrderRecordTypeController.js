@@ -1,47 +1,49 @@
 ({
     doInit: function (component, event, helper) {
         helper.getRecordTypes(component, event, helper);
-        var value = helper.getParameterByName(component, event, 'inContextOfRef');
-        var context = '';
-        var projectId = '';
-        let projectIdFromCO = component.get("v.projectId");
-        if (!projectIdFromCO) {
+        let generalId = component.get("v.generalId");
+        if (!generalId) {
+            var value = helper.getParameterByName(component, event, 'inContextOfRef');
+            var context = '';
+            var urlRecordId = '';
             if (value != null) {
                 context = JSON.parse(window.atob(value));
-                projectId = context.attributes.recordId;
-                component.set("v.projectId", projectId);
+                urlRecordId = context.attributes.recordId;
             } else {
                 var relatedList = window.location.pathname;
                 var stringList = relatedList.split("/");
-                projectId = stringList[4];
+                urlRecordId = stringList[4];
 
-                if (projectId == 'related') {
+                if (urlRecordId == 'related') {
                     var stringList = relatedList.split("/");
-                    projectId = stringList[3];
+                    urlRecordId = stringList[3];
                 }
-                component.set("v.projectId", projectId);
             }
+            component.set("v.generalId", urlRecordId);
         }
-
     },
 
     handleRadioChange: function (component, event, helper) {
         let selectedRecordTypeId = event.getSource().get("v.value");
         let selectedRecordTypeName = event.getSource().get("v.label");
         component.set("v.RecordTypeId", selectedRecordTypeId);
+        component.set("v.ParentRecordTypeName", selectedRecordTypeName);
         console.log(`${selectedRecordTypeName}: ${selectedRecordTypeId}`);
     },
 
     handleSave: function (component, event, helper) {
         let selectedRecordTypeId = component.get("v.RecordTypeId");
-        let projectId = component.get("v.projectId");
+        let generalId = component.get("v.generalId");
+        let selectedRecordTypeName = component.get("v.ParentRecordTypeName");
+        // console.log(`selectedRecordTypeName: ${selectedRecordTypeName}`);
         var evt = $A.get("e.force:navigateToComponent");
         console.log('selectedRecordTypeId:', selectedRecordTypeId);
         evt.setParams({
             componentDef: "c:BT_NewChangeOrderOverride",
             componentAttributes: {
                 RecordTypeId: selectedRecordTypeId,
-                parentprojectRecordId: projectId
+                parentRecordId: generalId || '',
+                RecordTypeName: selectedRecordTypeName || '',
             }
         });
 

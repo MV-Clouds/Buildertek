@@ -13,7 +13,7 @@
     <aura:attribute name="listOfFields" type="List" />
     <aura:attribute name="NameOfCO" type="String"/>
     <aura:attribute name="CustomerAccountName" type="String"/>
-    
+    <aura:attribute name="RecordTypeName" type="String" />
     <aura:attribute name="salesforceSelectedV" type="String"/>
     
     <aura:attribute name="createWithOutCOLines" type="Boolean" default="false" />
@@ -116,8 +116,8 @@
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Contract__c')}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }"   value = "{!v.parentContractRecordId}"/>
                                                 </aura:if>
-                                                <aura:if  isTrue="{!and(field.name =='buildertek__Purchase_Order__c')}" >                                            
-                                                    <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}"/>
+                                                <aura:if  isTrue="{!and(field.name =='buildertek`__Purchase_Order__c')}" >                                            
+                                                    <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}" required="{!v.RecordTypeName == 'Vendor'}" />
                                                 </aura:if>
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Budget__c')}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentbudgetRecordId}"/>
@@ -273,9 +273,11 @@
                                         <th scope="col" >
                                             <div class="slds-truncate" title="Quantity">Unit Cost</div>
                                         </th>
-                                        <th scope="col">
-                                            <div class="slds-truncate" title="Unit Price">Markup</div>
-                                        </th>
+                                        <aura:if isTrue="{!v.RecordTypeName == 'Customer'}">
+                                            <th scope="col">
+                                                <div class="slds-truncate" title="Unit Price">Markup</div>
+                                            </th>
+                                        </aura:if>
                                         <th scope="col">
                 
                                         </th>
@@ -294,9 +296,11 @@
                                             <td data-label="unitCost">
                                                 <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Unit_Price__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
                                             </td>
-                                            <td data-label="Markup">
-                                                <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Markup__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
-                                            </td>
+                                            <aura:if isTrue="{!v.RecordTypeName == 'Customer'}">
+                                                <td data-label="Markup">
+                                                    <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Markup__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
+                                                </td>
+                                            </aura:if>
                                             <td>
                                                 <span data-id="{!index}" onclick="{!c.removeCOLine}">
                                                     <lightning:icon iconName="action:delete" size="x-small" alternativeText="Error!"  variant="error" class="imageAction" /> 

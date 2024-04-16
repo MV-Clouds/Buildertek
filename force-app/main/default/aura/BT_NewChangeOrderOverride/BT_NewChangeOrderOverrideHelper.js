@@ -8,6 +8,22 @@
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     },
+
+    getTabName: function (component, event, helper) {
+        var workspaceAPI = component.find("workspace");
+        workspaceAPI.getEnclosingTabId().then((response) => {
+            let opendTab = response.tabId;
+            workspaceAPI.setTabLabel({
+                tabId: opendTab,
+                label: "Create CO"
+            });
+            workspaceAPI.setTabIcon({
+                tabId: opendTab,
+                icon: 'custom:custom40',
+                iconAlt: 'Create CO'
+            });
+        });
+    },
     getFields: function (component, event, helper,selectedRecordTypeId) {    
        component.set('v.isLoading', true);
         var action = component.get("c.getFieldSet");
@@ -39,7 +55,8 @@
 
     
     CustomerAccount: function (component, event, helper) {
-        var parentId = component.get("v.parentprojectRecordId")
+        var parentId = component.get("v.parentprojectRecordId");
+        debugger;
         var action = component.get("c.getNames");
         action.setParams({
 					RecordId: parentId
@@ -86,6 +103,23 @@
         $A.enqueueAction(action);
     },
     
+    getBudgetproject: function (component, event, helper) {
+        var BudgetId = component.get("v.parentbudgetRecordId")
+        var action = component.get("c.getBudgetprojectId");
+        action.setParams({
+            RecordId: BudgetId
+        });
+        action.setCallback(this, function (response) {
+            if (response.getState() == 'SUCCESS') {
+                var projectId = response.getReturnValue();
+                component.set("v.parentprojectRecordId", projectId);
+            } else {
+                console.log('Error', response.getError());
+            }
+        });
+        $A.enqueueAction(action);
+    },
+
     getRecType : function (component, event, helper) {
         component.set('v.isLoading', true);
         var recType = component.get("c.getRecordTypeName");
