@@ -29,7 +29,7 @@
 
 		let selectedOption = component.get("v.value");
 		let splitedOption = selectedOption.split('-');
-        console.log('selected option ',selectedOption);
+		console.log('selected option ', selectedOption);
 		let fieldSetName;
 
 		if (splitedOption[1] == 'Standard') {
@@ -94,20 +94,70 @@
 						console.log('We got the parentRecordId', component.get("v.parentprojectRecordId"));
 						helper.getCustomerId(component, event, helper, parentRecordId);
 						helper.getFieldSetwithProject(component, event, helper);
-						// if(adminSetting == 'With PO Lines'){
-						//     component.set("v.ProjectContainer", true);
-						//     component.set("v.MainContainer", false);
-						//     helper.getCustomerId(component, event, helper, parentRecordId);
-						//     helper.getFieldSetwithProject(component, event, helper);
-						//     helper.setupListofPOItem(component, event, helper);
-						// }
 					}
 				}
 			});
 			$A.enqueueAction(action);
 		}
 		$A.enqueueAction(action2);
-		helper.setupListofPOItem(component, event, helper);
+		helper.getPoLineFieldsetFields(component, event, helper, splitedOption[1]);
+	},
+
+	getPoLineFieldsetFields: function (component, event, helper, recordType) {
+		let fieldSetName;
+		var columnList = [];
+		var listofPOItems2 = [];
+
+		switch (recordType) {
+			case 'Standard':
+				fieldSetName = 'buildertek__Standard_PO_Lines';
+				break;
+			case 'Master':
+				fieldSetName = 'buildertek__Master_PO_Lines';
+				break;
+			case 'Variance':
+				fieldSetName = 'buildertek__Variance_PO_Lines';
+				break;
+			default:
+				fieldSetName = 'buildertek__Standard_PO_Lines';
+				break;
+		}
+
+		var action = component.get("c.getFieldSet");
+
+		action.setParams({
+			objectName: 'buildertek__Purchase_Order_Item__c',
+			fieldSetName: fieldSetName
+		});
+
+		action.setCallback(this, function (response) {
+			if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
+				component.set("v.Spinner", false);
+				var result = JSON.parse(response.getReturnValue());
+				var keys = Object.keys(result[0]);
+				component.set("v.dynamicKeys", keys);
+				console.log('result-->>', { result });
+
+				for (let i = 1; i < 2; i++) {
+					let newItem = { 'index': i };
+					for (let j = 0; j < result.length; j++) {
+						let columnName = result[j].name;
+						newItem[columnName] = '';
+						columnList.push( {'name' : result[j].label});
+					}
+					listofPOItems2.push(newItem);
+				}
+
+				console.log('listofPOItems2-->>', { listofPOItems2 });
+				console.log('columnList-->>', { columnList });
+
+				component.set("v.PoLineFieldSet", result);
+				component.set("v.listofPoLineFieldSetCol", columnList);
+				component.set("v.listofPOItems", listofPOItems2);
+			}
+		});
+
+		$A.enqueueAction(action);
 	},
 
 	getCustomerId: function (component, event, helper, parentRecordId) {
@@ -161,40 +211,13 @@
 		$A.enqueueAction(action5);
 	},
 
-	setupListofPOItem: function (component, event, helper) {
-		var listofPOItems = [];
-		for (var i = 1; i < 2; i++) {
-			listofPOItems.push({
-				'index': i,
-				'Name': '',
-				'buildertek__Quantity__c': '',
-				'buildertek__Unit_Price__c': '',
-			});
-		}
-		console.log('listofPOItems-->>', { listofPOItems });
-		component.set("v.listofPOItems", listofPOItems);
-	},
-
 	savePOLineItems: function (component, event, helper, recordId) {
 		var listofPOItems = component.get("v.listofPOItems");
-		var listofPOItemsToSave = [];
-		for (var i = 0; i < listofPOItems.length; i++) {
-			if (listofPOItems[i].Name != '' && listofPOItems[i].buildertek__Quantity__c != '' && listofPOItems[i].buildertek__Unit_Price__c != '') {
-				// listofPOItemsToSave.push(listofPOItems[i]);
-				let poLineObj = {
-					'Name': listofPOItems[i].Name,
-					'buildertek__Quantity__c': listofPOItems[i].buildertek__Quantity__c,
-					'buildertek__Unit_Price__c': listofPOItems[i].buildertek__Unit_Price__c
-				}
-				listofPOItemsToSave.push(poLineObj);
-			}
-		}
-		console.log('listofPOItemsToSave-->>', { listofPOItemsToSave });
-		console.log('recordId-->>', { recordId });
-		debugger;
+		console.log('listofPOItems-->>', { listofPOItems });
+
 		var action6 = component.get("c.savePOLineItems");
 		action6.setParams({
-			listofPOItemsToSave: listofPOItemsToSave,
+			listofPOItemsToSave: listofPOItems,
 			recordId: recordId
 		});
 		action6.setCallback(this, function (response) {

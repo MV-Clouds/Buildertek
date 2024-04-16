@@ -18,7 +18,10 @@
     <aura:attribute name="customerId" type="String" default="" />
     <aura:attribute name="listOfFieldsofPOLine" type="List" />
     <aura:attribute name="listofPOItems" type="List" />
+    <aura:attribute name="listofPoLineFieldSetCol" type="List" />
+    <aura:attribute name="PoLineFieldSet" type="List" />
 
+    <aura:attribute name="dynamicKeys" type="List" />
     <!-- selection of record type attributes -->
     <aura:attribute name="options" type="List" />
     <aura:attribute name="value" type="String" />
@@ -47,12 +50,13 @@
     <aura:if isTrue="{!v.MainContainer}">
         <div class="slds-modal__container">
             <header class="slds-modal__header">
-                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New {!v.recordTypeName} Purchase Order</h2>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New {!v.recordTypeName}
+                    Purchase Order</h2>
             </header>
             <div class="slds-modal__content" id="modal-content-id-1">
                 <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Purchase_Order__c"
                     onsubmit="{!c.handleSubmit}" density="Comfy">
-                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+                    <div class="" style="width:100%;overflow: auto;height: 63vh;">
                         <div class="slds-p-around_medium" style="background-color:white;">
                             <lightning:layout multipleRows="true">
                                 <aura:iteration items="{!v.listOfFields0}" var="field">
@@ -89,12 +93,13 @@
     <aura:if isTrue="{!v.ProjectContainer}">
         <div class="slds-modal__container">
             <header class="slds-modal__header">
-                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> New {!v.recordTypeName} Purchase Order</h2>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> New {!v.recordTypeName}
+                    Purchase Order</h2>
             </header>
             <div class="slds-modal__content" id="modal-content-id-1">
                 <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Purchase_Order__c"
                     onsubmit="{!c.handleSubmit}" density="Comfy">
-                    <div class="" style="height:50vh;width:100%;overflow: auto;">
+                    <div class="" style="width:100%;overflow: auto;">
                         <div class="slds-p-around_medium" style="background-color:white;">
                             <h2 class="slds-section-title--divider">Information</h2>
                             <lightning:layout multipleRows="true">
@@ -123,57 +128,65 @@
                             <br />
                             <h2 class="slds-section-title--divider">Purchase Order Lines</h2>
                             <br />
-                            <table class="slds-table slds-table_cell-buffer slds-table_bordered"
-                                aria-label="Example default base table of Opportunities">
-                                <thead>
-                                    <tr class="slds-line-height_reset">
-                                        <!-- <th class="" scope="col">
-                                      <div class="slds-truncate">S No.</div>
-                                    </th> -->
-                                        <th class="" scope="col">
-                                            <div class="slds-truncate">PO Item Name</div>
-                                        </th>
-                                        <th class="" scope="col">
-                                            <div class="slds-truncate">Quantity</div>
-                                        </th>
-                                        <th class="" scope="col">
-                                            <div class="slds-truncate">Unit Cost</div>
-                                        </th>
-                                        <th class="" scope="col">
-                                            <div class="slds-truncate"></div>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <aura:iteration items="{!v.listofPOItems}" var="item">
-                                        <tr class="slds-hint-parent">
-                                            <!-- <td data-label="S No.">
-                                                <div class="slds-truncate">{!item.index}</div>
-                                            </td> -->
-                                            <td data-label="PO Item Name">
-                                                <lightning:input aura:id="poItemName" value="{!item.Name}" />
-                                            </td>
-                                            <td data-label="Quantity">
-                                                <lightning:input type="number" aura:id="quantity"
-                                                    value="{!item.buildertek__Quantity__c}" />
-                                                <!-- <lightining:input type="number" aura:id="quantity" value="{!item.buildertek__Quantity__c}" /> -->
-                                            </td>
-                                            <td data-label="Unit Cost">
-                                                <lightning:input type="number" step="0.01" aura:id="unitCost"
-                                                    value="{!item.buildertek__Unit_Price__c}" />
-                                                <!-- <lightining:input type="number" step="0.01" aura:id="unitCost" value="{!item.buildertek__Unit_Price__c}" /> -->
-                                            </td>
-                                            <td>
-                                                <span data-id="{!item.index}" onclick="{!c.removePOLine}">
-                                                    <!-- <lightning:icon iconName="utility:delete" size="small" />   -->
-                                                    <lightning:icon iconName="action:delete" size="x-small"
-                                                        alternativeText="Error!" variant="error" class="imageAction" />
-                                                </span>
-                                            </td>
+                            <div style="width: 100%; max-width: 100%; overflow: auto; padding-bottom: 9rem;">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered"
+                                    aria-label="Example default base table of Opportunities">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <aura:iteration items="{!v.listofPoLineFieldSetCol}" var="column">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">{!column.name}</div>
+                                                </th>
+
+                                            </aura:iteration>
                                         </tr>
-                                    </aura:iteration>
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.listofPOItems}" var="item" indexVar="index" >
+                                            <tr class="slds-hint-parent">
+
+                                                <aura:iteration items="{!v.PoLineFieldSet}" var="field">
+                                                    <!-- <td data-label="PO Item Name">
+                                                        <lightning:input aura:id="poItemName" value="{!field.Name}" />
+                                                    </td> -->
+                                                    <aura:if isTrue="{!or(field.type == 'CURRENCY', field.type == 'DOUBLE')}">
+
+                                                        <td style="max-width: 8rem; min-width: 8rem;">
+                                                                <c:BT_FieldSetMassUpdate record="{!item}" index="{!index}" field="{!field}"
+                                                                    isMassUpdateEnable="true"
+                                                                    childObjectName="buildertek__Purchase_Order_Item__c" />
+                                                        </td>
+
+                                                        <aura:set attribute="else">
+
+                                                            <td style="max-width: 15rem; min-width: 15rem;">
+                                                                    <c:BT_FieldSetMassUpdate record="{!item}" index="{!index}" field="{!field}"
+                                                                        isMassUpdateEnable="true"
+                                                                        childObjectName="buildertek__Purchase_Order_Item__c" />
+                                                            </td>
+
+                                                        </aura:set>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                                <!-- <td data-label="Quantity">
+                                                    <lightning:input type="number" aura:id="quantity"
+                                                        value="{!item.buildertek__Quantity__c}" />
+                                                </td>
+                                                <td data-label="Unit Cost">
+                                                    <lightning:input type="number" step="0.01" aura:id="unitCost"
+                                                        value="{!item.buildertek__Unit_Price__c}" />
+                                                </td> -->
+                                                <td>
+                                                    <span data-id="{!item.index}" onclick="{!c.removePOLine}">
+                                                        <lightning:icon iconName="action:delete" size="x-small"
+                                                            alternativeText="Error!" variant="error" class="imageAction" />
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </tbody>
+                                </table>
+                            </div>
                             <br />
                             <lightning:button variant="brand" label="Add New Row" onclick="{!c.addNewRow}" />
                         </div>
@@ -196,7 +209,7 @@
                 <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"> New Purchase Order</h2>
             </header>
             <div class="slds-modal__content" id="modal-content-id-1" style="padding: 2rem;">
-                <lightning:radioGroup  name="radioGroup" label="Select PO Type" options="{! v.options }"
+                <lightning:radioGroup name="radioGroup" label="Select PO Type" options="{! v.options }"
                     value="{! v.value }" type="radio" />
             </div>
             <footer aura:id="footer" class="slds-modal__footer">
