@@ -1261,5 +1261,144 @@ public without sharing class ChangeOrderTriggerHandler {
             }
         }
     }
+    
+    public void updatePicklist(buildertek__Change_Order__c[] newChangeOrder, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            Map<Id, String> recordTypeIdToNameMap = new Map<Id, String>();
+            for (RecordType rt : [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c']) {
+                recordTypeIdToNameMap.put(rt.Id, rt.Name);
+            }
+
+            for (buildertek__Change_Order__c newCO : newChangeOrder) {
+                buildertek__Change_Order__c oldCO = oldChangeOrderMap.get(newCO.Id);
+                if (oldCO != null && newCO.RecordTypeId != oldCO.RecordTypeId) {
+                    String newRecordTypeName = recordTypeIdToNameMap.get(newCO.RecordTypeId);
+                    if (newRecordTypeName != null) {
+                        newCO.buildertek__Type__c = newRecordTypeName;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
+    public void afterInsertRollupOnPO(buildertek__Change_Order__c[] newChangeOrder){
+        try {
+            List<Id> poList = new List<Id>();
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            for(buildertek__Change_Order__c co : newChangeOrder){
+                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId){
+                    poList.add(co.buildertek__Purchase_Order__c);
+                }
+            }
+            if (!poList.isEmpty()) {
+                calculateTotalSalesPrice(poList);
+            }
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
+    public void afterUpdateRollupOnPO(buildertek__Change_Order__c[] newCOList, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
+        try {
+            List<Id> poList = new List<Id>();
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            for(buildertek__Change_Order__c newCO : newCOList) {
+                buildertek__Change_Order__c oldCO = oldChangeOrderMap.get(newCO.Id);
+                
+                if(newCO.buildertek__Purchase_Order__c != null && !poList.contains(newCO.buildertek__Purchase_Order__c)) {
+                    poList.add(newCO.buildertek__Purchase_Order__c);
+                }
+
+                if (newCO.buildertek__Purchase_Order__c != oldCO.buildertek__Purchase_Order__c && oldCO.buildertek__Purchase_Order__c != null && !poList.contains(oldCO.buildertek__Purchase_Order__c)) {
+                    poList.add(oldCO.buildertek__Purchase_Order__c);
+                }
+
+            }
+
+            if (!poList.isEmpty()) {
+                calculateTotalSalesPrice(poList);
+            }
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+
+    public void afterDeleteRollupOnPO(List<buildertek__Change_Order__c> deletedChangeOrders) {
+        try {
+            List<Id> poList = new List<Id>();
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            for(buildertek__Change_Order__c co : deletedChangeOrders){
+                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId){
+                    poList.add(co.buildertek__Purchase_Order__c);
+                }
+            }
+            if (!poList.isEmpty()) {
+                calculateTotalSalesPrice(poList);
+            }
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
+    
+    public void calculateTotalSalesPrice(List<Id> poIdList) {
+        try {
+            String vendorRecordId = [SELECT Id FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+
+            List<buildertek__Purchase_Order__c> poListToUpdate = new List<buildertek__Purchase_Order__c>();
+
+            List<buildertek__Change_Order__c> coList = [SELECT Id, buildertek__Purchase_Order__c, buildertek__Total_Amount_Tax__c 
+                                                        FROM buildertek__Change_Order__c 
+                                                        WHERE buildertek__Purchase_Order__c IN :poIdList 
+                                                        AND RecordTypeId = :vendorRecordId]; 
+
+            Map<Id, List<buildertek__Change_Order__c>> POMap = new Map<Id, List<buildertek__Change_Order__c>>();
+        
+            for(buildertek__Change_Order__c co : coList){
+                if(POMap.containsKey(co.buildertek__Purchase_Order__c)){
+                    POMap.get(co.buildertek__Purchase_Order__c).add(co);
+                }else{
+                    POMap.put(co.buildertek__Purchase_Order__c, new List<buildertek__Change_Order__c>{co});
+                }
+            }
+            
+            for(Id poId : poIdList){
+                if(POMap.containsKey(poId)){
+                    Decimal totalChangeOrderAmount = 0;
+                    for(buildertek__Change_Order__c co : POMap.get(poId)){
+                        totalChangeOrderAmount += co.buildertek__Total_Amount_Tax__c;
+                    }
+
+                    buildertek__Purchase_Order__c poToUpdate = new buildertek__Purchase_Order__c(Id = poId);
+                    poToUpdate.buildertek__Change_Order_Amount__c = totalChangeOrderAmount;
+                    poListToUpdate.add(poToUpdate);
+                }
+            }
+
+            if (!poListToUpdate.isEmpty()) {
+                update poListToUpdate;
+            }
+                
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!storeExcCustomSetting.isEmpty() && storeExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
 
 }

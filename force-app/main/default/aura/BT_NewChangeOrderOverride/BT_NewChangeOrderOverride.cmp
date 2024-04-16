@@ -116,7 +116,7 @@
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Contract__c')}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }"   value = "{!v.parentContractRecordId}"/>
                                                 </aura:if>
-                                                <aura:if  isTrue="{!and(field.name =='buildertek`__Purchase_Order__c')}" >                                            
+                                                <aura:if  isTrue="{!and(field.name =='buildertek__Purchase_Order__c')}" >                                            
                                                     <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}" required="{!v.RecordTypeName == 'Vendor'}" />
                                                 </aura:if>
                                                 <aura:if  isTrue="{!and(field.name =='buildertek__Budget__c')}" >                                            
@@ -228,7 +228,7 @@
                                                         <lightning:inputField fieldName="{! field.name }"   value = "{!v.parentContractRecordId}"/>
                                                     </aura:if>
                                                     <aura:if  isTrue="{!and(field.name =='buildertek__Purchase_Order__c')}" >                                            
-                                                        <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}"/>
+                                                        <lightning:inputField fieldName="{! field.name }" aura:id="purchaseorder"  value = "{!v.parentPurchaseOrderRecordId}" required="{!v.RecordTypeName == 'Vendor'}"/>
                                                     </aura:if>
                                                     <aura:if  isTrue="{!and(field.name =='buildertek__Budget__c')}" >                                            
                                                         <lightning:inputField fieldName="{! field.name }"  value = "{!v.parentbudgetRecordId}"/>
