@@ -29,6 +29,7 @@
     <aura:attribute name="SignatureName" type="string" />
     <aura:attribute name="parentId" type="string" />
     <aura:attribute name="fileimageId" type="string" />
+    <aura:attribute name="subject" type="string" />
     <aura:method name="acceptandSendMethod" action="{!c.acceptandSendMethodCall}" access="public" />
     <!-- creating new attribute array of string to store uploaded file names -->
     <aura:attribute name="uploadedFileName" type="String[]" default="" />
@@ -158,6 +159,16 @@
                                     <div class="slds-combobox_container slds-has-inline-listbox">
                                         <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact"
                                             lstSelectedRecords="{!v.selectedCcContact}" label="" />
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="slds-form-element slds-email-composer__combobox"
+                                style="padding-top: 10px;padding-bottom: 10px;">
+                                <label class="slds-form-element__label" for="recipients-subject" style="margin-left: -10px">Subject</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container slds-has-inline-listbox">
+                                <ui:inputText aura:id="subject" value="{!v.subject}" placeholder="subject.." />
+ 
                                     </div>
                                 </div>
                             </div>

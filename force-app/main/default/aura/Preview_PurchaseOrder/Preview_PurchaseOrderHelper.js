@@ -106,7 +106,7 @@
 		 var signid = component.get("v.fileimageId");
 		to.forEach(function(v){ toIds.push(v.Id) });
 		cc.forEach(function(v){ ccIds.push(v.Id) });
-		var subject = 'PurchaseOrder[ref:'+component.get("v.recordId")+']';
+		var subject = component.get("v.subject");
 		if(toIds.length != 0){
 		    
 		    var action = component.get("c.acceptandsendProposal"); 

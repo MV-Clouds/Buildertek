@@ -85,9 +85,23 @@
             var ccIds = [];
             var to = component.get("v.selectedToContact");
             var cc = component.get("v.selectedCcContact");
+            var subject =component.get("v.subject");
             to.forEach(function (v) { toIds.push(v.Id) });
             cc.forEach(function (v) { ccIds.push(v.Id) });
+            var subject = component.get( "v.subject" );
+
             if (toIds.length != 0) {
+               if (!subject || subject == ""){
+                    component.set("v.Spinner", false);
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                    "title": "Error!",
+                    "type": 'error',
+                    "message": "Please  enter a Subject for the email."
+                });
+                toastEvent.fire();
+                return;
+            }
                 // console.log("convertedFiles ==> ",{convertedFiles});
                 var action = component.get("c.sendProposal");
                 action.setParams({
@@ -98,6 +112,7 @@
                     cc: ccIds,
                     fileid: component.get("v.fileimageId"),
                     attacheDocs: Files,
+                    emailSubject:subject
                 });
                 action.setCallback(this, function (response) {
                     var state = response.getState();
@@ -164,7 +179,20 @@
         var cc = component.get("v.selectedCcContact");
         to.forEach(function (v) { toIds.push(v.Id) });
         cc.forEach(function (v) { ccIds.push(v.Id) });
+        var subject = component.get( "v.subject" );
+
         if (toIds.length != 0) {
+        if (!subject || subject == ""){
+             component.set("v.Spinner", false);
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "type": 'error',
+                    "message": "Please  enter a Subject for the email."
+                });
+                toastEvent.fire();
+                return;
+         }            
             if (!signaturePad.isEmpty()) {
                 helper.AcceptSignature(component, event);
             } else {
