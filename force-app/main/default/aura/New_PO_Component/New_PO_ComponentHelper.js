@@ -146,6 +146,14 @@
 						columnList.push( {'name' : result[j].label});
 					}
 					listofPOItems2.push(newItem);
+
+					//! checking for the type of field, if it is REFERENCE then we need to add paddingClass
+					for (let k = 0; k < result.length; k++) {
+						if (result[k].type == 'REFERENCE') {
+							component.set('v.paddingClass','padding-below');
+							break;
+						}
+					}
 				}
 
 				console.log('listofPOItems2-->>', { listofPOItems2 });

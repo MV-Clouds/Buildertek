@@ -9,6 +9,7 @@
     <aura:attribute name="isSaveNew" type="boolean" default="false" />
     <aura:attribute name="saveAndNew" type="Boolean" default="false" />
     <aura:attribute name="parentprojectRecordId" type="String" default="" />
+    <aura:attribute name="paddingClass" type="String" default="" />
     <aura:attribute name="parentRecordId" type="String" default="" />
     <aura:attribute name="Spinner" type="boolean" default="false" />
     <aura:attribute name="MainContainer" type="boolean" default="false" />
@@ -131,7 +132,7 @@
                             <br />
                             <h2 class="slds-section-title--divider">Purchase Order Lines</h2>
                             <br />
-                            <div style="width: 100%; max-width: 100%; overflow: auto; padding-bottom: 9rem;">
+                            <div style="width: 100%; max-width: 100%; overflow: auto;" class="{!v.paddingClass}">
                                 <table class="slds-table slds-table_cell-buffer slds-table_bordered"
                                     aria-label="Example default base table of Opportunities">
                                     <thead>
