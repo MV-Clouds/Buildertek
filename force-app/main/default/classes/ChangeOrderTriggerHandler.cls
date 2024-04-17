@@ -1290,9 +1290,9 @@ public without sharing class ChangeOrderTriggerHandler {
     public void afterInsertRollupOnPO(buildertek__Change_Order__c[] newChangeOrder){
         try {
             List<Id> poList = new List<Id>();
-            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor' limit 1].Id;
             for(buildertek__Change_Order__c co : newChangeOrder){
-                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId){
+                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId && co.buildertek__Purchase_Order__c != null){
                     poList.add(co.buildertek__Purchase_Order__c);
                 }
             }
@@ -1310,7 +1310,7 @@ public without sharing class ChangeOrderTriggerHandler {
     public void afterUpdateRollupOnPO(buildertek__Change_Order__c[] newCOList, Map<Id, buildertek__Change_Order__c> oldChangeOrderMap){
         try {
             List<Id> poList = new List<Id>();
-            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor' limit 1].Id;
             for(buildertek__Change_Order__c newCO : newCOList) {
                 buildertek__Change_Order__c oldCO = oldChangeOrderMap.get(newCO.Id);
                 
@@ -1322,6 +1322,9 @@ public without sharing class ChangeOrderTriggerHandler {
                     poList.add(oldCO.buildertek__Purchase_Order__c);
                 }
 
+                if(newCO.buildertek__Purchase_Order__c == null && oldCO.buildertek__Purchase_Order__c != null && !poList.contains(oldCO.buildertek__Purchase_Order__c)) {
+                    poList.add(oldCO.buildertek__Purchase_Order__c);
+                }
             }
 
             if (!poList.isEmpty()) {
@@ -1338,9 +1341,9 @@ public without sharing class ChangeOrderTriggerHandler {
     public void afterDeleteRollupOnPO(List<buildertek__Change_Order__c> deletedChangeOrders) {
         try {
             List<Id> poList = new List<Id>();
-            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            String vendorRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor' limit 1].Id;
             for(buildertek__Change_Order__c co : deletedChangeOrders){
-                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId){
+                if(co.buildertek__Total_Amount_Tax__c != null && co.RecordTypeId == vendorRecordId && co.buildertek__Purchase_Order__c != null){
                     poList.add(co.buildertek__Purchase_Order__c);
                 }
             }
@@ -1357,7 +1360,7 @@ public without sharing class ChangeOrderTriggerHandler {
     
     public void calculateTotalSalesPrice(List<Id> poIdList) {
         try {
-            String vendorRecordId = [SELECT Id FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor'].Id;
+            String vendorRecordId = [SELECT Id FROM RecordType WHERE SobjectType = 'buildertek__Change_Order__c' AND Name = 'Vendor' limit 1].Id;
 
             List<buildertek__Purchase_Order__c> poListToUpdate = new List<buildertek__Purchase_Order__c>();
 
@@ -1385,6 +1388,10 @@ public without sharing class ChangeOrderTriggerHandler {
 
                     buildertek__Purchase_Order__c poToUpdate = new buildertek__Purchase_Order__c(Id = poId);
                     poToUpdate.buildertek__Change_Order_Amount__c = totalChangeOrderAmount;
+                    poListToUpdate.add(poToUpdate);
+                } else{
+                    buildertek__Purchase_Order__c poToUpdate = new buildertek__Purchase_Order__c(Id = poId);
+                    poToUpdate.buildertek__Change_Order_Amount__c = 0;
                     poListToUpdate.add(poToUpdate);
                 }
             }
