@@ -225,8 +225,10 @@
 		let listofPOItemsToSave = [];
 
 		for (var i = 0; i < listofPOItems.length; i++){
+			let newPoToSave = {};
 			if (listofPOItems[i].Name != undefined && listofPOItems[i].Name != '' ) {
-				listofPOItemsToSave = listofPOItems;
+				newPoToSave = listofPOItems[i];
+				listofPOItemsToSave.push(newPoToSave);
 			}
 		}
 
