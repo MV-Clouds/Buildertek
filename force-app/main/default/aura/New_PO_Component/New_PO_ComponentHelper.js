@@ -214,10 +214,17 @@
 	savePOLineItems: function (component, event, helper, recordId) {
 		var listofPOItems = component.get("v.listofPOItems");
 		console.log('listofPOItems-->>', { listofPOItems });
+		let listofPOItemsToSave = [];
+
+		for (var i = 0; i < listofPOItems.length; i++){
+			if (listofPOItems[i].Name != undefined && listofPOItems[i].Name != '' ) {
+				listofPOItemsToSave = listofPOItems;
+			}
+		}
 
 		var action6 = component.get("c.savePOLineItems");
 		action6.setParams({
-			listofPOItemsToSave: listofPOItems,
+			listofPOItemsToSave: listofPOItemsToSave,
 			recordId: recordId
 		});
 		action6.setCallback(this, function (response) {

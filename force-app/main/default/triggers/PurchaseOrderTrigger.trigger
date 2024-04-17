@@ -19,35 +19,18 @@ trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, af
             handler.updateTotalCostOnBudgetLine(Trigger.new, Trigger.newMap,trigger.oldMap);
             handler.updateprojectonpoinsert(Trigger.new);
         } else if (Trigger.isUpdate && Trigger.isBefore){
-        //    handler.OnBeforeUpdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
            handler.OnBeforeUpdate(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap);
-
-
-        //    system.debug('Trigger.New => '+ Trigger.new);
-        //    for (Purchase_Order__c oldRecord : Trigger.old) {
-        //     Purchase_Order__c newRecord = Trigger.newMap.get(oldRecord.Id);
-            
-        //     // Iterate through the fields of the object
-        //     for (String fieldName : oldRecord.getSObjectType().getDescribe().fields.getMap().keySet()) {
-        //         if (oldRecord.get(fieldName) != newRecord.get(fieldName)) {
-        //             // The field has changed, perform your logic here
-        //             System.debug('Field ' + fieldName + ' has been updated');
-        //         }
-        //     }
-        // }
-
         } else if (Trigger.isUpdate && Trigger.isAfter ){
             handler.updateTotalCostOnBudgetLine(Trigger.new, Trigger.newMap,trigger.oldMap);
             handler.OnAfterUpdate(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap);
             handler.updateAmountonProject(Trigger.new, Trigger.oldMap);
             handler.removePOFromBudgetLine(Trigger.new, Trigger.oldMap);
-            //handler.afterUpdate(Trigger.old, Trigger.new, Trigger.oldMap, Trigger.newMap);
         } else if (Trigger.isDelete && Trigger.isBefore){
             PurchaseOrder_handler.handledelete(Trigger.old);
         } else if (Trigger.isDelete && Trigger.isAfter){
             handler.OnAfterDelete(Trigger.old);
             handler.updateprojectonpodelete(Trigger.old);
-        } 
+        }
     } else {
         if (Trigger.isInsert && Trigger.isAfter){
             handler.updateprojectonpoinsert(Trigger.new);

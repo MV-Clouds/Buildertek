@@ -70,7 +70,6 @@ public with sharing class PurchaseOrderTriggerHandler{
 
     public void OnBeforeUpdate(Purchase_Order__c[] oldPurchaseOrders, Purchase_Order__c[] updatedPurchaseOrders, Map<ID, Purchase_Order__c> oldPurchaseOrderMap, Map<ID, Purchase_Order__c> PurchaseOrderMap){
         try {
-            
             for (Purchase_Order__c PO : updatedPurchaseOrders){
                 if ((PO.buildertek__Completion__c == 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
                     PO.buildertek__Completion_Date__c = Date.today();
@@ -108,6 +107,8 @@ public with sharing class PurchaseOrderTriggerHandler{
                 //made process builder inactive and added
                  PO.buildertek__Date_Created__c = System.today();
             }
+
+            updatePicklist(updatedPurchaseOrders, PurchaseOrderMap);
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
             if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
@@ -187,18 +188,18 @@ public with sharing class PurchaseOrderTriggerHandler{
         List<Messaging.SingleEmailMessage> msgListToBeSend = new List<Messaging.SingleEmailMessage>();
         List<buildertek__Purchase_Order__c> purchaseOrderList = new List<buildertek__Purchase_Order__c>();
         if (POIdsToSendEmail.size() > 0 && adminInterfaceNodeConfigurations.size() > 0){
-            
+
             purchaseOrderList = [Select Id, buildertek__Project__r.buildertek__Project_Manager__r.Email, buildertek__Vendor__r.buildertek__Email_Address__c, buildertek__Vendor__c
                                                                      FROM buildertek__Purchase_Order__c
                                                                      WHERE Id In :POIdsToSendEmail];
             if (adminInterfaceNodeConfigurations[0].buildertek__Send_PO_On_Approval__c) {
-                
+
                 if (Schema.sObjectType.EmailTemplate.fields.Id.isAccessible() && Schema.sObjectType.EmailTemplate.fields.Name.isAccessible()){
                     templateId = [Select Id, Name
                     FROM EmailTemplate
                     WHERE DeveloperName = :'Purchase_Order_Approved_Template'];
                 }
-                
+
                 mails = new List<Messaging.SingleEmailMessage>();
                 for (buildertek__Purchase_Order__c newPO : purchaseOrderList){
                     if (newPO.buildertek__Project__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r != null && newPO.buildertek__Project__r.buildertek__Project_Manager__r.Email != null){
@@ -288,33 +289,10 @@ public with sharing class PurchaseOrderTriggerHandler{
                 Messaging.sendEmail(msgListToBeSend);
             }
         }
-        // remove PO from schedule item  
+        // remove PO from schedule item
         removePOFromScheduleItem(updatedPurchaseOrders, oldPurchaseOrdersMap);
     }
-    /*  public void afterUpdate(Purchase_Order__c[] oldPurchaseOrders, Purchase_Order__c[] updatedPurchaseOrders, Map<ID, Purchase_Order__c> PurchaseOrderMap, Map<Id, Purchase_Order__c> oldPurchaseOrdersMap){
-list<Id> purchaseIds = new list<Id>();
-string poRec = '';
-List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Send_Vendor_Lien_Release_On_Approval__c,
-buildertek__Send_PO_On_Approval__c, buildertek__Create_Invoice_on_Approval__c
-from buildertek__Admin_Interface_Node_Configuration__c
-WHERE Name = :'Purchase Order Configuration'
-LIMIT 1];
-if(adminInterfaceNodeConfigurations.size()>0 ){
-for(Purchase_Order__c purchaseorderRec : updatedPurchaseOrders){
-String status = oldPurchaseOrdersMap.get(purchaseorderRec.Id).buildertek__Status__c;
-if(purchaseorderRec.buildertek__Status__c == 'Approved' && adminInterfaceNodeConfigurations[0].buildertek__Create_Invoice_on_Approval__c == true){
-purchaseIds.add(purchaseorderRec.id);
-}
-}
-list<Purchase_Order__c> purchaseorderlist = [select id,Name from Purchase_Order__c where Id IN: purchaseIds];
-for(Purchase_Order__c purchase : purchaseorderlist){
-poRec = purchase.id;
-PurchaseOrderDAO.createAPFromPO(poRec);
-PurchaseOrderDAO.isUpdatePurchaseOrder = true;
-}
-}
-}
-*/
+
     public void OnBeforeUpdate(Purchase_Order__c[] newPurchaseOrders, Map<ID, Purchase_Order__c> newPurchaseOrdersMap, Map<ID, Purchase_Order__c> oldPurchaseOrdersMap){
         //* added this lines by Nishit (MV Clouds)
         Set<Id> scheduleItemId = new Set<Id>();
@@ -349,8 +327,6 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
                 }
             }
         }
-
-      
     }
 
     public void OnAfterDelete(Purchase_Order__c[] oldPurchaseOrders){
@@ -373,23 +349,12 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
             }
 
             PurchaseOrderTriggerHandler.firstRun = false;
-           // buildertek__Purchase_Order__c purchaseRec = [select id,Name,buildertek__PO_Total__c,buildertek__Budget__c,buildertek__Budget_Line__c from buildertek__Purchase_Order__c where Id IN: Trigger.new];
-
-
-          //  system.debug('purchaseorderRecord----->'+purchaseRec);
 
             list<buildertek__Purchase_Order_Item__c> purchaseOrderItem = [Select id,Name,buildertek__Purchase_Order__c,buildertek__Budget_Item__c from buildertek__Purchase_Order_Item__c where buildertek__Purchase_Order__c IN: purchaseIds order by CreatedDate limit 1];
             String purchaseOrderItemID;
             if (purchaseOrderItem.size() > 0) {
                 purchaseOrderItemID = purchaseOrderItem[0].Id;
             }
-
-            // if(purchaseOrderItem.size() == 0){
-            //     buildertek__Purchase_Order_Item__c purchaseOrderItemRec = new buildertek__Purchase_Order_Item__c();
-            //     purchaseOrderItemRec.Name = 'New Purchase Order Item - ' + newPurchaseOrders[0].Name;
-            //     purchaseOrderItemRec.buildertek__Purchase_Order__c = newPurchaseOrders[0].Id;
-            //     insert purchaseOrderItemRec;
-            // }
 
             system.debug('purchaseorderItemRecord----->'+purchaseOrderItem);
 
@@ -456,9 +421,6 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
                     update poLink;
                 }
             }
-
-
-
         }
 
     }
@@ -547,15 +509,15 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
         try {
             // Map to store aggregated results by project ID
             Map<Id, AggregateResult> aggregatedResultsMap = new Map<Id, AggregateResult>();
-            
+
             // Retrieve aggregated results for each project
             for (AggregateResult aggregatedResult : [SELECT buildertek__Project__c, SUM(buildertek__Paid_Amount__c) totalPaidAmount, SUM(buildertek__PO_Total__c) totalPOTotal FROM buildertek__Purchase_Order__c WHERE buildertek__Project__c IN :projectIds AND buildertek__Status__c != 'Canceled' GROUP BY buildertek__Project__c]) {
                 Id projectId = (Id)aggregatedResult.get('buildertek__Project__c');
                 aggregatedResultsMap.put(projectId, aggregatedResult);
             }
-    
+
             List<buildertek__Project__c> projectsToUpdate = new List<buildertek__Project__c>();
-    
+
             // Iterate over the projectsToUpdate list
             for (Id projectId : projectIds) {
                 // Check if aggregated result exists for the project
@@ -563,22 +525,22 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
                     AggregateResult aggregatedResult = aggregatedResultsMap.get(projectId);
                     Decimal totalPaidAmount = (Decimal)aggregatedResult.get('totalPaidAmount');
                     Decimal totalPOTotal = (Decimal)aggregatedResult.get('totalPOTotal');
-    
+
                     // Retrieve the project and update aggregated values
                     buildertek__Project__c projectToUpdate = new buildertek__Project__c(Id = projectId);
                     projectToUpdate.buildertek__Total_Paid_PO_Amount__c = totalPaidAmount;
                     projectToUpdate.buildertek__Total_PO_Amount__c = totalPOTotal;
-    
+
                     projectsToUpdate.add(projectToUpdate);
                 } else {
                     buildertek__Project__c projectToUpdate = new buildertek__Project__c(Id = projectId);
                     projectToUpdate.buildertek__Total_Paid_PO_Amount__c = 0;
                     projectToUpdate.buildertek__Total_PO_Amount__c = 0;
-    
+
                     projectsToUpdate.add(projectToUpdate);
                 }
             }
-    
+
             System.debug('projectsToUpdate---> '+projectsToUpdate);
             if (!projectsToUpdate.isEmpty()) {
                 update projectsToUpdate;
@@ -609,11 +571,11 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
             if (!poToBudgetLineMap.isEmpty()) {
                 Set<Id> poIds = poToBudgetLineMap.keySet();
                 Set<Id> budgetLineIds = new Set<Id>(poToBudgetLineMap.values());
-                
+
                 List<buildertek__PO_Item_To_Budget_Item_Link__c> POItemToBudgetItemLink = [
-                    SELECT Id, buildertek__PO_Item__r.buildertek__Purchase_Order__c, buildertek__Budget_Item__c 
-                    FROM buildertek__PO_Item_To_Budget_Item_Link__c 
-                    WHERE buildertek__PO_Item__r.buildertek__Purchase_Order__c IN :poIds 
+                    SELECT Id, buildertek__PO_Item__r.buildertek__Purchase_Order__c, buildertek__Budget_Item__c
+                    FROM buildertek__PO_Item_To_Budget_Item_Link__c
+                    WHERE buildertek__PO_Item__r.buildertek__Purchase_Order__c IN :poIds
                     AND buildertek__Budget_Item__c IN :budgetLineIds
                 ];
 
@@ -628,7 +590,7 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
             }
         }
     }
-    
+
     public void removePOFromScheduleItem(List<buildertek__Purchase_Order__c> newPurchaseOrders, Map<ID, buildertek__Purchase_Order__c> oldPurchaseOrderMap) {
         try {
             Set<Id> scheduleItemIds = new Set<Id>();
@@ -637,13 +599,14 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
                     scheduleItemIds.add(oldPurchaseOrderMap.get(newPO.Id).buildertek__Schedule_Item__c);
                 }
             }
-            
+
             List<buildertek__Project_Task__c> scheduleItems = [SELECT Id, buildertek__Purchase_Order__c FROM buildertek__Project_Task__c WHERE Id IN :scheduleItemIds];
 
             if (!scheduleItems.isEmpty()) {
                 for (buildertek__Project_Task__c scheduleItem : scheduleItems) {
                     scheduleItem.buildertek__Purchase_Order__c = null;
                 }
+
                 update scheduleItems;
             }
         } catch (Exception ex) {
@@ -654,6 +617,29 @@ PurchaseOrderDAO.isUpdatePurchaseOrder = true;
             }
         }
     }
-    
-    
+
+    public void updatePicklist(buildertek__Purchase_Order__c[] newPurchaseOrder, Map<Id, buildertek__Purchase_Order__c> oldPurchaseOrderMap){
+        try {
+            Map<Id, String> recordTypeIdToNameMap = new Map<Id, String>();
+            for (RecordType rt : [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Purchase_Order__c']) {
+                recordTypeIdToNameMap.put(rt.Id, rt.Name);
+            }
+
+            for (buildertek__Purchase_Order__c newPo : newPurchaseOrder) {
+                buildertek__Purchase_Order__c oldPo = oldPurchaseOrderMap.get(newPo.Id);
+                if (oldPo != null && newPo.RecordTypeId != oldPo.RecordTypeId) {
+                    String newRecordTypeName = recordTypeIdToNameMap.get(newPo.RecordTypeId);
+                    if (newRecordTypeName != null) {
+                        newPo.buildertek__PO_Type__c = newRecordTypeName;
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+        }
+    }
 }

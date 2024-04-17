@@ -46,6 +46,9 @@
         padding: 0 !important;
         max-width: 80rem !important;
         }
+        .slds-form-element_stacked{
+        margin: 0 !important;
+        }
     </aura:html>
     <aura:if isTrue="{!v.MainContainer}">
         <div class="slds-modal__container">
@@ -139,6 +142,9 @@
                                                 </th>
 
                                             </aura:iteration>
+                                            <th class="" scope="col">
+                                                <div class="slds-truncate"></div>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
