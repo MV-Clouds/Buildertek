@@ -160,7 +160,7 @@ public with sharing class PreviewPurchaseOrderController {
         //    body += '&nbsp;to confirm your Purchase Order details.' ;
            mail.setReplyTo(fromAddress);
         //    subject = subject +'[ref:'+recordId+']'; 
-           mail.setSubject(subject);
+           mail.setSubject(subject+'[ref:'+recordId+']');
            mail.setHTMLBody(templateBody1);
            mail.setSaveAsActivity(false);
            List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
@@ -326,7 +326,7 @@ public with sharing class PreviewPurchaseOrderController {
             body += '&nbsp;to confirm your Purchase Order details.' ;
             mail.setReplyTo(fromAddress);
             // subject = subject +'[ref:'+recordId+']'; 
-            mail.setSubject(subject);
+            mail.setSubject(subject+'[ref:'+recordId+']');
             mail.setHTMLBody(body);
             List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
