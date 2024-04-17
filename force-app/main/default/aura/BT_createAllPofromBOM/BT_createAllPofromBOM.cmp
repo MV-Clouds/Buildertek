@@ -1,11 +1,66 @@
 <aura:component controller="createAllPOfromBOM_controller" implements="force:hasSObjectName,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global" >
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="selectedOption" type="String" default="buildertek__Vendor__c"/>
+    <aura:attribute name="isoptionModal" type="Boolean" default="true"/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
     <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
 
-    <center>
-        <img alt="Creating all po's." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
-                    <br/>
-                    <div style="margin-block: 10px;"> 
-                        <br/> Please don't leave this page until PO's are created.
-                    </div>
-    </center>
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
+
+    <aura:html tag="style">
+        .slds-modal__container{
+            width: 60% !important;
+            padding: 0 !important;
+            max-width: 80rem !important;
+        }
+        .slds-modal__header .slds-modal__close{
+            display: none;
+        }
+    </aura:html>
+
+    <aura:if isTrue="{!v.isoptionModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{! c.closeModel }"
+                                          alternativeText="close"
+                                          variant="bare-inverse"
+                                          class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Grouping option</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!-- Give a picklist where the options are Vendor, Cost-Code, Trade-Type, Phase, Category -->
+                    <lightning:select name="select1" label="Grouping Option" value="{!v.selectedOption}">
+                        <option value="buildertek__Vendor__c">Vendor</option>
+                        <option value="buildertek__Cost_Code__c">Cost-Code</option>
+                        <option value="buildertek__Trade_Type__c">Trade-Type</option>
+                        <option value="buildertek__Build_Phase__c">Phase</option>
+                        <option value="buildertek__Category__c">Category</option>
+                    </lightning:select>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral"
+                                      label="Cancel"
+                                      title="Cancel"
+                                      onclick="{! c.closeModel }"/>
+                    <lightning:button variant="brand"
+                                      label="OK"
+                                      title="OK"
+                                      onclick="{!c.submitDetails}"/>
+                </footer>
+            </div>
+        </section>
+    </aura:if>
+
+    <aura:if isTrue="{!v.isLoading}">
+        <center>
+            <img alt="Creating all po's." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+                        <br/>
+                        <div style="margin-block: 10px;"> 
+                            <br/> Please don't leave this page until PO's are created.
+                        </div>
+        </center>
+    </aura:if>
+
 </aura:component>	

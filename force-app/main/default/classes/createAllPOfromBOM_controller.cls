@@ -6,12 +6,12 @@ public class createAllPOfromBOM_controller {
         try {
             buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
                                                                   FROM buildertek__Project_Selection_Sheet_Takeoff__c
-                                                                  WHERE Id =: BOMiD];
+                                                                  WHERE Id =: BOMId];
 
             List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
                                                           buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
                                                           FROM buildertek__Select_Sheet__c 
-                                                          WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMiD];
+                                                          WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMId];
             if(BOMLines.size() > 0){
 
                 boolean AllBOMlinesAssigesWithPO =  true;
@@ -239,6 +239,645 @@ public class createAllPOfromBOM_controller {
             return returnValue;
         }
     }
+
+    @AuraEnabled
+    public static responseWrapper createAllPOWithCostCode(string BOMId){
+        responseWrapper returnValue = new responseWrapper();
+        try {
+            buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
+                                                                  FROM buildertek__Project_Selection_Sheet_Takeoff__c
+                                                                  WHERE Id =: BOMId];
+
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
+                                                          buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
+                                                          FROM buildertek__Select_Sheet__c 
+                                                          WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMId];
+            
+            if(BOMLines.size() > 0){
+                boolean AllBOMlinesAssigesWithPO =  true;
+                boolean AllBOMlinesNotHaveCostCode =  true;
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Purchase_Order__c == null && line.buildertek__Cost_Code__c != null){
+                        AllBOMlinesAssigesWithPO = false;
+                    }
+                }
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Cost_Code__c != null){
+                        AllBOMlinesNotHaveCostCode = false;
+                    }
+                }
+
+                if(AllBOMlinesNotHaveCostCode == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No cost code assigned to available lines.';
+                }
+                else if(AllBOMlinesAssigesWithPO == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }
+                else{
+                    Map<String, Id> recordTypeMap = new Map<String, Id>();
+                    for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                        recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+                    }
+
+                    Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
+
+                    Map<Id, Id> BOMlineId_CostCodeId = new Map<Id, Id>();
+                    Map<Id, Id> CostCodeId_VendorId = new Map<Id, Id>();
+                    Map<Id, Id> CostCodeId_Phase = new Map<Id, Id>();
+                    Map<Id, String> CostCodeId_Category = new Map<Id, String>();
+                    Set<String> costCodeList = new Set<String>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            costCodeList.add(line.buildertek__Cost_Code__c);   
+
+                            BOMlineId_CostCodeId.put(line.Id, line.buildertek__Cost_Code__c);
+
+                            // Get Vendor and Phase value of First BOM Line which match condition for perticulart cost code....
+                            if(line.buildertek__Vendor__c != null && line.buildertek__Build_Phase__c != null && line.buildertek__Category__c != null && !CostCodeId_VendorId.containsKey(line.buildertek__Cost_Code__c)){
+                                CostCodeId_VendorId.put(line.buildertek__Cost_Code__c, line.buildertek__Vendor__c);
+                                CostCodeId_Phase.put(line.buildertek__Cost_Code__c, line.buildertek__Build_Phase__c);
+                                CostCodeId_Category.put(line.buildertek__Cost_Code__c, line.buildertek__Category__c);
+                            }
+                        }
+                    }
+                    System.debug('CostCodeId_VendorId : ' + CostCodeId_VendorId);
+                    System.debug('CostCodeId_Phase : ' + CostCodeId_Phase);
+                    System.debug('CostCodeId_Category : ' + CostCodeId_Category);
+
+                    List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
+                    List<Id> createdPOsIds = new List<Id>();
+
+                    if(costCodeList.size() > 0){
+                        for(String cc : costCodeList){
+                            buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
+                            POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
+                            POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
+                            POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
+                            POtoCreate.buildertek__Status__c = 'Open';
+                            POtoCreate.buildertek__Vendor__c = CostCodeId_VendorId.containsKey(cc) ? CostCodeId_VendorId.get(cc) : null;      // Assign Vendor...
+                            POtoCreate.buildertek__Cost_Code__c = cc;
+                            POtoCreate.buildertek__BT_Build_Phase__c = CostCodeId_Phase.containsKey(cc) ? CostCodeId_Phase.get(cc) : null;    // Assign Phase...
+                            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
+                            POsToCreate_List.add(POtoCreate);
+                        }
+                    }
+
+                    if(POsToCreate_List.size() > 0){
+                        insert POsToCreate_List;
+                    }
+
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        createdPOsIds.add(PO.Id);
+                    }
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+
+                    Map<Id, Id> CostCodeId_POId = new Map<Id, Id>();
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        CostCodeId_POId.put(PO.buildertek__Cost_Code__c, PO.Id);
+                    }
+
+                    List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
+                    Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
+                            Poline.Name = line.Name;
+                            Poline.buildertek__Product__c = line.buildertek__Product__c;
+                            Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
+                            Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
+                            Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
+                            Poline.buildertek__Purchase_Order__c = CostCodeId_POId.get(line.buildertek__Cost_Code__c);
+                            POlinesToCreate.add(Poline);
+                            LineId_POlines.put(line.Id, Poline);
+                        }
+                    }
+
+                    if(POlinesToCreate.size() > 0){
+                        insert POlinesToCreate;
+                    }
+
+                    for(buildertek__Select_Sheet__c line: BOMlines){
+                        if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
+                            line.buildertek__Purchase_Order__c = CostCodeId_POId.get(line.buildertek__Cost_Code__c);
+                        }
+                    }
+
+                    update BOMlines;
+
+
+                    returnValue.state = 'success';
+                    returnValue.returnMessage = 'All PO\'s created successfully.';
+                    
+                }
+
+                
+                
+            }
+            else{
+                returnValue.state = 'error';
+                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+            }
+            return returnValue;
+        }
+        catch (Exception e) {
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            returnValue.state = 'error';
+            returnValue.returnMessage = 'Something went wrong!';
+            return returnValue;
+        }
+    }
+
+    @AuraEnabled
+    public static responseWrapper createAllPOWithTradeType(string BOMId){
+        responseWrapper returnValue = new responseWrapper();
+        try{
+            buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
+                                                                  FROM buildertek__Project_Selection_Sheet_Takeoff__c
+                                                                  WHERE Id =: BOMId];
+            
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Trade_Type__c,
+                                                            buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
+                                                            FROM buildertek__Select_Sheet__c 
+                                                            WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMId];
+
+            if(BOMLines.size() > 0){
+                boolean AllBOMlinesAssigesWithPO = true;
+                boolean AllBOMlinesNotHaveTradeType = true;
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Purchase_Order__c == null && line.buildertek__Trade_Type__c != null){
+                        AllBOMlinesAssigesWithPO = false;
+                    }
+                }
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Trade_Type__c != null){
+                        AllBOMlinesNotHaveTradeType = false;
+                    }
+                }
+
+                if(AllBOMlinesNotHaveTradeType == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No trade type assigned to available lines.';
+                }
+                else if(AllBOMlinesAssigesWithPO == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }
+                else{
+                    Map<String, Id> recordTypeMap = new Map<String, Id>();
+                    for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                        recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+                    }
+
+                    Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
+
+                    Map<Id, Id> BOMlineId_TradeTypeId = new Map<Id, Id>();
+                    Map<Id, Id> TradeTypeId_VendorId = new Map<Id, Id>();
+                    Map<Id, Id> TradeTypeId_CostCode = new Map<Id, Id>();
+                    Map<Id, Id> TradeTypeId_Phase = new Map<Id, Id>();
+                    Map<Id, String> TradeTypeId_Category = new Map<Id, String>();
+                    Set<String> tradeTypeList = new Set<String>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
+                            tradeTypeList.add(line.buildertek__Trade_Type__c);   
+
+                            BOMlineId_TradeTypeId.put(line.Id, line.buildertek__Trade_Type__c);
+
+                            // Get Vendor and Phase value of First BOM Line which match condition for perticulart trade type....
+                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && line.buildertek__Category__c != null && !TradeTypeId_VendorId.containsKey(line.buildertek__Trade_Type__c)){
+                                TradeTypeId_VendorId.put(line.buildertek__Trade_Type__c, line.buildertek__Vendor__c);
+                                TradeTypeId_CostCode.put(line.buildertek__Trade_Type__c, line.buildertek__Cost_Code__c);
+                                TradeTypeId_Phase.put(line.buildertek__Trade_Type__c, line.buildertek__Build_Phase__c);
+                                TradeTypeId_Category.put(line.buildertek__Trade_Type__c, line.buildertek__Category__c);
+                            }
+                        }
+                    }
+                    System.debug('tradeTypeList : ' + tradeTypeList);
+                    System.debug('TradeTypeId_VendorId : ' + TradeTypeId_VendorId);
+                    System.debug('TradeTypeId_CostCode : ' + TradeTypeId_CostCode);
+                    System.debug('TradeTypeId_Phase : ' + TradeTypeId_Phase);
+                    System.debug('TradeTypeId_Category : ' + TradeTypeId_Category);
+
+                    List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
+                    List<Id> createdPOsIds = new List<Id>();
+                    if(tradeTypeList.size() > 0){
+                        for(String tt : tradeTypeList){
+                            buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
+                            POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
+                            POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
+                            POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
+                            POtoCreate.buildertek__Status__c = 'Open';
+                            POtoCreate.buildertek__Trade_Type__c = tt;
+                            POtoCreate.buildertek__Vendor__c = TradeTypeId_VendorId.containsKey(tt) ? TradeTypeId_VendorId.get(tt) : null;      // Assign Vendor...
+                            POtoCreate.buildertek__Cost_Code__c = TradeTypeId_CostCode.containsKey(tt) ? TradeTypeId_CostCode.get(tt) : null;      // Assign Cost code...
+                            POtoCreate.buildertek__BT_Build_Phase__c = TradeTypeId_Phase.containsKey(tt) ? TradeTypeId_Phase.get(tt) : null;    // Assign Phase...
+                            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
+                            POsToCreate_List.add(POtoCreate);
+                        }
+                    }
+
+                    if(POsToCreate_List.size() > 0){
+                        insert POsToCreate_List;
+                    }
+
+                    System.debug('no of create POs ==> ' + POsToCreate_List.size());
+
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        createdPOsIds.add(PO.Id);
+                    }
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+
+                    System.debug('no of create POs ==> ' + POsToCreate_List.size());
+
+                    Map<Id, Id> TradeTypeId_POId = new Map<Id, Id>();
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        TradeTypeId_POId.put(PO.buildertek__Trade_Type__c, PO.Id);
+                    }
+
+                    System.debug('TradeTypeId_POId ==> ' + TradeTypeId_POId);
+
+                    List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
+                    Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
+                            buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
+                            Poline.Name = line.Name;
+                            Poline.buildertek__Product__c = line.buildertek__Product__c;
+                            Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
+                            Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
+                            Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
+                            Poline.buildertek__Purchase_Order__c = TradeTypeId_POId.get(line.buildertek__Trade_Type__c);
+                            POlinesToCreate.add(Poline);
+                            LineId_POlines.put(line.Id, Poline);
+                        }
+                    }
+
+                    if(POlinesToCreate.size() > 0){
+                        insert POlinesToCreate;
+                    }
+
+                    for(buildertek__Select_Sheet__c line: BOMlines){
+                        if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
+                            line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
+                            line.buildertek__Purchase_Order__c = TradeTypeId_POId.get(line.buildertek__Trade_Type__c);
+                        }
+                    }
+
+                    update BOMlines;
+
+                    returnValue.state = 'success';
+                    returnValue.returnMessage = 'All PO\'s created successfully.';
+                }
+            }
+            else{
+                returnValue.state = 'error';
+                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+            }
+            return returnValue;
+
+        }catch(Exception e){
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            returnValue.state = 'error';
+            returnValue.returnMessage = 'Something went wrong!';
+            return returnValue;
+        }
+    }
+
+    @AuraEnabled
+    public static responseWrapper createAllPOWithBuildPhase(string BOMId){
+        responseWrapper returnValue = new responseWrapper();
+        try{
+            buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
+                                                                  FROM buildertek__Project_Selection_Sheet_Takeoff__c
+                                                                  WHERE Id =: BOMId];
+            
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Trade_Type__c,
+                                                            buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
+                                                            FROM buildertek__Select_Sheet__c 
+                                                            WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMId];
+
+            if(BOMLines.size() > 0){
+                boolean AllBOMlinesAssigesWithPO = true;
+                boolean AllBOMlinesNotHaveBuildPhase = true;
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Purchase_Order__c == null && line.buildertek__Build_Phase__c != null){
+                        AllBOMlinesAssigesWithPO = false;
+                    }
+                }
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Build_Phase__c != null){
+                        AllBOMlinesNotHaveBuildPhase = false;
+                    }
+                }
+
+                if(AllBOMlinesNotHaveBuildPhase == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No build phase assigned to available lines.';
+                }
+                else if(AllBOMlinesAssigesWithPO == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }
+                else{
+                    Map<String, Id> recordTypeMap = new Map<String, Id>();
+                    for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                        recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+                    }
+
+                    Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
+
+                    Map<Id, Id> BOMlineId_PhaseId = new Map<Id, Id>();
+                    Map<Id, Id> PhaseId_VendorId = new Map<Id, Id>();
+                    Map<Id, Id> PhaseId_CostCode = new Map<Id, Id>();
+                    Map<Id, String> PhaseId_Category = new Map<Id, String>();
+                    Set<String> phaseList = new Set<String>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
+                            phaseList.add(line.buildertek__Build_Phase__c);   
+
+                            BOMlineId_PhaseId.put(line.Id, line.buildertek__Build_Phase__c);
+
+                            // Get Vendor and Cost code value of First BOM Line which match condition for perticulart build phase....
+                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Category__c != null && !PhaseId_VendorId.containsKey(line.buildertek__Build_Phase__c)){
+                                PhaseId_VendorId.put(line.buildertek__Build_Phase__c, line.buildertek__Vendor__c);
+                                PhaseId_CostCode.put(line.buildertek__Build_Phase__c, line.buildertek__Cost_Code__c);
+                                PhaseId_Category.put(line.buildertek__Build_Phase__c, line.buildertek__Category__c);
+                            }
+                        }
+                    }
+                    System.debug('phaseList : ' + phaseList);
+                    System.debug('PhaseId_VendorId : ' + PhaseId_VendorId);
+                    System.debug('PhaseId_CostCode : ' + PhaseId_CostCode);
+                    System.debug('PhaseId_Category : ' + PhaseId_Category);
+
+                    List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
+                    List<Id> createdPOsIds = new List<Id>();
+
+                    if(phaseList.size() > 0){
+                        for(String ph : phaseList){
+                            buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
+                            POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
+                            POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
+                            POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
+                            POtoCreate.buildertek__Status__c = 'Open';
+                            POtoCreate.buildertek__BT_Build_Phase__c = ph;
+                            POtoCreate.buildertek__Vendor__c = PhaseId_VendorId.containsKey(ph) ? PhaseId_VendorId.get(ph) : null;      // Assign Vendor...
+                            POtoCreate.buildertek__Cost_Code__c = PhaseId_CostCode.containsKey(ph) ? PhaseId_CostCode.get(ph) : null;      // Assign Cost code...
+                            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
+                            POsToCreate_List.add(POtoCreate);
+                        }
+                    }
+
+                    if(POsToCreate_List.size() > 0){
+                        insert POsToCreate_List;
+                    }
+
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        createdPOsIds.add(PO.Id);
+                    }
+
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+
+                    Map<Id, Id> PhaseId_POId = new Map<Id, Id>();
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        PhaseId_POId.put(PO.buildertek__BT_Build_Phase__c, PO.Id);
+                    }
+
+                    List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
+                    Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
+                            buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
+                            Poline.Name = line.Name;
+                            Poline.buildertek__Product__c = line.buildertek__Product__c;
+                            Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
+                            Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
+                            Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
+                            Poline.buildertek__Purchase_Order__c = PhaseId_POId.get(line.buildertek__Build_Phase__c);
+                            POlinesToCreate.add(Poline);
+                            LineId_POlines.put(line.Id, Poline);
+                        }
+                    }
+
+                    if(POlinesToCreate.size() > 0){
+                        insert POlinesToCreate;
+                    }
+
+                    for(buildertek__Select_Sheet__c line: BOMlines){
+                        if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
+                            line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
+                            line.buildertek__Purchase_Order__c = PhaseId_POId.get(line.buildertek__Build_Phase__c);
+                        }
+                    }
+
+                    update BOMlines;
+
+                    returnValue.state = 'success';
+                    returnValue.returnMessage = 'All PO\'s created successfully.';
+                }
+            }
+            else{
+                returnValue.state = 'error';
+                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+            }
+            return returnValue;
+        }
+        catch(Exception e){
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            returnValue.state = 'error';
+            returnValue.returnMessage = 'Something went wrong!';
+            return returnValue;
+        }
+    }
+
+    @AuraEnabled
+    //createAllPOWithCategory
+    public static responseWrapper createAllPOWithCategory(string BOMId){
+        responseWrapper returnValue = new responseWrapper();
+        try{
+            buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
+                                                                  FROM buildertek__Project_Selection_Sheet_Takeoff__c
+                                                                  WHERE Id =: BOMId];
+            
+            List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name, buildertek__Trade_Type__c,
+                                                            buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
+                                                            FROM buildertek__Select_Sheet__c 
+                                                            WHERE buildertek__Selection_Sheet_Takeoff__c =: BOMId];
+
+            if(BOMLines.size() > 0){
+                boolean AllBOMlinesAssigesWithPO = true;
+                boolean AllBOMlinesNotHaveCategory = true;
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Purchase_Order__c == null && line.buildertek__Category__c != null){
+                        AllBOMlinesAssigesWithPO = false;
+                    }
+                }
+
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Category__c != null){
+                        AllBOMlinesNotHaveCategory = false;
+                    }
+                }
+
+                if(AllBOMlinesNotHaveCategory == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No category assigned to available lines.';
+                }
+
+                else if(AllBOMlinesAssigesWithPO == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }
+                else{
+                    Map<String, Id> recordTypeMap = new Map<String, Id>();
+                    for (Schema.RecordTypeInfo rt : buildertek__Purchase_Order__c.SObjectType.getDescribe().getRecordTypeInfos()) {
+                        recordTypeMap.put(rt.getName(), rt.getRecordTypeId());
+                    }
+
+                    Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
+
+                    Map<Id, Id> BOMlineId_CategoryId = new Map<Id, Id>();
+                    Map<Id, Id> CategoryId_VendorId = new Map<Id, Id>();
+                    Map<Id, Id> CategoryId_CostCode = new Map<Id, Id>();
+                    Map<Id, Id> CategoryId_Phase = new Map<Id, Id>();
+                    Set<String> categoryList = new Set<String>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
+                            categoryList.add(line.buildertek__Category__c);   
+
+                            BOMlineId_CategoryId.put(line.Id, line.buildertek__Category__c);
+
+                            // Get Vendor and Cost code value of First BOM Line which match condition for perticulart category....
+                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && !CategoryId_VendorId.containsKey(line.buildertek__Category__c)){
+                                CategoryId_VendorId.put(line.buildertek__Category__c, line.buildertek__Vendor__c);
+                                CategoryId_CostCode.put(line.buildertek__Category__c, line.buildertek__Cost_Code__c);
+                                CategoryId_Phase.put(line.buildertek__Category__c, line.buildertek__Build_Phase__c);
+                            }
+                        }
+                    }
+                    System.debug('categoryList : ' + categoryList);
+                    System.debug('CategoryId_VendorId : ' + CategoryId_VendorId);
+                    System.debug('CategoryId_CostCode : ' + CategoryId_CostCode);
+                    System.debug('CategoryId_Phase : ' + CategoryId_Phase);
+
+                    List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
+                    List<Id> createdPOsIds = new List<Id>();
+
+                    if(categoryList.size() > 0){
+                        for(String cat : categoryList){
+                            buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
+                            POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
+                            POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
+                            POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
+                            POtoCreate.buildertek__Status__c = 'Open';
+                            POtoCreate.buildertek__Category__c = cat;
+                            POtoCreate.buildertek__Vendor__c = CategoryId_VendorId.containsKey(cat) ? CategoryId_VendorId.get(cat) : null;      // Assign Vendor...
+                            POtoCreate.buildertek__Cost_Code__c = CategoryId_CostCode.containsKey(cat) ? CategoryId_CostCode.get(cat) : null;      // Assign Cost code...
+                            POtoCreate.buildertek__BT_Build_Phase__c = CategoryId_Phase.containsKey(cat) ? CategoryId_Phase.get(cat) : null;    // Assign Phase...
+                            POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
+                            POsToCreate_List.add(POtoCreate);
+                        }
+                    }
+
+                    if(POsToCreate_List.size() > 0){
+                        insert POsToCreate_List;
+                    }
+
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        createdPOsIds.add(PO.Id);
+                    }
+
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+
+                    Map<Id, Id> CategoryId_POId = new Map<Id, Id>();
+                    for(buildertek__Purchase_Order__c PO : POsToCreate_List){
+                        CategoryId_POId.put(PO.buildertek__Category__c, PO.Id);
+                    }
+
+                    List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
+                    Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
+
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
+                            buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
+                            Poline.Name = line.Name;
+                            Poline.buildertek__Product__c = line.buildertek__Product__c;
+                            Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
+                            Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
+                            Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
+                            Poline.buildertek__Purchase_Order__c = CategoryId_POId.get(line.buildertek__Category__c);
+                            POlinesToCreate.add(Poline);
+                            LineId_POlines.put(line.Id, Poline);
+                        }
+                    }
+
+                    if(POlinesToCreate.size() > 0){
+                        insert POlinesToCreate;
+                    }
+
+                    for(buildertek__Select_Sheet__c line: BOMlines){
+                        if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
+                            line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
+                            line.buildertek__Purchase_Order__c = CategoryId_POId.get(line.buildertek__Category__c);
+                        }
+                    }
+
+                    update BOMlines;
+
+                    returnValue.state = 'success';
+                    returnValue.returnMessage = 'All PO\'s created successfully.';
+                }
+            }
+            else{
+                returnValue.state = 'error';
+                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+            }
+            return returnValue;
+        }
+        catch(Exception e){
+            System.debug('Error in getBOMlines ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
+
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            returnValue.state = 'error';
+            returnValue.returnMessage = 'Something went wrong!';
+            return returnValue;
+        }
+    }
+
 
     public class responseWrapper{
         @AuraEnabled Public string state;
