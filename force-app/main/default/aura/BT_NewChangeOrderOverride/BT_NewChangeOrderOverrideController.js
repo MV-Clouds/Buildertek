@@ -74,7 +74,6 @@
                         if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                             var objName = response.getReturnValue();
                             console.log(`object Name ${objName}`);
-                            debugger;
                             if(objName == 'Account'){
                                 component.set("v.CustomerAccountName", parentRecordId);
                             }else if(objName == 'buildertek__Project__c'){
@@ -164,7 +163,6 @@
         var rfq = component.get('v.parentRFQRecordId');
         var contract = component.get('v.parentContractRecordId');
         var project = component.get('v.parentprojectRecordId');
-        debugger
         console.log(`Save CO Project Id: ${project}`);
         var po = component.get('v.parentPurchaseOrderRecordId');
         var budget = component.get('v.parentbudgetRecordId');
@@ -430,7 +428,6 @@
     },
     
     vendorChanged : function(component, event, helper) {
-        debugger;
         //  alert('qwertyuiop');
         var SelVendor = component.find("selectedVendor").get("v.value");
         

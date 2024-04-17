@@ -301,7 +301,7 @@
                                                     <lightning:input type='number' aura:id="quantity" value="{!item.buildertek__Markup__c}" step="0.01" onblur="{!c.roundToTwoDecimals}"/>
                                                 </td>
                                             </aura:if>
-                                            <td>
+                                            <td style="padding-top: 10px !important;">
                                                 <span data-id="{!index}" onclick="{!c.removeCOLine}">
                                                     <lightning:icon iconName="action:delete" size="x-small" alternativeText="Error!"  variant="error" class="imageAction" /> 
                                                 </span>                     

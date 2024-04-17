@@ -56,7 +56,6 @@
     
     CustomerAccount: function (component, event, helper) {
         var parentId = component.get("v.parentprojectRecordId");
-        debugger;
         var action = component.get("c.getNames");
         action.setParams({
 					RecordId: parentId
