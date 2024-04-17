@@ -13,6 +13,7 @@ public with sharing class CreatePOFromRFQ{
                        WHERE buildertek__RFQ__c = :RFQId AND (buildertek__Status__c =: 'Awarded' OR buildertek__Status__c =: 'Accepted')];
             }
             System.debug('Number of RFQ records : '+RFQ.size());
+            String standardRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Purchase_Order__c' AND Name = 'Standard' limit 1].Id;
             if (RFQ.size()>0){
                 for (buildertek__RFQ_To_Vendor__c rfqItems : RFQ){
                     buildertek__Purchase_Order__c PO = new buildertek__Purchase_Order__c();
@@ -24,6 +25,7 @@ public with sharing class CreatePOFromRFQ{
                     PO.buildertek__Quote__c = rfqItems.buildertek__Rfq__r.buildertek__Quote__c;
                     PO.buildertek__RFQ__c = rfqItems.buildertek__Rfq__c;
                     PO.buildertek__Description__c = rfqItems.buildertek__Rfq__r.Name;
+                    PO.RecordTypeId = standardRecordId;
                     purchaseOrder.put(rfqItems.buildertek__Vendor__c, PO);
                 }
                 if (Schema.sObjectType.buildertek__Purchase_Order__c.isCreateAble() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isCreateAble() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Status__c.isCreateAble() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Type__c.isCreateable() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isCreateable() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Budget__c.isCreateable() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Quote__c.isCreateable() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__RFQ__c.isCreateable() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isCreateable()){
@@ -67,7 +69,7 @@ public with sharing class CreatePOFromRFQ{
                 return response;
                 
             } else{
-                response.strMessage = 'RFQ Status Should be Awarded or Accepted';
+                response.strMessage = 'Vendor RFQ Status Should be Awarded or Accepted';
                 
                 return response;
             }
