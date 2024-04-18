@@ -141,8 +141,10 @@ public without sharing class PreviewQuoteController{
     }
 
     @AuraEnabled
-    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, List<String> emailIds, string memovalue, String emailBodyValue){
+    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,List<String> files, List<String> emailIds, string memovalue, String emailBodyValue){
        try {
+        System.debug('I am in sendProposal');
+        System.debug('files----->'+files);
             String fileid = '';
             String body = '';
             String subject='';
@@ -308,9 +310,23 @@ public without sharing class PreviewQuoteController{
             
             efa.setBody(b);
             fileAttachments.add(efa);
-            mail.setFileAttachments(fileAttachments);
+            // mail.setFileAttachments(fileAttachments);
             mail.setUseSignature(useSignature);
             mails.add(mail);
+ 
+            for(String fileItemId : files) { 
+            ContentVersion file = [SELECT Title, VersionData FROM ContentVersion WHERE Id = :fileItemId LIMIT 1];
+             
+            Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+            attachment.setFileName(file.Title);  
+            attachment.setBody(file.VersionData); 
+             
+            fileAttachments.add(attachment);
+        }
+        System.debug(fileAttachments);
+     mail.setFileAttachments(fileAttachments);
+mails.add(mail);
+
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
 
             String message = 'Success';
@@ -814,6 +830,23 @@ public without sharing class PreviewQuoteController{
             return errorMessage;
         }
         
+    }
+    @AuraEnabled
+    public static List<ContentVersion> getRelatedFiles(String recordId) {
+        List<ContentDocumentLink> fileLinks = [SELECT ContentDocumentId 
+                                               FROM ContentDocumentLink 
+                                               WHERE LinkedEntityId = :recordId];
+        
+        Set<Id> documentIds = new Set<Id>();
+        for(ContentDocumentLink link : fileLinks) {
+            documentIds.add(link.ContentDocumentId);
+        }
+
+        List<ContentVersion> relatedFiles = [SELECT Id, VersionData,ContentDocumentId, Title ,ContentSize
+                                              FROM ContentVersion 
+                                              WHERE ContentDocumentId IN :documentIds];
+        
+        return relatedFiles;
     }
     
 
