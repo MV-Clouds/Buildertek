@@ -67,6 +67,7 @@ public with sharing class BT_CreateProjectFromOpportunity {
            }
                // project.buildertek__Contract_Amount__c = totalquoteamount;
         insert project;
+        sendEmailtoProjectManager(project.Id);
         for(ContentNote c : contentNotes){
                 textpreview = c.TextPreview;
                 ContentNote noteRec = new ContentNote();
@@ -385,6 +386,35 @@ public with sharing class BT_CreateProjectFromOpportunity {
           List<buildertek__Budget__c> newBudgets = BudgetContractCreateHelper.createBudgetFromQuote(createdContractCustomerToAccess);
         
         return project.Id;
+    }
+
+    public static void sendEmailtoProjectManager(Id projectId){
+        //check admin interface node configuration
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Assign_to_Existing_Project_on_Closed_Won__c, buildertek__Send_Email_on_automatic_creation_of_Proj__c
+                                                                                                        from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                                        WHERE Name = 'Opportunity Configuration' limit 1];
+        if(adminInterfaceNodeConfigurations.size() == 0 || !adminInterfaceNodeConfigurations[0].buildertek__Send_Email_on_automatic_creation_of_Proj__c){
+            return;
+        }
+        System.debug('projectId--->'+projectId);
+        buildertek__Project__c project = [SELECT Id, Name, buildertek__Project_Manager__c, buildertek__Project_Manager__r.Email, buildertek__Project_Manager__r.Name, Owner.Name from buildertek__Project__c where Id =: projectId];
+        if (project.buildertek__Project_Manager__r.Email == null) {
+            return;
+        }
+
+        Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+        String[] toAddresses = new String[] {project.buildertek__Project_Manager__r.Email};
+        mail.setToAddresses(toAddresses);
+        mail.setSubject('Project Created');
+        String body = 'Hello '+project.buildertek__Project_Manager__r.Name+',<br><br>';
+        body += 'Project '+project.Name+' has been created and is ready for you and the team.<br><br>';
+        body += 'Please click <a href="'+System.URL.getSalesforceBaseURL().toExternalForm()+'/'+project.Id+'">here</a> to view the project.<br><br>';
+        body += 'Sincerely,<br>' + project.Owner.Name;
+        mail.setHtmlBody(body);
+        mail.setTargetObjectId(project.buildertek__Project_Manager__c);
+        mail.setSaveAsActivity(false);
+        Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+        System.debug('Email sent to '+project.buildertek__Project_Manager__r.Email);
     }
     
     public class displayMessages{

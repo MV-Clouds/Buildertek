@@ -133,8 +133,10 @@ public without sharing class OpportunityTriggerHandler{
                             project.buildertek__Notes__c = TextPreview1;
                         }
                         project.OwnerId = oppquotereclist[0].buildertek__Opportunity__r.OwnerId;
+                        project.buildertek__Project_Manager__c = oppquotereclist[0].buildertek__Opportunity__r.OwnerId;
                         System.debug('project details ' + project);
                         insert project;
+                        BT_CreateProjectFromOpportunity.sendEmailtoProjectManager(project.Id);
                         createProject = false;
                         List<ContentNote> contentNoteslist = new List<ContentNote>();
                         for (ContentNote c : contentNotes){
@@ -386,10 +388,15 @@ public without sharing class OpportunityTriggerHandler{
                             prj.Name = opp.Account.Name;
                             prj.buildertek__Opportunity__c = opp.Id;
                             prj.OwnerId = opp.OwnerId;
+                            prj.buildertek__Project_Manager__c = opp.OwnerId;
                             projectList.add(prj);
                         }
                         
                         insert projectList;
+                        //iterating through the project list to send email to project manager
+                        for (buildertek__Project__c project : projectList) {
+                            BT_CreateProjectFromOpportunity.sendEmailtoProjectManager(project.Id);
+                        }
                     }
                 }
             }
