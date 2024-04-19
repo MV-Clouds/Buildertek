@@ -5,13 +5,13 @@
             var pageReference = component.get("v.pageReference");
             //var bomIdFromParentCmp = pageReference.attributes.attributes.recordId;
             var urlBomId = pageReference.state.buildertek__bomRecordId;
-        
+
             if (urlBomId != null && urlBomId != undefined && urlBomId != "") {
               component.set("v.recordId", urlBomId);
             }
-    
+
             console.log('Record ID : ', component.get("v.recordId"));
-        
+
             // helper.checkFabricationTaxes(component, event, helper);
             component.set("v.massUpdateEnable", false);
             var pageNumber = component.get("v.PageNumber");
@@ -21,7 +21,7 @@
             helper.setColumns(component);
             // helper.getFieldSetFields(component,event);
             // helper.getPoLinesList(component, event, helper,pageNumber,pageSize);
-        
+
             window.setTimeout(
               $A.getCallback(function () {
                 helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
@@ -49,10 +49,10 @@
                     // alert(error);
                   });
               }, 100);
-        
+
             var billOfMeterialId = component.get("v.recordId");
             // component.set("v.bomId", billOfMeterialId);
-        
+
             //  helper.getPoList(component, event, helper);
             // component.set("v.isLoading", false);
         } catch (error) {
@@ -69,7 +69,6 @@
       },
 
       massUpdateLines: function(component, event, helper){
-
           var headerIndex = event.getSource().get("v.title");
           var massupdateIndex = component.get("v.massupdateIndex");
           // console.log('headerIndex :: ', headerIndex);
@@ -87,11 +86,11 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              5000
+              2000
             );
           }
           else{
-            
+
             helper.MassUpdateHelper(component, event, helper, headerIndex, massupdateIndex);
 
           }
@@ -128,14 +127,14 @@
       },
 
       redirect: function (component, event, helper) {
-    
+
         var navEvt = $A.get("e.force:navigateToSObject");
         navEvt.setParams({
           recordId: component.get("v.recordId"),
           slideDevName: "related",
         });
         navEvt.fire();
-    
+
         var workspaceAPI = component.find("workspace");
         workspaceAPI
           .getFocusedTabInfo()
@@ -159,7 +158,7 @@
           var selectedRecordId = event.getParam("selectedRecordId");
           var index = event.getParam('index');
           var headerIndex = event.getParam('phaseIndex');
-          
+
           if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
             component.set("v.isLoading", true);
             var groupData = component.get("v.dataByGroup");
@@ -167,7 +166,7 @@
             component.set("v.dataByGroup", groupData);
 
             var setProduct = false;   // Clear product...
-    
+
             window.setTimeout(
               $A.getCallback(function () {
                 helper.setProduct(component, event, helper, setProduct); 
@@ -181,7 +180,7 @@
           }
 
       },
-      
+
 
     ProductSelectHandler: function(component, event, helper){
         component.set("v.isLoading", true);
@@ -197,7 +196,7 @@
 
     },
 
-    
+
 
     clearSelectedHandler :  function(component, event, helper){
         component.set("v.isLoading", true);
@@ -217,7 +216,7 @@
       }
       catch(error){
           console.log('error in valueChnagedInFildsetMassUpdate : ', error.stack);
-          
+
       }
     },
 
@@ -246,11 +245,11 @@
       else if(fieldLabel == 'buildertek__Quantity__c' || fieldLabel == 'buildertek__BL_MARKUP__c' || fieldLabel == 'buildertek__BL_UNIT_COST__c'){
           helper.onInputChangeHelper(component, event, helper, selectedValue, fieldLabel,index, headerIndex )
       }
-        
+
       } catch (error) {
         console.log('error in onInputChange : ', error.stack);
       }
     },
 
-     
+
 })
