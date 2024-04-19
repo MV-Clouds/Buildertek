@@ -141,6 +141,21 @@
             toastEvent.fire();
             return;
         }
+        var subject= component.get ('v.subject') ; 
+        if ((subject == null || subject == "")) {
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: 'Error',
+                message: 'Please  enter a Subject for the email',
+                duration: ' 3000',
+                key: 'info_alt',
+                type: 'error',
+                mode: 'pester'
+            });
+            toastEvent.fire();
+            return;
+        }
         var cc = component.get("v.selectedCcContact");
         var emailIds = component.get("v.emailIds");
         to.forEach(function(v) {
@@ -152,6 +167,15 @@
         console.log('toIds', toIds);
         console.log('ccIds', ccIds);
         // debugger;
+        var contentDocumentIds = [];
+    var fileInput = component.get("v.selectedfilesFill");
+    if (fileInput && fileInput.length > 0) {
+        for (var i = 0; i < fileInput.length; i++) {
+            var contentDocumentId = fileInput[i].Id;
+            contentDocumentIds.push(contentDocumentId);
+        }
+    }
+        console.log(JSON.stringify(contentDocumentIds));
         if (toIds.length != 0 || emailIds.length != 0) {
             var action = component.get("c.sendProposal");
             action.setParams({
@@ -160,6 +184,8 @@
                 templateId: component.get("v.selectedTemplate"),
                 to: toIds,
                 cc: ccIds,
+                files: contentDocumentIds,
+                Subject: component.get("v.subject"),
                 emailIds: emailIds,
                 memovalue: component.get("v.memoquote"),
                 emailBodyValue: component.get("v.templateEmailBody")
@@ -272,6 +298,21 @@
             ccIds.push(v.Id)
         });
         if (toIds.length != 0 || emailIds.length != 0) {
+            var subject= component.get ('v.subject') ;
+            if (!subject || subject == "") {
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: 'Error',
+                message: 'Please  enter a Subject for the email',
+                duration: ' 3000',
+                key: 'info_alt',
+                type: 'error',
+                mode: 'pester'
+            });
+            toastEvent.fire();
+            return;
+        }
             if (!signaturePad.isEmpty()) {
                 helper.AcceptSignature(component, event);
             } else {
@@ -321,5 +362,39 @@
         toastEvent.fire();
         $A.get("e.force:closeQuickAction").fire();*/
 
+    },
+    
+    handleFileChange: function(component, event, helper) {
+        helper.standardFileUploderFileChange(component, event, helper);
+    },
+         openPopupModel:function(component, event, helper) {
+            console.log('open');
+        $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();    
+        var selectedFile = component.get("v.selectedFile");
+        component.set("v.selectedFile", selectedFile);
+        helper.getFileList(component, event, helper);
+    },
+      handleCheckboxChange: function(component, event, helper) {
+        helper.onChecboxChanges(component, event, helper);
+    },
+        closeFileModel : function (component,event,helper) {
+        var selectedFiles = component.get("v.selectedFiles") || [];
+        var selectedFiles2 = component.get("v.selectedFiles2") || [];
+
+        selectedFiles = selectedFiles.filter(function(file) {
+            return !selectedFiles2.includes(file);
+        });
+        component.set("v.selectedFiles", selectedFiles);
+        component.set("v.selectedFiles2", []);
+        console.log('selectedFiles after cancel:', selectedFiles);
+        component.set("v.showModel",false);
+    },
+
+        handleSaveButtonClick: function(component, event, helper) {
+        helper.saveButton(component, event, helper);
+    },
+        clear :function(component,event,helper){
+        helper.clearPillValues(component, event, helper);
     }
+
 })
