@@ -313,16 +313,25 @@ public without sharing class PreviewQuoteController{
             // mail.setUseSignature(useSignature);
             // mails.add(mail);
 
-            List<ContentVersion> docList = [SELECT Id, Title, VersionData FROM ContentVersion WHERE ContentDocumentId IN :files];
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData, ContentSize FROM ContentVersion WHERE ContentDocumentId IN :files];
+            Integer sum=0; 
             list<Id> contentVersionIds = new list<Id>();
             System.debug('doclist---->'+docList);
  for (ContentVersion doc : docList) {
     Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+    sum+=doc.ContentSize;
     attachment.setFileName(doc.Title );
     attachment.setBody(doc.VersionData);
     contentVersionIds.add(doc.Id);
     fileAttachments.add(attachment);
 }
+if(sum>3000000){ 
+      List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete;
+                } 
+   return('The total document size exceeds the limit of 3MB') ;
+} 
         System.debug('fileattachments------>'+fileAttachments);
      mail.setEntityAttachments(contentVersionIds);
     //  mail.setFileAttachments(fileAttachments);
@@ -580,17 +589,26 @@ public without sharing class PreviewQuoteController{
             // mails.add(mail);
 
 
-            List<ContentVersion> docList = [SELECT Id, Title, VersionData FROM ContentVersion WHERE ContentDocumentId IN :files];
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData,ContentSize FROM ContentVersion WHERE ContentDocumentId IN :files];
             list<Id> contentVersionIds = new list<Id>();
+            Integer sum=0;
             System.debug('doclist---->'+docList);
             for (ContentVersion doc : docList) {
                 Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+                sum+=doc.ContentSize;
                 attachment.setFileName(doc.Title );
                 attachment.setBody(doc.VersionData);
                 contentVersionIds.add(doc.Id);
 
                 fileAttachments.add(attachment);
             }
+            if(sum>3000000){ 
+      List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete;
+                } 
+   return('The total document size exceeds the limit of 3MB') ;
+} 
             System.debug('fileattachments------>'+fileAttachments);
             mail.setEntityAttachments(contentVersionIds);
             //  mail.setFileAttachments(fileAttachments);
