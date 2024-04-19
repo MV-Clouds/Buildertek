@@ -142,9 +142,7 @@ public without sharing class PreviewQuoteController{
 
     @AuraEnabled
     public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,List<String> files, List<String> emailIds, string memovalue, String emailBodyValue){
-       try {
-        System.debug('I am in sendProposal');
-        System.debug('files----->'+files);
+       try { 
             String fileid = '';
             String body = '';
             String subject='';
@@ -310,29 +308,36 @@ public without sharing class PreviewQuoteController{
             
             efa.setBody(b);
             fileAttachments.add(efa);
-            // mail.setFileAttachments(fileAttachments);
-            mail.setUseSignature(useSignature);
-            mails.add(mail);
- 
-            for(String fileItemId : files) { 
-            ContentVersion file = [SELECT Title, VersionData FROM ContentVersion WHERE Id = :fileItemId LIMIT 1];
-             
-            Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
-            attachment.setFileName(file.Title);  
-            attachment.setBody(file.VersionData); 
-             
-            fileAttachments.add(attachment);
-        }
-        System.debug(fileAttachments);
-     mail.setFileAttachments(fileAttachments);
-mails.add(mail);
+            mail.setFileAttachments(fileAttachments);
+            // mail.setUseSignature(useSignature);
+            // mails.add(mail);
+        
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData FROM ContentVersion WHERE ContentDocumentId IN :files];
+            list<Id> contentVersionIds = new list<Id>();            
+            System.debug('doclist---->'+docList);
+ for (ContentVersion doc : docList) { 
+    Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+    attachment.setFileName(doc.Title );  
+    attachment.setBody(doc.VersionData);  
+    contentVersionIds.add(doc.Id);    
+    fileAttachments.add(attachment);
+}
+        System.debug('fileattachments------>'+fileAttachments);
+     mail.setEntityAttachments(contentVersionIds);
+    //  mail.setFileAttachments(fileAttachments);
+     mail.setUseSignature(useSignature);
+     mails.add(mail);
 
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
 
             String message = 'Success';
             if (results.size() > 0){
+                List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete; 
+                }
                 if (results[0].isSuccess()){
-                    string Toaddresses = '';
+                     string Toaddresses = '';
                     string CCaddresses = '';
                     integer i = 0;
                     for (String Str : strTO){
@@ -442,7 +447,7 @@ mails.add(mail);
     }
 
     @AuraEnabled
-    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, List<String> emailIds, string memovalue, String emailBodyValue){
+    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,List<String> files, string fileid, List<String> emailIds, string memovalue, String emailBodyValue){
 
         try{
             String body = '';
@@ -570,12 +575,35 @@ mails.add(mail);
             efa.setBody(setAttachmentBody(recordId, templateId, fileid));
             fileAttachments.add(efa);
             mail.setFileAttachments(fileAttachments);
+            // mail.setUseSignature(useSignature);
+            // mails.add(mail);
+
+
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData FROM ContentVersion WHERE ContentDocumentId IN :files];
+            list<Id> contentVersionIds = new list<Id>();            
+            System.debug('doclist---->'+docList);
+            for (ContentVersion doc : docList) { 
+                Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+                attachment.setFileName(doc.Title );  
+                attachment.setBody(doc.VersionData);  
+                contentVersionIds.add(doc.Id);    
+
+                fileAttachments.add(attachment);
+            }
+            System.debug('fileattachments------>'+fileAttachments);
+            mail.setEntityAttachments(contentVersionIds);
+            //  mail.setFileAttachments(fileAttachments);
             mail.setUseSignature(useSignature);
             mails.add(mail);
+
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
             String message = 'Success';
             System.debug('results '+results);
             if (results.size() > 0){
+                List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete; 
+                }
                 if (results[0].isSuccess()){
                     string Toaddresses = '';
                     string CCaddresses = '';

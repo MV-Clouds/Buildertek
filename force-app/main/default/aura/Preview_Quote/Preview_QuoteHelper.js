@@ -116,6 +116,14 @@
         cc.forEach(function(v) {
             ccIds.push(v.Id)
         });
+          var contentDocumentIds = [];
+    var fileInput = component.get("v.selectedfilesFill");
+    if (fileInput && fileInput.length > 0) {
+        for (var i = 0; i < fileInput.length; i++) {
+            var contentDocumentId = fileInput[i].Id;
+            contentDocumentIds.push(contentDocumentId);
+        }
+    }
 
         var signid = component.get("v.fileimageId");
         // alert('imageId'+component.get("v.fileimageId"));
@@ -126,6 +134,7 @@
             templateId: component.get("v.selectedTemplate"),
             to: toIds,
             cc: ccIds,
+            files: contentDocumentIds,
             fileid: signid,
             emailIds: emailIds,
             memovalue: component.get("v.memoquote"),

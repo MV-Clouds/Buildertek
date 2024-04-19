@@ -179,7 +179,7 @@
                             <lightning:layout multipleRows = "true">
                                 <div style="display: flex; flex-direction :column;">
                                 <div style="display: flex; align-items: center;">
-                                    <lightning:fileUpload label="Attach receipt"
+                                    <lightning:fileUpload label="Attachments"
                                                             name="fileUploader"
                                                             multiple="true"
                                                             accept="{!v.filetype}"

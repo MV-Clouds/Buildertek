@@ -12,6 +12,9 @@
    display : none;
 } */
 
+.THIS .sldsButtonGroup{
+  margin-top: 24px;
+}
 .THIS .slds-pill__remove {
   display: none;
 }
