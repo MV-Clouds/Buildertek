@@ -10,6 +10,7 @@
                 for (let i = 0; i < response.getReturnValue().length; i++) {
                     if (response.getReturnValue()[i].Name === 'Customer') {
                         component.set("v.RecordTypeId", response.getReturnValue()[i].Id);
+                        component.set("v.ParentRecordTypeName", response.getReturnValue()[i].Name);
                     }
                 }
                 console.log('default record type ' + component.get("v.RecordTypeId"));
