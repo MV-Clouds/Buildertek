@@ -24,9 +24,10 @@
             fieldSetName: 'buildertek__NewfromParent'
         });
         action.setCallback(this, function (response) {
-            console.log('Field Set :: ', response.getReturnValue());
             var fieldSetObj = JSON.parse(response.getReturnValue());
+            console.log('fieldSetObj::',fieldSetObj);
             component.set("v.fieldSetValues", fieldSetObj);
+            component.set("v.spinner", false);
         })
         $A.enqueueAction(action);
     }

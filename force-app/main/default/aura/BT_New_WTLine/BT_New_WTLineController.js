@@ -1,5 +1,6 @@
 ({
     doInit : function(component, event, helper) {
+        component.set("v.spinner", true); 
         console.log('doInit');
         helper.getRecordType(component);
         helper.getFields(component);
@@ -8,6 +9,12 @@
     closeModel: function(component, event, helper) {
         $A.get("e.force:closeQuickAction").fire();
         component.set("v.isOptionModal", false);
+    },
+
+    pageOne : function(component, event, helper) {
+        console.log('pageOne');
+        component.set("v.pageTwo", false);
+        component.set("v.isOptionModal", true);
     },
 
     pageTwo : function(component, event, helper) {
@@ -27,4 +34,8 @@
         component.set("v.isOptionModal", false);
         component.set("v.pageTwo", true);
     },
+
+    submitDetails : function(component, event, helper) {
+        console.log('submitDetails');
+    }
 })
