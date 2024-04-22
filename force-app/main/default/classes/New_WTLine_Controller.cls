@@ -63,4 +63,18 @@ public with sharing class New_WTLine_Controller {
 		}
 		return pickListValuesList;
 	}
+
+	@AuraEnabled
+	//saveData
+	public static String saveData(buildertek__Walk_Through_Line_Items__c allData ){
+		String result = '';
+		try{
+			insert allData;
+			result = 'Record Inserted Successfully';
+		} catch (Exception e){
+			result = e.getMessage();
+			throw new AuraHandledException(e.getMessage());
+		}
+		return result;
+	}
 }

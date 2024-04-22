@@ -27,6 +27,7 @@ access="global" controller="New_WTLine_Controller">
     .slds-modal__header .slds-modal__close{
         display: none;
     }
+    
 </aura:html>
 
 <aura:if isTrue="{!v.Spinner}">
@@ -82,6 +83,8 @@ access="global" controller="New_WTLine_Controller">
 </aura:if>
 
 <aura:if isTrue="{!v.pageTwo}">
+    <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Walk_Through_Line_Items__c"   onsubmit="{!c.handleSubmit}" density="Comfy" >        
+
     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
         <div class="slds-modal__container">
             <!-- Modal/Popup Box Header Starts here-->
@@ -95,7 +98,6 @@ access="global" controller="New_WTLine_Controller">
             </header>
             <!--Modal/Popup Box Body Starts here-->
             <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Walk_Through_Line_Items__c"   onsubmit="{!c.handleSubmit}" density="Comfy" >        
                     <div class="" style="height:50vh;width:100%;overflow: auto;">
                         <div class="slds-p-around_medium" style="background-color:white;">
                             <lightning:layout multipleRows="true">
@@ -107,7 +109,7 @@ access="global" controller="New_WTLine_Controller">
                                         <aura:set attribute="else">
                                             <aura:if isTrue="{!field.name=='buildertek__Product__c'}">
                                                 <aura:if isTrue="{!v.selectedRecordTypeName == 'Product'}">
-                                                    <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
+                                                    <!-- <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
                                                         <label class="slds-form-element__label slds-no-flex">Pricebook</label>
                                                         <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class">
                                                         <aura:iteration var="option" items="{! v.pricebookoptions }">
@@ -136,11 +138,12 @@ access="global" controller="New_WTLine_Controller">
                                                         <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
                                                             IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"
                                                             parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" />
-                                                            <!-- <div onclick="{!c.handleProductChange}">
-                                                            <lightning:inputField fieldName="{!field.name}"  />
-                                                        </div> -->
-        
-                                                    </lightning:layoutItem> 
+                                                    </lightning:layoutItem>  -->
+
+                                                    <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
+                                                        <lightning:inputField fieldName="{!field.name}" aura:id="field"  />
+                                                    </lightning:layoutItem>
+
                                                 </aura:if>
                                             </aura:if>  
                                             <aura:if isTrue="{!field.name=='buildertek__Description__c'}">
@@ -161,7 +164,7 @@ access="global" controller="New_WTLine_Controller">
                             </lightning:layout>
                         </div>
                     </div>
-                    <footer aura:id="footer" class="slds-modal__footer">
+                    <!-- <footer aura:id="footer" class="slds-modal__footer">
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
                         <lightning:button variant="neutral"
                                     label="Back"
@@ -169,22 +172,20 @@ access="global" controller="New_WTLine_Controller">
                                     onclick="{!c.pageOne}"/>
                         <lightning:button variant="brand" type="submit" name="save" label="Save"  />
                     </footer>
-                </lightning:recordEditForm>
+                -->
             </div>
             <!--Modal/Popup Box Footer Starts here-->
-            <!-- <footer class="slds-modal__footer">
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
                 <lightning:button variant="neutral"
                                     label="Back"
                                     title="Back"
                                     onclick="{!c.pageOne}"/>
-                <lightning:button variant="brand"
-                                  label="Submit"
-                                  title="OK"
-                                  onclick="{!c.submitDetails}"/>
-            </footer> -->
+                <lightning:button variant="brand" type="submit" name="save" label="Save"  />
+            </footer>
         </div>
     </section>
-
+</lightning:recordEditForm>
 </aura:if>
 
 
