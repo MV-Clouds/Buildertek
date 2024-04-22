@@ -1,0 +1,73 @@
+<aura:component controller="createPDFFromQuote"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="templateList" type="List" />
+    <aura:attribute name="selectedTemplateId" type="String" />
+    <aura:attribute name="showModal" type="Boolean" default="false" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require styles="{!$Resource.ModalPreview62moreMedia}" />
+
+    <aura:html tag="style">
+        .slds-modal__container{
+        width: 60% !important;
+        padding: 0 !important;
+        max-width: 80rem !important;
+        }
+        .slds-form-element_stacked{
+        margin: 0 !important;
+        }
+        .slds-modal__header .slds-modal__close{
+        display: none;
+        }
+    </aura:html>
+
+    <c:BT_Spinner />
+
+    <aura:if isTrue="{!v.showModal}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Quote Template</h2>
+                </header>
+
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-form-element">
+                        <div class="slds-form-element__control">
+                            <lightning:select aura:id="select-01" name="select-01" label="Template"
+                                value="{!v.selectedTemplateId}">
+                                <aura:iteration items="{!v.templateList}" var="template">
+                                    <option value="{!template.Id}">{!template.Name}</option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModal }" />
+                    <lightning:button variant="brand" label="OK" title="OK" onclick="{! c.submitDetails }" />
+                </footer>
+            </div>
+        </section>
+        <aura:set attribute="else">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                    <div class="custom-loading-text">
+                        <b>Processing, Please Wait</b>
+                    </div>
+                </div>
+            </div>
+        </aura:set>
+    </aura:if>
+
+</aura:component>
