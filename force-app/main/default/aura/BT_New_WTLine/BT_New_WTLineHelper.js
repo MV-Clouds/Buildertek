@@ -30,5 +30,5 @@
             component.set("v.spinner", false);
         })
         $A.enqueueAction(action);
-    }
+    },
 })

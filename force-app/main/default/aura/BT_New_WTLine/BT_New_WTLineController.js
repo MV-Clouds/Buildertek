@@ -37,5 +37,27 @@
 
     submitDetails : function(component, event, helper) {
         console.log('submitDetails');
+    },
+
+    handleSubmit : function (component, event, helper) {
+        component.set("v.isDisabled", true);
+        component.set("v.isLoading", true);
+        event.preventDefault(); // Prevent default submit
+        var fields = event.getParam("fields");
+        console.log('fields: ' + fields);
+        var allData = JSON.stringify(fields);
+        console.log('allData: ' + allData);
+        var action = component.get("c.saveData");
+        action.setParams({
+            allData : allData
+        });
+        action.setCallback(this, function(response) {
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                console.log('Saved successfully');
+                $A.get("e.force:closeQuickAction").fire();
+            }
+        });
+        // $A.enqueueAction(action);
     }
 })
