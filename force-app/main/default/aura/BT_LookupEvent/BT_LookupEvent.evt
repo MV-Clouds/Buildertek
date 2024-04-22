@@ -9,4 +9,5 @@
     <aura:attribute name="listOfToDoItems" type="To_Do_Items__c[]" />
     <aura:attribute name="listOfScheduleItems" type="Project_Task__c[]" />
     <aura:attribute name="listOfSelectionSheetItems" type="Select_Sheet__c[]" />
+    <aura:attribute name="listOfWalkThroughLine" type="Walk_Through_List__c[]" />
 </aura:event>
