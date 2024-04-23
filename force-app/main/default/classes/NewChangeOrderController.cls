@@ -206,5 +206,10 @@ public static List<ListView> getListViews() {
         return sovRecordType;
     }
 
+    @AuraEnabled
+    public static string getBudgetprojectId(String RecordId){
+        buildertek__Budget__c budgetRec = [Select Id, Name, buildertek__Project__c from buildertek__Budget__c where Id =: RecordId];
+        return budgetRec.buildertek__Project__c;
+    } 
 
 }
