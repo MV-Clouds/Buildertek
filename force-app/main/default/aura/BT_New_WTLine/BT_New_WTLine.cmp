@@ -109,7 +109,7 @@ access="global" controller="New_WTLine_Controller">
                                         <aura:set attribute="else">
                                             <aura:if isTrue="{!field.name=='buildertek__Product__c'}">
                                                 <aura:if isTrue="{!v.selectedRecordTypeName == 'Product'}">
-                                                    <!-- <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
+                                                    <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
                                                         <label class="slds-form-element__label slds-no-flex">Pricebook</label>
                                                         <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class">
                                                         <aura:iteration var="option" items="{! v.pricebookoptions }">
@@ -138,11 +138,11 @@ access="global" controller="New_WTLine_Controller">
                                                         <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2"
                                                             IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}"
                                                             parentId="{! v.pricebookName }" prodctfamly="{!v.productfamily}" />
-                                                    </lightning:layoutItem>  -->
+                                                    </lightning:layoutItem> 
 
-                                                    <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
+                                                    <!-- <lightning:layoutItem size="6" mediumDeviceSize="6" padding="around-small">
                                                         <lightning:inputField fieldName="{!field.name}" aura:id="field"  />
-                                                    </lightning:layoutItem>
+                                                    </lightning:layoutItem> -->
 
                                                 </aura:if>
                                             </aura:if>  
