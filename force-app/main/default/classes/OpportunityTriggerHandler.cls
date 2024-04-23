@@ -77,7 +77,7 @@ public without sharing class OpportunityTriggerHandler{
 
             if (adminInterfaceNodeConfigurations.size() > 0){
                 if (adminInterfaceNodeConfigurations[0].buildertek__Create_Project_from_Opportunity__c == true){
-                    list<buildertek__Quote__c> oppquotereclist = [select id, name, buildertek__Opportunity__r.OwnerId, buildertek__Opportunity__r.Account.Billingpostalcode, buildertek__Opportunity__r.Account.Billingstreet, buildertek__Opportunity__r.Account.Billingstate, buildertek__Opportunity__r.Account.Billingcity, buildertek__Grand_Total__c, buildertek__Status__c, buildertek__Opportunity__r.Name, buildertek__Opportunity__r.Account.Name, buildertek__Opportunity__r.buildertek__Notes__c, buildertek__Opportunity__c, buildertek__Opportunity__r.AccountId
+                    list<buildertek__Quote__c> oppquotereclist = [select id, name, buildertek__Opportunity__r.OwnerId, buildertek__Opportunity__r.Account.Billingpostalcode, buildertek__Opportunity__r.Account.Billingstreet, buildertek__Opportunity__r.Account.Billingstate, buildertek__Opportunity__r.Account.Billingcity, buildertek__Grand_Total__c, buildertek__Status__c, buildertek__Opportunity__r.Name, buildertek__Opportunity__r.Account.Name, buildertek__Opportunity__r.buildertek__Notes__c, buildertek__Opportunity__c, buildertek__Opportunity__r.AccountId, buildertek__Opportunity__r.buildertek__Project_Manager__c, buildertek__Opportunity__r.buildertek__Estimator__c
                                                                   from buildertek__Quote__c
                                                                   where buildertek__Opportunity__c = :oppoids and buildertek__Status__c = 'Customer Accepted'];
                     list<buildertek__Project__c> projectlst = new list<buildertek__Project__c>();
@@ -133,8 +133,15 @@ public without sharing class OpportunityTriggerHandler{
                             project.buildertek__Notes__c = TextPreview1;
                         }
                         project.OwnerId = oppquotereclist[0].buildertek__Opportunity__r.OwnerId;
+                        if (oppquotereclist[0].buildertek__Opportunity__r.buildertek__Project_Manager__c != null){
+                            project.buildertek__Project_Manager__c = oppquotereclist[0].buildertek__Opportunity__r.buildertek__Project_Manager__c;
+                        }
+                        if (oppquotereclist[0].buildertek__Opportunity__r.buildertek__Estimator__c != null){
+                            project.buildertek__Estimator_User__c = oppquotereclist[0].buildertek__Opportunity__r.buildertek__Estimator__c;
+                        }
                         System.debug('project details ' + project);
                         insert project;
+                        BT_CreateProjectFromOpportunity.sendEmailtoProjectManager(project.Id);
                         createProject = false;
                         List<ContentNote> contentNoteslist = new List<ContentNote>();
                         for (ContentNote c : contentNotes){
@@ -372,7 +379,7 @@ public without sharing class OpportunityTriggerHandler{
                     }
 
                     List<Opportunity> oppyList = new List<Opportunity>();
-                    oppyList = [SELECT Id, Name, AccountId, Account.Name, Account.Billingcity, Account.Billingstate, Account.Billingstreet, Account.Billingpostalcode, ownerId FROM Opportunity WHERE Id IN :oldOpportunityMap.keySet()];
+                    oppyList = [SELECT Id, Name, AccountId, buildertek__Estimator__c, buildertek__Project_Manager__c, Account.Name, Account.Billingcity, Account.Billingstate, Account.Billingstreet, Account.Billingpostalcode, ownerId FROM Opportunity WHERE Id IN :oldOpportunityMap.keySet()];
                     if (createProject) {
                         list<buildertek__Project__c> projectList = new list<buildertek__Project__c>();
                         for (Opportunity opp : oppyList) {
@@ -386,10 +393,20 @@ public without sharing class OpportunityTriggerHandler{
                             prj.Name = opp.Account.Name;
                             prj.buildertek__Opportunity__c = opp.Id;
                             prj.OwnerId = opp.OwnerId;
+                            if (opp.buildertek__Estimator__c != null) {
+                                prj.buildertek__Estimator_User__c = opp.buildertek__Estimator__c;
+                            }
+                            if (opp.buildertek__Project_Manager__c != null) {
+                                prj.buildertek__Project_Manager__c = opp.buildertek__Project_Manager__c;
+                            }
                             projectList.add(prj);
                         }
                         
                         insert projectList;
+                        //iterating through the project list to send email to project manager
+                        for (buildertek__Project__c project : projectList) {
+                            BT_CreateProjectFromOpportunity.sendEmailtoProjectManager(project.Id);
+                        }
                     }
                 }
             }
