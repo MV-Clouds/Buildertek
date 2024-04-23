@@ -149,7 +149,7 @@
                 component.set("v.Spinner", false);
                 var result = response.getReturnValue();
                 if (result === 'Success') {
-                    $A.get('e.force:refreshView').fire();
+                    // $A.get('e.force:refreshView').fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "title": "Success!",
