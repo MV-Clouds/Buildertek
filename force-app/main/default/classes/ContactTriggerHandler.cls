@@ -30,7 +30,7 @@ public with sharing class ContactTriggerHandler {
                 }
 
                 if (!timeCardsToUpdate.isEmpty()) {
-                    update timeCardsToUpdate;
+                    // update timeCardsToUpdate;
                 }
             }
         } catch (Exception ex) {
