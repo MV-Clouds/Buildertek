@@ -256,6 +256,7 @@ public class createAllPOfromBOM_controller {
             if(BOMLines.size() > 0){
                 boolean AllBOMlinesAssigesWithPO =  true;
                 boolean AllBOMlinesNotHaveCostCode =  true;
+                boolean AllBOMlinesNotHaveVendor =  true;
 
                 for(buildertek__Select_Sheet__c line : BOMLines){
                     if(line.buildertek__Purchase_Order__c == null && line.buildertek__Cost_Code__c != null){
@@ -269,6 +270,12 @@ public class createAllPOfromBOM_controller {
                     }
                 }
 
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Vendor__c != null){
+                        AllBOMlinesNotHaveVendor = false;
+                    }
+                }
+
                 if(AllBOMlinesNotHaveCostCode == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'Unable to create purchase order. No cost code assigned to available lines.';
@@ -276,6 +283,9 @@ public class createAllPOfromBOM_controller {
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }else if(AllBOMlinesNotHaveVendor == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -285,43 +295,28 @@ public class createAllPOfromBOM_controller {
 
                     Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
 
-                    Map<Id, Id> BOMlineId_CostCodeId = new Map<Id, Id>();
-                    Map<Id, Id> CostCodeId_VendorId = new Map<Id, Id>();
-                    Map<Id, Id> CostCodeId_Phase = new Map<Id, Id>();
-                    Map<Id, String> CostCodeId_Category = new Map<Id, String>();
-                    Set<String> costCodeList = new Set<String>();
+                    Map<String, Id> CostCodeVendorId_BOMLineId = new Map<String, Id>();
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
-                            costCodeList.add(line.buildertek__Cost_Code__c);   
-
-                            BOMlineId_CostCodeId.put(line.Id, line.buildertek__Cost_Code__c);
-
-                            // Get Vendor and Phase value of First BOM Line which match condition for perticulart cost code....
-                            if(line.buildertek__Vendor__c != null && line.buildertek__Build_Phase__c != null && line.buildertek__Category__c != null && !CostCodeId_VendorId.containsKey(line.buildertek__Cost_Code__c)){
-                                CostCodeId_VendorId.put(line.buildertek__Cost_Code__c, line.buildertek__Vendor__c);
-                                CostCodeId_Phase.put(line.buildertek__Cost_Code__c, line.buildertek__Build_Phase__c);
-                                CostCodeId_Category.put(line.buildertek__Cost_Code__c, line.buildertek__Category__c);
-                            }
+                            String key = line.buildertek__Cost_Code__c + '_' + line.buildertek__Vendor__c;
+                            CostCodeVendorId_BOMLineId.put(key, line.Id);
                         }
                     }
-                    System.debug('CostCodeId_VendorId : ' + CostCodeId_VendorId);
-                    System.debug('CostCodeId_Phase : ' + CostCodeId_Phase);
-                    System.debug('CostCodeId_Category : ' + CostCodeId_Category);
 
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
-                    List<Id> createdPOsIds = new List<Id>();
-
-                    if(costCodeList.size() > 0){
-                        for(String cc : costCodeList){
+                    if(CostCodeVendorId_BOMLineId.size() > 0){
+                        for(String key : CostCodeVendorId_BOMLineId.keySet()){
+                            List<String> keyList = key.split('_');
+                            String CostCode = keyList[0];
+                            String VendorId = keyList[1];
                             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
                             POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
                             POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
                             POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
                             POtoCreate.buildertek__Status__c = 'Open';
-                            POtoCreate.buildertek__Vendor__c = CostCodeId_VendorId.containsKey(cc) ? CostCodeId_VendorId.get(cc) : null;      // Assign Vendor...
-                            POtoCreate.buildertek__Cost_Code__c = cc;
-                            POtoCreate.buildertek__BT_Build_Phase__c = CostCodeId_Phase.containsKey(cc) ? CostCodeId_Phase.get(cc) : null;    // Assign Phase...
+                            POtoCreate.buildertek__Vendor__c = VendorId;
+                            POtoCreate.buildertek__Cost_Code__c = CostCode;
                             POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                         }
@@ -331,14 +326,19 @@ public class createAllPOfromBOM_controller {
                         insert POsToCreate_List;
                     }
 
+                    //itetate through the CostCodeVendorId_BOMLineId map and create PO lines for each PO
+                    List<Id> createdPOsIds = new List<Id>();
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
                         createdPOsIds.add(PO.Id);
                     }
+
                     List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
-                    Map<Id, Id> CostCodeId_POId = new Map<Id, Id>();
+                    Map<String, Id> CostCodeVendorId_POId = new Map<String, Id>();
+
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
-                        CostCodeId_POId.put(PO.buildertek__Cost_Code__c, PO.Id);
+                        String key = PO.buildertek__Cost_Code__c + '_' + PO.buildertek__Vendor__c;
+                        CostCodeVendorId_POId.put(key, PO.Id);
                     }
 
                     List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
@@ -346,13 +346,14 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Cost_Code__c + '_' + line.buildertek__Vendor__c;
                             buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
                             Poline.Name = line.Name;
                             Poline.buildertek__Product__c = line.buildertek__Product__c;
                             Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                             Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                             Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
-                            Poline.buildertek__Purchase_Order__c = CostCodeId_POId.get(line.buildertek__Cost_Code__c);
+                            Poline.buildertek__Purchase_Order__c = CostCodeVendorId_POId.get(key);
                             POlinesToCreate.add(Poline);
                             LineId_POlines.put(line.Id, Poline);
                         }
@@ -364,13 +365,13 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line: BOMlines){
                         if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Cost_Code__c + '_' + line.buildertek__Vendor__c;
                             line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
-                            line.buildertek__Purchase_Order__c = CostCodeId_POId.get(line.buildertek__Cost_Code__c);
+                            line.buildertek__Purchase_Order__c = CostCodeVendorId_POId.get(key);
                         }
                     }
 
                     update BOMlines;
-
 
                     returnValue.state = 'success';
                     returnValue.returnMessage = 'All PO\'s created successfully.';
@@ -415,6 +416,7 @@ public class createAllPOfromBOM_controller {
             if(BOMLines.size() > 0){
                 boolean AllBOMlinesAssigesWithPO = true;
                 boolean AllBOMlinesNotHaveTradeType = true;
+                boolean AllBOMlinesNotHaveVendor = true;
 
                 for(buildertek__Select_Sheet__c line : BOMLines){
                     if(line.buildertek__Purchase_Order__c == null && line.buildertek__Trade_Type__c != null){
@@ -428,6 +430,12 @@ public class createAllPOfromBOM_controller {
                     }
                 }
 
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Vendor__c != null){
+                        AllBOMlinesNotHaveVendor = false;
+                    }
+                }
+
                 if(AllBOMlinesNotHaveTradeType == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'Unable to create purchase order. No trade type assigned to available lines.';
@@ -435,6 +443,9 @@ public class createAllPOfromBOM_controller {
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }else if(AllBOMlinesNotHaveVendor == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -444,47 +455,28 @@ public class createAllPOfromBOM_controller {
 
                     Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
 
-                    Map<Id, Id> BOMlineId_TradeTypeId = new Map<Id, Id>();
-                    Map<Id, Id> TradeTypeId_VendorId = new Map<Id, Id>();
-                    Map<Id, Id> TradeTypeId_CostCode = new Map<Id, Id>();
-                    Map<Id, Id> TradeTypeId_Phase = new Map<Id, Id>();
-                    Map<Id, String> TradeTypeId_Category = new Map<Id, String>();
-                    Set<String> tradeTypeList = new Set<String>();
+                    Map<String, Id> TradeTypeVendorId_BOMLineId = new Map<String, Id>();
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
-                            tradeTypeList.add(line.buildertek__Trade_Type__c);   
-
-                            BOMlineId_TradeTypeId.put(line.Id, line.buildertek__Trade_Type__c);
-
-                            // Get Vendor and Phase value of First BOM Line which match condition for perticulart trade type....
-                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && line.buildertek__Category__c != null && !TradeTypeId_VendorId.containsKey(line.buildertek__Trade_Type__c)){
-                                TradeTypeId_VendorId.put(line.buildertek__Trade_Type__c, line.buildertek__Vendor__c);
-                                TradeTypeId_CostCode.put(line.buildertek__Trade_Type__c, line.buildertek__Cost_Code__c);
-                                TradeTypeId_Phase.put(line.buildertek__Trade_Type__c, line.buildertek__Build_Phase__c);
-                                TradeTypeId_Category.put(line.buildertek__Trade_Type__c, line.buildertek__Category__c);
-                            }
+                            String key = line.buildertek__Trade_Type__c + '_' + line.buildertek__Vendor__c;
+                            TradeTypeVendorId_BOMLineId.put(key, line.Id);
                         }
                     }
-                    System.debug('tradeTypeList : ' + tradeTypeList);
-                    System.debug('TradeTypeId_VendorId : ' + TradeTypeId_VendorId);
-                    System.debug('TradeTypeId_CostCode : ' + TradeTypeId_CostCode);
-                    System.debug('TradeTypeId_Phase : ' + TradeTypeId_Phase);
-                    System.debug('TradeTypeId_Category : ' + TradeTypeId_Category);
 
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
-                    List<Id> createdPOsIds = new List<Id>();
-                    if(tradeTypeList.size() > 0){
-                        for(String tt : tradeTypeList){
+                    if(TradeTypeVendorId_BOMLineId.size() > 0){
+                        for(String key : TradeTypeVendorId_BOMLineId.keySet()){
+                            List<String> keyList = key.split('_');
+                            String TradeType = keyList[0];
+                            String VendorId = keyList[1];
                             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
                             POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
                             POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
                             POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
                             POtoCreate.buildertek__Status__c = 'Open';
-                            POtoCreate.buildertek__Trade_Type__c = tt;
-                            POtoCreate.buildertek__Vendor__c = TradeTypeId_VendorId.containsKey(tt) ? TradeTypeId_VendorId.get(tt) : null;      // Assign Vendor...
-                            POtoCreate.buildertek__Cost_Code__c = TradeTypeId_CostCode.containsKey(tt) ? TradeTypeId_CostCode.get(tt) : null;      // Assign Cost code...
-                            POtoCreate.buildertek__BT_Build_Phase__c = TradeTypeId_Phase.containsKey(tt) ? TradeTypeId_Phase.get(tt) : null;    // Assign Phase...
+                            POtoCreate.buildertek__Vendor__c = VendorId;
+                            POtoCreate.buildertek__Trade_Type__c = TradeType;
                             POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                         }
@@ -494,34 +486,34 @@ public class createAllPOfromBOM_controller {
                         insert POsToCreate_List;
                     }
 
-                    System.debug('no of create POs ==> ' + POsToCreate_List.size());
-
+                    //itetate through the TradeTypeVendorId_BOMLineId map and create PO lines for each PO
+                    List<Id> createdPOsIds = new List<Id>();
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
                         createdPOsIds.add(PO.Id);
                     }
+
                     List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
-                    System.debug('no of create POs ==> ' + POsToCreate_List.size());
+                    Map<String, Id> TradeTypeVendorId_POId = new Map<String, Id>();
 
-                    Map<Id, Id> TradeTypeId_POId = new Map<Id, Id>();
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
-                        TradeTypeId_POId.put(PO.buildertek__Trade_Type__c, PO.Id);
+                        String key = PO.buildertek__Trade_Type__c + '_' + PO.buildertek__Vendor__c;
+                        TradeTypeVendorId_POId.put(key, PO.Id);
                     }
-
-                    System.debug('TradeTypeId_POId ==> ' + TradeTypeId_POId);
 
                     List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
                     Map<Id, buildertek__Purchase_Order_Item__c> LineId_POlines = new Map<Id, buildertek__Purchase_Order_Item__c>();
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Trade_Type__c + '_' + line.buildertek__Vendor__c;
                             buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
                             Poline.Name = line.Name;
                             Poline.buildertek__Product__c = line.buildertek__Product__c;
                             Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                             Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                             Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
-                            Poline.buildertek__Purchase_Order__c = TradeTypeId_POId.get(line.buildertek__Trade_Type__c);
+                            Poline.buildertek__Purchase_Order__c = TradeTypeVendorId_POId.get(key);
                             POlinesToCreate.add(Poline);
                             LineId_POlines.put(line.Id, Poline);
                         }
@@ -533,8 +525,9 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line: BOMlines){
                         if(line.buildertek__Trade_Type__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Trade_Type__c + '_' + line.buildertek__Vendor__c;
                             line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
-                            line.buildertek__Purchase_Order__c = TradeTypeId_POId.get(line.buildertek__Trade_Type__c);
+                            line.buildertek__Purchase_Order__c = TradeTypeVendorId_POId.get(key);
                         }
                     }
 
@@ -579,6 +572,7 @@ public class createAllPOfromBOM_controller {
             if(BOMLines.size() > 0){
                 boolean AllBOMlinesAssigesWithPO = true;
                 boolean AllBOMlinesNotHaveBuildPhase = true;
+                boolean AllBOMlinesNotHaveVendor = true;
 
                 for(buildertek__Select_Sheet__c line : BOMLines){
                     if(line.buildertek__Purchase_Order__c == null && line.buildertek__Build_Phase__c != null){
@@ -592,6 +586,12 @@ public class createAllPOfromBOM_controller {
                     }
                 }
 
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Vendor__c != null){
+                        AllBOMlinesNotHaveVendor = false;
+                    }
+                }
+
                 if(AllBOMlinesNotHaveBuildPhase == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'Unable to create purchase order. No build phase assigned to available lines.';
@@ -599,6 +599,9 @@ public class createAllPOfromBOM_controller {
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }else if(AllBOMlinesNotHaveVendor == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -608,44 +611,28 @@ public class createAllPOfromBOM_controller {
 
                     Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
 
-                    Map<Id, Id> BOMlineId_PhaseId = new Map<Id, Id>();
-                    Map<Id, Id> PhaseId_VendorId = new Map<Id, Id>();
-                    Map<Id, Id> PhaseId_CostCode = new Map<Id, Id>();
-                    Map<Id, String> PhaseId_Category = new Map<Id, String>();
-                    Set<String> phaseList = new Set<String>();
+                    Map<String, Id> BuildPhaseVendorId_BOMLineId = new Map<String, Id>();
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
-                            phaseList.add(line.buildertek__Build_Phase__c);   
-
-                            BOMlineId_PhaseId.put(line.Id, line.buildertek__Build_Phase__c);
-
-                            // Get Vendor and Cost code value of First BOM Line which match condition for perticulart build phase....
-                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Category__c != null && !PhaseId_VendorId.containsKey(line.buildertek__Build_Phase__c)){
-                                PhaseId_VendorId.put(line.buildertek__Build_Phase__c, line.buildertek__Vendor__c);
-                                PhaseId_CostCode.put(line.buildertek__Build_Phase__c, line.buildertek__Cost_Code__c);
-                                PhaseId_Category.put(line.buildertek__Build_Phase__c, line.buildertek__Category__c);
-                            }
+                            String key = line.buildertek__Build_Phase__c + '_' + line.buildertek__Vendor__c;
+                            BuildPhaseVendorId_BOMLineId.put(key, line.Id);
                         }
                     }
-                    System.debug('phaseList : ' + phaseList);
-                    System.debug('PhaseId_VendorId : ' + PhaseId_VendorId);
-                    System.debug('PhaseId_CostCode : ' + PhaseId_CostCode);
-                    System.debug('PhaseId_Category : ' + PhaseId_Category);
 
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
-                    List<Id> createdPOsIds = new List<Id>();
-
-                    if(phaseList.size() > 0){
-                        for(String ph : phaseList){
+                    if(BuildPhaseVendorId_BOMLineId.size() > 0){
+                        for(String key : BuildPhaseVendorId_BOMLineId.keySet()){
+                            List<String> keyList = key.split('_');
+                            String BuildPhase = keyList[0];
+                            String VendorId = keyList[1];
                             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
                             POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
                             POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
                             POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
                             POtoCreate.buildertek__Status__c = 'Open';
-                            POtoCreate.buildertek__BT_Build_Phase__c = ph;
-                            POtoCreate.buildertek__Vendor__c = PhaseId_VendorId.containsKey(ph) ? PhaseId_VendorId.get(ph) : null;      // Assign Vendor...
-                            POtoCreate.buildertek__Cost_Code__c = PhaseId_CostCode.containsKey(ph) ? PhaseId_CostCode.get(ph) : null;      // Assign Cost code...
+                            POtoCreate.buildertek__Vendor__c = VendorId;
+                            POtoCreate.buildertek__BT_Build_Phase__c = BuildPhase;
                             POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                         }
@@ -655,15 +642,19 @@ public class createAllPOfromBOM_controller {
                         insert POsToCreate_List;
                     }
 
+                    //itetate through the BuildPhaseVendorId_BOMLineId map and create PO lines for each PO
+                    List<Id> createdPOsIds = new List<Id>();
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
                         createdPOsIds.add(PO.Id);
                     }
 
                     List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
-                    Map<Id, Id> PhaseId_POId = new Map<Id, Id>();
+                    Map<String, Id> BuildPhaseVendorId_POId = new Map<String, Id>();
+
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
-                        PhaseId_POId.put(PO.buildertek__BT_Build_Phase__c, PO.Id);
+                        String key = PO.buildertek__BT_Build_Phase__c + '_' + PO.buildertek__Vendor__c;
+                        BuildPhaseVendorId_POId.put(key, PO.Id);
                     }
 
                     List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
@@ -671,13 +662,14 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Build_Phase__c + '_' + line.buildertek__Vendor__c;
                             buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
                             Poline.Name = line.Name;
                             Poline.buildertek__Product__c = line.buildertek__Product__c;
                             Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                             Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                             Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
-                            Poline.buildertek__Purchase_Order__c = PhaseId_POId.get(line.buildertek__Build_Phase__c);
+                            Poline.buildertek__Purchase_Order__c = BuildPhaseVendorId_POId.get(key);
                             POlinesToCreate.add(Poline);
                             LineId_POlines.put(line.Id, Poline);
                         }
@@ -689,8 +681,9 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line: BOMlines){
                         if(line.buildertek__Build_Phase__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Build_Phase__c + '_' + line.buildertek__Vendor__c;
                             line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
-                            line.buildertek__Purchase_Order__c = PhaseId_POId.get(line.buildertek__Build_Phase__c);
+                            line.buildertek__Purchase_Order__c = BuildPhaseVendorId_POId.get(key);
                         }
                     }
 
@@ -736,6 +729,7 @@ public class createAllPOfromBOM_controller {
             if(BOMLines.size() > 0){
                 boolean AllBOMlinesAssigesWithPO = true;
                 boolean AllBOMlinesNotHaveCategory = true;
+                boolean AllBOMlinesNotHaveVendor = true;
 
                 for(buildertek__Select_Sheet__c line : BOMLines){
                     if(line.buildertek__Purchase_Order__c == null && line.buildertek__Category__c != null){
@@ -749,6 +743,12 @@ public class createAllPOfromBOM_controller {
                     }
                 }
 
+                for(buildertek__Select_Sheet__c line : BOMLines){
+                    if(line.buildertek__Vendor__c != null){
+                        AllBOMlinesNotHaveVendor = false;
+                    }
+                }
+
                 if(AllBOMlinesNotHaveCategory == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'Unable to create purchase order. No category assigned to available lines.';
@@ -757,6 +757,9 @@ public class createAllPOfromBOM_controller {
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
                     returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                }else if(AllBOMlinesNotHaveVendor == true){
+                    returnValue.state = 'error';
+                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -766,45 +769,29 @@ public class createAllPOfromBOM_controller {
 
                     Id standardPurchaseOrderRecordTypeId = recordTypeMap.get('Standard');
 
-                    Map<Id, Id> BOMlineId_CategoryId = new Map<Id, Id>();
-                    Map<Id, Id> CategoryId_VendorId = new Map<Id, Id>();
-                    Map<Id, Id> CategoryId_CostCode = new Map<Id, Id>();
-                    Map<Id, Id> CategoryId_Phase = new Map<Id, Id>();
-                    Set<String> categoryList = new Set<String>();
+                    Map<String, Id> CategoryVendorId_BOMLineId = new Map<String, Id>();
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
-                            categoryList.add(line.buildertek__Category__c);   
-
-                            BOMlineId_CategoryId.put(line.Id, line.buildertek__Category__c);
-
-                            // Get Vendor and Cost code value of First BOM Line which match condition for perticulart category....
-                            if(line.buildertek__Vendor__c != null && line.buildertek__Cost_Code__c != null && line.buildertek__Build_Phase__c != null && !CategoryId_VendorId.containsKey(line.buildertek__Category__c)){
-                                CategoryId_VendorId.put(line.buildertek__Category__c, line.buildertek__Vendor__c);
-                                CategoryId_CostCode.put(line.buildertek__Category__c, line.buildertek__Cost_Code__c);
-                                CategoryId_Phase.put(line.buildertek__Category__c, line.buildertek__Build_Phase__c);
-                            }
+                            String key = line.buildertek__Category__c + '_' + line.buildertek__Vendor__c;
+                            CategoryVendorId_BOMLineId.put(key, line.Id);
                         }
                     }
-                    System.debug('categoryList : ' + categoryList);
-                    System.debug('CategoryId_VendorId : ' + CategoryId_VendorId);
-                    System.debug('CategoryId_CostCode : ' + CategoryId_CostCode);
-                    System.debug('CategoryId_Phase : ' + CategoryId_Phase);
 
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
-                    List<Id> createdPOsIds = new List<Id>();
 
-                    if(categoryList.size() > 0){
-                        for(String cat : categoryList){
+                    if(CategoryVendorId_BOMLineId.size() > 0){
+                        for(String key : CategoryVendorId_BOMLineId.keySet()){
+                            List<String> keyList = key.split('_');
+                            String Category = keyList[0];
+                            String VendorId = keyList[1];
                             buildertek__Purchase_Order__c POtoCreate = new buildertek__Purchase_Order__c();
                             POtoCreate.buildertek__Description__c = BOM.buildertek__Name__c;
                             POtoCreate.buildertek__Project__c = BOM.buildertek__Project__c;
                             POtoCreate.buildertek__Bill_of_Material__c = BOM.Id;
                             POtoCreate.buildertek__Status__c = 'Open';
-                            POtoCreate.buildertek__Category__c = cat;
-                            POtoCreate.buildertek__Vendor__c = CategoryId_VendorId.containsKey(cat) ? CategoryId_VendorId.get(cat) : null;      // Assign Vendor...
-                            POtoCreate.buildertek__Cost_Code__c = CategoryId_CostCode.containsKey(cat) ? CategoryId_CostCode.get(cat) : null;      // Assign Cost code...
-                            POtoCreate.buildertek__BT_Build_Phase__c = CategoryId_Phase.containsKey(cat) ? CategoryId_Phase.get(cat) : null;    // Assign Phase...
+                            POtoCreate.buildertek__Vendor__c = VendorId;
+                            POtoCreate.buildertek__Category__c = Category;
                             POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                         }
@@ -814,15 +801,19 @@ public class createAllPOfromBOM_controller {
                         insert POsToCreate_List;
                     }
 
+                    //itetate through the CategoryVendorId_BOMLineId map and create PO lines for each PO
+                    List<Id> createdPOsIds = new List<Id>();
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
                         createdPOsIds.add(PO.Id);
                     }
 
                     List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
-                    Map<Id, Id> CategoryId_POId = new Map<Id, Id>();
+                    Map<String, Id> CategoryVendorId_POId = new Map<String, Id>();
+
                     for(buildertek__Purchase_Order__c PO : POsToCreate_List){
-                        CategoryId_POId.put(PO.buildertek__Category__c, PO.Id);
+                        String key = PO.buildertek__Category__c + '_' + PO.buildertek__Vendor__c;
+                        CategoryVendorId_POId.put(key, PO.Id);
                     }
 
                     List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
@@ -830,13 +821,14 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line : BOMLines){
                         if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Category__c + '_' + line.buildertek__Vendor__c;
                             buildertek__Purchase_Order_Item__c Poline = new buildertek__Purchase_Order_Item__c();
                             Poline.Name = line.Name;
                             Poline.buildertek__Product__c = line.buildertek__Product__c;
                             Poline.buildertek__Quantity__c = line.buildertek__Quantity__c;
                             Poline.buildertek__Cost_Code__c = line.buildertek__Cost_Code__c;
                             Poline.buildertek__Unit_Price__c = line.buildertek__BL_UNIT_COST__c;
-                            Poline.buildertek__Purchase_Order__c = CategoryId_POId.get(line.buildertek__Category__c);
+                            Poline.buildertek__Purchase_Order__c = CategoryVendorId_POId.get(key);
                             POlinesToCreate.add(Poline);
                             LineId_POlines.put(line.Id, Poline);
                         }
@@ -848,8 +840,9 @@ public class createAllPOfromBOM_controller {
 
                     for(buildertek__Select_Sheet__c line: BOMlines){
                         if(line.buildertek__Category__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Category__c + '_' + line.buildertek__Vendor__c;
                             line.buildertek__Purchase_Order_Line__c = LineId_POlines.get(line.Id).Id;
-                            line.buildertek__Purchase_Order__c = CategoryId_POId.get(line.buildertek__Category__c);
+                            line.buildertek__Purchase_Order__c = CategoryVendorId_POId.get(key);
                         }
                     }
 
