@@ -1,245 +1,24 @@
 ({
 
-    storeAllData: [],
-    setColumns: function (component) {
-        component.set("v.columns", [
-            {
-                label: "Name",
-                fieldName: "linkName",
-                type: "url",
-                typeAttributes: {
-                    label: { fieldName: "Name" },
-                    target: "_blank",
-                    tooltip: { fieldName: "Name" },
-                },
-                sortable: true,
-            },
-            {
-                label: "Vendor",
-                fieldName: "VendorName",
-                //fieldName : 'buildertek__Vendor__r.Name',
-                type: "text",
-                sortable: true,
-            },
-            /* {
-                      label : 'Product',
-                      //buildertek__Product__c
-                      fieldName : 'ProductName',
-                      type : 'text',
-                      sortable : true
-                  },
-                  {
-                      label: 'Build Phase',
-                      //buildertek__Build_Phase__c
-                      fieldName : 'BuildPhase',
-                      type: 'text',
-                      sortable : true
-                  },
-                  {
-                      label : 'Trade Type',
-                      //buildertek__Trade_Type__c
-                      fieldName : 'Tradetype',
-                      type : 'text',
-                      sortable : true
-                  },*/
-            {
-                label: "Category",
-                //buildertek__Category__c
-                fieldName: "CategoryName",
-                type: "text",
-                sortable: true,
-            },
-            //buildertek__Purchase_Order__c,buildertek__Purchase_Order__r.Name
-            {
-                label: "Purchase order",
-                //buildertek__Category__c
-                fieldName: "PurchaseOrder",
-                type: "text",
-                sortable: true,
-            },
-            {
-                label: "Product Type",
-                //buildertek__Product_Type__c
-                fieldName: "ProductType",
-                type: "text",
-                sortable: true,
-            },
-            {
-                label: "Location",
-                fieldName: "buildertek__Location_Picklist__c",
-                type: "Picklist",
-                sortable: true,
-            },
-            {
-                label: "Standard",
-                fieldName: "buildertek__Standard__c",
-                type: "Picklist",
-                sortable: true,
-            },
-            /* {
-                      label : 'Upgrade Price',
-                      fieldName : 'buildertek__Upgrade_Price__c',
-                      type : 'currency',
-                      sortable : true,
-                      cellAttributes: { alignment: 'left' }
-                  },*/
-            {
-                label: "Quantity",
-                fieldName: "buildertek__Quantity__c",
-                type: "number",
-                sortable: true,
-            },
-            {
-                label: "List Price",
-                fieldName: "buildertek__BL_LIST_PRICE__c",
-                type: "Currency",
-                sortable: true,
-            },
-            {
-                label: "Discount",
-                fieldName: "buildertek__BL_DISCOUNT__c",
-                type: "Percent",
-                sortable: true,
-            },
-            {
-                label: "Markup",
-                fieldName: "buildertek__BL_MARKUP__c",
-                type: "Percent",
-                sortable: true,
-            },
-            {
-                label: "Unit Cost",
-                fieldName: "buildertek__BL_UNIT_COST__c",
-                type: "Currency",
-                sortable: true,
-            },
-        ]);
-    },
-
-    fetchTakeOffLinesData: function (component, event, helper) {
-        var action = component.get("c.getTakeOffLinesData");
-        action.setCallback(this, function (response) {
-            // debugger;
-            console.log('getTakeOffLinesData Response : ', response.getReturnValue());
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
-                // console.log("fetchTakeOffLinesData");
-                // console.log({ result });
-                if (result != null) {
-
-                    component.set("v.bomLineFieldsSettings", result.bomLineFieldSettings);
-                    var bomSelectedFieldsLength =
-                        result.bomLineselectedFields.split(",").length;
-                    bomSelectedFieldsLength = bomSelectedFieldsLength + 2;
-                    component.set("v.bomLineselectedFieldsLength", bomSelectedFieldsLength);
-                    component.set("v.bomLineselectedFields", result.bomLineselectedFields);
-                    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>' , component.get("v.bomLineselectedFields"));
-                }
-                var getBOMLineFieldMapAction = component.get(
-                    "c.getBOMLineFiledNameAndApi"
-                );
-                component.set("v.isSpinner", true);
-                getBOMLineFieldMapAction.setCallback(this, function (response) {
-                    console.log('getBOMLineFieldMapAction response : ', response.getReturnValue());
-                    // debugger;
-                    var state = response.getState();
-                    if (state === "SUCCESS") {
-                        component.set("v.isSpinner", true);
-                        var result = response.getReturnValue();
-                        component.set("v.fieldBOMLineNameApiMap", result);
-                        var neList = [];
-                        neList = Object.values(result);
-                        // // console.log(neList)
-                        component.set("v.fieldBOMLineNameApiList", neList);
-                        component.set("v.isSpinner", false);
-                    }
-                });
-                $A.enqueueAction(getBOMLineFieldMapAction);
-
-                component.set("v.isSpinner", false);
-            } else {
-                helper.showToast(
-                    component,
-                    event,
-                    helper,
-                    "Error!",
-                    "Something went wrong!",
-                    "error"
-                );
-                // // console.log('Error');
-            }
-        });
-        $A.enqueueAction(action);
-    },
-
     getPoLinesList: function (component, event, helper, pageNumber, pageSize, headerIndex) {
         console.time('getPoLinesList');
         component.set("v.isLoading", true);
-
-        var vendorValue = component.get("v.searchVendorFilter");
-        var categoryValue = component.get("v.searchCategoryFilter");
-        var tradeTypeValue = component.get("v.searchTradeTypeFilter");
-        var productTypeValue = component.get("v.searchProductTypeFilter");
-        var purchaseOrderValue = component.get("v.searchPurchaseOrderFilter");
-        var buildPhaseValue = component.get("v.searchBuildPhaseFilter");
-        var toggleVal = component.get("v.groupBytoggle");
         var recId = component.get("v.recordId");
-
-        //dynamic filter
-        var bomLineOptionlist = component.get("v.fieldBOMLineNameApiList");
-        var filter2 = "";
-        if (bomLineOptionlist != undefined) {
-            for (var i = 0; i < bomLineOptionlist.length; i++) {
-                if (bomLineOptionlist[i].Value) {
-                    var fieldApiName = bomLineOptionlist[i]["Name"];
-                    if (bomLineOptionlist[i].Type == "REFERENCE") {
-                        var fieldApiName1 = fieldApiName.split("__c")[0];
-                        var value = "'%" + bomLineOptionlist[i].Value + "%'";
-                        filter2 += " AND " + fieldApiName1 + "__r.Name LIKE " + value;
-                    } else if (
-                        bomLineOptionlist[i].Type == "STRING" ||
-                        bomLineOptionlist[i].Type == "PICKLIST"
-                    ) {
-                        var STRvalue = "'%" + bomLineOptionlist[i].Value + "%'";
-                        filter2 += " AND " + fieldApiName + " LIKE " + STRvalue;
-                    } else if (bomLineOptionlist[i].Type == "DOUBLE") {
-                        var value1 = JSON.parse(bomLineOptionlist[i].Value);
-                        filter2 += " AND " + fieldApiName + " =" + value1;
-                    } else if (bomLineOptionlist[i].Type == "DATETIME") {
-                        var dateVal = bomLineOptionlist[i].Value; // new Date(optionlist[i].Value);
-                        filter2 += " AND " + fieldApiName + " >=" + dateVal;
-                    } else if (bomLineOptionlist[i].Type == "DATE") {
-                        var dateVal = bomLineOptionlist[i].Value; // new Date(optionlist[i].Value);
-                        filter2 += " AND " + fieldApiName + " >=" + dateVal;
-                    }
-                    // // console.log(filter2);
-                }
-            }
-        }
 
         var action = component.get("c.getProductOptionLines");
         action.setParams({
             pageNumber: pageNumber,
             pageSize: pageSize,
             recordId: recId,
-            vendorName: vendorValue,
-            category: categoryValue,
-            tradeType: tradeTypeValue,
-            purchaseOrder: purchaseOrderValue,
-            productType: productTypeValue,
-            buildPhase: buildPhaseValue,
-            toggleValue: toggleVal,
-            filter: filter2,
         });
         action.setCallback(this, function (response) {
-            // debugger;
-            console.log('getProductOptionLines response : ', response.getReturnValue());
+
             var state = response.getState();
             if (state === "SUCCESS") {
                 var pageSize = component.get("v.pageSize");
                 var result = response.getReturnValue();
 
+                component.set("v.bomLineFieldsSettings", result.bomLineFieldSettings);
                 component.set("v.recordsList", result.recordList);
                 component.set("v.fieldValues", JSON.parse(result.fieldValues));
                 var fieldValues = JSON.parse(result.fieldValues)
@@ -314,19 +93,11 @@
                     JSON.parse(result.sObjectRecordsList),
                     headerIndex
                 );
-                //component.set("v.totalRecords", component.get("v.masterBudgetsList").length);
 
-                /*var PaginationList = [];
-                        for(var i=0; i< pageSize; i++){
-                            if(component.get("v.masterBudgetsList").length> i)
-                                PaginationList.push(result[i]);
-                        }*/
-                // component.set('v.PaginationList', PaginationList);
                 component.set("v.isLoading", false);
                 console.timeEnd('getPoLinesList');
             } else {
                 component.set("v.isLoading", false);
-                // // console.log(response.getError())
             }
         });
         $A.enqueueAction(action);
@@ -341,9 +112,9 @@
         sObjectRecordsList,
         headerIndex
     ) {
-        try {
-            debugger
+        console.time('formatDataByGroups');
 
+        try {
             let recordsMap = new Map();
             let sObjectRecordsMap = new Map();
             for (var kkk in sObjectRecordsList) {
@@ -353,14 +124,7 @@
                 );
             }
 
-            var massupdateIndex = JSON.parse(JSON.stringify(component.get("v.massupdateIndex")));
-            // console.log('formate data massupdateIndex ', massupdateIndex);
-
             for (var i in mapData) {
-                var toggleVal = component.get("v.groupBytoggle");
-
-                // if (component.get("v.groupByPhasetoggle")) {
-                //group by phase
                 if (mapData[i].sheetrecord.buildertek__Vendor__c) {
                     if (
                         !recordsMap.has(
@@ -383,7 +147,7 @@
                             "(#&%*)" +
                             mapData[i].sheetrecord.buildertek__Vendor__r.Name
                         )
-                        .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
+                        .push(mapData[i].sheetrecord);
                 } else {
                     if (!recordsMap.has("No Vendor")) {
                         recordsMap.set("No Vendor", []);
@@ -391,15 +155,20 @@
                     mapData[i]["sheetrecord"]["showIcon"] = mapData[i]["isShowIcon"];
                     recordsMap
                         .get("No Vendor")
-                        .push(JSON.parse(JSON.stringify(mapData[i].sheetrecord)));
+                        .push(mapData[i].sheetrecord);
                 }
-                // }
             }
+
             var result = Array.from(recordsMap.entries());
             var groupData = [];
             var totalRecords = 0;
             var totalCost = 0;
             var totalSalesPrice = 0;
+
+            console.log('mapData ', mapData);
+            console.log('sObjectRecordsMap ', sObjectRecordsMap);
+            console.log('result ', result);
+
 
             for (var i in result) {
                 var newObj = {};
@@ -410,9 +179,6 @@
                 }
                 var newObj_groupData = result[i][1];
 
-                //dynamic field
-                var selectedFields = component.get("v.bomLineselectedFields").split(",");
-                var mainList = [];
                 var sObjectRecordsList = [];
                 for (var j in newObj_groupData) {
                     sObjectRecordsList.push(
@@ -427,11 +193,12 @@
                 let costCodeArray = [];
 
                 sObjectRecordsList.forEach(row => {
-                    const existingIndex = costCodeArray.findIndex(item => item.costCode === row.buildertek__Cost_Code__r.Name);
+                    let costCode = row.buildertek__Cost_Code__c ? row.buildertek__Cost_Code__r.Name : 'No Cost Code';
+                    const existingIndex = costCodeArray.findIndex(item => item.costCode === costCode);
                     if (existingIndex === -1) {
                         // If the cost code doesn't exist in the array, add a new entry
                         costCodeArray.push({
-                            costCode: row.buildertek__Cost_Code__r.Name,
+                            costCode: costCode,
                             records: [row]
                         });
                     } else {
@@ -441,7 +208,6 @@
                 });
 
                 newObj["sObjectListWithCostCodeGroup"] = costCodeArray;
-
 
                 newObj["massUpdate"] = false;
 
@@ -455,14 +221,15 @@
 
             component.set("v.totalBOMlines", totalRecords);
             component.set("v.dataByGroup", groupData);
-            component.set("v.Init_dataByGroup", JSON.parse(JSON.stringify(groupData)));
+            component.set("v.Init_dataByGroup", groupData);
             component.set("v.cloneDataByGroup", groupData);
-            console.log('From formatDataByGroups >> ', JSON.parse(JSON.stringify(component.get("v.dataByGroup"))));
+            console.log('From formatDataByGroups >> ', component.get("v.dataByGroup"));
             component.set("v.isLoading", false);
         }
         catch (error) {
             console.log('error in formatDataByGroups : ', error.stack);
         }
+        console.timeEnd('formatDataByGroups');
     },
 
     showToast: function (component, event, helper, title, message, type) {
@@ -519,6 +286,7 @@
         else {
 
             console.log('update records : ', newList);
+            debugger
             var action = component.get("c.updateBOMlines");
             action.setParams({
                 recordId: component.get("v.recordId"),
@@ -526,7 +294,6 @@
             });
 
             action.setCallback(this, function (response) {
-                var state = response.getState();
                 var Result = response.getReturnValue();
                 if (Result === "successfull") {
                     var pageNumber = component.get("v.PageNumber");
@@ -536,13 +303,10 @@
                     groupData[headerIndex].massUpdate = false;
                     component.set("v.dataByGroup", groupData);
 
-                    // var massupdateIndex = component.get("v.massupdateIndex");
-                    // massupdateIndex = massupdateIndex.filter(ele => ele !== headerIndex)
-                    // component.set("v.massupdateIndex", massupdateIndex);
-                    // console.log('formate data apex call ', massupdateIndex);
-
-                    helper.getPoLinesList(component, event, helper, pageNumber, pageSize, headerIndex);
+                    // helper.getPoLinesList(component, event, helper, pageNumber, pageSize, headerIndex);
                     helper.ToastMessageUtilityMethod(component, "Success", 'Lines updated successfully', 'success', 3000);
+                    component.set("v.isLoading", false);
+                    // $A.get('e.force:refreshView').fire();
                     console.timeEnd('MassUpdateHelper');
                 }
                 else {
