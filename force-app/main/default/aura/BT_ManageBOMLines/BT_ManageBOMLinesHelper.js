@@ -343,9 +343,11 @@
         try {
 
             var index = event.getParam("index");
-            var headerIndex = event.getParam("phaseIndex");
+            var headerIndex0 = event.getParam("phaseIndex");
+            var headerIndex = event.getParam("phaseIndexValue");
 
             var groupData = component.get("v.dataByGroup");
+            debugger
             if (setProduct) {
                 console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
                 var product = JSON.parse(JSON.stringify(event.getParam("recordByEvent")));
@@ -356,37 +358,37 @@
                     var unitCost = pricebookEntry != null ? (pricebookEntry.buildertek__Unit_Cost__c != null ? pricebookEntry.buildertek__Unit_Cost__c : 0) : 0;
                     var markupPrecentage = pricebookEntry != null ? (pricebookEntry.buildertek__Markup__c != null ? pricebookEntry.buildertek__Markup__c : 0) : 0;
                     var markup = markupPrecentage != 0 ? markupPrecentage / 100 : 0;
-                    var quantity = groupData[headerIndex].sObjectRecordsList[index].buildertek__Quantity__c;
+                    var quantity = groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Quantity__c;
                     var UOMpickListValues = component.get("v.UOMpickListValues");
                     uom = UOMpickListValues.includes(uom) ? uom : null;
 
                     console.log('phase 2');
 
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__r = product;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = product.Id;
-                    groupData[headerIndex].sObjectRecordsList[index].Name = product.Name;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c = uom;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = unitCost;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = markupPrecentage;
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Extended_Cost__c = (quantity * unitCost);
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = ((unitCost * markup) + unitCost);
-                    groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = ((unitCost * markup) + unitCost) * quantity;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Product__r = product;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Product__c = product.Id;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].Name = product.Name;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__UOM_Picklist__c = uom;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_UNIT_COST__c = unitCost;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_MARKUP__c = markupPrecentage;
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Extended_Cost__c = (quantity * unitCost);
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_LIST_PRICE_F__c = ((unitCost * markup) + unitCost);
+                    groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Total_Sales_Price__c = ((unitCost * markup) + unitCost) * quantity;
                     console.log('phase 3');
 
                 }
             }
             else {
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__r = null;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__Product__c = null;
-                groupData[headerIndex].sObjectRecordsList[index].Name = null;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__Vendor__c = null;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__UOM_Picklist__c = null;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_UNIT_COST__c = 0;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_MARKUP__c = 0;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__Extended_Cost__c = 0;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__BL_LIST_PRICE_F__c = 0;
-                groupData[headerIndex].sObjectRecordsList[index].buildertek__Total_Sales_Price__c = 0;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Product__r = null;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Product__c = null;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].Name = null;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Vendor__c = null;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__UOM_Picklist__c = null;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_UNIT_COST__c = 0;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_MARKUP__c = 0;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Extended_Cost__c = 0;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BL_LIST_PRICE_F__c = 0;
+                groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__Total_Sales_Price__c = 0;
             }
             component.set("v.dataByGroup", groupData);
 
@@ -397,7 +399,7 @@
                 500
             );
         } catch (error) {
-            console.log('error in setProduct : ', error.stack);
+            console.log('error in setProduct : ', error);
 
         }
     },

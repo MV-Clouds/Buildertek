@@ -245,6 +245,7 @@
                                                                     selectedRecordId="{!row.buildertek__BT_Price_Book__c}"
                                                                     childObjectName="buildertek__Select_Sheet__c"
                                                                     phaseIndex="{!phaseIndex}" index="{!index}"
+                                                                    phaseIndexValue="{!subHeaderIndex}"
                                                                     fieldName="{!field.name}" record="{!row}"
                                                                     callingCmpName="BT_ManageBOMLines" />
                                                             </td>
@@ -259,7 +260,8 @@
                                                                     aura:id="productId"
                                                                     parentId="{!row.buildertek__BT_Price_Book__c}"
                                                                     prodctfamly="{!v.productfamily}"
-                                                                    phaseIndex="{!phaseIndex}" index="{!index}" />
+                                                                    phaseIndex="{!phaseIndex}" index="{!index}"
+                                                                    phaseIndexValue="{!subHeaderIndex}" />
                                                             </td>
                                                         </aura:if>
 
@@ -271,7 +273,7 @@
                                                                     objectApiName="buildertek__Select_Sheet__c">
                                                                     <lightning:inputField aura:id="lookupField"
                                                                         fieldName="{!field.name}"
-                                                                        name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                        name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                         value="{!row.buildertek__Takeoff_Line__c}"
                                                                         class="slds-size--1-of-1 vendorlookup"
                                                                         variant="label-hidden" />
@@ -286,7 +288,7 @@
                                                                     objectApiName="buildertek__Select_Sheet__c">
                                                                     <lightning:inputField aura:id="lookupField"
                                                                         fieldName="{!field.name}"
-                                                                        name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                        name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                         value="{!row.buildertek__Vendor__c}"
                                                                         class="slds-size--1-of-1 vendorlookup"
                                                                         variant="label-hidden" />
@@ -297,7 +299,7 @@
                                                         <aura:if isTrue="{!field.name == 'Name'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input value="{!row.Name}"
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     onchange="{!c.onInputChange}" width="500%"
                                                                     variant="label-hidden" />
@@ -307,7 +309,7 @@
                                                         <aura:if isTrue="{!field.name == 'buildertek__Quantity__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input value="{!row.buildertek__Quantity__c}"
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     onchange="{!c.onInputChange}" width="500%"
                                                                     variant="label-hidden" />
@@ -318,7 +320,7 @@
                                                             isTrue="{!field.name == 'buildertek__BL_UNIT_COST__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     value="{!row.buildertek__BL_UNIT_COST__c}"
                                                                     type="number" formatter="currency"
@@ -331,7 +333,7 @@
                                                             isTrue="{!field.name == 'buildertek__UOM_Picklist__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:select aura:id="select" class="UOMPicklist"
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     variant="label-hidden"
                                                                     onchange="{!c.onInputChange}">
                                                                     <option value="None">None</option>
@@ -349,7 +351,7 @@
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
                                                                     value="{!row.buildertek__Tax_Percent__c}"
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     onchange="{!c.onInputChange}" width="500%"
                                                                     variant="label-hidden" />
@@ -359,7 +361,7 @@
                                                         <aura:if isTrue="{!field.name == 'buildertek__BL_MARKUP__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input value="{!row.buildertek__BL_MARKUP__c}"
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     onchange="{!c.onInputChange}" width="500%"
                                                                     variant="label-hidden" />
@@ -370,7 +372,7 @@
                                                             isTrue="{!field.name == 'buildertek__Extended_Cost__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     disabled="true" data-fieldapi="{!field.name}"
                                                                     value="{!row.buildertek__Extended_Cost__c}"
                                                                     type="number" formatter="currency"
@@ -383,7 +385,7 @@
                                                             isTrue="{!field.name == 'buildertek__BL_LIST_PRICE_F__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     disabled="true" data-fieldapi="{!field.name}"
                                                                     value="{!row.buildertek__BL_LIST_PRICE_F__c}"
                                                                     type="number" formatter="currency"
@@ -396,7 +398,7 @@
                                                             isTrue="{!field.name == 'buildertek__Total_Sales_Price__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
-                                                                    name="{!index+'-'+phaseIndex+'-'+field.name}"
+                                                                    name="{!index+'-'+subHeaderIndex+'-'+field.name}"
                                                                     disabled="true" data-fieldapi="{!field.name}"
                                                                     value="{!row.buildertek__Total_Sales_Price__c}"
                                                                     type="number" formatter="currency"
@@ -454,7 +456,7 @@
                                                             style="background-color: #164486; color: white; padding: 0.5rem 0.5rem; border-left : 1px solid #c7c7c7"
                                                             class="slds-is-resizable slds-is-sortable" scope="col"
                                                             data-sortBy="{!rec.value}" name="{!rec.value}"
-                                                            data-sortGroupIndex="{!phaseIndex}"
+                                                            data-sortGroupIndex="{!SettingsIndex}"
                                                             onclick="{!c.handleSort}" title="{!rec.value}">
                                                             <div data-sortBy="{!rec.value}" name="{!rec.value}"
                                                                 style="display: none;">{!rec.label}</div>
@@ -468,7 +470,7 @@
                                                                     <span class="slds-truncate"
                                                                         title="{!rec.label}">{!rec.label}</span>
                                                                     <aura:if
-                                                                        isTrue="{!phaseIndex == v.sortingGroupIndex}">
+                                                                        isTrue="{!SettingsIndex == v.sortingGroupIndex}">
                                                                         <aura:if
                                                                             isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == rec.value)}">
                                                                             <span

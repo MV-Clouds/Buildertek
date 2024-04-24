@@ -136,12 +136,13 @@
           component.set("v.isLoading", true);
           var selectedRecordId = event.getParam("selectedRecordId");
           var index = event.getParam('index');
-          var headerIndex = event.getParam('phaseIndex');
+          var headerIndex0 = event.getParam('phaseIndex');
+          var headerIndex = event.getParam("phaseIndexValue");
 
           if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
             component.set("v.isLoading", true);
             var groupData = component.get("v.dataByGroup");
-            groupData[headerIndex].sObjectRecordsList[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
+            groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
             component.set("v.dataByGroup", groupData);
 
             var setProduct = false;   // Clear product...
