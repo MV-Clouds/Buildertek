@@ -12,28 +12,28 @@
 
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
 
-    <div class="slds-modal__header" style="font-size: 17px;">
-        Assign Purchase Orders to Budget Lines
-    </div>
+    <aura:if isTrue="{!not(empty(v.poList)) &amp;&amp; v.spinner == false}">
+        <div class="slds-modal__header" style="font-size: 17px;">
+            Assign Purchase Orders to Budget Lines
+        </div>
 
-    <div class="slds-modal__content">
-        <div class="slds slds-scope">
-            <table>
-                <thead>
-                    <tr>
-                        <th class="header">
-                            <span>Purchase Order Items</span>
-                            <span>Budget Lines</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="slds-card po-container">
-                                <div class="slds-card__body">
-                                    <div class="slds-card__body_inner">
-                                        <aura:if isTrue="{!not(empty(v.poList))}">
+        <div class="slds-modal__content">
+            <div class="slds slds-scope">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="header">
+                                <span>Purchase Order Items</span>
+                                <span>Budget Lines</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="slds-card po-container">
+                                    <div class="slds-card__body">
+                                        <div class="slds-card__body_inner">
                                             <aura:iteration items="{!v.poList}" var="item">
                                                 <div class="slds-media po-item">
                                                     <div class="icon">
@@ -64,28 +64,22 @@
                                                     </div>
                                                 </div>
                                             </aura:iteration>
-                                            <aura:set attribute="else">
-                                                <div class="slds-text-align_center" style="font-size: large;">
-                                                    <p>No PO found to assigned.</p>
-                                                </div>
-                                            </aura:set>
-                                        </aura:if>
 
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div class="slds-modal__footer">
-        <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
-        <button class="slds-button slds-button--brand" onclick="{!c.Save}">Save</button>
-    </div>
-
+        <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+            <button class="slds-button slds-button--brand" onclick="{!c.Save}">Save</button>
+        </div>
+    </aura:if>
     <aura:if isTrue="{!v.spinner}">
         <div aura:id="spinnerId" class="slds-spinner_container">
             <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">

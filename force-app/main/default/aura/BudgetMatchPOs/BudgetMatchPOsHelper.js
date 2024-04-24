@@ -12,8 +12,9 @@
                     item.isDisabled = false;
                 });
                 component.set("v.budgetLineList", result);
+                helper.getAllPOs(component, event, helper);
             } else {
-                helper.showToast('warning', 'Warning', 'No Budget Lines Found', '3000');
+                helper.showToast('warning', 'Warning', 'No eligible Budget Lines avaiable', '3000');
                 $A.get("e.force:closeQuickAction").fire();
             }
         });
@@ -31,16 +32,21 @@
             let state = response.getState();
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
-                component.set("v.poList", result);
+                if (result && result.length > 0) {
+                    component.set("v.poList", result);
+                } else {
+                    helper.showToast('warning', 'Warning', 'No Purchase Order available to assign', '3000');
+                    $A.get("e.force:closeQuickAction").fire();
+                }
             } else {
                 let error = response.getError();
-                console.log('Error =>', { error });
-                showToast('Error', 'Error', 'Something Went Wrong', '3000');
+                console.error('getAllPOs Error =>', error);
+                showToast('Error', 'Error', 'Something went wrong', '3000');
             }
         });
         setTimeout(function () {
             component.set("v.spinner", false);
-        }, 3000);
+        }, 1000);
         $A.enqueueAction(action);
     },
 
@@ -73,8 +79,8 @@
                 $A.get("e.force:closeQuickAction").fire();
             } else {
                 let error = response.getError();
-                console.log('Error =>', { error });
-                helper.showToast('Error', 'Error', 'Something Went Wrong', '3000');
+                console.error('Error =>', error);
+                helper.showToast('Error', 'Error', 'Something went wrong', '3000');
             }
             if (callback && typeof callback === "function") {
                 callback();

@@ -1,7 +1,6 @@
 ({
     doInit: function (component, event, helper) {
         helper.getAllBudgetLines(component, event, helper);
-        helper.getAllPOs(component, event, helper);
     },
 
     Save: function (component, event, helper) {
@@ -13,7 +12,7 @@
                 component.set("v.spinner", false);
             });
         } else {
-            helper.showToast('error', 'Error', 'Please select at least one PO to sync', '3000');
+            helper.showToast('error', 'Error', 'Please select atleast one Budget Line', '3000');
         }
     },
 
