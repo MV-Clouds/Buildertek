@@ -11,40 +11,7 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
-    <aura:html tag="style">
 
-        .po-container {
-            height: 53vh !important;
-            max-height: 53vh !important;
-        }
-
-        .budget-item {
-            padding: 0.1rem 1rem;
-            border-bottom: 1px solid #d8d8d8;
-            display: flex;
-            align-items: center !important;
-            justify-content: space-between;
-        }
-
-        .icon {
-            margin-right: 10px;
-        }
-
-        .budget-name-column {
-            width: 25%;
-        }
-
-        .dropdown-column {
-            width: 65%;
-            position: relative;
-            padding-top: 0px !important;
-            min-width: 0;
-            margin-top: 0px !important;
-            bottom: 8px;
-            right: 6px;
-        }
-
-    </aura:html>
     <div class="slds-modal__header" style="font-size: 17px;">
         Assign Purchase Orders to Budget Lines
     </div>
@@ -54,8 +21,10 @@
             <table>
                 <thead>
                     <tr>
-                        <th scope="col" class="slds-text-title--caps slds-text-align_center">Select Budget Line for
-                            Purchase Order</th>
+                        <th class="header">
+                            <span>Purchase Order Items</span>
+                            <span>Budget Lines</span>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,31 +33,30 @@
                             <div class="slds-card po-container">
                                 <div class="slds-card__body">
                                     <div class="slds-card__body_inner">
-                                        <aura:if isTrue="{!not(empty(v.budgetLineList))}">
-                                            <aura:iteration items="{!v.budgetLineList}" var="budgetLineItem">
-                                                <div class="slds-media budget-item">
+                                        <aura:if isTrue="{!not(empty(v.poList))}">
+                                            <aura:iteration items="{!v.poList}" var="item">
+                                                <div class="slds-media po-item">
                                                     <div class="icon">
                                                         <lightning:icon iconName='custom:custom18'
-                                                            alternativeText='Budget Item' size='small' />
+                                                            alternativeText='PO Item' size='small' />
                                                     </div>
-                                                    <div class="slds-media__body budget-name-column">
-                                                        {!budgetLineItem.Name}
+                                                    <div class="slds-media__body po-name-column">
+                                                        {!item.Name} - {!item.buildertek__Description__c} -
+                                                        {!item.buildertek__Vendor__r.Name} -
+                                                        <lightning:formattedNumber
+                                                            value="{!item.buildertek__PO_Total__c}" style="currency" />
                                                     </div>
                                                     <div class="slds-form-element dropdown-column">
-                                                        <div class="slds-form-element__control" data-id="{!budgetLineItem.Id}">
+                                                        <div class="slds-form-element__control" data-id="{!item.Id}">
                                                             <lightning:select name="budgetItem-dropdown"
-                                                                value="{!budgetLineItem.selectedBudgetLine}"
+                                                                value="{!item.selectedBudgetLine}"
                                                                 onchange="{!c.onSelectChange}">
                                                                 <option text="--None--" value="" />
-                                                                <aura:iteration items="{!v.poList}" var="item">
-                                                                    <option value="{!item.Id}"
-                                                                        disabled="{!item.isDisabled}">
-                                                                        {!item.Name} -
-                                                                        {!item.buildertek__Description__c} -
-                                                                        {!item.buildertek__Vendor__r.Name} -
-                                                                        <lightning:formattedNumber
-                                                                            value="{!item.buildertek__PO_Total__c}"
-                                                                            style="currency" />
+                                                                <aura:iteration items="{!v.budgetLineList}"
+                                                                    var="budgetLine">
+                                                                    <option value="{!budgetLine.Id}"
+                                                                        disabled="{!budgetLine.isDisabled}">
+                                                                        {!budgetLine.Name}
                                                                     </option>
                                                                 </aura:iteration>
                                                             </lightning:select>
