@@ -97,7 +97,7 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              1500
+              500
             );
 
         } catch (error) {

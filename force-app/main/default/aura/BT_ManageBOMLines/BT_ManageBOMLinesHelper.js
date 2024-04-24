@@ -39,7 +39,7 @@
                     "v.TotalPages",
                     Math.ceil(result.totalRecords / pageSize)
                 );
-                // // console.log('&**&*&*&*&*&*& ',result.recordList);
+
                 var resultData = [];
                 result.recordList.forEach(function (item, index) {
                     resultData.push(item);
@@ -77,6 +77,7 @@
                 }
                 component.set("v.orgData", rows);
                 component.set("v.data", rows);
+                component.set("v.cloneDataByGroup", result.priceBookMap);
                 var groupByData = component.get("v.orgData");
                 component.set("v.fieldmaptype", result.fieldtypemap);
                 component.set(
@@ -222,7 +223,6 @@
             component.set("v.totalBOMlines", totalRecords);
             component.set("v.dataByGroup", groupData);
             component.set("v.Init_dataByGroup", groupData);
-            component.set("v.cloneDataByGroup", groupData);
             console.log('From formatDataByGroups >> ', component.get("v.dataByGroup"));
             component.set("v.isLoading", false);
         }
@@ -249,8 +249,8 @@
         // debugger;
         console.time('MassUpdateHelper');
         component.set("v.isLoading", true);
-        var x = component.get("v.dataByGroup");
-        var data = JSON.parse(JSON.stringify(component.get("v.dataByGroup")));
+        var data = component.get("v.dataByGroup");
+        let priceBookMap = component.get("v.cloneDataByGroup");
         var BOMlinesWithoutName = [];
         var groupName = '';
         var newList = [];
@@ -262,6 +262,7 @@
                         groupName = data[i].groupName;
                     }
                     else {
+                        console.log('data[i].sObjectRecordsList[j] : ', data[i].sObjectRecordsList[j]);
                         newList.push(data[i].sObjectRecordsList[j]);
                     }
 
@@ -286,7 +287,6 @@
         else {
 
             console.log('update records : ', newList);
-            debugger
             var action = component.get("c.updateBOMlines");
             action.setParams({
                 recordId: component.get("v.recordId"),
@@ -300,6 +300,16 @@
                     var pageSize = component.get("v.pageSize");
 
                     var groupData = component.get("v.dataByGroup");
+                    console.log('groupData : ', groupData);
+                    groupData.forEach(vendorGroup => {
+                        vendorGroup.sObjectListWithCostCodeGroup.forEach(costCodeGroup => {
+                            costCodeGroup.records.forEach(record => {
+                                console.log('map value : ', priceBookMap[record.buildertek__BT_Price_Book__c]);
+                                record.buildertek__BT_Price_Book__r = priceBookMap[record.buildertek__BT_Price_Book__c];
+                                console.log('record value : ', record.buildertek__BT_Price_Book__r);
+                            });
+                        });
+                    });
                     groupData[headerIndex].massUpdate = false;
                     component.set("v.dataByGroup", groupData);
 

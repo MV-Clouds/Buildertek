@@ -88,6 +88,9 @@ public without sharing class ManageBOMlinesController{
             objDT.recordEnd = totalRecords >= recordEnd ? recordEnd : totalRecords;
             objDT.totalRecords = totalRecords;
 
+            Map<Id, Pricebook2> pricebookMap = new Map<Id, Pricebook2>([SELECT Id, Name FROM Pricebook2 LIMIT 10000]);
+            objDT.priceBookMap = pricebookMap;
+
 
             String jsonSerializeFields = '[';
             jsonSerializeFields += '{"value": "buildertek__BT_Price_Book__c","label": "Pricebook Name"},';
@@ -514,6 +517,9 @@ public without sharing class ManageBOMlinesController{
 
         @AuraEnabled
         public string fieldValues{ get; set; }
+
+        @AuraEnabled
+        public Map<Id, Pricebook2> priceBookMap{ get; set; }
 
         @AuraEnabled
         public list<FieldsetUtilityClass.FieldSetProperties> bomLineFieldSettings{ get; set; }

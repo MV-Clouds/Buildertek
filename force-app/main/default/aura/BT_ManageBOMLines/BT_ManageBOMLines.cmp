@@ -19,7 +19,7 @@
 
     <aura:attribute name="dataByGroup" type="Object" />
     <aura:attribute name="Init_dataByGroup" type="Object" />
-    <aura:attribute name="cloneDataByGroup" type="Object" />
+    <aura:attribute name="cloneDataByGroup" type="Map" />
 
     <!-- dynamic BOM Line filed -->
     <aura:attribute name="bomLineFieldsSettings" type="List" default="[]" />
@@ -214,7 +214,8 @@
                                                     <aura:if
                                                         isTrue="{!or(rec.label == 'Build Phase',rec.label == 'List Price')}">
                                                         <th style="background-color: #164486; color: white; padding: 0.5rem 0.5rem; border-left : 1px solid #c7c7c7"
-                                                            class="slds-is-resizable slds-is-sortable"> &nbsp;{!rec.label}
+                                                            class="slds-is-resizable slds-is-sortable">
+                                                            &nbsp;{!rec.label}
                                                         </th>
                                                         <aura:set attribute="else">
                                                             <th style="background-color: #164486; color: white; padding: 0.5rem 0.5rem; border-left : 1px solid #c7c7c7"
@@ -236,7 +237,8 @@
                                                         </span>
                                                     </td>
                                                     <aura:iteration items="{!v.fieldValues}" var="field">
-                                                        <aura:if isTrue="{!field.name == 'buildertek__BT_Price_Book__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__BT_Price_Book__c'}">
                                                             <td
                                                                 style="padding-right:5px; min-width: 13rem; max-width : 13rem;">
                                                                 <c:BT_LookupFields
@@ -261,7 +263,8 @@
                                                             </td>
                                                         </aura:if>
 
-                                                        <aura:if isTrue="{!field.name == 'buildertek__Takeoff_Line__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__Takeoff_Line__c'}">
                                                             <td
                                                                 style="padding-right:5px; max-width: 13rem; min-width: 13rem;">
                                                                 <lightning:recordEditForm
@@ -311,22 +314,26 @@
                                                             </td>
                                                         </aura:if>
 
-                                                        <aura:if isTrue="{!field.name == 'buildertek__BL_UNIT_COST__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__BL_UNIT_COST__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
                                                                     name="{!index+'-'+phaseIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
-                                                                    value="{!row.buildertek__BL_UNIT_COST__c}" type="number"
-                                                                    formatter="currency" onchange="{!c.onInputChange}"
-                                                                    step="0.01" variant="label-hidden" />
+                                                                    value="{!row.buildertek__BL_UNIT_COST__c}"
+                                                                    type="number" formatter="currency"
+                                                                    onchange="{!c.onInputChange}" step="0.01"
+                                                                    variant="label-hidden" />
                                                             </td>
                                                         </aura:if>
 
-                                                        <aura:if isTrue="{!field.name == 'buildertek__UOM_Picklist__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__UOM_Picklist__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:select aura:id="select" class="UOMPicklist"
                                                                     name="{!index+'-'+phaseIndex+'-'+field.name}"
-                                                                    variant="label-hidden" onchange="{!c.onInputChange}">
+                                                                    variant="label-hidden"
+                                                                    onchange="{!c.onInputChange}">
                                                                     <option value="None">None</option>
                                                                     <aura:iteration items="{!v.UOMpickListValues}"
                                                                         var="item" indexVar="i">
@@ -340,7 +347,8 @@
 
                                                         <aura:if isTrue="{!field.name == 'buildertek__Tax_Percent__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
-                                                                <lightning:input value="{!row.buildertek__Tax_Percent__c}"
+                                                                <lightning:input
+                                                                    value="{!row.buildertek__Tax_Percent__c}"
                                                                     name="{!index+'-'+phaseIndex+'-'+field.name}"
                                                                     data-fieldapi="{!field.name}"
                                                                     onchange="{!c.onInputChange}" width="500%"
@@ -358,7 +366,8 @@
                                                             </td>
                                                         </aura:if>
 
-                                                        <aura:if isTrue="{!field.name == 'buildertek__Extended_Cost__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__Extended_Cost__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
                                                                     name="{!index+'-'+phaseIndex+'-'+field.name}"
@@ -370,7 +379,8 @@
                                                             </td>
                                                         </aura:if>
 
-                                                        <aura:if isTrue="{!field.name == 'buildertek__BL_LIST_PRICE_F__c'}">
+                                                        <aura:if
+                                                            isTrue="{!field.name == 'buildertek__BL_LIST_PRICE_F__c'}">
                                                             <td style="padding-right:5px; width: 7rem;">
                                                                 <lightning:input
                                                                     name="{!index+'-'+phaseIndex+'-'+field.name}"
@@ -444,52 +454,61 @@
                                                             style="background-color: #164486; color: white; padding: 0.5rem 0.5rem; border-left : 1px solid #c7c7c7"
                                                             class="slds-is-resizable slds-is-sortable" scope="col"
                                                             data-sortBy="{!rec.value}" name="{!rec.value}"
-                                                            data-sortGroupIndex="{!phaseIndex}" onclick="{!c.handleSort}"
-                                                            title="{!rec.value}">
+                                                            data-sortGroupIndex="{!phaseIndex}"
+                                                            onclick="{!c.handleSort}" title="{!rec.value}">
                                                             <div data-sortBy="{!rec.value}" name="{!rec.value}"
                                                                 style="display: none;">{!rec.label}</div>
                                                             <a data-sortBy="{!rec.value}"
                                                                 style="display: flex; justify-content: start; padding-block: 6px;"
-                                                                name="{!rec.value}" class="slds-text-link_reset" href="#"
-                                                                role="button" tabindex="0">
+                                                                name="{!rec.value}" class="slds-text-link_reset"
+                                                                href="#" role="button" tabindex="0">
                                                                 <span class="slds-assistive-text">Sort by: </span>
                                                                 <div class="slds-grid slds-grid_vertical-align-center"
                                                                     style="">
                                                                     <span class="slds-truncate"
                                                                         title="{!rec.label}">{!rec.label}</span>
-                                                                    <aura:if isTrue="{!phaseIndex == v.sortingGroupIndex}">
+                                                                    <aura:if
+                                                                        isTrue="{!phaseIndex == v.sortingGroupIndex}">
                                                                         <aura:if
                                                                             isTrue="{!and(v.sortDirection == 'asc',v.sortedBy == rec.value)}">
                                                                             <span
                                                                                 class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown">
-                                                                                <lightning:icon iconName="utility:arrowdown"
+                                                                                <lightning:icon
+                                                                                    iconName="utility:arrowdown"
                                                                                     alternativeText="arrowDown"
-                                                                                    size="xx-small" title="xx-small size" />
+                                                                                    size="xx-small"
+                                                                                    title="xx-small size" />
                                                                             </span>
                                                                         </aura:if>
                                                                         <aura:if
                                                                             isTrue="{!and(v.sortDirection == 'desc',v.sortedBy == rec.value)}">
                                                                             <span
                                                                                 class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowup">
-                                                                                <lightning:icon iconName="utility:arrowup"
+                                                                                <lightning:icon
+                                                                                    iconName="utility:arrowup"
                                                                                     alternativeText="arrowup"
-                                                                                    size="xx-small" title="xx-small size" />
+                                                                                    size="xx-small"
+                                                                                    title="xx-small size" />
                                                                             </span>
                                                                         </aura:if>
                                                                         <aura:if isTrue="{!v.sortedBy != rec.value}">
                                                                             <span
                                                                                 class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown">
-                                                                                <lightning:icon iconName="utility:arrowup"
+                                                                                <lightning:icon
+                                                                                    iconName="utility:arrowup"
                                                                                     alternativeText="arrowup"
-                                                                                    size="xx-small" title="xx-small size" />
+                                                                                    size="xx-small"
+                                                                                    title="xx-small size" />
                                                                             </span>
                                                                         </aura:if>
                                                                         <aura:set attribute="else">
                                                                             <span
                                                                                 class="slds-icon_container slds-is-sortable__icon slds-icon-utility-arrowdown">
-                                                                                <lightning:icon iconName="utility:arrowup"
+                                                                                <lightning:icon
+                                                                                    iconName="utility:arrowup"
                                                                                     alternativeText="arrowup"
-                                                                                    size="xx-small" title="xx-small size" />
+                                                                                    size="xx-small"
+                                                                                    title="xx-small size" />
                                                                             </span>
                                                                         </aura:set>
                                                                     </aura:if>
@@ -510,7 +529,8 @@
 
                                             </thead>
                                             <tbody>
-                                                <aura:iteration items="{!outerRow.records}" var="row" indexVar="dataIndex">
+                                                <aura:iteration items="{!outerRow.records}" var="row"
+                                                    indexVar="dataIndex">
 
                                                     <tr>
                                                         <td role="gridcell" tabindex="-1">
@@ -547,8 +567,9 @@
 
                                                                                 <td
                                                                                     style="padding-right:5px; padding-left: 16px;">
-                                                                                    <c:BT_FieldSetMassUpdate record="{!row}"
-                                                                                        index="{!index}" field="{!field}"
+                                                                                    <c:BT_FieldSetMassUpdate
+                                                                                        record="{!row}" index="{!index}"
+                                                                                        field="{!field}"
                                                                                         isMassUpdateEnable="{!groupItem.massUpdate}"
                                                                                         childObjectName="buildertek__Select_Sheet__c"
                                                                                         ObjectName="buildertek__Select_Sheet__c"
@@ -558,7 +579,8 @@
                                                                                     <td
                                                                                         style="max-width: 16rem; overflow: hidden; text-overflow: ellipsis;">
                                                                                         <c:BT_FieldSetMassUpdate
-                                                                                            record="{!row}" index="{!index}"
+                                                                                            record="{!row}"
+                                                                                            index="{!index}"
                                                                                             field="{!field}"
                                                                                             isMassUpdateEnable="{!groupItem.massUpdate}"
                                                                                             childObjectName="buildertek__Select_Sheet__c"
