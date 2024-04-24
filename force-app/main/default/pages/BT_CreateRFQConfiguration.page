@@ -23,11 +23,38 @@
                 </apex:inputcheckbox>
                 <!-- using product checkbox -->
                 <apex:inputcheckbox value="{!isUsingProduct}" label="Using Product">
-                </apex:inputcheckbox>
+                </apex:inputcheckbox> 
+                <apex:inputText value="{!colorcode}" id="colorCodeInput"/>
+                <label for="head">Color Code</label>
+                <input type="color" id="head" name="ColorCode" onchange="updateColorCode(this.value)" value="{!colorcode}"/>  
+
+                <!-- <apex:inputField styleClass="color" value="{!adminterface.buildertek__Color_code__c}" label="Color Code"/> -->
                 <center>
                 <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
                 </center>
             </apex:pageblocksection>
         </apex:pageBlock>
     </apex:form>
+    <script> 
+       function updateColorCode(color) {
+        console.log(color);
+        document.getElementById('{!$Component.colorCodeInput}').value = color;
+        console.log(document.getElementById('{!$Component.colorCodeInput}').value );
+    }
+        // function updateColorCode(color) {
+        //     console.log(color);
+        //     console.log(document.getElementById('{!$Component.colorCodeInput}'));
+        //     console.log(document.getElementById("colorCodeInput").value);
+        //     BT_RFQConfiguration.setcolorcode(color);
+        //     var  colorCodeInput = document.getElementById('colorCodeInput');
+        //     console.log('colorcode input value: ',colorCodeInput); 
+        //     console.log('till here work perfect');            
+        //     console.log(document.getElementById('{!$Component.colorCodeInput}'));
+        //     // document.getElementById('{!$Component.colorCodeInput}').value = color;
+        //     colorCodeInput.setAttribute('value', color);
+        //     console.log("after setting attribute ",colorCodeInput.getAttribute('value') );  
+        //     console.log('hey');
+        //     // console.log(document.getElementById('{!$Component.colorCodeInput}').value);
+        // }
+    </script>
 </apex:page>
