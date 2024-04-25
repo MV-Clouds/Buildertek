@@ -4,6 +4,7 @@
         console.log('doInit');
         helper.getRecordType(component);
         helper.getFields(component);
+        helper.getPriceBook(component);
     },
 
     closeModel: function(component, event, helper) {
@@ -88,5 +89,10 @@
         });
         $A.enqueueAction(action);
 
-    }
+    },
+
+    changeEvent : function(component, event, helper) {
+        console.log('changeEvent in controller');
+        helper.changeEvent(component, event);
+    },
 })

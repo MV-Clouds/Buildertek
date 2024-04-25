@@ -12,6 +12,9 @@ access="global" controller="New_WTLine_Controller">
 
 <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
+<aura:attribute name="pricebookName" type="String" default="" />
+<aura:attribute name="pricebookoptions" type="List" />
+
 
 <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
 
