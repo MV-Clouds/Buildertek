@@ -10,12 +10,7 @@ public class BT_RFQConfiguration {
     public Boolean isUsingProduct{get;set;}
     public String settingDescription{get;set;}
     public String colorcode {get; set;} 
-
-    @AuraEnabled
-    public static void setcolorcode(String colorcodee){
-        System.debug('hey');
-       System.debug( 'Color Code: '+ colorcodee);
-    }
+ 
 
     public BT_RFQConfiguration(){
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id,buildertek__Update_Price_Book__c,   buildertek__Setting_Description__c,                  buildertek__Create_PO_On_Vendor_Acceptance__c,

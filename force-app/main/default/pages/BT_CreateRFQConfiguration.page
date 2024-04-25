@@ -1,13 +1,13 @@
 <apex:page controller="BT_RFQConfiguration" sidebar="false" lightningStylesheets="true">
     <apex:slds />
-    <apex:form >
-        <apex:pageBlock >
+    <apex:form id="frmConfigure" > 
+        <apex:pageBlock id="thepageblock">
             <apex:outputText escape="false" value="{!settingDescription}">
             </apex:outputText>
         </apex:pageBlock>
-        <apex:pageBlock mode="maindetail">
+        <apex:pageBlock mode="maindetail" id="mainDetailPageBlock">
             <apex:pageMessages />
-            <apex:pageblocksection >
+            <apex:pageblocksection id="pageBlockSection">
               <!--  <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Create Change Order on Overage">
                 </apex:inputcheckbox> -->
                 <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
@@ -24,9 +24,9 @@
                 <!-- using product checkbox -->
                 <apex:inputcheckbox value="{!isUsingProduct}" label="Using Product">
                 </apex:inputcheckbox> 
-                <apex:inputText value="{!colorcode}" id="colorCodeInput"/>
-                <label for="head">Color Code</label>
-                <input type="color" id="head" name="ColorCode" onchange="updateColorCode(this.value)" value="{!colorcode}"/>  
+                <label for="head"  style="margin-left: 116px;">Color Code</label>
+                <input type="color" id="head" name="ColorCode" onchange="updateColorCode(this.value)" value="{!colorcode}" style="margin-left: 23px;"/>  
+                <apex:inputHidden value="{!colorcode}" id="colorCodeInput"/>
 
                 <!-- <apex:inputField styleClass="color" value="{!adminterface.buildertek__Color_code__c}" label="Color Code"/> -->
                 <center>
@@ -35,26 +35,11 @@
             </apex:pageblocksection>
         </apex:pageBlock>
     </apex:form>
-    <script> 
+        <script type="text/javascript"> 
        function updateColorCode(color) {
         console.log(color);
-        document.getElementById('{!$Component.colorCodeInput}').value = color;
-        console.log(document.getElementById('{!$Component.colorCodeInput}').value );
+        document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value = color;
+        console.log(document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value );
     }
-        // function updateColorCode(color) {
-        //     console.log(color);
-        //     console.log(document.getElementById('{!$Component.colorCodeInput}'));
-        //     console.log(document.getElementById("colorCodeInput").value);
-        //     BT_RFQConfiguration.setcolorcode(color);
-        //     var  colorCodeInput = document.getElementById('colorCodeInput');
-        //     console.log('colorcode input value: ',colorCodeInput); 
-        //     console.log('till here work perfect');            
-        //     console.log(document.getElementById('{!$Component.colorCodeInput}'));
-        //     // document.getElementById('{!$Component.colorCodeInput}').value = color;
-        //     colorCodeInput.setAttribute('value', color);
-        //     console.log("after setting attribute ",colorCodeInput.getAttribute('value') );  
-        //     console.log('hey');
-        //     // console.log(document.getElementById('{!$Component.colorCodeInput}').value);
-        // }
     </script>
 </apex:page>
