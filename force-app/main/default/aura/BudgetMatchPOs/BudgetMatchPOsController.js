@@ -49,12 +49,6 @@
             }
         }
 
-        let budgetLineList = component.get("v.budgetLineList");
-        budgetLineList.forEach(po => {
-            po.isDisabled = selectedPOItems.some(item => item.budgetLineId === po.Id);
-        });
-
-        component.set("v.budgetLineList", budgetLineList);
         component.set("v.selectedPOItems", selectedPOItems);
     },
 

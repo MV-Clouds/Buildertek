@@ -3,7 +3,7 @@ public without sharing class budgetMatchPOsController {
     @AuraEnabled
     public static List<buildertek__Budget_Item__c> fetchBudgetLine(String budgetId) {
         try {
-            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c = :budgetId AND buildertek__Purchase_Order__c = '' ORDER BY Name ASC];
+            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c = :budgetId ORDER BY Name ASC];
             return budgetLineList;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
@@ -43,7 +43,6 @@ public without sharing class budgetMatchPOsController {
                 budgetLineIds.add(budgetPOItem.budgetLineId);
             }
             List<buildertek__Purchase_Order__c> poList = [SELECT Id, Name, buildertek__Description__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
-            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name, buildertek__Purchase_Order__c FROM buildertek__Budget_Item__c WHERE Id IN :budgetLineIds];
             
             for (BudgetPOWrapper budgetPOItem : wrapper) {
                 for (buildertek__Purchase_Order__c po : poList) {
@@ -52,19 +51,10 @@ public without sharing class budgetMatchPOsController {
                         po.buildertek__Budget_Line__c = budgetPOItem.budgetLineId;
                     }
                 }
-
-                for (buildertek__Budget_Item__c budgetLine : budgetLineList) {
-                    if (budgetLine.Id == budgetPOItem.budgetLineId) {
-                        budgetLine.buildertek__Purchase_Order__c = budgetPOItem.poId;
-                    }
-                }
             }
 
             if (!poList.isEmpty()) {
                 update poList;
-            }
-            if (!budgetLineList.isEmpty()) {
-                update budgetLineList;
             }
 
             return 'Success';
