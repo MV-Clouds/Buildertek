@@ -3,31 +3,16 @@
         try {
           component.set("v.isLoading", true);
             var pageReference = component.get("v.pageReference");
-            //var bomIdFromParentCmp = pageReference.attributes.attributes.recordId;
             var urlBomId = pageReference.state.buildertek__bomRecordId;
 
             if (urlBomId != null && urlBomId != undefined && urlBomId != "") {
               component.set("v.recordId", urlBomId);
             }
 
-            console.log('Record ID : ', component.get("v.recordId"));
-
-            // helper.checkFabricationTaxes(component, event, helper);
-            component.set("v.massUpdateEnable", false);
             var pageNumber = component.get("v.PageNumber");
             var pageSize = component.get("v.pageSize");
 
-            helper.fetchTakeOffLinesData(component, event, helper);
-            helper.setColumns(component);
-            // helper.getFieldSetFields(component,event);
-            // helper.getPoLinesList(component, event, helper,pageNumber,pageSize);
-
-            window.setTimeout(
-              $A.getCallback(function () {
-                helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
-              }),
-              1500
-            );
+            helper.getPoLinesList(component, event, helper, pageNumber, pageSize);
 
             window.setTimeout(function () {
                 var workspaceAPI = component.find("workspace");
@@ -45,16 +30,11 @@
                     });
                   })
                   .catch(function (error) {
-                    // console.log("sub tab error::", error);
+                    console.log("sub tab error::", error);
                     // alert(error);
                   });
               }, 100);
 
-            var billOfMeterialId = component.get("v.recordId");
-            // component.set("v.bomId", billOfMeterialId);
-
-            //  helper.getPoList(component, event, helper);
-            // component.set("v.isLoading", false);
         } catch (error) {
             console.log('error in DoInti : ', error.stack);
             component.set("v.isLoading", false);
@@ -71,7 +51,6 @@
       massUpdateLines: function(component, event, helper){
           var headerIndex = event.getSource().get("v.title");
           var massupdateIndex = component.get("v.massupdateIndex");
-          // console.log('headerIndex :: ', headerIndex);
           var groupData = component.get("v.dataByGroup");
 
           if(!groupData[headerIndex].massUpdate){
@@ -86,7 +65,7 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              2000
+              1000
             );
           }
           else{
@@ -118,7 +97,7 @@
               $A.getCallback(function () {
                 component.set("v.isLoading", false);
               }),
-              1500
+              500
             );
 
         } catch (error) {
@@ -157,12 +136,13 @@
           component.set("v.isLoading", true);
           var selectedRecordId = event.getParam("selectedRecordId");
           var index = event.getParam('index');
-          var headerIndex = event.getParam('phaseIndex');
+          var headerIndex0 = event.getParam('phaseIndex');
+          var headerIndex = event.getParam("phaseIndexValue");
 
           if(event.getParam("fieldName") == 'buildertek__BT_Price_Book__c'){
             component.set("v.isLoading", true);
             var groupData = component.get("v.dataByGroup");
-            groupData[headerIndex].sObjectRecordsList[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
+            groupData[headerIndex0].sObjectListWithCostCodeGroup[headerIndex].records[index].buildertek__BT_Price_Book__c = selectedRecordId[0];
             component.set("v.dataByGroup", groupData);
 
             var setProduct = false;   // Clear product...

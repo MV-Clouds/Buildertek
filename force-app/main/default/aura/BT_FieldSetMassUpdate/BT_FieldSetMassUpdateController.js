@@ -9,14 +9,14 @@
         if(field.name == 'buildertek__Contractor__c'){
             if(record.buildertek__Contractor__c){
                 component.set("v.contractor",record.buildertek__Contractor__c);
-            }            
+            }
         }
         if(field.name == "buildertek__Purchase_Order__c"){
             if(record.buildertek__Purchase_Order__c){
                 component.set("v.PurchaseOrderId", record.buildertek__Purchase_Order__c);
             }
         }
-            
+
         if(field.name == "buildertek__Quantity_Received__c"){
             if(record.buildertek__Quantity__c){
                 component.set("v.QuantityValue", record.buildertek__Quantity__c);
@@ -46,14 +46,14 @@
                     if (field.readOnly != undefined) {
                         component.set('v.readOnly', field.readOnly);
                     }
-                } 
+                }
                 if(mainobjectname=='buildertek__Select_Sheet__c'){
                     if (field.readOnly != undefined) {
                         component.set('v.readOnly', field.readOnly);
                     }
-                } 
-                
-                
+                }
+
+
             } else if (field.type == 'TEXTAREA') {
                 component.set("v.isTextAreaField", true);
             } else if (field.type == 'PICKLIST') {
@@ -103,7 +103,7 @@
             }
         }
     },
-    
+
     getLookUpValues: function (component, event, helper) {
         var fieldName = event.getParam("fieldName");
         var selectedRecordId = event.getParam("selectedRecordId");
@@ -119,7 +119,7 @@
                     }else{
                         record['buildertek__Contractor_Resource__r']['attributes'] = {};
                         record['buildertek__Contractor_Resource__r']['attributes']['url'] = '/services/data/v51.0/sobjects/Contact/'+selectedRecordId.Id;
-                        
+
                     }
                 }else{
                     record['buildertek__Contractor_Resource__r'] = {};
@@ -145,7 +145,7 @@
                         }else{
                             record['buildertek__Dependency__r']['attributes'] = {};
                             record['buildertek__Dependency__r']['attributes']['url'] = '/services/data/v51.0/sobjects/Contact/'+selectedRecordId.Id;
-                            
+
                         }
                     }else{
                         record['buildertek__Dependency__r'] = {};
@@ -171,13 +171,13 @@
                     }
                     record[fieldName] = null;
                 }
-                
+
             }
             component.set('v.record', record);
             if(fieldName == 'buildertek__Contractor__c'){
                 component.set("v.contractor",record[fieldName]);
             }
-            
+
             if(component.get("v.fromcustomDataTable")){
                 var compEvent = component.getEvent("dataTableRow");
                 compEvent.setParams({
@@ -192,10 +192,10 @@
                 compEvent.fire();
             }
         }
-        
-        
+
+
     },
-    
+
     onInputChange: function (component, event, helper) {
         var fieldName = event.getSource().get("v.name").split('-');
         var fieldLabel = fieldName[1];
@@ -244,11 +244,11 @@
                         'changedFieldName' : fieldLabel,
                         'index' : component.get("v.index"),
                         'phaseIndex' : component.get("v.phaseIndex"),
-                    });  
+                    });
                 compEvent.fire();
         }
     },
-    
+
     onPercentageChange: function (component, event, helper) {
         //var fieldName = event.getSource().get("v.name").split('-');
         var fieldName = event.target.name.split('-');
@@ -269,11 +269,11 @@
                         'changedFieldName' : fieldLabel,
                         'index' : component.get("v.index"),
                         'phaseIndex' : component.get("v.phaseIndex"),
-                    });  
+                    });
                 compEvent.fire();
         }
     },
-    
+
     onCheckBoxChange: function (component, event, helper) {
         var fieldLabel = event.getSource().get("v.name").split('-');
         var selectedValue = event.getSource().get("v.checked");
@@ -288,16 +288,16 @@
             var ele = document.getElementById(index+'_completion');
           //  console.log(ele.children[0])
             ele.value = 100;
-            
+
             component.set("v.percentageValue", 100);
         }else{
             record['buildertek__Completion__c'] = 0;
             var ele = document.getElementById(index+'_completion');
             ele.value = 0;
-            
+
             component.set("v.percentageValue", 0);
         }
-        //  console.log(JSON.parse(JSON.stringify(record))); 
+        //  console.log(JSON.parse(JSON.stringify(record)));
         }
         component.set('v.record', record);
     },
@@ -305,7 +305,7 @@
         //component.set("v.contractorChange",true);
         component.set("v.isReferenceField", true);
         $A.enqueueAction(component.get('c.doInit'));
-        
+
     },
 
     setSelectedRecordId: function (component, event, helper) {
