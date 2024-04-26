@@ -304,6 +304,18 @@ public class createAllPOfromBOM_controller {
                         }
                     }
 
+                    Map<String, Id> CostCodeVendorId_CategoryId = new Map<String, Id>();
+                    for(buildertek__Select_Sheet__c line : BOMLines){
+                        if(line.buildertek__Cost_Code__c != null && line.buildertek__Purchase_Order__c == null){
+                            String key = line.buildertek__Cost_Code__c + '_' + line.buildertek__Vendor__c;
+                            if(line.buildertek__Category__c != null ){
+                                if(!CostCodeVendorId_CategoryId.containsKey(key)){
+                                    CostCodeVendorId_CategoryId.put(key, line.buildertek__Category__c);
+                                }
+                            }
+                        }
+                    }
+
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
                     if(CostCodeVendorId_BOMLineId.size() > 0){
                         for(String key : CostCodeVendorId_BOMLineId.keySet()){
@@ -317,6 +329,7 @@ public class createAllPOfromBOM_controller {
                             POtoCreate.buildertek__Status__c = 'Open';
                             POtoCreate.buildertek__Vendor__c = VendorId;
                             POtoCreate.buildertek__Cost_Code__c = CostCode;
+                            POtoCreate.buildertek__Category__c = CostCodeVendorId_CategoryId.get(key);
                             POtoCreate.RecordTypeId = standardPurchaseOrderRecordTypeId;
                             POsToCreate_List.add(POtoCreate);
                         }
@@ -372,6 +385,78 @@ public class createAllPOfromBOM_controller {
                     }
 
                     update BOMlines;
+
+                    buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id,buildertek__Update_Quantity__c,buildertek__Show_Fabrication_taxes__c, buildertek__Match_BOM_Lines_with_Schedule_Items__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'BOM Settings' LIMIT 1];
+                    // if "Match BOM line with Schedule item" admin setting is checked true, run match schedule item logic...
+                    if(adminInterfaceNodeConfigurations.buildertek__Match_BOM_Lines_with_Schedule_Items__c == true){
+                        List<buildertek__Schedule__c> scheduleList = [SELECT ID,buildertek__Description__c, Name FROM buildertek__Schedule__c WHERE buildertek__Project__c =: BOM.buildertek__Project__c ORDER BY CreatedDate DESC LIMIT 1];
+                        String scheduleId = '';
+                        // used FIRST Schedule of Project for matching logic....
+                        if(scheduleList.size() > 0){
+                            scheduleId = scheduleList[0].Id;
+                            System.debug('matched schedule : ' + scheduleList[0].buildertek__Description__c);
+                        }
+                        List<buildertek__Project_Task__c> ScheduleItems = [SELECT Id, Name, buildertek__Schedule__c,buildertek__Contractor__c, buildertek__Cost_Code__c,buildertek__Phase__c, buildertek__Completion__c,buildertek__Start__c,buildertek__Finish__c, buildertek__BT_Category__c
+                                                                            FROM buildertek__Project_Task__c WHERE buildertek__Schedule__c =: scheduleId  ORDER BY CreatedDate DESC];
+
+                        Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
+                        List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
+
+                        if(ScheduleItems.size() > 0){
+                                for(buildertek__Purchase_Order__c PO : CreatedPOs){
+                                    for(buildertek__Project_Task__c SchItem : ScheduleItems){
+                                        String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
+                                        String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
+                                        String key = PO.buildertek__Cost_Code__c + '_' + PO.buildertek__Vendor__c;
+                                        String Category = CostCodeVendorId_CategoryId.get(key);
+
+
+                                        if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
+                                            && SchItem.buildertek__BT_Category__c == Category 
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                        {
+                                            PO_to_matchedSchItems.put(PO.Id, SchItem);
+                                            poToUpdate.add(PO);
+                                        }
+                                    }
+                                }
+        
+                                system.debug('matched Sch Item : ' + PO_to_matchedSchItems.values());
+                                system.debug('no of matched Sch Item : ' + PO_to_matchedSchItems.keySet().size());
+        
+                                List<buildertek__Project_Task__c> schItemsToUpdate = new List<buildertek__Project_Task__c>();
+        
+                                if(poToUpdate.size() > 0){
+                                    for(buildertek__Purchase_Order__c PO : poToUpdate){
+                                            buildertek__Project_Task__c MatchedScheduleItem = PO_to_matchedSchItems.get(PO.Id);
+                                            PO.buildertek__Schedule__c = scheduleId;
+                                            PO.buildertek__Schedule_Item__c = MatchedScheduleItem.Id;
+                                            PO.buildertek__Completion__c = MatchedScheduleItem.buildertek__Completion__c;
+                                            PO.buildertek__Projected_Start_Date__c = MatchedScheduleItem.buildertek__Start__c;
+                                            PO.buildertek__Projected_Completion_Date__c = MatchedScheduleItem.buildertek__Finish__c;
+                                            MatchedScheduleItem.buildertek__Purchase_Order__c = PO.Id;
+                                            if(MatchedScheduleItem.buildertek__Contractor__c != PO.buildertek__Vendor__c){
+                                                MatchedScheduleItem.buildertek__Contractor__c = PO.buildertek__Vendor__c;       // added as per BUIL-3961
+                                                MatchedScheduleItem.buildertek__Contractor_Resource__c = null;
+                                                MatchedScheduleItem.buildertek__Contractor_Resource_1__c = null;
+                                                MatchedScheduleItem.buildertek__Contractor_Resource_2__c = null;
+                                                MatchedScheduleItem.buildertek__Contractor_Resource_3__c = null;
+                                            }
+                                            schItemsToUpdate.add(MatchedScheduleItem);
+                                    }
+                                }
+                                
+                                system.debug('poToUpdate : ' + poToUpdate);
+                                system.debug('schItemsToUpdate ' + schItemsToUpdate);
+            
+                                if(poToUpdate.size() > 0){
+                                    update poToUpdate;
+                                }
+                                if(schItemsToUpdate.size() > 0){
+                                    update schItemsToUpdate;
+                                }
+                            }
+                        }
 
                     returnValue.state = 'success';
                     returnValue.returnMessage = 'All PO\'s created successfully.';
@@ -463,6 +548,8 @@ public class createAllPOfromBOM_controller {
                             TradeTypeVendorId_BOMLineId.put(key, line.Id);
                         }
                     }
+
+                    
 
                     List<buildertek__Purchase_Order__c> POsToCreate_List = new List<buildertek__Purchase_Order__c>();
                     if(TradeTypeVendorId_BOMLineId.size() > 0){
