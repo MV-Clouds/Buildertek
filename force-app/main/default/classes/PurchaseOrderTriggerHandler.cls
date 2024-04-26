@@ -386,13 +386,15 @@ public with sharing class PurchaseOrderTriggerHandler{
                             system.debug('-------------------------->2222222');
 
                             system.debug('PurchaseOrderItem size-------------->'+purchaseOrderItem.size());
-                            for(buildertek__Purchase_Order_Item__c poitemRec : purchaseOrderItem){
-                                for(buildertek__Budget_Item__c budgetRec : BudgetItemList){
-                                    buildertek__PO_Item_To_Budget_Item_Link__c potobudgetRec = new buildertek__PO_Item_To_Budget_Item_Link__c();
-                                    potobudgetRec.buildertek__Budget_Item__c = budgetRec.id;
-                                    potobudgetRec.buildertek__PO_Item__c = poitemRec.id;
-                                    potobudgetRec.buildertek__Approved_PO__c =purchaseRec.buildertek__PO_Total__c;
-                                    budgetItemLinkRecs.add(potobudgetRec);
+                            for (buildertek__Purchase_Order_Item__c poitemRec : purchaseOrderItem) {
+                                for (buildertek__Budget_Item__c budgetRec : BudgetItemList) {
+                                    if (budgetRec.Id == purchaseRec.buildertek__Budget_Line__c) {
+                                        buildertek__PO_Item_To_Budget_Item_Link__c potobudgetRec = new buildertek__PO_Item_To_Budget_Item_Link__c();
+                                        potobudgetRec.buildertek__Budget_Item__c = budgetRec.Id;
+                                        potobudgetRec.buildertek__PO_Item__c = poitemRec.Id;
+                                        potobudgetRec.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                        budgetItemLinkRecs.add(potobudgetRec);
+                                    }
                                 }
                             }
                         }
