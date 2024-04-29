@@ -694,17 +694,13 @@
                                         </td>
                                         <td> 
                                             <center> 
-                                            <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c}" target="_blank" disabled="{!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c == null}"> 
-                                            <span class="slds-icon_container slds-icon-standard-call" title="Public folder">
-                                                <svg style="fill: {!IF(item.buildertek__RFQ_Item__r.buildertek__Public_folder__c == null, 'gray', '#009beb')}; background:#ffffff" class="slds-icon" aria-hidden="true">
-                                                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="/apexpages/slds/latest/assets/icons/standard-sprite/svg/symbols.svg#folder" />
-                                                </svg>
-                                        </span>
-                                        </apex:outputLink>
-                                        </center>
+                                                <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c}" target="_blank" disabled="{!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c == null}"> 
+                                                <apex:image url="{!IF(item.buildertek__RFQ_Item__r.buildertek__Public_folder__c != null, $Resource.blue_folder_icon, $Resource.gray_folder_icon)}" style="height:40px"/>
+                                                </apex:outputLink>
+                                            </center>
                                         </td> 
                                         <td>
-                                            <apex:commandButton styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" value="X" action="{!addNewRowToAccList}" Status="status" immediate="true" />
+                                            <!-- <apex:commandButton styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" value="X" action="{!addNewRowToAccList}" Status="status" immediate="true" /> -->
                                        
                                         </td>
 
@@ -735,6 +731,9 @@
                                         </td>
                                         <td>
                                             <apex:inputField value="{!eachRecord.record.Vendor_Note__c}" styleClass="slds-input" />
+                                        </td>
+                                        <td>
+                                            <!-- blank space for public folder -->
                                         </td>
                                         <td>
                                             <apex:commandLink styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" rerender="form" value="X"
