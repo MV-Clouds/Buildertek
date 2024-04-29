@@ -2873,8 +2873,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     "recordIds": BudgetIds
                 });
                 action.setCallback(this, function (response) {
-                    var state = response.getState();
-                    if (state === "SUCCESS") {
+                    let result = response.getReturnValue();
+                    if (result === "success") {
                         component.set("v.isBudgetlinedelete", false);
                         $A.get("e.force:refreshView").fire();
 
@@ -2911,14 +2911,27 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             toastEvent.fire();
                         });
                     }
+                    } else {
+                        component.find('notifLib').showNotice({
+                            "variant": "error",
+                            "header": "Error!",
+                            "message": result,
+                            closeCallback: function () {
+                                $A.get("e.c:BT_SpinnerEvent").setParams({
+                                    "action": "HIDE"
+                                }).fire();
+                                component.set("v.isBudgetlinedelete", false);
+                            }
+                        });
                     }
+                    
                 });
                 $A.enqueueAction(action);
             } else {
                 component.find('notifLib').showNotice({
                     "variant": "error",
-                    "header": "Please Select Quote Line!",
-                    "message": "Please select the Quote Line you would like to Delete.",
+                    "header": "Please Select BudgetLine!",
+                    "message": "Please select the BudgetLine you would like to Delete.",
                     closeCallback: function () {
                         $A.get("e.c:BT_SpinnerEvent").setParams({
                             "action": "HIDE"
