@@ -406,10 +406,15 @@ public class CreateRFQFromWalkThroughController{
             cdIds.add(cdl.Id);
         }
 
+        Set<String> rfqLineIds = new Set<String>();
+        for (String rfqLineId : mapOfWalkThroughLineIdAndRfqLineId.values()){
+            rfqLineIds.add(rfqLineId);
+        }
+
         //Query all the CDLs to get the ContentDocument.LatestPublishedVersionId and ContentDocument.Title
         List<ContentDocumentLink> allCdLinksToQuery = [SELECT Id, ContentDocument.LatestPublishedVersionId, ContentDocument.Title, ContentDocumentId, LinkedEntityId
                                                        FROM ContentDocumentLink
-                                                       WHERE Id IN:cdIds];
+                                                       WHERE LinkedEntityId IN:rfqLineIds];
 
         //Create a map of RFQ Line and List of ContentDocumentLink 
         Map<String, List<ContentDocumentLink>> mapOfRfqLineAndCdLinks = new Map<String, List<ContentDocumentLink>>();
