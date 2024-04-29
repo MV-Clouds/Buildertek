@@ -35,8 +35,8 @@
                         <option value="buildertek__Vendor__c">Vendor</option>
                         <option value="buildertek__Cost_Code__c">Cost-Code</option>
                         <option value="buildertek__Trade_Type__c">Trade-Type</option>
-                        <option value="buildertek__Build_Phase__c">Phase</option>
-                        <option value="buildertek__Category__c">Category</option>
+                        <!-- <option value="buildertek__Build_Phase__c">Phase</option>
+                        <option value="buildertek__Category__c">Category</option> -->
                     </lightning:select>
                 </div>
                 <footer class="slds-modal__footer">
