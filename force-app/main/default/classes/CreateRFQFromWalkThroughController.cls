@@ -400,6 +400,207 @@ public class CreateRFQFromWalkThroughController{
         if (!allCdLinksToInsert.isEmpty()){
             database.Insert (allCdLinksToInsert, false);
         }
+        
+        Set<Id> cdIds = new Set<Id>();
+        for (ContentDocumentLink cdl : allCdLinksToInsert){
+            cdIds.add(cdl.Id);
+        }
+
+        //Query all the CDLs to get the ContentDocument.LatestPublishedVersionId and ContentDocument.Title
+        List<ContentDocumentLink> allCdLinksToQuery = [SELECT Id, ContentDocument.LatestPublishedVersionId, ContentDocument.Title, ContentDocumentId, LinkedEntityId
+                                                       FROM ContentDocumentLink
+                                                       WHERE Id IN:cdIds];
+
+        //Create a map of RFQ Line and List of ContentDocumentLink 
+        Map<String, List<ContentDocumentLink>> mapOfRfqLineAndCdLinks = new Map<String, List<ContentDocumentLink>>();
+        for (ContentDocumentLink cdl : allCdLinksToQuery){
+            if (!mapOfRfqLineAndCdLinks.containsKey(cdl.LinkedEntityId)){
+                mapOfRfqLineAndCdLinks.put(cdl.LinkedEntityId, new List<ContentDocumentLink>());
+            }
+            mapOfRfqLineAndCdLinks.get(cdl.LinkedEntityId).add(cdl);
+        }
+
+        //Create ContentDistribution records for each CDL in allCdLinksToQuery
+        List<ContentDistribution> allContentDistributionsToInsert = new List<ContentDistribution>();
+        for (String rfqLineId : mapOfRfqLineAndCdLinks.keySet()){
+            for (ContentDocumentLink cdl : mapOfRfqLineAndCdLinks.get(rfqLineId)){
+                ContentDistribution cd = new ContentDistribution();
+                cd.ContentVersionId = cdl.ContentDocument.LatestPublishedVersionId;
+                cd.Name = cdl.ContentDocument.Title;
+                cd.PreferencesAllowViewInBrowser= true;
+                cd.PreferencesLinkLatestVersion=true;
+                cd.PreferencesNotifyOnVisit=false;
+                cd.PreferencesPasswordRequired=false;
+                cd.PreferencesAllowOriginalDownload= true;
+                cd.RelatedRecordId = rfqLineId;
+                allContentDistributionsToInsert.add(cd);
+            }
+        }
+
+        if (!allContentDistributionsToInsert.isEmpty()){
+            database.Insert (allContentDistributionsToInsert, false);
+        }
+
+        //Query all the ContentDistribution with ContentVersionId, DistributionPublicUrl
+        List<ContentDistribution> allContentDistributionsToQuery = [SELECT Id, ContentVersionId, DistributionPublicUrl, Name, RelatedRecordId
+                                                                   FROM ContentDistribution
+                                                                   WHERE Id IN:allContentDistributionsToInsert];
+
+        //Create a map where ContentDistribution Id is the key and the value is the RelatedRecordId
+        Map<String, String> mapOfContentDistributionIdAndRelatedRecordId = new Map<String, String>();
+        for (ContentDistribution cd : allContentDistributionsToQuery){
+            mapOfContentDistributionIdAndRelatedRecordId.put(cd.Id, cd.RelatedRecordId);
+        }
+
+        //Create a map of RFQ Line and List of ContentDistribution
+        Map<String, List<ContentDistribution>> mapOfRfqLineAndContentDistributions = new Map<String, List<ContentDistribution>>();
+        for (ContentDistribution cd : allContentDistributionsToQuery){
+            if (!mapOfRfqLineAndContentDistributions.containsKey(cd.RelatedRecordId)){
+                mapOfRfqLineAndContentDistributions.put(cd.RelatedRecordId, new List<ContentDistribution>());
+            }
+            mapOfRfqLineAndContentDistributions.get(cd.RelatedRecordId).add(cd);
+        }
+
+        //cretea record for buildertek__Public_File__c for each ContentDistribution
+        List<buildertek__Public_File__c> allPublicFilesToInsert = new List<buildertek__Public_File__c>();
+        for (String rfqLineId : mapOfRfqLineAndContentDistributions.keySet()){
+            for (ContentDistribution cd : mapOfRfqLineAndContentDistributions.get(rfqLineId)){
+                buildertek__Public_File__c publicfile = new buildertek__Public_File__c();
+                publicfile.buildertek__File_Name__c = cd.Name;
+                publicfile.buildertek__Content_Distrubution__c = cd.Id;
+                publicfile.buildertek__Content_Version__c = cd.ContentVersionId;
+                publicfile.buildertek__Public_URL__c = cd.DistributionPublicUrl;
+                allPublicFilesToInsert.add(publicfile);
+            }
+        }
+
+        if (!allPublicFilesToInsert.isEmpty()){
+            database.Insert (allPublicFilesToInsert, false);
+        }
+
+        //create a map where ContentDistribution Id is the key and the value is the buildertek__Public_File__c 
+        Map<String, buildertek__Public_File__c> mapOfContentDistributionIdAndPublicFile = new Map<String, buildertek__Public_File__c>();
+        for (buildertek__Public_File__c publicFile : allPublicFilesToInsert){
+            mapOfContentDistributionIdAndPublicFile.put(publicFile.buildertek__Content_Distrubution__c, publicFile);
+        }
+
+        //Create a map of RelatedRecordId and List of buildertek__Public_File__c
+        Map<String, List<buildertek__Public_File__c>> mapOfRfqLineAndPublicFiles = new Map<String, List<buildertek__Public_File__c>>();
+        for (buildertek__Public_File__c publicFile : allPublicFilesToInsert){
+            if (!mapOfRfqLineAndPublicFiles.containsKey(mapOfContentDistributionIdAndRelatedRecordId.get(publicFile.buildertek__Content_Distrubution__c))){
+                mapOfRfqLineAndPublicFiles.put(mapOfContentDistributionIdAndRelatedRecordId.get(publicFile.buildertek__Content_Distrubution__c), new List<buildertek__Public_File__c>());
+            }
+            mapOfRfqLineAndPublicFiles.get(mapOfContentDistributionIdAndRelatedRecordId.get(publicFile.buildertek__Content_Distrubution__c)).add(publicFile);
+        }
+
+        //iterate and debug the map
+        for (String rfqLineId : mapOfRfqLineAndPublicFiles.keySet()){
+            for (buildertek__Public_File__c publicFile : mapOfRfqLineAndPublicFiles.get(rfqLineId)){
+                System.debug('rfqLineId--> ' + rfqLineId + ' publicFile--> ' + publicFile);
+                System.debug('publicFile Id => ' + publicFile.Id);
+            }
+        }
+
+        //Create a record of buildertek__Public_Folder__c for each RFQ Line
+        List<buildertek__Public_Folder__c> allPublicFoldersToInsert = new List<buildertek__Public_Folder__c>();
+        for (String rfqLineId : mapOfRfqLineAndPublicFiles.keySet()){
+            buildertek__Public_Folder__c publicfol = new buildertek__Public_Folder__c();
+            publicfol.Name = 'Walkthrough Files';
+            publicfol.buildertek__Description__c = 'Public Folder for ' + rfqLineId;
+            publicfol.buildertek__RelatedToId__c = rfqLineId;
+            allPublicFoldersToInsert.add(publicfol);
+        }
+
+        if (!allPublicFoldersToInsert.isEmpty()){
+            database.Insert (allPublicFoldersToInsert, false);
+        }
+
+        //Create a map of RFQ Line and buildertek__Public_Folder__c.Id
+        Map<String, String> mapOfRfqLineAndPublicFolderId = new Map<String, String>();
+        for (buildertek__Public_Folder__c publicFolder : allPublicFoldersToInsert){
+            mapOfRfqLineAndPublicFolderId.put(publicFolder.buildertek__RelatedToId__c, publicFolder.Id);
+        }
+
+        //Iterate and debug the map
+        for (String rfqLineId : mapOfRfqLineAndPublicFolderId.keySet()){
+            System.debug('rfqLineId--> ' + rfqLineId + ' publicFolderId--> ' + mapOfRfqLineAndPublicFolderId.get(rfqLineId));
+        }
+
+        //We have a field on RFQ Line where we can store the Public Folder Id
+        List<buildertek__RFQ_Item__c> rfqLineToUpdate = new List<buildertek__RFQ_Item__c>();
+        for (String rfqLineId : mapOfRfqLineAndPublicFolderId.keySet()){
+            buildertek__RFQ_Item__c rfqLine = new buildertek__RFQ_Item__c();
+            rfqLine.Id = rfqLineId;
+            rfqLine.buildertek__Public_Folder__c = mapOfRfqLineAndPublicFolderId.get(rfqLineId);
+            rfqLineToUpdate.add(rfqLine);
+        }
+
+        if (!rfqLineToUpdate.isEmpty()){
+            database.Update (rfqLineToUpdate, false);
+        }
+
+
+        //Create a map of Public Folder Id and publicfile list, we hvae 2 list where RFQ Line is the key and the value is the list of public files and public folder
+        Map<String, List<buildertek__Public_File__c>> mapOfPublicFolderIdAndPublicFiles = new Map<String, List<buildertek__Public_File__c>>();
+        for (String rfqLineId : mapOfRfqLineAndPublicFiles.keySet()){
+            if (!mapOfPublicFolderIdAndPublicFiles.containsKey(mapOfRfqLineAndPublicFolderId.get(rfqLineId))){
+                mapOfPublicFolderIdAndPublicFiles.put(mapOfRfqLineAndPublicFolderId.get(rfqLineId), new List<buildertek__Public_File__c>());
+            }
+            mapOfPublicFolderIdAndPublicFiles.get(mapOfRfqLineAndPublicFolderId.get(rfqLineId)).addAll(mapOfRfqLineAndPublicFiles.get(rfqLineId));
+        }
+
+        //Iterate and debug the map
+        for (String publicFolderId : mapOfPublicFolderIdAndPublicFiles.keySet()){
+            for (buildertek__Public_File__c publicFile : mapOfPublicFolderIdAndPublicFiles.get(publicFolderId)){
+                System.debug('publicFolderId--> ' + publicFolderId + ' publicFile--> ' + publicFile);
+            }
+        }
+
+        //create a record of buildertek__Public_File_Folder_Jn__c for each Public Folder and Public File
+        List<buildertek__Public_File_Folder_Jn__c> allPublicFileFolderJnToInsert = new List<buildertek__Public_File_Folder_Jn__c>();
+        for (String publicFolderId : mapOfPublicFolderIdAndPublicFiles.keySet()){
+            for (buildertek__Public_File__c publicFile : mapOfPublicFolderIdAndPublicFiles.get(publicFolderId)){
+                buildertek__Public_File_Folder_Jn__c publicFileFolderJn = new buildertek__Public_File_Folder_Jn__c();
+                publicFileFolderJn.buildertek__Public_File__c = publicFile.Id;
+                publicFileFolderJn.buildertek__Public_Folder__c = publicFolderId;
+                allPublicFileFolderJnToInsert.add(publicFileFolderJn);
+            }
+        }
+
+        //iterate and debug the list
+        for (buildertek__Public_File_Folder_Jn__c publicFileFolderJn : allPublicFileFolderJnToInsert){
+            System.debug('publicFileFolderJn--> ' + publicFileFolderJn);
+        }
+
+        if (!allPublicFileFolderJnToInsert.isEmpty()){
+            database.Insert (allPublicFileFolderJnToInsert, false);
+        }
+
+
+
+
+
+
+        
+
+        
+
+        
+
+
+
+
+
+        
+
+        
+
+
+
+
+
+
+        
     }
 
     public static String sliceDescriptionForName(String description){
