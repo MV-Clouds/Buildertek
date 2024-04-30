@@ -1358,19 +1358,12 @@ public with sharing class BudgetDAO{
             }
             if (budgetItemLists.size() > 0){
                 Database.DeleteResult[] deletedBudgetLineList = Database.delete(budgetItemLists, false);
-                Integer notDeletedBudgetLineCounter = 0;
-                String errorMessage = '';
-                for (Database.DeleteResult dr : deletedBudgetLineList){
-                    if (!dr.isSuccess()){
-                        notDeletedBudgetLineCounter += 1;
-                        if(errorMessage == ''){
-                            errorMessage += dr.getErrors()[0].getMessage();
-                        }
+                for (Database.DeleteResult dr : deletedBudgetLineList) {
+                    if (!dr.isSuccess()) {
+                        return 'There are records associated with one of the Budget Lines you are trying to delete.  Please remove the associated record and try again.';
                     }
                 }
-                if (notDeletedBudgetLineCounter > 0){
-                    return notDeletedBudgetLineCounter + ' Budget Line(s) were not deleted because: '+ errorMessage;
-                }
+
             }
             
             return 'success';
@@ -2134,7 +2127,7 @@ public with sharing class BudgetDAO{
         // List<buildertek__BT_Time_Sheet__c> timeSheetList = [SELECT Id, Name, buildertek__BT_Project__c, buildertek__Status__c,buildertek__Total_Labor_Cost__c FROM buildertek__BT_Time_Sheet__c where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
         List<buildertek__BT_Time_Sheet_Entry__c> timesheetEntryList = [SELECT Id, Name, buildertek__BT_Project__r.Name, buildertek__Status__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__Total_Labor_Costs__c, buildertek__BT_Time_Sheet__r.Name
                                                                        FROM buildertek__BT_Time_Sheet_Entry__c
-                                                                       where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null];
+                                                                       where buildertek__BT_Project__c = :BudgetRec.buildertek__Project__c and buildertek__BT_Budget_Line__c = null and buildertek__Status__c = 'Approved'];
 
         return timesheetEntryList;
     }
