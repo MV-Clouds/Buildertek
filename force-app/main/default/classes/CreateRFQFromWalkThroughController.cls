@@ -608,17 +608,6 @@ public class CreateRFQFromWalkThroughController{
         if (!publicFileFolderJnList.isEmpty()){
             insert publicFileFolderJnList;
         }
-
-
-
-
-        
-
-
-
-
-
-
     }
 
     public static String sliceDescriptionForName(String description){
