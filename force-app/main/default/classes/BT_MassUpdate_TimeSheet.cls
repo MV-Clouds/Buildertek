@@ -1,19 +1,10 @@
 public with sharing class BT_MassUpdate_TimeSheet {
-    public BT_MassUpdate_TimeSheet() {
-
-    }
 
     @AuraEnabled
     public static List<buildertek__BT_Time_Sheet_Entry__c> getTimeSheetEntries(string recordId) {
-        List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntries = [SELECT Id, Name, buildertek__Status__c,buildertek__Start_Time__c, buildertek__End_Time__c, buildertek__BT_Time_Sheet__c, buildertek__Duration__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__BT_Project__c, buildertek__BT_Schedule_Item__c, buildertek__Description__c, buildertek__Notes__c, buildertek__Duration_Manual__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c = :recordId];
+        List<buildertek__BT_Time_Sheet_Entry__c> timeSheetEntries = [SELECT Id, Name, buildertek__Contact__c, buildertek__Status__c,buildertek__Start_Time__c, buildertek__End_Time__c, buildertek__BT_Time_Sheet__c, buildertek__Duration__c, buildertek__BT_Budget__c, buildertek__BT_Budget_Line__c, buildertek__BT_Project__c, buildertek__BT_Schedule_Item__c, buildertek__Description__c, buildertek__Notes__c, buildertek__Duration_Manual__c, buildertek__Sunday_hrs__c, buildertek__Monday_hrs__c, buildertek__Tuesday_hrs__c,buildertek__Wednesday_hrs__c, buildertek__Thursday_hrs__c, buildertek__Friday_hrs__c, buildertek__Saturday_hrs__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c = :recordId];
         return timeSheetEntries;
     }
-
-    // var action = component.get("c.updateTimeSheetEntries");
-    // action.setParams({
-    //     "upsertTimeSheetEntries": JSON.stringify(timeSheetEntries),
-    //     "deletedTimeSheetEntries": JSON.stringify(deletedTimeSheetEntries)
-    // });
 
     @AuraEnabled
     public static string updateTimeSheetEntries(List<buildertek__BT_Time_Sheet_Entry__c> upsertTimeSheetEntries, List<buildertek__BT_Time_Sheet_Entry__c> deletedTimeSheetEntries) {
@@ -22,7 +13,6 @@ public with sharing class BT_MassUpdate_TimeSheet {
         List<buildertek__BT_Time_Sheet_Entry__c> toDelete = new List<buildertek__BT_Time_Sheet_Entry__c>();
 
         for (buildertek__BT_Time_Sheet_Entry__c entry : upsertTimeSheetEntries) {
-            System.debug('entry: ' + entry);
             if (entry.Id == null) {
                 toInsert.add(entry);
             } else {
@@ -30,7 +20,6 @@ public with sharing class BT_MassUpdate_TimeSheet {
             }
         }
         for (buildertek__BT_Time_Sheet_Entry__c entry : deletedTimeSheetEntries) {
-            System.debug('deleted entry: ' + entry);
             toDelete.add(entry);
         }
 
