@@ -57,43 +57,24 @@
             }
 
             //start time <= end time
-            if(timeSheetEntries[i].buildertek__Start_Time__c != '' && timeSheetEntries[i].buildertek__Start_Time__c != undefined && timeSheetEntries[i].buildertek__Start_Time__c != null && timeSheetEntries[i].buildertek__End_Time__c != '' && timeSheetEntries[i].buildertek__End_Time__c != undefined && timeSheetEntries[i].buildertek__End_Time__c != null){
+            if (timeSheetEntries[i].buildertek__Start_Time__c && timeSheetEntries[i].buildertek__End_Time__c) {
                 var startTime = new Date(timeSheetEntries[i].buildertek__Start_Time__c);
                 var endTime = new Date(timeSheetEntries[i].buildertek__End_Time__c);
-                console.log('startTime', startTime);
-                console.log('endTime', endTime);
-                if(startTime > endTime){
+                console.log(timeSheetEntries[i].buildertek__Start_Time__c);
+                console.log(timeSheetEntries[i].buildertek__End_Time__c);
+                if (startTime > endTime) {
                     component.set("v.Spinner", false);
                     isValid = false;
-                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                    window.onload = showToast();
                     function showToast() {
                         sforce.one.showToast({
                             "title": "Error!",
                             "message": "Start Time cannot be greater than End Time on row " + (i + 1),
                             "type": "error"
                         });
-                    }     
+                    }
                     break;
                 }
-            }
-            let starttime = this.isValidDateFormat(timeSheetEntries[i].buildertek__Start_Time__c);
-            let endtime = this.isValidDateFormat(timeSheetEntries[i].buildertek__End_Time__c);
-            console.log(timeSheetEntries[i].buildertek__Start_Time__c);
-            console.log(timeSheetEntries[i].buildertek__End_Time__c);
-            console.log('st-->'+starttime);
-            console.log('et-->'+endtime);
-            if(starttime == false || endtime == false || timeSheetEntries[i].buildertek__Start_Time__c == null || timeSheetEntries[i].buildertek__End_Time__c == null || timeSheetEntries[i].buildertek__Start_Time__c == undefined || timeSheetEntries[i].buildertek__End_Time__c == undefined) {
-                component.set("v.Spinner", false);
-                    isValid = false;
-                    window.onload = showToast();        // Show  toast message on VF page --> Aura
-                    function showToast() {
-                        sforce.one.showToast({
-                            "title": "Error!",
-                            "message": "Date Format is incorrect on row " + (i + 1),
-                            "type": "error"
-                        });
-                    }     
-                    break;
             }
 
             if (timeSheetEntries[i].buildertek__Sunday_hrs__c < 0 || timeSheetEntries[i].buildertek__Monday_hrs__c < 0 || timeSheetEntries[i].buildertek__Tuesday_hrs__c < 0 || timeSheetEntries[i].buildertek__Wednesday_hrs__c < 0 || timeSheetEntries[i].buildertek__Thursday_hrs__c < 0 || timeSheetEntries[i].buildertek__Friday_hrs__c < 0 || timeSheetEntries[i].buildertek__Saturday_hrs__c < 0 || timeSheetEntries[i].buildertek__Sunday_hrs__c > 24 || timeSheetEntries[i].buildertek__Monday_hrs__c > 24 || timeSheetEntries[i].buildertek__Tuesday_hrs__c > 24 || timeSheetEntries[i].buildertek__Wednesday_hrs__c > 24 || timeSheetEntries[i].buildertek__Thursday_hrs__c > 24 || timeSheetEntries[i].buildertek__Friday_hrs__c > 24 || timeSheetEntries[i].buildertek__Saturday_hrs__c > 24) {
@@ -141,7 +122,6 @@
         }
         
         if(isValid){
-            debugger;
             helper.updateTimeSheetEntries(component, event, helper);
         }
     },
