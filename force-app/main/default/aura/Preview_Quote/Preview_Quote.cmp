@@ -26,6 +26,20 @@
     <aura:attribute name="siteURL" type="string" />
     <aura:attribute name="salesRep" type="string" />
     <aura:attribute name="orgName" type="string" />
+
+	<aura:attribute name="pdfFileName" type="String"/>
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg',  '.zip', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.pdf', '.txt']" />
+	<aura:attribute name="recordId" type="String" />
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedFillIds" type="sObject[]" default="[]"/>
+    <aura:attribute name="showModel" type="Boolean" default="false" />
+    <aura:attribute name="relatedFiles" type="List" default="[]" />
+	<aura:attribute name="selectedFiles" type="sObject[]" default="[]"/>
+    <aura:attribute name="selectedFile" type="List" default="[]" />
+
+    <aura:attribute name="subject" type="string" />
+
+
     
 
 
@@ -116,6 +130,16 @@
                                     </div>
                                 </div>
                             </div>
+                             <div class="slds-form-element slds-email-composer__combobox"
+                                style="padding-top: 10px;padding-bottom: 10px;">
+                                <label class="slds-form-element__label" for="recipients-subject" style="margin-left:-7px" >Subject</label>
+                                <div class="slds-form-element__control">
+                                    <div class="slds-combobox_container slds-has-inline-listbox" style="padding-left: 2rem;">
+                                <ui:inputText aura:id="subject" value="{!v.subject}" placeholder="subject.." />
+
+                                    </div>
+                                </div>
+                             </div>
 
                             <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
                                 <label class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
@@ -163,6 +187,74 @@
                                     </div>
                                 </div>
                             </div>
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
+                            <lightning:layout multipleRows = "true">
+                                <div style="display: flex; flex-direction :column;">
+                                <div style="display: flex; align-items: center;">
+                                    <lightning:fileUpload label="Attachments"
+                                                            name="fileUploader"
+                                                            multiple="true"
+                                                            accept="{!v.filetype}"
+                                                            recordId="{!v.recordId}"
+                                                            aura:id="fuploader"
+                                                            onuploadfinished="{!c.handleFileChange}" />
+                                    
+                                    <div style="display: inline-block; padding-left: 10px;" onclick="{!c.openPopupModel}">
+                                        <lightning:button iconPosition="left" label="Select file from record" class="sldsButtonGroup" />
+                                    </div>
+                                    <aura:if isTrue="{!v.showModel}">
+                                        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open slds-modal_large">
+                                                <div class="slds-modal__container">
+                                                    <header class="slds-modal__header">
+                                                            <h2 class="slds-text-heading_medium slds-hyphenate">Select Files</h2>
+                                                    </header>    
+                                                    <div class="slds-modal__content divModel" id="modal-content-id-1" style="">
+                                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col"></th>
+                                                                    <th scope="col">File Name</th>
+                                                                    <th scope="col">Size</th>
+                                                                    <th scope="col">File Type</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                
+                                                                <aura:iteration items="{!v.relatedFiles}" var="file">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <lightning:input type="checkbox" name="{!file}" value="{!file.ContentDocumentId}" checked="{!file.isChecked}" onchange="{!c.handleCheckboxChange}" />
+                                                                        </td>
+                                                                        <td>{!file.Title}</td>
+                                                                        <td>{!file.FormattedSize}</td> 
+                                                                        <td>{!file.FileType}</td>
+                                                                    </tr>
+                                                                </aura:iteration>
+                                                                
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <footer class="slds-modal__footer">
+                                                        <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeFileModel}">Cancel</button>
+                                                        <button class="slds-button slds-button_brand" aria-label="save" onclick="{!c.handleSaveButtonClick}">Save</button>
+                                                    </footer>                                                
+                                            </div>
+                                        </section>
+                                        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+                                    </aura:if>
+                                </div>
+                                <div>
+                                    <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                        <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Id}" onremove="{!c.clear}">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon" />
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>
+                            </div>
+                            </lightning:layout>
+                        </div>                             
 
                             <p class="slds-text-longform tile__title red-txt">
                                 <aura:unescapedHtml value="{!v.quoteLines}" />
