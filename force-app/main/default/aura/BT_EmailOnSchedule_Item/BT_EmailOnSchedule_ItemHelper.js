@@ -258,7 +258,7 @@
                     toastEvent.setParams({
                         mode: 'sticky',
                       //  message: response.getReturnValue(),
-                        message:'Please Add Email in To Address.',
+                        message:'Please Add Email On Vendor.',
                         type : 'error',
                         duration: '5000',
 						mode: 'dismissible'
