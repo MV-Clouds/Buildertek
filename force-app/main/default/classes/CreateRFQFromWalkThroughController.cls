@@ -533,7 +533,7 @@ public class CreateRFQFromWalkThroughController{
         }
 
         //query all the ContentDistribution to get the Name, ContentVersionId, DistributionPublicUrl
-        List<ContentDistribution> cdListToQuery = [SELECT Id, Name, ContentVersionId, DistributionPublicUrl
+        List<ContentDistribution> cdListToQuery = [SELECT Id, Name, ContentVersionId, DistributionPublicUrl, RelatedRecordId
                                                    FROM ContentDistribution
                                                    WHERE Id IN:cdList];
 
