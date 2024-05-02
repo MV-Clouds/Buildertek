@@ -82,7 +82,7 @@ global without sharing class QuotelineGroupingController{
                 wrapperlst.add(wrap);
             }
 
-            if (quotegroupingmap.get(null).size() > 0) {
+            if (quotegroupingmap.containsKey(null) &&  quotegroupingmap.get(null).size() > 0) {
                 wrapperClass wrap = new wrapperClass();
                 wrap.groupName = 'Grouping None';
                 decimal quoteitemNetunitprice = 0.0;
@@ -155,7 +155,7 @@ global without sharing class QuotelineGroupingController{
                 wrapperlst.add(wrap);
             }
 
-            if (quoteCostCodemap.get(null).size() > 0) {
+            if (quoteCostCodemap.containsKey(null) &&  quoteCostCodemap.get(null).size() > 0) {
                 wrapperClass wrap = new wrapperClass();
                 wrap.groupName = 'No Cost Code';
                 decimal quoteitemNetunitprice = 0.0;
