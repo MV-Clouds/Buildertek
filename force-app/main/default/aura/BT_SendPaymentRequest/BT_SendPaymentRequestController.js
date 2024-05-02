@@ -48,6 +48,14 @@
         console.log('subject: ' + subject);
 
         var body = component.get('v.templateBody');
+        body = body.replaceAll('<p><br></p>', '<br>');
+        body = body.replaceAll('<b><br></b>', '<br>');
+        body = body.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+        body = body.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+        body = body.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+        body = body.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">');
+        body = body.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">');
+        body = body.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">');
         body += '<p>Here is the link to Contractor Invoice <a href="' + component.get('v.siteURL') + '" target="_blank">Link</a></p>';
         body += '<p style="margin: 0;">Thanks & Regards,</p>';
         body += '<p style="margin: 0;">' + component.get('v.orgName') + '</p>';
