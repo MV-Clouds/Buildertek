@@ -71,6 +71,28 @@ public with sharing class TimeSheetEntryHandler {
 
     //onBeforeInsert
     public void onBeforeInsert(List<buildertek__BT_Time_Sheet_Entry__c> newTimeSheetEntries) {
+
+        //create a set of contact ids from the newTimeSheetEntries
+        Set<Id> contactIds = new Set<Id>();
+        for (buildertek__BT_Time_Sheet_Entry__c tse : newTimeSheetEntries) {
+            contactIds.add(tse.buildertek__Contact__c);
+        }
+
+        //query all the contacts
+        List<Contact> contacts = [SELECT Id, Name, buildertek__Hourly_Rate__c FROM Contact WHERE Id IN :contactIds];
+
+        //create a map where contact id is the key and the hourly rate is the value
+        Map<Id, Decimal> contactToHourlyRate = new Map<Id, Decimal>();
+        for (Contact c : contacts) {
+            contactToHourlyRate.put(c.Id, c.buildertek__Hourly_Rate__c);
+        }
+
+        //iterate through the new timesheet entries and set the buildertek__Billable_RateManual__c to the hourly rate of the contact
+        for (buildertek__BT_Time_Sheet_Entry__c tse : newTimeSheetEntries) {
+            if (contactToHourlyRate.containsKey(tse.buildertek__BT_Time_Sheet__r.buildertek__Contact__c)) {
+                tse.buildertek__Billable_RateManual__c = contactToHourlyRate.get(tse.buildertek__Contact__c);
+            }
+        }
         
         String budgetLineGroupId ;
         List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'Labor' LIMIT 1];

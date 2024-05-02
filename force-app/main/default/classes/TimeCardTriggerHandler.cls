@@ -98,6 +98,48 @@ timecard.adderror('You Need to close your last Time Card before you can create a
             }
         }
 
+        
+        Set<Id> contactIds = new Set<Id>();
+        for (buildertek__Time_Cards__c timeCard : newtimecardslist){
+            if (timeCard.buildertek__Resource__c != null){
+                contactIds.add(timeCard.buildertek__Resource__c);
+            }
+        }
+        //query all the contacts with the fields buildertek__Hourly_Rate__c,buildertek__Daily_Over_Time_Threshold__c, buildertek__Overtime__c, buildertek__Weekly__c, buildertek__Weekly_Overtime_Premium__c
+        List<Contact> contactList = [SELECT Id, Name, buildertek__Hourly_Rate__c, buildertek__Daily_Over_Time_Threshold__c, buildertek__Overtime__c, buildertek__Weekly__c, buildertek__Weekly_Overtime_Premium__c FROM Contact WHERE Id IN :contactIds];
+
+        //Map to store the contact Id and the contact record
+        Map<Id, Contact> contactMap = new Map<Id, Contact>();
+        for (Contact conRec : contactList){
+            contactMap.put(conRec.Id, conRec);
+        }
+
+        //Iterate through the new time cards and check if the fields are not null and then update the time card fields
+        for (buildertek__Time_Cards__c timeCard : newtimecardslist){
+            if (timeCard.buildertek__Resource__c != null){
+                if (contactMap.containsKey(timeCard.buildertek__Resource__c)){
+                    if (contactMap.get(timeCard.buildertek__Resource__c).buildertek__Hourly_Rate__c != null){
+                        timeCard.buildertek__Hourly_Rate__c = contactMap.get(timeCard.buildertek__Resource__c).buildertek__Hourly_Rate__c;
+                    }
+                    if (contactMap.get(timeCard.buildertek__Resource__c).buildertek__Weekly_Overtime_Premium__c != null){
+                        timeCard.buildertek__Weekly_Overtime_Premium__c = contactMap.get(timeCard.buildertek__Resource__c).buildertek__Weekly_Overtime_Premium__c;
+                    }
+                    if (contactMap.get(timeCard.buildertek__Resource__c).buildertek__Weekly__c != null){
+                        timeCard.buildertek__Weekly_Overtime_Threshold__c = contactMap.get(timeCard.buildertek__Resource__c).buildertek__Weekly__c;
+                    }
+                    if (contactMap.get(timeCard.buildertek__Resource__c).buildertek__Overtime__c != null){
+                        timeCard.buildertek__Daily_Overtime_Premium__c = contactMap.get(timeCard.buildertek__Resource__c).buildertek__Overtime__c;
+                    }
+                    if (contactMap.get(timeCard.buildertek__Resource__c).buildertek__Daily_Over_Time_Threshold__c != null){
+                        timeCard.buildertek__Daily_Overtime_Threshold__c = contactMap.get(timeCard.buildertek__Resource__c).buildertek__Daily_Over_Time_Threshold__c;
+                    }
+                }
+            }
+        }
+
+        
+
+
         list<buildertek__Budget_Item__c> budgetlines = [select id,Name,buildertek__Budget__c from buildertek__Budget_Item__c where id IN : budgetlineids];
         for(buildertek__Budget_Item__c budgetRec : budgetlines){
             for(buildertek__Time_Cards__c exp : newtimecardslist){

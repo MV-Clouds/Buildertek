@@ -20,6 +20,7 @@
             }
             if (id.length > 0) {
                 console.log('phase index : ', component.get('v.phaseIndex'));
+                console.log('phaseIndexValue  : ', component.get('v.phaseIndexValue'));
                 var cmpEvent = component.getEvent("onSelectEvt");
                 cmpEvent.setParams({
                     "childObjectName": component.get("v.childObjectName"),
@@ -27,6 +28,7 @@
                     "fieldName": component.get("v.fieldName"),
                     "selectedRecordId": component.find("lookupField").get("v.value"),
                     "index": component.get('v.index'),
+                    "phaseIndexValue": component.get('v.phaseIndexValue'),
                     "groupIndex" : component.get('v.groupindex'),
                 });
                 cmpEvent.fire();
@@ -35,12 +37,13 @@
                 cmpEvent.setParams({
                     "phaseIndex": component.get('v.phaseIndex'),
                     "index": component.get('v.index'),
+                    "phaseIndexValue": component.get('v.phaseIndexValue'),
                     "fieldName": component.get("v.fieldName")
                 });
                 cmpEvent.fire();
             }
 
         // }
-        
+
     }
 })

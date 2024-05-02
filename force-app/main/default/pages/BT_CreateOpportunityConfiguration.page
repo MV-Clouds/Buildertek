@@ -6,6 +6,9 @@
             <apex:pageblocksection >
                 <apex:inputcheckbox value="{!AssigntoExistingProjectonClosedWon}" label="Assign to Existing Project on Closed Won?">
                 </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!SendEmailonautomaticcreationofProj}" label="Send Email on automatic creation of Project?">
+                </apex:inputcheckbox>
+
                 <apex:commandButton value="Save" id="onOpportunityOverage" styleClass="slds-button slds-button_brand" action="{!onOpportunityOverage}"></apex:commandButton>
             </apex:pageblocksection>
         </apex:pageBlock>

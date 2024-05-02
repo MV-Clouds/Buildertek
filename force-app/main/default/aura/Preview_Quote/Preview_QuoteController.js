@@ -141,6 +141,21 @@
             toastEvent.fire();
             return;
         }
+        var subject= component.get ('v.subject') ; 
+        if ((subject == null || subject == "")) {
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: 'Error',
+                message: 'Please  enter a Subject for the email',
+                duration: ' 3000',
+                key: 'info_alt',
+                type: 'error',
+                mode: 'pester'
+            });
+            toastEvent.fire();
+            return;
+        }
         var cc = component.get("v.selectedCcContact");
         var emailIds = component.get("v.emailIds");
         to.forEach(function(v) {
@@ -170,6 +185,7 @@
                 to: toIds,
                 cc: ccIds,
                 files: contentDocumentIds,
+                Subject: component.get("v.subject"),
                 emailIds: emailIds,
                 memovalue: component.get("v.memoquote"),
                 emailBodyValue: component.get("v.templateEmailBody")
@@ -205,7 +221,7 @@
                         });
                         toastEvent.fire();
                     }
-                    $A.get('e.force:refreshView').fire();
+                    // $A.get('e.force:refreshView').fire();
                 }
             });
             $A.enqueueAction(action);
@@ -282,6 +298,21 @@
             ccIds.push(v.Id)
         });
         if (toIds.length != 0 || emailIds.length != 0) {
+            var subject= component.get ('v.subject') ;
+            if (!subject || subject == "") {
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: 'Error',
+                message: 'Please  enter a Subject for the email',
+                duration: ' 3000',
+                key: 'info_alt',
+                type: 'error',
+                mode: 'pester'
+            });
+            toastEvent.fire();
+            return;
+        }
             if (!signaturePad.isEmpty()) {
                 helper.AcceptSignature(component, event);
             } else {
@@ -362,6 +393,7 @@
         handleSaveButtonClick: function(component, event, helper) {
         helper.saveButton(component, event, helper);
     },
+
         clear :function(component,event,heplper){
         helper.clearPillValues(component, event, helper);
     }

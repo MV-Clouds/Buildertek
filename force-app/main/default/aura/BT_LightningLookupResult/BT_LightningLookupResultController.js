@@ -17,6 +17,7 @@
           "PricebookEntryrecordByEvent" : pricebookEntrybyProd,
           "recordByEventstring": component.get("v.ObjectAPIName"),
           "phaseIndex" : component.get("v.phaseIndex"),
+          "phaseIndexValue" : component.get("v.phaseIndexValue"),
           "index": component.get("v.index"),
         });  
     // fire the event  
