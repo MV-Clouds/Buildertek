@@ -30,5 +30,19 @@ public with sharing class SendPaymentRequestController {
 
     }
 
+    @AuraEnabled
+    public static String getOwnerNameAndCompanyName(String recordId) {
+        System.debug('recordId: ' + recordId);
+        buildertek__Account_Payable__c inn = [SELECT Id, Name, CreatedById FROM buildertek__Account_Payable__c WHERE Id = :recordId];
+        System.debug('inn: ' + inn);
+        User owner = [SELECT Id, Name, CompanyName FROM User WHERE Id = :inn.CreatedById];
+        System.debug('owner: ' + owner);
+        List<Organization> org = [SELECT Id,Name from Organization limit 1];
+        return owner.Name + ' - ' + org[0].Name;
+
+    }
+
+
+
     
 }

@@ -1,34 +1,29 @@
 ({
-    sendEmailHelper: function(component, toAddress, ccAddress, subject, body) {
-        console.log('sendEmailHelper');
-        var action = component.get("c.sendEmail");
+    getOwnerNameAndCompanyName: function(component, recordId) {
+        var action = component.get("c.getOwnerNameAndCompanyName");
         action.setParams({
-            toAddress: toAddress,
-            ccAddress: ccAddress,
-            subject: subject,
-            body: body
+            recordId: recordId
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
-                console.log('Email sent successfully');
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    title: "Success!",
-                    message: "Email sent successfully",
-                    type: "success"
-                });
-                toastEvent.fire();
+                var response = response.getReturnValue();
+                console.log('response: ' + JSON.stringify(response));
+                //whatever is before the - is the response
+                var ownerName = response.split('-')[0];
+                var companyName = response.split('-')[1];
+                if (ownerName != null && ownerName != '') {
+                    console.log('ownerName: ' + ownerName);
+                    component.set('v.orgName', ownerName);
+                }
+                if (companyName != null && companyName != '' && companyName != 'null') {
+                    console.log('companyName: ' + companyName);
+                    component.set('v.companyName', companyName);
+                }
             } else {
-                console.log('Error in sending email');
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    title: "Error!",
-                    message: "Error in sending email",
-                    type: "error"
-                });
-                toastEvent.fire();
+                console.log('Error in getting owner name and company name');
             }
         });
-    }
+        $A.enqueueAction(action);
+    },
 })

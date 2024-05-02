@@ -3,8 +3,8 @@
         console.log('doInit');
         var url = window.location.href;
         component.set("v.siteURL", url);
-        component.set("v.orgName", 'Jaimin Shah');
-        component.set("v.companyName", 'MV Clouds');
+        var recordId = component.get('v.recordId');
+        helper.getOwnerNameAndCompanyName(component, recordId);
     },
 
     closeModel: function(component, event, helper) {
@@ -49,7 +49,6 @@
 
         var body = component.get('v.templateBody');
         body += '<p>Here is the link to Contractor Invoice <a href="' + component.get('v.siteURL') + '" target="_blank">Link</a></p>';
-        //add margin : 0 to all the below tags
         body += '<p style="margin: 0;">Thanks & Regards,</p>';
         body += '<p style="margin: 0;">' + component.get('v.orgName') + '</p>';
         body += '<p style="margin: 0;">' + component.get('v.companyName') + '</p>';
@@ -85,7 +84,7 @@
                     type: "error"
                 });
                 toastEvent.fire();
-                
+
             }
         });
         $A.enqueueAction(action);
