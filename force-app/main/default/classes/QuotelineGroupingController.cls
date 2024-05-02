@@ -34,7 +34,6 @@ global without sharing class QuotelineGroupingController{
     }
 
     global void Quotelinegroupingdata(){
-
         wrapperlst = new list<wrapperClass>();
         Totalquotelineamount = 0.0;
         quotesList = [select id, buildertek__Project__c, buildertek__Roll_Up__c, buildertek__Rollup_by_Group__c, buildertek__Roll_Up_All_Lines_by_Cost_Code__c, buildertek__Subtotal__c, Total__c, Tax__c, Grand_Total__c, buildertek__Discount__c
@@ -76,6 +75,26 @@ global without sharing class QuotelineGroupingController{
                     }
                     if (quoteitemrec.buildertek__Net_Total_Price__c != null){
                         quoteitemlistTotal += quoteitemrec.buildertek__Net_Total_Price__c;
+                    }
+                }
+                wrap.netunitprice = quoteitemNetunitprice;
+                wrap.listTotal = quoteitemlistTotal;
+                wrapperlst.add(wrap);
+            }
+
+            if (quotegroupingmap.get(null).size() > 0) {
+                wrapperClass wrap = new wrapperClass();
+                wrap.groupName = 'Grouping None';
+                decimal quoteitemNetunitprice = 0.0;
+                decimal quoteitemlistTotal = 0.0;
+                for (buildertek__Quote_Item__c quoteLineWithNullCostCode : quotegroupingmap.get(null)) {
+                    if (quoteLineWithNullCostCode != null) {
+                        if (quoteLineWithNullCostCode.buildertek__Net_Unit__c != null){
+                            quoteitemNetunitprice += quoteLineWithNullCostCode.buildertek__Net_Unit__c;
+                        }
+                        if (quoteLineWithNullCostCode.buildertek__Net_Total_Price__c != null){
+                            quoteitemlistTotal += quoteLineWithNullCostCode.buildertek__Net_Total_Price__c;
+                        }
                     }
                 }
                 wrap.netunitprice = quoteitemNetunitprice;
@@ -136,6 +155,25 @@ global without sharing class QuotelineGroupingController{
                 wrapperlst.add(wrap);
             }
 
+            if (quoteCostCodemap.get(null).size() > 0) {
+                wrapperClass wrap = new wrapperClass();
+                wrap.groupName = 'No Cost Code';
+                decimal quoteitemNetunitprice = 0.0;
+                decimal quoteitemlistTotal = 0.0;
+                for (buildertek__Quote_Item__c quoteLineWithNullCostCode : quoteCostCodemap.get(null)) {
+                    if (quoteLineWithNullCostCode != null) {
+                        if (quoteLineWithNullCostCode.buildertek__Net_Unit__c != null){
+                            quoteitemNetunitprice += quoteLineWithNullCostCode.buildertek__Net_Unit__c;
+                        }
+                        if (quoteLineWithNullCostCode.buildertek__Net_Total_Price__c != null){
+                            quoteitemlistTotal += quoteLineWithNullCostCode.buildertek__Net_Total_Price__c;
+                        }
+                    }
+                }
+                wrap.netunitprice = quoteitemNetunitprice;
+                wrap.listTotal = quoteitemlistTotal;
+                wrapperlst.add(wrap);
+            }
             system.debug(wrapperlst.size() + 'wrapperlst----->' + wrapperlst);
         }
     }
