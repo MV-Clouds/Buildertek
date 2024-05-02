@@ -39,7 +39,6 @@
 
     <aura:attribute name="subject" type="string" />
 
-
     
 
 

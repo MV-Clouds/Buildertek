@@ -393,7 +393,8 @@
         handleSaveButtonClick: function(component, event, helper) {
         helper.saveButton(component, event, helper);
     },
-        clear :function(component,event,helper){
+
+        clear :function(component,event,heplper){
         helper.clearPillValues(component, event, helper);
     }
 
