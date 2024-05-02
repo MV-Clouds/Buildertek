@@ -43,7 +43,7 @@ global without sharing class QuotelineGroupingController{
 
         QuoteItem = [select Id, Name, buildertek__Product__c, buildertek__Quote__c, buildertek__Quote__r.name, buildertek__Grouping__c, buildertek__Cost_Code__c, buildertek__Grouping__r.Name, buildertek__Unit_Cost__c, buildertek__Unit_Price__c, buildertek__Net_Unit__c, buildertek__Total_Cost__c, buildertek__List_Total__c, buildertek__Net_Total_Price__c, buildertek__Gross_Profit__c, buildertek__Quantity__c, buildertek__Status__c, buildertek__Discount__c
                      from buildertek__Quote_Item__c
-                     where buildertek__Quote__c = :quoteid AND buildertek__Status__c = :'Accept'];
+                     where buildertek__Quote__c = :quoteid AND buildertek__Status__c = :'Accept' AND buildertek__Not_Customer_Visible__c = false];
         if (quotesList[0].buildertek__Rollup_by_Group__c == true && quotesList[0].buildertek__Roll_Up__c != true){
             system.debug('QuoteItem---->' + QuoteItem.size());
             set<Id> groupid = new set<Id>();
