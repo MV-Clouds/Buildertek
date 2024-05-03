@@ -607,7 +607,7 @@ public class createAllPOfromBOM_controller {
                         createdPOsIds.add(PO.Id);
                     }
 
-                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name, buildertek__Trade_Type__c FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
                     Map<String, Id> TradeTypeVendorId_POId = new Map<String, Id>();
 
@@ -671,6 +671,7 @@ public class createAllPOfromBOM_controller {
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
                                         String key = PO.buildertek__Trade_Type__c + '_' + PO.buildertek__Vendor__c;
                                         String Category = TradeTypeVendorId_Category.get(key);
+                                        String TradeType = PO.buildertek__Trade_Type__c;
 
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
