@@ -13,15 +13,14 @@ export default {
                 "name"      : "General",
                 "intervals" : [
                     {
-                        "recurrentStartDate" : "on Sat at 0:00",
-                        "recurrentEndDate"   : "on Mon at 0:00",
+                        "recurrentStartDate" : "every weekday at 12:00",
+                        "recurrentEndDate"   : "every weekday at 13:00",
                         "isWorking"          : false
                     },
                     {
-                        "startDate": "2023-03-06",
-                        "endDate": "2023-03-07",
-                        "isWorking": false,
-                        "name": "Vacation",
+                        "recurrentStartDate" : "every weekday at 17:00",
+                        "recurrentEndDate"   : "every weekday at 08:00",
+                        "isWorking"          : false
                     }
                 ],
                 "expanded" : true,
@@ -30,17 +29,17 @@ export default {
                         "id"           : "business",
                         "name"         : "Business",
                         "hoursPerDay"  : 8,
-                        "daysPerWeek"  : 5,
-                        "daysPerMonth" : 20,
+                        // "daysPerWeek"  : 5,
+                        // "daysPerMonth" : 20,
                         "intervals"    : [
                             {
-                                "recurrentStartDate" : "every weekday at 12:00",
-                                "recurrentEndDate"   : "every weekday at 13:00",
+                                "recurrentStartDate" : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 12:00",
+                                "recurrentEndDate"   : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 13:00",
                                 "isWorking"          : false
                             },
                             {
-                                "recurrentStartDate" : "every weekday at 17:00",
-                                "recurrentEndDate"   : "every weekday at 08:00",
+                                "recurrentStartDate" : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 17:00",
+                                "recurrentEndDate"   : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 08:00",
                                 "isWorking"          : false
                             }
                         ]
