@@ -98,6 +98,7 @@ public Boolean displayPopup1 {get;set;}
     public Integer fileSize { get; set; }
     public string rfqcontact {get;set;}
     public String forceSiteURL { get; set; }
+    public Map<Integer, String> rfqlinetofolder{ get; set; }
 
     public Document document {
     get {
@@ -121,17 +122,29 @@ public Boolean displayPopup1 {get;set;}
         companycurrency = UserInfo.getDefaultCurrency();
         multicurrency = UserInfo.isMultiCurrencyOrganization();
         rfqToVendorItemMap = new Map<Integer, Id>();
+        rfqlinetofolder = new Map <Integer,String>();
         rfqVendorId = ApexPages.currentPage().getParameters().get('id').escapeHtml4();
         rfqToVendor = new buildertek__RFQ_To_Vendor__c();
         rfqrec1 = new buildertek__RFQ__c();
         files = new List<File__c>();
         try{
-            String query = 'Select RFQ__r.Due_Date__c,RFQ__r.Name,RFQ__r.RFQ_Details__c,RFQ__r.Auto_Number__c,RFQ__r.Project__c,buildertek__RFQ__r.Project__r.Name,' + BT_Utils.getQueryStringForObjectWithAllFields('buildertek__RFQ_To_Vendor__c')+',(Select id,Name,Item_Name__c,Vendor_Note__c,buildertek__Estimated_Work_Days__c,Quantity__c,Unit_Price__c,Total_Price__c,Description__c,Budget_Line_Amount__c, buildertek__RFQ_Item__c, buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Name from Vendor_Items__r),(Select Id, Name, File__r.Name, File__r.File_Presigned_URL__c,File__r.Description__c,File__r.Download_Link__c,File__r.Download_Link1__c from RFQ_To_Vendor_Document_Links__r), (Select Id, Name, File_Presigned_URL__c,Description__c from Files__r) From buildertek__RFQ_To_Vendor__c where ID =:rfqVendorId order by Name';
+            String query = 'Select RFQ__r.Due_Date__c,RFQ__r.Name,RFQ__r.RFQ_Details__c,RFQ__r.Auto_Number__c,RFQ__r.Project__c,buildertek__RFQ__r.Project__r.Name,' + BT_Utils.getQueryStringForObjectWithAllFields('buildertek__RFQ_To_Vendor__c')+',(Select id,Name,Item_Name__c,Vendor_Note__c,buildertek__Estimated_Work_Days__c,Quantity__c,Unit_Price__c,Total_Price__c,Description__c,Budget_Line_Amount__c, buildertek__RFQ_Item__c, buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Name, buildertek__RFQ_Item__r.buildertek__Public_Folder__c from Vendor_Items__r),(Select Id, Name, File__r.Name, File__r.File_Presigned_URL__c,File__r.Description__c,File__r.Download_Link__c,File__r.Download_Link1__c from RFQ_To_Vendor_Document_Links__r), (Select Id, Name, File_Presigned_URL__c,Description__c from Files__r) From buildertek__RFQ_To_Vendor__c where ID =:rfqVendorId order by Name';
             List<buildertek__RFQ_Template_Settings__c> settingsList = (List<buildertek__RFQ_Template_Settings__c>) Database.query('SELECT buildertek__Force_Site_URL__c FROM buildertek__RFQ_Template_Settings__c');
             forceSiteURL = settingsList[0].buildertek__Force_Site_URL__c;
- 
+            
             System.debug('query----------->'+query);
             rfqToVendor = (buildertek__RFQ_To_Vendor__c)Database.query(query)[0];
+            Integer countt = 0;
+            for (buildertek__RFQ_Vendor_Item__c rfqItem : rfqToVendor.Vendor_Items__r) {
+                if (rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r != null) {
+                    System.debug('Public Folder: ' + rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Id);
+                    rfqlinetofolder.put(countt,rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Id);
+                    countt++;
+                } else {
+                    rfqlinetofolder.put(countt,'n');
+                    System.debug('Public Folder is null for RFQ Item: ' + rfqItem.Name);
+                }
+            }
             rfqId = rfqToVendor.RFQ__c;
             rfqcontact=rfqToVendor.buildertek__Contact__c;
             projectId =rfqToVendor.RFQ__r.Project__c;

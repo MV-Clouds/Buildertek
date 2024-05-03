@@ -646,6 +646,7 @@
                             </thead>
                             <tbody>
                                 <apex:variable value="{!0}" var="rowNum" />
+                                <apex:variable value="{!0}" var="rowNumm" />
                                 <apex:repeat value="{!rfqToVendor.buildertek__Vendor_Items__r}" var="item">
                                     <tr>
                                         <td style="white-space: normal">
@@ -693,10 +694,10 @@
                                             />
                                         </td>
                                         <td> 
-                                            <center> 
-                                                <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c}" target="_blank" disabled="{!item.buildertek__RFQ_Item__r.buildertek__Public_folder__c == null}"> 
-                                                <apex:image url="{!IF(item.buildertek__RFQ_Item__r.buildertek__Public_folder__c != null, $Resource.blue_folder_icon, $Resource.gray_folder_icon)}" style="height:40px"/>
-                                                </apex:outputLink>
+                                            <center>  
+                <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!rfqlinetofolder[rowNumm]}" target="_blank" disabled="{!rfqlinetofolder[rowNumm] == 'n'}">
+                <apex:image url="{!IF(rfqlinetofolder[rowNumm] == 'n', $Resource.gray_folder_icon, $Resource.blue_folder_icon)}" style="height:40px;"/>
+                </apex:outputLink> 
                                             </center>
                                         </td> 
                                         <td>
@@ -705,6 +706,8 @@
                                         </td>
 
                                     </tr>
+                                        <apex:variable var="rowNumm" value="{!rowNumm + 1}" />
+
                                 </apex:repeat>
                                 <apex:repeat value="{!wrapList}" var="eachRecord" id="theRepeat">
                                     <tr>
