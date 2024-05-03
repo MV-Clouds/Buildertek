@@ -1299,19 +1299,18 @@ public with sharing class BudgetDAO{
         try {
             buildertek__Budget_Item__c budgetItem;
             if (Schema.sObjectType.buildertek__Budget_Item__c.fields.Id.isAccessible()){
-                List<buildertek__Account_Payable__c> payment = [Select Id, Name, buildertek__BT_Budget_Line__c from buildertek__Account_Payable__c where buildertek__BT_Budget_Line__c = :budgetId];
-                if (payment.size() == 0){
-                    budgetItem = [SELECT Id FROM buildertek__Budget_Item__c WHERE Id = :budgetId];
-                    if (buildertek__Budget_Item__c.sObjectType.getDescribe().isDeletable()){
-                        delete budgetItem;
-                        return budgetItem;
+                budgetItem = [SELECT Id FROM buildertek__Budget_Item__c WHERE Id = :budgetId];
+                if (budgetItem != null) {
+                    Database.DeleteResult deleteResult = Database.delete(budgetItem, false);
+                    if (!deleteResult.isSuccess()) {
+                        return null;
                     }
                 }
             }
-            return null;
+            return budgetItem;
         } catch (Exception e) {
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if(StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
                 BT_ExceptionHandler.Store_Exception(e);
             }
             return null;
@@ -1358,24 +1357,17 @@ public with sharing class BudgetDAO{
     @AuraEnabled
     public static String deleteSelectedItems(List<String> recordIds){
         try {
-
+            List<buildertek__Budget_Item__c> budgetItemLists;
             if (Schema.sObjectType.buildertek__Budget_Item__c.fields.Id.isAccessible()){
-                List<buildertek__Account_Payable__c> payment = [Select Id, Name, buildertek__BT_Budget_Line__c from buildertek__Account_Payable__c where buildertek__BT_Budget_Line__c In :recordIds];
-                if (payment.size() > 0){
-                    List<Id> paymentBudgetLineIds = new List<Id>();
-                    for(buildertek__Account_Payable__c p : payment){
-                        paymentBudgetLineIds.add(p.buildertek__BT_Budget_Line__c);
-                    }
-                    List<buildertek__Budget_Item__c> budgetItemLists = [Select Id, Name from buildertek__Budget_Item__c where Id In :recordIds and Id NOT IN :paymentBudgetLineIds];
-                    System.debug('budgetItemLists: ' + budgetItemLists);
-                    if(budgetItemLists.size() > 0){
-                        delete budgetItemLists;
-                    }
-                    return 'There are records associated with one of the Budget Lines you are trying to delete.  Please remove the associated record and try again.';
-                } else {
-                    List<buildertek__Budget_Item__c> budgetItemList = [Select Id, Name from buildertek__Budget_Item__c where Id IN :recordIds];
-                    if(budgetItemList.size() > 0){
-                        delete budgetItemList;
+                budgetItemLists = [select id
+                                   from buildertek__Budget_Item__c
+                                   where id IN:recordIds];
+            }
+            if (budgetItemLists.size() > 0){
+                Database.DeleteResult[] deletedBudgetLineList = Database.delete(budgetItemLists, false);
+                for (Database.DeleteResult dr : deletedBudgetLineList) {
+                    if (!dr.isSuccess()) {
+                        return 'There are records associated with one of the Budget Lines you are trying to delete.  Please remove the associated record and try again.';
                     }
                 }
             }
