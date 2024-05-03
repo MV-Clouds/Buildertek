@@ -4,7 +4,7 @@ public with sharing class SendPaymentRequestController {
     }
 
     @AuraEnabled
-    public static void sendEmailtoContact(String toAddress, String ccAddress, String subject, String body) {
+    public static string sendEmailtoContact(String toAddress, String ccAddress, String subject, String body, List<String> files) {
         //from the string toAddress, create a list of email addresses
         List<String> toAddresses = new List<String>();
         toAddresses = toAddress.split(';');
@@ -16,6 +16,31 @@ public with sharing class SendPaymentRequestController {
         System.debug('toAddresses: ' + toAddresses);
         System.debug('ccAddresses: ' + ccAddresses);
 
+        List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
+
+        List<ContentVersion> docList = [SELECT Id, Title, VersionData,ContentSize FROM ContentVersion WHERE ContentDocumentId IN :files];
+        list<Id> contentVersionIds = new list<Id>();
+        Integer sum=0;
+        System.debug('doclist---->'+docList);
+        for (ContentVersion doc : docList) {
+            Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+            sum+=doc.ContentSize;
+            attachment.setFileName(doc.Title );
+            attachment.setBody(doc.VersionData);
+            contentVersionIds.add(doc.Id);
+
+            fileAttachments.add(attachment);
+        }
+        if(sum>3000000){ 
+            List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+            if (!contentDocumentsToDelete.isEmpty()) {
+                delete contentDocumentsToDelete;
+            } 
+            return 'Error: The total size of the attachments exceeds the limit of 3MB. Please remove some attachments and try again.';
+        }
+
+
+
         Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
         mail.setToAddresses(toAddresses);
         if(ccAddresses.size() > 0){
@@ -25,8 +50,11 @@ public with sharing class SendPaymentRequestController {
         mail.setCcAddresses(ccAddresses);
         mail.setSubject(subject);
         mail.setHtmlBody(body);
+        mail.setEntityAttachments(contentVersionIds);
         mail.setSaveAsActivity(true);
         Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+
+        return 'Email sent successfully';
 
     }
 

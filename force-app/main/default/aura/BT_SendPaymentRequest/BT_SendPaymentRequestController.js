@@ -11,6 +11,10 @@
         $A.get("e.force:closeQuickAction").fire();
     },
 
+    handleFileChange: function(component, event, helper) {
+        helper.standardFileUploderFileChange(component, event, helper);
+    },
+
     sendEmail: function(component, event, helper) {
         var toContactList = component.get("v.selectedToContact");
         console.log('toContactList: ' + toContactList);
@@ -63,13 +67,25 @@
 
         console.log('body: ' + body);
 
+        var contentDocumentIds = [];
+        var fileInput = component.get("v.selectedfilesFill");
+        if (fileInput && fileInput.length > 0) {
+            for (var i = 0; i < fileInput.length; i++) {
+                var contentDocumentId = fileInput[i].Id;
+                contentDocumentIds.push(contentDocumentId);
+            }
+        }
+
+
+
         // helper.sendEmailHelper(component, toAddress, ccAddress, subject, body);
         var action = component.get("c.sendEmailtoContact");
         action.setParams({
             toAddress: toAddress,
             ccAddress: ccAddress,
             subject: subject,
-            body: body
+            body: body,
+            files : contentDocumentIds
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
@@ -133,6 +149,10 @@
         var emailIds = component.get('v.emailIds');
         emailIds.splice(removeIndex, 1);
         component.set('v.emailIds', emailIds);
+    },
+
+    clear :function(component,event,helper){
+        helper.clearPillValues(component, event, helper);
     },
 
 
