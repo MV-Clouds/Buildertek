@@ -597,4 +597,90 @@ function checkPastDueForTaskInFront(record) {
     }
 }
 
-export { formatApexDatatoJSData, checkPastDueForTaskInFront, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData };
+//* ayther : Nishit Suthar
+//* Date : 3rd May 2024
+//* This method is creating a custom calendardata to include weekends in working hours
+function encludeWeekendWorkingHours() {
+    return [
+        {
+            "id": "general",
+            "name": "General",
+            "intervals": [
+                {
+                    "recurrentStartDate": "every weekday at 12:00",
+                    "recurrentEndDate": "every weekday at 13:00",
+                    "isWorking": false
+                },
+                {
+                    "recurrentStartDate": "every weekday at 17:00",
+                    "recurrentEndDate": "every weekday at 08:00",
+                    "isWorking": false
+                }
+            ],
+            "expanded": true,
+            "children": [
+                {
+                    "id": "business",
+                    "name": "Business",
+                    "hoursPerDay": 8,
+                    "daysPerWeek": 7,
+                    "daysPerMonth": 30,
+                    "unspecifiedTimeIsWorking": false,
+                    "intervals": [
+                        {
+                            "recurrentStartDate": "on monday at 8:00",
+                            "recurrentEndDate": "on monday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on tuesday at 8:00",
+                            "recurrentEndDate": "on tuesday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on wednesday at 8:00",
+                            "recurrentEndDate": "on wednesday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on thursday at 8:00",
+                            "recurrentEndDate": "on thursday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on friday at 8:00",
+                            "recurrentEndDate": "on friday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on saturday at 8:00",
+                            "recurrentEndDate": "on saturday at 16:00",
+                            "isWorking": true
+                        },
+                        {
+                            "recurrentStartDate": "on sunday at 8:00",
+                            "recurrentEndDate": "on sunday at 16:00",
+                            "isWorking": true
+                        }
+                    ]
+                },
+                {
+                    "id": "night",
+                    "name": "Night shift",
+                    "hoursPerDay": 8,
+                    "daysPerWeek": 5,
+                    "daysPerMonth": 20,
+                    "intervals": [
+                        {
+                            "recurrentStartDate": "every weekday at 6:00",
+                            "recurrentEndDate": "every weekday at 22:00",
+                            "isWorking": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ];
+}
+
+export { formatApexDatatoJSData, checkPastDueForTaskInFront, convertJSONtoApexData, recordsTobeDeleted, makeComboBoxDataForContractor, calcBusinessDays, makeComboBoxDataForResourceData, setResourceDataForApexData, mergeArrays, createAssignmentData, encludeWeekendWorkingHours };

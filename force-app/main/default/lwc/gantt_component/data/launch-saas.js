@@ -29,17 +29,17 @@ export default {
                         "id"           : "business",
                         "name"         : "Business",
                         "hoursPerDay"  : 8,
-                        // "daysPerWeek"  : 5,
-                        // "daysPerMonth" : 20,
+                        "daysPerWeek"  : 5,
+                        "daysPerMonth" : 20,
                         "intervals"    : [
                             {
-                                "recurrentStartDate" : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 12:00",
-                                "recurrentEndDate"   : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 13:00",
+                                "recurrentStartDate" : "every weekday at 12:00",
+                                "recurrentEndDate"   : "every weekday at 13:00",
                                 "isWorking"          : false
                             },
                             {
-                                "recurrentStartDate" : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 17:00",
-                                "recurrentEndDate"   : "on Mon, Tue, Wed, Thu, Fri, Sat, Sun at 08:00",
+                                "recurrentStartDate" : "every weekday at 17:00",
+                                "recurrentEndDate"   : "every weekday at 08:00",
                                 "isWorking"          : false
                             }
                         ]

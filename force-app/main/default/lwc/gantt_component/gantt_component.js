@@ -22,7 +22,8 @@ import {
   calcBusinessDays,
   makeComboBoxDataForResourceData,
   mergeArrays,
-  checkPastDueForTaskInFront
+  checkPastDueForTaskInFront,
+  encludeWeekendWorkingHours
 } from "./gantt_componentHelper";
 import { populateIcons } from "./lib/BryntumGanttIcons";
 
@@ -38,6 +39,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
   @track error_toast = true;
   @track taskId = "";
+  considerWeekendsAsWorking = false;
 
   @api SchedulerId;
   @api isLoading = false;
@@ -239,6 +241,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     })
       .then((response) => {
         var data = response.lstOfSObjs;
+        this.considerWeekendsAsWorking = response.includeWeekend;
         this.scheduleItemsDataList = response.lstOfSObjs;
         console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList)
         console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList.length)
@@ -597,6 +600,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     // debugger
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
+    let calendarData = this.considerWeekendsAsWorking ? encludeWeekendWorkingHours() : data.calendars.rows;
 
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
@@ -610,7 +614,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       assignmentsData: assignmentRowData,
       // dependenciesData: data.dependencies.rows,
       dependenciesData: taskDependencyData,
-      calendarsData: data.calendars.rows,
+      calendarsData: calendarData,
     });
 
     project.hoursPerDay = 8;
@@ -798,7 +802,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               let projectStartDate = new Date(record.record.startDate);
               let projectEndDate = new Date(record.record.endDate);
               let projectDuration = calcBusinessDays(projectStartDate, projectEndDate);
-              console.log('projectDuration ',projectDuration);
               return projectDuration + ' days';
             }
             if (record.record._data.type == "Phase") {
