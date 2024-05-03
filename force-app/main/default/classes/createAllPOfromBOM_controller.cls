@@ -345,7 +345,7 @@ public class createAllPOfromBOM_controller {
                         createdPOsIds.add(PO.Id);
                     }
 
-                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name, buildertek__Category__c  FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
                     Map<String, Id> CostCodeVendorId_POId = new Map<String, Id>();
 
@@ -408,7 +408,7 @@ public class createAllPOfromBOM_controller {
                                         String schItemPhaseName = SchItem.buildertek__Phase__c != null ? SchItem.buildertek__Phase__c.toLowercase() : null;
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
                                         String key = PO.buildertek__Cost_Code__c + '_' + PO.buildertek__Vendor__c;
-                                        String Category = CostCodeVendorId_CategoryId.get(key);
+                                        String Category = PO.buildertek__Category__c;
 
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
