@@ -212,6 +212,19 @@
         }
         
     },
+        onAddEmail: function(component, event, helper) {
+        var emailId = component.find('emailForm').get('v.value');
+        console.log('emailId', emailId)
+        var emailIds = component.get('v.emailIds');
+        var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+        if (reg.test(emailId)) {
+            component.set("v.toEmail", '');
+            if (!emailIds.includes(emailId)) {
+                emailIds.push(emailId);
+            }
+        }
+        component.set('v.emailIds', emailIds);
+    },
      handleEmailRemove: function (component, event, helper) {
         var removeIndex = event.getSource().get("v.name");
         var emailIds = component.get('v.emailIds');

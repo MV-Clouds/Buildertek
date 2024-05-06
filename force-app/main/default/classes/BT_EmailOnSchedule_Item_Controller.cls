@@ -302,45 +302,43 @@ public with sharing class BT_EmailOnSchedule_Item_Controller{
         return subject;
     }
 
-   @AuraEnabled
-public static String getbody(String objectApiName, String recordId) {
-    String body = '';
-    if (objectAPIName == 'buildertek__Project_Task__c') {
-        try {
-            buildertek__Project_Task__c projectTask = [SELECT Name, buildertek__Actual_Start_Date__c, buildertek__Project__r.buildertek__Address__c, buildertek__Project__r.buildertek__City_Text__c, buildertek__Project__r.buildertek__State__c, buildertek__Project__r.buildertek__Zip__c, buildertek__Project__r.buildertek__County__c, buildertek__Project__r.buildertek__Country__c, buildertek__Project__r.Name, buildertek__Contractor__r.Name FROM buildertek__Project_Task__c WHERE Id = :recordId];
-            String scheduleName = projectTask.Name != null ? projectTask.Name : '';
-            String startDate = projectTask.buildertek__Actual_Start_Date__c != null ? String.valueOf(projectTask.buildertek__Actual_Start_Date__c) : '';
-            String projectAddress = '<br/>' + (projectTask.buildertek__Project__r.Name != null ? projectTask.buildertek__Project__r.Name : '') + '<br/>' +
+    @AuraEnabled
+    public Static String getbody(String ObjectApiName, String recordId) {
+        String  body='';
+        if(objectAPIName=='buildertek__Project_Task__c'){
+        try{
+        buildertek__Project_Task__c projectTask = [select Name, buildertek__Actual_Start_Date__c, buildertek__Project__r.buildertek__Address__c,buildertek__Project__r.buildertek__City_Text__c,buildertek__Project__r.buildertek__State__c,buildertek__Project__r.buildertek__Zip__c,buildertek__Project__r.buildertek__County__c,buildertek__Project__r.buildertek__Country__c,buildertek__Project__r.Name, buildertek__Contractor__r.Name from buildertek__Project_Task__c where Id = :recordId];
+        String scheduleName = projectTask.Name != null ? projectTask.Name : '';
+        String startDate = projectTask.buildertek__Actual_Start_Date__c != null ? String.valueOf(projectTask.buildertek__Actual_Start_Date__c) : '';
+        String projectAddress = '<br/>' + (projectTask.buildertek__Project__r.Name != null ? projectTask.buildertek__Project__r.Name : '') + '<br/>' +
                                     (projectTask.buildertek__Project__r.buildertek__Address__c != null ? projectTask.buildertek__Project__r.buildertek__Address__c : '') + '<br/>' +
                                     (projectTask.buildertek__Project__r.buildertek__City_Text__c != null ? projectTask.buildertek__Project__r.buildertek__City_Text__c + ', ' : '') +
                                     (projectTask.buildertek__Project__r.buildertek__State__c != null ? projectTask.buildertek__Project__r.buildertek__State__c + ', ' : '') +
                                     (projectTask.buildertek__Project__r.buildertek__Zip__c != null ? projectTask.buildertek__Project__r.buildertek__Zip__c + '<br/>' : '') +
                                     (projectTask.buildertek__Project__r.buildertek__County__c != null ? projectTask.buildertek__Project__r.buildertek__County__c + ', ' : '') +
                                     (projectTask.buildertek__Project__r.buildertek__Country__c != null ? projectTask.buildertek__Project__r.buildertek__Country__c : '');
-            String vendorName = projectTask.buildertek__Contractor__r.Name != null ? projectTask.buildertek__Contractor__r.Name + '.' : '';
-            String senderName = UserInfo.getName();
+        String vendorName = projectTask.buildertek__Contractor__r.Name != null ? projectTask.buildertek__Contractor__r.Name  : '';        
+        String senderName = UserInfo.getName();
 
-            System.debug(vendorName);
-            System.debug(projectAddress);
-            System.debug(scheduleName);
-            System.debug(startDate);
+        body += 'Dear <strong>' + vendorName + '</strong>,<br/><br/>';
+        body += 'We hope this email finds you well.<br/>';
+        body += 'We\'re excited to share some details with you regarding an upcoming project. Below is important information you may need:<br/><br/>';
+        body += '<strong>Project Address:</strong> ' + projectAddress + '<br/><br/>';
+        body += '<strong>Schedule Name:</strong> ' + scheduleName + '<br/><br/>';
+        body += '<strong>Start Date:</strong> ' + startDate + '<br/><br/>';
+        body += 'Please review this information at your earliest convenience. Feel free to reach out if you have any questions or need further assistance.<br/>';
+        body += 'Thank you for your attention to this matter.<br/><br/>';
+        body += 'Best regards,<br/>';
+        body += senderName+'<br/><br/>'; 
 
-            body += 'Dear <strong>' + vendorName + '</strong>,<br/><br/>';
-            body += 'We hope this email finds you well.<br/>';
-            body += 'We\'re excited to share some details with you regarding an upcoming project. Below is important information you may need:<br/><br/>';
-            body += '<strong>Project Address:</strong> ' + projectAddress + '<br/><br/>';
-            body += '<strong>Schedule Name:</strong> ' + scheduleName + '<br/><br/>';
-            body += '<strong>Start Date:</strong> ' + startDate + '<br/><br/>';
-            body += 'Please review this information at your earliest convenience. Feel free to reach out if you have any questions or need further assistance.<br/>';
-            body += 'Thank you for your attention to this matter.<br/><br/>';
-            body += 'Best regards,<br/>';
-            body += senderName + '<br/><br/>';
-        } catch (Exception e) {
-            System.debug('Error:------>' + e.getMessage());
         }
-    }
+        catch(Exception e){ 
+           System.debug('Error:------>'+e.getMessage()); 
+       }
+        
+        }
     return body;
-}
+    }
 
     @AuraEnabled
     public Static String getBodyFromQuote(String recordId, String objectAPIName){

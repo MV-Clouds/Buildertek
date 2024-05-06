@@ -195,27 +195,34 @@
                 </aura:if> 
                 
                             <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
-                                <label class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
+                                <label style="margin-left: -1.3rem; margin-top: -0.3rem;" class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
                                 <div class="slds-form-element__control slds-size--1-of-1">
-                                    <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left: 2rem;">
+                                    <div class="slds-combobox_container slds-has-inline-listbox">
                                         <lightning:input aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}" onchange="{!c.onEmailChange}" oncommit="{!c.onAddEmail}" class="slds-size--1-of-1" />
                                     </div>
                                 </div>
-                
-                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
-                    <label class="slds-form-element__label" for="recipients-Subject" style="margin-left: -0.7rem" >Subject</label>
-                    <div class="slds-form-element__control">
-                        <div class="slds-combobox_container slds-has-inline-listbox">
-                            <div class="slds-form-element" style="margin-top: -0.5rem;margin-bottom: 0.5rem;">
-                                <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}" style="width:35rem; margin-top: 1rem;"/>
                             </div>
-                        </div>
-                    </div>
-                </div>   
-                
+                                <div class="slds-form-element__control slds-size--1-of-1 addPadd">
+                                    <aura:iteration items="{!v.emailIds}" var="email" indexVar="index">
+                                        <lightning:pill label="{!email}" name="{!index}" onremove="{!c.handleEmailRemove}">
+                                            <aura:set attribute="media">
+                                                <lightning:icon iconName="standard:email" alternativeText="Email" />
+                                            </aura:set>
+                                        </lightning:pill>
+                                    </aura:iteration>
+                                </div>                            
+                            <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
+                                <label style="margin-left: -0.7rem; margin-top: -0.3rem;" class="slds-form-element__label" for="recipients-to">Subject</label>
+                                <div class="slds-form-element__control slds-size--1-of-1">
+                                    <div class="slds-combobox_container slds-has-inline-listbox">
+                                <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"  class="slds-size--1-of-1"/>
+                                    </div>
+                                </div>
+                            </div>                                
                 <div class="slds-form-element" style="height: 500px;">
                     <lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateBody}" />
                 </div>
+                <hr/>
                 <!-- <br/> -->
                 <!-- <aura:if isTrue="{!v.showTemplate}">
                     <lightning:select name="templates" label="Select Template" aura:id="template" value="{!v.selectedTemplate}">
@@ -227,10 +234,10 @@
                         </aura:iteration>
                     </lightning:select>    
                 </aura:if> -->
-                <!-- <br/> -->
-                <!-- <div class="slds-form-element slds-email-composer__combobox" style="padding-left:0px !important;border-bottom: 0px;"> -->
-                    <!-- <lightning:button name="Add" class="addattchment slds-float_left slds-m-bottom_medium" variant="brand" label="Add" onclick="{!c.uploadFile}" /> -->
-                    <!--<div class="slds-file-selector slds-file-selector_files">
+                <br/>
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-left:0px !important;border-bottom: 0px;">
+                    <!-- <lightning:button name="Add" class="addattchment slds-float_left slds-m-bottom_medium" variant="brand" label="Add" onclick="{!c.uploadFile}" />
+                    <div class="slds-file-selector slds-file-selector_files">
                       <div class="slds-file-selector__dropzone">
                         <input type="file" class="slds-file-selector__input slds-assistive-text" onchange="{!c.doSave}" id="fileToUpload" aria-labelledby="file-selector-primary-label file-selector-secondary-label" />
                         <label class="slds-file-selector__body" for="fileToUpload" id="file-selector-secondary-label">
@@ -239,7 +246,7 @@
                           <span class="slds-file-selector__text slds-medium-show" ondragover="{!c.onDragOver}" ondrop="{!c.onDrop}">or Drop Files</span>
                         </label>
                       </div>
-                    </div>-->
+                    </div> -->
                     <!-- <div class="slds-form-element__control">
                         <div class="slds-combobox_container slds-has-inline-listbox">
                             <c:BT_MultiSelectLookup objectAPIName="buildertek__File__c"
@@ -250,7 +257,7 @@
                         </div>
                     </div> -->
                     
-                        <!-- <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
                             <lightning:layout multipleRows = "true">
                                 <div style="display: flex; flex-direction :column;">
                                 <div style="display: flex; align-items: center;">
@@ -317,8 +324,8 @@
                                 </div>
                             </div>
                             </lightning:layout>
-                        </div>                                      -->
-                <!-- </div> -->
+                        </div>                                     
+                </div>
             </div>
             </div>
             <div class="modal-footer slds-modal__footer slds-size_1-of-1">
