@@ -52,6 +52,11 @@
         console.log('subject: ' + subject);
 
         var body = component.get('v.templateBody');
+        var memo = component.get('v.memoquote');
+        //add memo to the body
+        if(memo != null && memo != ''){
+            body += '<p>' + memo + '</p>';
+        }
         body = body.replaceAll('<p><br></p>', '<br>');
         body = body.replaceAll('<b><br></b>', '<br>');
         body = body.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
