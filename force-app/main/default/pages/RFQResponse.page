@@ -694,11 +694,12 @@
                                             />
                                         </td>
                                         <td> 
-                                            <center>  
+                                            <center>
                 <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!rfqlinetofolder[rowNumm]}" target="_blank" disabled="{!rfqlinetofolder[rowNumm] == 'n'}">
                 <apex:image url="{!IF(rfqlinetofolder[rowNumm] == 'n', $Resource.gray_folder_icon, $Resource.blue_folder_icon)}" style="height:40px;"/>
                 </apex:outputLink> 
                                             </center>
+                
                                         </td> 
                                         <td>
                                             <!-- <apex:commandButton styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" value="X" action="{!addNewRowToAccList}" Status="status" immediate="true" /> -->

@@ -132,19 +132,22 @@ public Boolean displayPopup1 {get;set;}
             List<buildertek__RFQ_Template_Settings__c> settingsList = (List<buildertek__RFQ_Template_Settings__c>) Database.query('SELECT buildertek__Force_Site_URL__c FROM buildertek__RFQ_Template_Settings__c');
             forceSiteURL = settingsList[0].buildertek__Force_Site_URL__c;
             
-            System.debug('query----------->'+query);
+            // System.debug('query----------->'+query);
             rfqToVendor = (buildertek__RFQ_To_Vendor__c)Database.query(query)[0];
             Integer countt = 0;
             for (buildertek__RFQ_Vendor_Item__c rfqItem : rfqToVendor.Vendor_Items__r) {
-                if (rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r != null) {
-                    System.debug('Public Folder: ' + rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Id);
-                    rfqlinetofolder.put(countt,rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__r.Id);
+                // System.debug('before if folder: '+rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__c );
+                if (rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__c != null) {
+                    // System.debug('Public Folder: ' + rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__c);
+                    rfqlinetofolder.put(countt,rfqItem.buildertek__RFQ_Item__r.buildertek__Public_Folder__c);
                     countt++;
                 } else {
                     rfqlinetofolder.put(countt,'n');
-                    System.debug('Public Folder is null for RFQ Item: ' + rfqItem.Name);
+                    countt++;
+                    // System.debug('Public Folder is null for RFQ Item: ' + rfqItem.Name);
                 }
             }
+            System.debug(rfqlinetofolder);
             rfqId = rfqToVendor.RFQ__c;
             rfqcontact=rfqToVendor.buildertek__Contact__c;
             projectId =rfqToVendor.RFQ__r.Project__c;
