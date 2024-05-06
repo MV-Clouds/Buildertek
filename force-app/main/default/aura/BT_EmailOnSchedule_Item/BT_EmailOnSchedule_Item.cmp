@@ -194,9 +194,24 @@
                     </lightning:select>    
                 </aura:if> 
                 
-                <div class="slds-form-element" style="margin-top: -0.5rem;margin-bottom: 0.5rem;">
-                    <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"/>
-                </div>
+                            <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
+                                <label class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
+                                <div class="slds-form-element__control slds-size--1-of-1">
+                                    <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left: 2rem;">
+                                        <lightning:input aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}" onchange="{!c.onEmailChange}" oncommit="{!c.onAddEmail}" class="slds-size--1-of-1" />
+                                    </div>
+                                </div>
+                
+                <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                    <label class="slds-form-element__label" for="recipients-Subject" style="margin-left: -0.7rem" >Subject</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-combobox_container slds-has-inline-listbox">
+                            <div class="slds-form-element" style="margin-top: -0.5rem;margin-bottom: 0.5rem;">
+                                <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}" style="width:35rem; margin-top: 1rem;"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>   
                 
                 <div class="slds-form-element" style="height: 500px;">
                     <lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateBody}" />
