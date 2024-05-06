@@ -16,7 +16,7 @@ public without sharing class PreviewQuoteController{
         List<Contact> con;
         buildertek__Quote__c qut;
         Set<Id> projectAccId= new Set<Id>();
-        
+
         qut = [SELECT Id, Name, buildertek__Project__c , buildertek__Project__r.buildertek__Customer__c FROM buildertek__Quote__c WHERE Id = :recordId];
 
         System.debug('qut.buildertek__Project__c' + qut.buildertek__Project__c);
@@ -26,7 +26,7 @@ public without sharing class PreviewQuoteController{
             if(qut.buildertek__Project__r.buildertek__Customer__c != null){
                 projectAccId.add(qut.buildertek__Project__r.buildertek__Customer__c);
             }
-            
+
         }
 
         System.debug('projectAccId' + projectAccId);
@@ -80,13 +80,13 @@ public without sharing class PreviewQuoteController{
             templateBody1 = emailNew.getHTMLBody();
             templateBody1 = templateBody1.replaceAll('<p><br></p>', '<br>');
             templateBody1 = templateBody1.replaceAll('<b><br></b>', '<br>');
-            templateBody1 = templateBody1.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody1 = templateBody1.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody1 = templateBody1.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody1 = templateBody1.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">'); 
-            templateBody1 = templateBody1.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
-            templateBody1 = templateBody1.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
-            
+            templateBody1 = templateBody1.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody1 = templateBody1.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody1 = templateBody1.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody1 = templateBody1.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">');
+            templateBody1 = templateBody1.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">');
+            templateBody1 = templateBody1.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">');
+
         }
 
         if (theTemplate.Name != 'Quote - HISAB') {
@@ -113,13 +113,13 @@ public without sharing class PreviewQuoteController{
             templateBody = templateBody1 + templateBody2;
             templateBody = templateBody.replaceAll('<p><br></p>', '<br>');
             templateBody = templateBody.replaceAll('<b><br></b>', '<br>');
-            templateBody = templateBody.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody = templateBody.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody = templateBody.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">'); 
-            templateBody = templateBody.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">'); 
-            templateBody = templateBody.replaceAll('<ul>', '<ul style="margin-top: 0px !important; margin-bottom: 0px !important ">'); 
-            templateBody = templateBody.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
-            templateBody = templateBody.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">'); 
+            templateBody = templateBody.replaceAll('<p>', '<p style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody = templateBody.replaceAll('<b>', '<b style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody = templateBody.replaceAll('<strong>', '<strong style="margin-top: 0px !important; margin-bottom: 0px !important; ">');
+            templateBody = templateBody.replaceAll('<ol>', '<ol style="margin-top: 0px !important; margin-bottom: 0px !important;font-size:11px !important ">');
+            templateBody = templateBody.replaceAll('<ul>', '<ul style="margin-top: 0px !important; margin-bottom: 0px !important ">');
+            templateBody = templateBody.replaceAll('<span>', '<span style="margin-top: 0px !important; margin-bottom: 0px !important;">');
+            templateBody = templateBody.replaceAll('<p class="ql-indent-1">', '<p class="ql-indent-1" style="margin-top: 0px !important; margin-bottom: 0px !important;">');
             system.debug('Final templateBody ----------> ' + templateBody);
         } else {
             templateBody = templateBody1;
@@ -141,11 +141,11 @@ public without sharing class PreviewQuoteController{
     }
 
     @AuraEnabled
-    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, List<String> emailIds, string memovalue, String emailBodyValue){
+    public static String sendProposal(String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,List<String> files,String Subject, List<String> emailIds, string memovalue, String emailBodyValue){
        try {
             String fileid = '';
             String body = '';
-            String subject='';
+            String sub = Subject;
             String salesRepEmailId='';
             string templateBody = '';
             string templateBody1 = '';
@@ -164,20 +164,20 @@ public without sharing class PreviewQuoteController{
                                                                                                   buildertek__Quote_Configuration__c,buildertek__Email_Subject__c
                                                                                                   from buildertek__Admin_Interface_Node_Configuration__c
                                                                                                   WHERE Name=:'Quote Configuration' and buildertek__Email_Subject__c !=null limit 1];
-            if(adminInterfaceNodeConfigurations.size()>0){
-                subject = adminInterfaceNodeConfigurations[0].buildertek__Email_Subject__c;
-            }else{
-                // subject = 'Quote';
-                //BUIL 3119
-                list<buildertek__Quote__c> quoterecbody = new list<buildertek__Quote__c>();
-                quoterecbody = [select id, Name, buildertek__Status__c, buildertek__TemplateId__c,buildertek__Template_Name__c, buildertek__To_Emails__c,buildertek__Date_Sent_To_Customer__c,buildertek__Memo__c
-                                from buildertek__Quote__c
-                                where Id = :recordId
-                                limit 1];
-                if (quoterecbody.size() > 0){
-                    subject = 'Quote : ' + quoterecbody[0].Name;
-                }
-            }
+            // if(adminInterfaceNodeConfigurations.size()>0){
+            //     sub = adminInterfaceNodeConfigurations[0].buildertek__Email_Subject__c;
+            // }else{
+            //     // sub = 'Quote';
+            //     //BUIL 3119
+            //     list<buildertek__Quote__c> quoterecbody = new list<buildertek__Quote__c>();
+            //     quoterecbody = [select id, Name, buildertek__Status__c, buildertek__TemplateId__c,buildertek__Template_Name__c, buildertek__To_Emails__c,buildertek__Date_Sent_To_Customer__c,buildertek__Memo__c
+            //                     from buildertek__Quote__c
+            //                     where Id = :recordId
+            //                     limit 1];
+            //     if (quoterecbody.size() > 0){
+            //         sub = 'Quote : ' + quoterecbody[0].Name;
+            //     }
+            // }
 
 
         List<EmailTemplate> et = [SELECT Id,Name,Subject FROM EmailTemplate WHERE Id =:templateId];
@@ -291,8 +291,9 @@ public without sharing class PreviewQuoteController{
             if (wideOrgEmail.size() > 0) {
                 mail.setOrgWideEmailAddressId(wideOrgEmail[0].Id);
             }
-            subject = subject + '[ref:' + recordId + ']';
-            mail.setSubject(subject);
+            
+            sub = sub + '[ref:' + recordId + ']';
+            mail.setSubject(sub);
             mail.setHTMLBody(templateBody1);
             //mail.setTargetObjectId(conrec.Id);
             mail.setSaveAsActivity(false);
@@ -305,18 +306,48 @@ public without sharing class PreviewQuoteController{
             efa.setFileName(quoterecbody[0].Name+'.pdf');
             Blob b = setAttachmentBody(recordId, templateId, fileid);
             system.debug('Blob ---> ' + b);
-            
+
             efa.setBody(b);
             fileAttachments.add(efa);
             mail.setFileAttachments(fileAttachments);
-            mail.setUseSignature(useSignature);
-            mails.add(mail);
+            // mail.setUseSignature(useSignature);
+            // mails.add(mail);
+
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData, ContentSize FROM ContentVersion WHERE ContentDocumentId IN :files];
+            Integer sum=0; 
+            list<Id> contentVersionIds = new list<Id>();
+            System.debug('doclist---->'+docList);
+ for (ContentVersion doc : docList) {
+    Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+    sum+=doc.ContentSize;
+    attachment.setFileName(doc.Title );
+    attachment.setBody(doc.VersionData);
+    contentVersionIds.add(doc.Id);
+    fileAttachments.add(attachment);
+}
+if(sum>3000000){ 
+      List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete;
+                } 
+   return('The total document size exceeds the limit of 3MB') ;
+} 
+        System.debug('fileattachments------>'+fileAttachments);
+     mail.setEntityAttachments(contentVersionIds);
+    //  mail.setFileAttachments(fileAttachments);
+     mail.setUseSignature(useSignature);
+     mails.add(mail);
+
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
 
             String message = 'Success';
             if (results.size() > 0){
+                List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete; 
+                }
                 if (results[0].isSuccess()){
-                    string Toaddresses = '';
+                     string Toaddresses = '';
                     string CCaddresses = '';
                     integer i = 0;
                     for (String Str : strTO){
@@ -351,7 +382,7 @@ public without sharing class PreviewQuoteController{
                     caseEmailMessage.ToAddress = Toaddresses;
                     caseEmailMessage.FromName = UserInfo.getName();
                     caseEmailMessage.CcAddress = CCaddresses;
-                    caseEmailMessage.Subject = subject;
+                    caseEmailMessage.Subject = sub;
                     caseEmailMessage.HtmlBody = templateBody1;
                     caseEmailMessage.Incoming = False;
                     caseEmailMessage.RelatedToId = recordId;
@@ -361,33 +392,33 @@ public without sharing class PreviewQuoteController{
                     system.debug('Content length ---------> ' + body.length());
                     caseEmailMessage.status = '3';
                     caseEmailMessage.RelatedToId = recordId;
-                    caseEmailMessage.buildertek__Subject__c = 'Re: ' + subject;
+                    caseEmailMessage.buildertek__Subject__c = 'Re: ' + sub;
                     System.debug('before caseEmailMessage:- '+caseEmailMessage);
 
                     insert caseEmailMessage;
 
                     System.debug('caseEmailMessage:- '+caseEmailMessage);
-                    
+
                     ContentVersion conVer = new ContentVersion();
                     conVer.PathOnClient = 'Quote.pdf'; // The files name, extension is very important here which will help the file in preview.
                     conVer.Title = quoterecbody[0].Name; // Display name of the files
                     conVer.VersionData = b; // converting your binary string to Blog
                     insert conVer;    //Insert ContentVersion
-                    
+
                     ContentDocumentLink conDocLink = New ContentDocumentLink();
                     conDocLink.LinkedEntityId = caseEmailMessage.Id; // Specify RECORD ID here i.e Any Object ID (Standard Object/Custom Object)
                     conDocLink.ContentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:conVer.Id].ContentDocumentId;  //ContentDocumentId Id from ContentVersion
                     conDocLink.Visibility = 'AllUsers';
                     insert conDocLink;
-                    
-                    
+
+
                     EmailMessageRelation emr = new EmailMessageRelation();
                     emr.emailMessageId = caseEmailMessage.id;
                     emr.relationId = UserInfo.getUserId(); // user id / contact Id of the sender
                     emr.relationType = 'FromAddress';
                     emr.relationAddress = caseEmailMessage.fromAddress;
                     insert emr;
-                    
+
                     System.debug('emrid+- '+ emr);
                     System.debug('caseEmailMessage id :- '+emr.EmailMessageId);
 
@@ -421,26 +452,26 @@ public without sharing class PreviewQuoteController{
         } catch (Exception e) {
             String errorMessage = e.getMessage();
             return errorMessage;
-        
+
         }
     }
 
     @AuraEnabled
-    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc, string fileid, List<String> emailIds, string memovalue, String emailBodyValue){
+    public static String acceptandsendProposal(string signName, String htmlBody, String recordId, String templateId, List<String> to, List<String> cc,List<String> files,String Subject, string fileid, List<String> emailIds, string memovalue, String emailBodyValue){
 
         try{
             String body = '';
-            String subject = '';
+            String emailsubject = Subject;
             Boolean useSignature = false;
              list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id,
                                                                                                   buildertek__Quote_Configuration__c,buildertek__Email_Subject__c
                                                                                                   from buildertek__Admin_Interface_Node_Configuration__c
                                                                                                   WHERE Name=:'Quote Configuration' and buildertek__Email_Subject__c !=null limit 1];
-            if(adminInterfaceNodeConfigurations.size()>0){
-                subject = adminInterfaceNodeConfigurations[0].buildertek__Email_Subject__c;
-            }else{
-                subject = 'Quote';
-            }
+            // if(adminInterfaceNodeConfigurations.size()>0){
+            //     emailsubject = adminInterfaceNodeConfigurations[0].buildertek__Email_Subject__c;
+            // }else{
+            //     emailsubject = 'Quote';
+            // }
             String salesRepEmailId='';
             List<buildertek__Quote__c> salesRepEmail=[SELECT Id,Name, buildertek__Sales_Rep__r.Email FROM buildertek__Quote__c WHERE Id = : recordId LIMIT 1];
             if(salesRepEmail.size()>0){
@@ -524,8 +555,8 @@ public without sharing class PreviewQuoteController{
             if (wideOrgEmail.size() > 0) {
                 mail.setOrgWideEmailAddressId(wideOrgEmail[0].Id);
             }
-            subject = subject + '[ref:' + recordId + ']';
-            mail.setSubject(subject);
+            emailsubject = emailsubject + '[ref:' + recordId + ']';
+            mail.setSubject(emailsubject);
             mail.setHTMLBody(body);
             List<Messaging.Emailfileattachment> fileAttachments = new List<Messaging.Emailfileattachment>();
             Messaging.Emailfileattachment efa = new Messaging.Emailfileattachment();
@@ -554,12 +585,44 @@ public without sharing class PreviewQuoteController{
             efa.setBody(setAttachmentBody(recordId, templateId, fileid));
             fileAttachments.add(efa);
             mail.setFileAttachments(fileAttachments);
+            // mail.setUseSignature(useSignature);
+            // mails.add(mail);
+
+
+            List<ContentVersion> docList = [SELECT Id, Title, VersionData,ContentSize FROM ContentVersion WHERE ContentDocumentId IN :files];
+            list<Id> contentVersionIds = new list<Id>();
+            Integer sum=0;
+            System.debug('doclist---->'+docList);
+            for (ContentVersion doc : docList) {
+                Messaging.Emailfileattachment attachment = new Messaging.Emailfileattachment();
+                sum+=doc.ContentSize;
+                attachment.setFileName(doc.Title );
+                attachment.setBody(doc.VersionData);
+                contentVersionIds.add(doc.Id);
+
+                fileAttachments.add(attachment);
+            }
+            if(sum>3000000){ 
+      List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete;
+                } 
+   return('The total document size exceeds the limit of 3MB') ;
+} 
+            System.debug('fileattachments------>'+fileAttachments);
+            mail.setEntityAttachments(contentVersionIds);
+            //  mail.setFileAttachments(fileAttachments);
             mail.setUseSignature(useSignature);
             mails.add(mail);
+
             Messaging.SendEmailResult[] results = Messaging.sendEmail(mails);
             String message = 'Success';
             System.debug('results '+results);
             if (results.size() > 0){
+                List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
+                if (!contentDocumentsToDelete.isEmpty()) {
+                    delete contentDocumentsToDelete;
+                }
                 if (results[0].isSuccess()){
                     string Toaddresses = '';
                     string CCaddresses = '';
@@ -581,14 +644,14 @@ public without sharing class PreviewQuoteController{
                     }
                     system.debug('CCaddresses ----------> ' + CCaddresses);
                     system.debug('body ----------> ' + body);
-                    system.debug('subject ----------> ' + subject);
+                    system.debug('subject ----------> ' + emailsubject);
                     system.debug('Toaddresses ----------> ' + Toaddresses);
                     EmailMessage caseEmailMessage = new EmailMessage();
                     caseEmailMessage.fromAddress = UserInfo.getUserEmail();
                     caseEmailMessage.ToAddress = Toaddresses;
                     caseEmailMessage.FromName = UserInfo.getUserName();
                     caseEmailMessage.CcAddress = CCaddresses;
-                    caseEmailMessage.Subject = subject;
+                    caseEmailMessage.Subject = emailsubject;
                     caseEmailMessage.HtmlBody = body;
                     caseEmailMessage.Incoming = False;
                     caseEmailMessage.buildertek__Is_Incoming_Email__c = false;
@@ -597,7 +660,7 @@ public without sharing class PreviewQuoteController{
                     system.debug('Content length ---------> ' + body.length());
                     caseEmailMessage.status = '5';
                     caseEmailMessage.RelatedToId = recordId;
-                    caseEmailMessage.buildertek__Subject__c = 'Re: ' + subject;
+                    caseEmailMessage.buildertek__Subject__c = 'Re: ' + emailsubject;
 
                     insert caseEmailMessage;
 
@@ -654,7 +717,7 @@ public without sharing class PreviewQuoteController{
         }
     }
 
-    private static Blob setAttachmentBody(String recordId, String templateId, String fileid){
+    public static Blob setAttachmentBody(String recordId, String templateId, String fileid){
         System.debug(recordId);
         System.debug(templateId);
         System.debug(fileid);
@@ -791,12 +854,12 @@ public without sharing class PreviewQuoteController{
         try {
             QuoteAndSiteUrlWrapper retObj = new QuoteAndSiteUrlWrapper();
                 List<buildertek__Quote__c> qut = [SELECT buildertek__Memo__c, buildertek__Email_Body__c, TemplateId__c, buildertek__Sales_Rep__r.Name FROM buildertek__Quote__c WHERE Id = :recordId];
-        
+
                     retObj.memo = qut[0].buildertek__Memo__c;
                     retObj.emailBody = qut[0].buildertek__Email_Body__c;
                     retObj.salesRepName = qut[0].buildertek__Sales_Rep__r.Name;
                     retObj.templateId = qut[0].TemplateId__c;
-        
+
             List<buildertek__ConfirmationPageSiteURL__c> confirmationurl = buildertek__ConfirmationPageSiteURL__c.getAll().values();
             if (!confirmationurl.isEmpty()) {
                 String star = confirmationurl[0].buildertek__SiteURL__c +'buildertek__ConfirmationPage?Id='+recordId+'&templateId='+retObj.templateId;
@@ -807,14 +870,30 @@ public without sharing class PreviewQuoteController{
             retObj.orgName = org[0].Name;
 
             retObj.companyname = System.Label.company_website;
-        
+
             return JSON.serialize(retObj);
         } catch (Exception ex) {
             String errorMessage = ex.getMessage();
             return errorMessage;
         }
-        
+
     }
-    
+    @AuraEnabled
+    public static List<ContentVersion> getRelatedFiles(String recordId) {
+        List<ContentDocumentLink> fileLinks = [SELECT ContentDocumentId
+                                               FROM ContentDocumentLink
+                                               WHERE LinkedEntityId = :recordId];
+
+        Set<Id> documentIds = new Set<Id>();
+        for(ContentDocumentLink link : fileLinks) {
+            documentIds.add(link.ContentDocumentId);
+        }
+
+        List<ContentVersion> relatedFiles = [SELECT Id, VersionData,ContentDocumentId, Title ,ContentSize
+                                              FROM ContentVersion
+                                              WHERE ContentDocumentId IN :documentIds];
+
+        return relatedFiles;
+    }
 
 }
