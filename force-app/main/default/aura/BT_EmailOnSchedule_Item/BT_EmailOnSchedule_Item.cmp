@@ -52,6 +52,15 @@
     <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}"/> -->
     
     <aura:html tag="style">
+
+        .slds-pill{
+            margin-left: 3%;
+        }
+
+        .slds-lookup__search-input { 
+            width: 97%;
+            margin-left: 3%;
+        }
         .slds-rich-text-area__content{
             min-height:26.5rem;
             max-height:26.5rem;                
@@ -62,8 +71,9 @@
         }
 
         .slds-modal__container {
-        width:65% !important;      
-        max-width: 65% !important;   
+        width:73% !important;      
+        max-width: 73% !important;   
+        height: 99% !important;
         <!-- overflow: hidden !important; -->
         
         }
@@ -98,8 +108,7 @@
                 justify-content:  flex-start;
             }
             .slds-email-composer{
-                padding: 20px;
-                border: 1px solid #bcbcbc;
+                padding: 20px; 
                 margin: 10px;
                 border-radius: 5px;
             }
@@ -113,7 +122,7 @@
     </div> -->
     
     <div class="slds-modal__content ">
-        <!-- <div class="slds slds-scope"> -->
+        <div class="slds slds-scope">
             <header class="slds-modal__header">
                 <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
                                       variant="bare-inverse" class="slds-modal__close" />
@@ -146,7 +155,7 @@
                 <div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
                     <label class="slds-form-element__label" for="recipients-to">To</label>
                     <div class="slds-form-element__control">
-                        <div class="slds-combobox_container slds-has-inline-listbox">
+                        <div style="width: 97%;" class="slds-combobox_container slds-has-inline-listbox">
                               <c:BT_MultiSelectLookup objectAPIName="Account"
                                                            IconName="standard:account"
                                                            lstSelectedRecords="{!v.selectedToContact}"
@@ -178,7 +187,7 @@
                 <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
                     <label class="slds-form-element__label" for="recipients-cc">Cc</label>
                     <div class="slds-form-element__control">
-                        <div class="slds-combobox_container slds-has-inline-listbox">
+                        <div style="width: 97%;" class="slds-combobox_container slds-has-inline-listbox">
                             <c:BT_MultiSelectLookup objectAPIName="Account"
                                                     IconName="standard:account"
                                                     lstSelectedRecords="{!v.selectedCcContact}"
@@ -195,10 +204,10 @@
                 </aura:if> 
                 
                             <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
-                                <label style="margin-left: -1.3rem; margin-top: -0.3rem;" class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
+                                <label style="margin-left: -0.7rem; margin-top: -0.3rem; z-index:999;" class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
                                 <div class="slds-form-element__control slds-size--1-of-1">
                                     <div class="slds-combobox_container slds-has-inline-listbox">
-                                        <lightning:input aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}" onchange="{!c.onEmailChange}" oncommit="{!c.onAddEmail}" class="slds-size--1-of-1" />
+                                        <lightning:input style="width: 97%;margin-left: 3%;" aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}" onchange="{!c.onEmailChange}" oncommit="{!c.onAddEmail}" class="slds-size--1-of-1" />
                                     </div>
                                 </div>
                             </div>
@@ -215,7 +224,7 @@
                                 <label style="margin-left: -0.7rem; margin-top: -0.3rem;" class="slds-form-element__label" for="recipients-to">Subject</label>
                                 <div class="slds-form-element__control slds-size--1-of-1">
                                     <div class="slds-combobox_container slds-has-inline-listbox">
-                                <lightning:input type="text" placeholder="Enter Subject" value="{!v.subject}"  class="slds-size--1-of-1"/>
+                                <lightning:input style="width: 97%;margin-left: 3%;" type="text" placeholder="Enter Subject" value="{!v.subject}"  class="slds-size--1-of-1"/>
                                     </div>
                                 </div>
                             </div>                                
@@ -256,12 +265,12 @@
                                                     placeholder="Attachments"/>
                         </div>
                     </div> -->
-                    
-                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
+                        <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;"> 
+                            <label style="padding: 1px;" for="file uploader">Attachments</label>
                             <lightning:layout multipleRows = "true">
                                 <div style="display: flex; flex-direction :column;">
                                 <div style="display: flex; align-items: center;">
-                                    <lightning:fileUpload label="Attach receipt"
+                                    <lightning:fileUpload label="Attachments"
                                                             name="fileUploader"
                                                             multiple="true"
                                                             accept="{!v.filetype}"
@@ -345,7 +354,7 @@
                 <button class="slds-button slds-button-neutral sldsbutton" style="margin-top: 10px;" onclick="{!c.closeModel}" >Cancel</button>
                 
             </footer>-->
-        <!-- </div> -->
+        </div>
         <!-- <div class="footercls">
             <div aura:id="footer">
                 <button class="slds-button slds-buttonneutral sldsbutton"
