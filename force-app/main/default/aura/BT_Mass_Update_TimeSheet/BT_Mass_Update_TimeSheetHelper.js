@@ -1,34 +1,38 @@
 ({
-    getTimeSheetEntries : function(component, event, helper) {
+    getTimeSheetEntries: function (component, event, helper) {
         console.log('getTimeSheetEntries');
-        var recordId = component.get('v.recordId');
-        var action = component.get("c.getTimeSheetEntries");
+        var timesheetId = component.get('v.recordId');
+        var action = component.get("c.fetchDataAndFieldSetValues");
         action.setParams({
-            "recordId": recordId
+            "RecordId": timesheetId,
+            "sObjectName": "buildertek__BT_Time_Sheet_Entry__c",
+            "fieldSetName": "buildertek__Mass_Update_Time_sheet_entry"
         });
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var result = response.getReturnValue();
+        action.setCallback(this, function (response) {
+            var result = response.getReturnValue();
+            if (result) {
                 console.log('result', result);
-                if(result.length == 0){
-                    window.onload = showToast();        // Show  toast message on VF page --> Aura
+                if (result.timesheetentryObject.length === 0) {
+                    window.onload = showToast();
                     function showToast() {
                         sforce.one.showToast({
                             "title": "Error!",
                             "message": "No Time Sheet Entry found for this Time Sheet!",
                             "type": "error"
                         });
-                    }     
+                    }
                     var appEvent = $A.get("e.c:myEvent");
                     appEvent.setParams({
-                        "message" : "Event fired"
+                        "message": "Event fired"
                     });
                     appEvent.fire();
                     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                } else {
+                    component.set("v.timeSheetEntries", result.timesheetentryObject);
+                    component.set("v.fieldSetValues", result.FieldSetValues);
+                    console.log('timeSheetEntries', component.get('v.timeSheetEntries'));
+                    component.set("v.Spinner", false);
                 }
-                component.set("v.timeSheetEntries", result);
-                component.set("v.Spinner", false);
             }
         });
         $A.enqueueAction(action);
@@ -156,10 +160,10 @@
                             "message": "Time Sheet Entries updated successfully!",
                             "type": "success"
                         });
-                    }     
+                    }
                     var appEvent = $A.get("e.c:myEvent");
                     appEvent.setParams({
-                        "message" : "Event fired"
+                        "message": "Event fired"
                     });
                     appEvent.fire();
                     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
@@ -169,6 +173,6 @@
         });
         $A.enqueueAction(action);
 
-        
+
     },
 })

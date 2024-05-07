@@ -1,11 +1,8 @@
 ({
     doInit : function(component, event, helper) {
         component.set("v.Spinner", true);
-        var pageNumber = component.get("v.PageNumber");
-        var pageSize = component.get("v.pageSize");
         window.setTimeout(
             $A.getCallback(function () {
-                console.log('recordId', component.get('v.recordId'));
                 helper.getTimeSheetEntries(component, event, helper);
             }),
             2000
@@ -15,7 +12,6 @@
     onMassUpdate: function(component, event, helper){
         component.set("v.Spinner", true);
         helper.validateTimeSheetEntries(component, event, helper);
-        // helper.updateTimeSheetEntries(component, event, helper);
     },
 
     onAddClick: function(component, event, helper){
