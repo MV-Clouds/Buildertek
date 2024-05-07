@@ -11,14 +11,7 @@ public with sharing class BT_MassUpdate_TimeSheet {
             Map<String, Schema.FieldSet> FsMap = d.fieldSets.getMap();
             Map<String, Schema.SObjectField> mapFields = d.fields.getMap();
 
-            Set<String> requiredFields = new Set<String>();
-            for (String fieldName : mapFields.keySet()) {
-                Schema.DescribeFieldResult fieldDescribe = mapFields.get(fieldName).getDescribe();
-                if (!fieldDescribe.isNillable() && !fieldDescribe.isDefaultedOnCreate()) {
-                    requiredFields.add(fieldName);
-                }
-            }
-
+            // Include fields from the field set if not already included as required fields
             if (FsMap.containsKey(fieldSetName)) {
                 for (Schema.FieldSetMember f : FsMap.get(fieldSetName).getFields()) {
                     String fieldPath = f.getFieldPath();
@@ -42,18 +35,33 @@ public with sharing class BT_MassUpdate_TimeSheet {
                 }
             }
 
-            for (String requiredField : requiredFields) {
-                if (!queryFields.contains(requiredField)) {
-                    Map<String, Object> requiredFieldData = new Map<String, Object>();
-                    requiredFieldData.put('label', mapFields.get(requiredField).getDescribe().getLabel());
-                    requiredFieldData.put('required', true);
-                    requiredFieldData.put('type', mapFields.get(requiredField).getDescribe().getType().name());
-                    requiredFieldData.put('name', requiredField);
-                    queryFields.add(requiredField);
-                    fieldSetValues.add(requiredFieldData);
+            if (!queryFields.contains('Name')) {
+                Schema.DescribeFieldResult nameFieldDescribe = objToken.getDescribe().fields.getMap().get('Name').getDescribe();
+                Map<String, Object> nameFieldData = new Map<String, Object>();
+                nameFieldData.put('label', nameFieldDescribe.getLabel());
+                nameFieldData.put('required', true);
+                nameFieldData.put('type', String.valueOf(nameFieldDescribe.getType().name()));
+                nameFieldData.put('name', 'Name');
+                queryFields.add('Name');
+                fieldSetValues.add(nameFieldData);
+            }
+            
+            // Include all required fields by default
+            for (String fieldName : mapFields.keySet()) {
+                Schema.DescribeFieldResult fieldDescribe = mapFields.get(fieldName).getDescribe();
+                if (!fieldDescribe.isNillable() && !fieldDescribe.isDefaultedOnCreate()) {
+                    String fieldPath = fieldDescribe.getName();
+                    if (!queryFields.contains(fieldPath)) {
+                        Map<String, Object> fieldData = new Map<String, Object>();
+                        fieldData.put('label', fieldDescribe.getLabel());
+                        fieldData.put('required', true);
+                        fieldData.put('type', String.valueOf(fieldDescribe.getType().name()));
+                        fieldData.put('name', fieldPath);
+                        queryFields.add(fieldPath);
+                        fieldSetValues.add(fieldData);
+                    }
                 }
             }
-
             String QueryString = 'SELECT ' + String.join(new List<String>(queryFields), ', ') + ' FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c =: RecordId ORDER BY Name';
             List<buildertek__BT_Time_Sheet_Entry__c> timesheetentries = Database.query(QueryString);
 

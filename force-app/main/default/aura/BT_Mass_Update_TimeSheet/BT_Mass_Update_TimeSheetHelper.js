@@ -38,15 +38,15 @@
         $A.enqueueAction(action);
     },
 
-    validateTimeSheetEntries : function(component, event, helper) {
+    validateTimeSheetEntries: function (component, event, helper) {
         console.log('validateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
-        for(var i = 0; i < timeSheetEntries.length; i++){
+        for (var i = 0; i < timeSheetEntries.length; i++) {
             var name = timeSheetEntries[i].Name;
             name = name.replace(/^\s+|\s+$/g, '');
 
-            if(timeSheetEntries[i].Name == '' || timeSheetEntries[i].Name == undefined || timeSheetEntries[i].Name == null || name == '' || name == undefined || name == null){
+            if (timeSheetEntries[i].Name == '' || timeSheetEntries[i].Name == undefined || timeSheetEntries[i].Name == null || name == '' || name == undefined || name == null) {
                 component.set("v.Spinner", false);
                 isValid = false;
                 window.onload = showToast();        // Show  toast message on VF page --> Aura
@@ -56,7 +56,7 @@
                         "message": "Name cannot be empty on row " + (i + 1),
                         "type": "error"
                     });
-                }     
+                }
                 break;
             }
 
@@ -124,19 +124,19 @@
             }
 
         }
-        
-        if(isValid){
+
+        if (isValid) {
             helper.updateTimeSheetEntries(component, event, helper);
         }
     },
 
-    isValidDateFormat: function(dateString) {
+    isValidDateFormat: function (dateString) {
         // Define regular expression for date format (MMM D, YYYY)
         var parsedDate = new Date(dateString);
         return !isNaN(parsedDate.getTime());
     },
 
-    updateTimeSheetEntries : function(component, event, helper) {
+    updateTimeSheetEntries: function (component, event, helper) {
         var timeSheetEntries = component.get('v.timeSheetEntries');
         console.log('timeSheetEntries', timeSheetEntries);
         var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
@@ -147,12 +147,12 @@
             "upsertTimeSheetEntries": JSON.stringify(timeSheetEntries),
             "deletedTimeSheetEntries": JSON.stringify(deletedTimeSheetEntries)
         });
-        action.setCallback(this, function(response) {
+        action.setCallback(this, function (response) {
             var state = response.getState();
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
-                if(result == 'success'){
+                if (result == 'success') {
                     window.onload = showToast();        // Show  toast message on VF page --> Aura
                     function showToast() {
                         sforce.one.showToast({
@@ -167,7 +167,17 @@
                     });
                     appEvent.fire();
                     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
-                    windows.location.reload();
+                    window.location.reload();
+                } else {
+                    component.set("v.Spinner", false);
+                    window.onload = showToast();
+                    function showToast() {
+                        sforce.one.showToast({
+                            "title": "Error!",
+                            "message": "Time Sheet Entries not updated! Please verify the data and try again.",
+                            "type": "error"
+                        });
+                    }
                 }
             }
         });
