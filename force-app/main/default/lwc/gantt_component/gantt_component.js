@@ -241,6 +241,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
     })
       .then((response) => {
         var data = response.lstOfSObjs;
+        console.log("res:- ", response);
         this.considerWeekendsAsWorking = response.includeWeekend;
         this.scheduleItemsDataList = response.lstOfSObjs;
         console.log('scheduleItemsDataList:- ', this.scheduleItemsDataList)
@@ -601,6 +602,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
 
     let resourceData = makeComboBoxDataForResourceData(this.contractorAndResources, this.internalResources);
     let calendarData = this.considerWeekendsAsWorking ? encludeWeekendWorkingHours() : data.calendars.rows;
+    let checkIsweekendIncluded = this.considerWeekendsAsWorking;
 
     const project = new bryntum.gantt.ProjectModel({
       calendar: data.project.calendar,
@@ -801,7 +803,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             if (record.record._data.type == "Project") {
               let projectStartDate = new Date(record.record.startDate);
               let projectEndDate = new Date(record.record.endDate);
-              let projectDuration = calcBusinessDays(projectStartDate, projectEndDate);
+              let projectDuration = calcBusinessDays(projectStartDate, projectEndDate, checkIsweekendIncluded);
               return projectDuration + ' days';
             }
             if (record.record._data.type == "Phase") {
