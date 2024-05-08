@@ -4,6 +4,11 @@
     <label>RFQAcceptedRejected</label>
     <packageVersions>
         <majorNumber>1</majorNumber>
+        <minorNumber>13</minorNumber>
+        <namespace>MVMU</namespace>
+    </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
         <minorNumber>20</minorNumber>
         <namespace>sf_chttr_apps</namespace>
     </packageVersions>

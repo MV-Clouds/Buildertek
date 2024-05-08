@@ -1,11 +1,11 @@
-public without sharing class  RFQAcceptedRejected{
+public without sharing class  RFQbiddingnotbidding{
     public String recordId {get; Set;}
     public String guestUserSite{get; set;}
     public String colorr { get; set;}
     public buildertek__RFQ_Template_Settings__c rfqTemplateSettings;
     
     
-    public RFQAcceptedRejected(){
+    public RFQbiddingnotbidding(){
 
     buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id,buildertek__Color_code__c
                                                                                               FROM buildertek__Admin_Interface_Node_Configuration__c
