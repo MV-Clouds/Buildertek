@@ -16,6 +16,8 @@
                 </apex:inputcheckbox>
                 <apex:inputcheckbox value="{!oldGanttChart}" label="Old Gantt Chart">
                 </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!includeweekend}" label="Include Weekend">
+                </apex:inputcheckbox>
                 <center>
                     <apex:commandButton value="Save" id="onSave" styleClass="slds-button slds-button_brand" action="{!onSave}"></apex:commandButton>
                 </center>

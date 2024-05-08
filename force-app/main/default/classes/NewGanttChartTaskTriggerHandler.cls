@@ -2,6 +2,14 @@ public with sharing class NewGanttChartTaskTriggerHandler{
     public static Boolean blnSkipTaskTrigger = false;
     public static void upsertMilestoneData(List<buildertek__Project_Task__c> newTaskList, Map<ID, buildertek__Project_Task__c> newTaskMap){
 
+		Boolean checkIncludeWeekendSettings = false;
+
+		List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Include_Weekend__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+
+        if (adminInterfaceNodeConfigurations.size() > 0) {
+            checkIncludeWeekendSettings = adminInterfaceNodeConfigurations[0].buildertek__Include_Weekend__c;
+        }
+
         if (!blnSkipTaskTrigger){
 
             Id scheduleId = newTaskList[0].buildertek__Schedule__c;
@@ -39,8 +47,13 @@ public with sharing class NewGanttChartTaskTriggerHandler{
                 System.debug('phaseDateMap ==> '+phaseDateMap.get(key));
                 if (phaseMileStoneMap.containsKey(key)){
                     buildertek__Project_Task__c task = phaseMileStoneMap.get(key);
-                    task.buildertek__Start__c = skipWeekend(phaseDateMap.get(key));
-                    task.buildertek__finish__c = skipWeekend(phaseDateMap.get(key));
+                    if (checkIncludeWeekendSettings) {
+						task.buildertek__Start__c = phaseDateMap.get(key);
+						task.buildertek__Finish__c = phaseDateMap.get(key);
+					} else {
+						task.buildertek__Start__c = skipWeekend(phaseDateMap.get(key));
+						task.buildertek__Finish__c = skipWeekend(phaseDateMap.get(key));
+					}
                     if (key != null && key != ''){
                         System.debug('task ===> '+task);
                         mileStoneList.add(task) ;
@@ -49,8 +62,13 @@ public with sharing class NewGanttChartTaskTriggerHandler{
                     buildertek__Project_Task__c task = new buildertek__Project_Task__c();
                     task.Name = 'Milestone Complete';
                     task.buildertek__Phase__c = key;
-                    task.buildertek__Start__c = skipWeekend(phaseDateMap.get(key));
-                    task.buildertek__Finish__c = skipWeekend(phaseDateMap.get(key));
+					if (checkIncludeWeekendSettings) {
+						task.buildertek__Start__c = phaseDateMap.get(key);
+						task.buildertek__Finish__c = phaseDateMap.get(key);
+					} else {
+						task.buildertek__Start__c = skipWeekend(phaseDateMap.get(key));
+						task.buildertek__Finish__c = skipWeekend(phaseDateMap.get(key));
+					}
                     task.buildertek__Duration__c = 0;
                     task.buildertek__Schedule__c = scheduleId;
                     task.buildertek__Milestone__c = true;
@@ -64,9 +82,6 @@ public with sharing class NewGanttChartTaskTriggerHandler{
             NewGanttChartTaskTriggerHandler.blnSkipTaskTrigger = true;
             ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
 
-            for (buildertek__Project_Task__c task : mileStoneList) {
-                System.debug('Task before update ==> '+ task);
-            }
             upsert mileStoneList;
             updateProjectAnticipatedDate(newTaskList);
             NewGanttChartTaskTriggerHandler.blnSkipTaskTrigger = false;
@@ -161,7 +176,7 @@ public with sharing class NewGanttChartTaskTriggerHandler{
 		                                                            from Account
 		                                                            where id IN:accountIds]);
 		for (Project_Task__c updatedProjectTask : updatedProjectTasks){
-			
+
 			//Actual Completion date
 			if (updatedProjectTask.buildertek__Completion__c == 100){
 				updatedProjectTask.buildertek__Actual_Completion_date__c = system.today();
