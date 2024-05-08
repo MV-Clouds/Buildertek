@@ -1,5 +1,7 @@
-<aura:component controller="BT_MassUpdate_TimeSheet"  implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global" >
-    
+<aura:component controller="BT_MassUpdate_TimeSheet"
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes"
+    access="global">
+
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
@@ -7,7 +9,6 @@
     <lightning:overlayLibrary aura:id="overlayLib" />
 
 
-    
     <aura:attribute name="Spinner" type="boolean" />
     <aura:attribute name="recordId" type="String" />
     <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
@@ -16,84 +17,87 @@
     <aura:attribute name="deletedTimeSheetEntries" type="List" default="[]" />
     <aura:attribute name="PageNumber" type="integer" default="1" />
     <aura:attribute name="isNextDisabled" type="Boolean" default="true" />
-   
+    <aura:attribute name="fieldSetValues" type="List" />
     <lightning:workspaceAPI aura:id="workspace" />
-    
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clearSelectedHandler}" />
+
     <aura:if isTrue="{!v.Spinner}">
         <lightning:spinner alternativeText="Loading" variant="brand" size="large" />
     </aura:if>
 
+    <aura:html tag="style">
+        .slds-scope .slds-form-element_stacked:not(.slds-form-element_readonly){
+        padding-bottom: 0px !important;
+        margin-bottom: 0px !important;
+        }
+    </aura:html>
+
     <lightning:card aura:id="lightCard" class="slds-card_boundary slds-page-header" title="Time Sheet Entries">
-    <aura:set attribute="actions">
-        <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}"
-            label="Save" class="" />
-        <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
-        <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
-            label="Cancel" />
-        <!-- <lightning:button iconName="utility:back" iconPosition="left" disabled="{!v.PageNumber == 1}"
-            aura:id="prevPage" label="Previous" onclick="{!c.handlePrev}" />
-        <lightning:button iconName="utility:forward" iconPosition="right" disabled="{!v.isNextDisabled}"
-            aura:id="nextPage" label="Next" onclick="{!c.handleNext}" /> -->
-    </aura:set>
+        <aura:set attribute="actions">
+            <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onMassUpdate}" label="Save"
+                class="" />
+            <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.onAddClick}" label="Add" />
+            <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onMassUpdateCancel}"
+                label="Cancel" />
+        </aura:set>
 
-    <div class="slds-modal__content slds-scrollable" style="min-height:90vh">
-        <div class="slds slds-m-top_medium slds-p-horizontal_medium tableDiv slds-scrollable">
-            <table class="slds-table slds-table--bordered slds-table--edit">
-                <thead>
-                    <tr style="height:35px; !important">
-                        <th> Name </th>
-                        <th> Status </th>
-                        <th> Description </th>
-                        <th> Start Time </th>
-                        <th> End Time </th>
-                        <th> Duration </th>
-                        <th> Notes </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <aura:iteration items="{!v.timeSheetEntries}" var="entry" indexVar="index">
-                        <tr>
-                            <td>
-                                <lightning:input type="text" value="{!entry.Name}" class="alignment" />
-                            </td>
-                            <td>
-                                <lightning:select name="status" value="{!entry.buildertek__Status__c}" class="alignment">
-                                    <option value="New">New</option>
-                                    <option value="Submitted">Submitted</option>
-                                    <option value="Approved">Approved</option>
-                                </lightning:select>
-                            </td>
-                            <td>
-                                <lightning:input type="text" value="{!entry.buildertek__Description__c}" class="alignment"/>
-                            </td>
-                            <td>
-                                <lightning:input type="datetime-local" value="{!entry.buildertek__Start_Time__c}"  class="date"/>
-                            </td>
-                            <td>
-                                <lightning:input type="datetime-local" value="{!entry.buildertek__End_Time__c}"  class="date" />
-                            </td>
-                            <td>
-                                <lightning:input type="number" value="{!entry.buildertek__Duration_Manual__c}" class="alignment"/>
-                            </td>
-                            <td>
-                                <lightning:input type="text" value="{!entry.buildertek__Notes__c}" class="alignment"/>
-                            </td>
-                            <td>
-                                <span onclick="{!c.deleteRecord}" data-index='{!index}'>
-                                    <lightning:icon iconName="action:close" alternativeText="Delete"
-                                        class="some-indicator alignment" size="x-small" title="Delete" />
-                                </span>
-                            </td>
-                        </tr>
-                    </aura:iteration>
-                </tbody>
-            </table>
+        <div class="slds-modal__content">
+            <div class="slds-scrollable">
+                <div class="slds slds-m-top_medium slds-p-horizontal_medium"
+                    style="min-height : 600px !important;margin-bottom:100px !important;">
+                    <table class="{!v.massUpdateEnable ? 'slds-table slds-table--bordered':'slds-table--bordered'}">
+                        <thead>
+                            <tr style="{!v.massUpdateEnable ? '':'height:35px; !important'}">
+                                <aura:iteration items="{!v.fieldSetValues}" var="field" indexVar="index">
+                                    <th> {!field.label}</th>
+                                </aura:iteration>
+                                <aura:if isTrue="{!v.massUpdateEnable}">
+                                    <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:4%;">
+                                        <span class="slds-truncate"></span>
+                                    </th>
+                                </aura:if>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.timeSheetEntries}" var="row" indexVar="index">
+                                <tr style="{!v.massUpdateEnable ? 'height: 4rem;':'height:35px; !important'}">
+                                    <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                        <aura:if isTrue="{!!AND(v.currectModifiedIndex == index, v.rerender == true)}">
+                                            <aura:if
+                                                isTrue="{!OR(OR(field.type == 'DOUBLE', field.type == 'CURRENCY'), field.type == 'PERCENT')}">
+                                                <td style="max-width: 5rem; min-width: 5rem;">
+                                                    <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}"
+                                                        field="{!field}" isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                        childObjectName="buildertek__BT_Time_Sheet_Entry__c" />
+                                                </td>
+                                                <aura:set attribute="else">
+                                                    <td style="max-width: 11rem; min-width: 11rem;">
+                                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}"
+                                                            field="{!field}" isMassUpdateEnable="{!v.massUpdateEnable}"
+                                                            childObjectName="buildertek__BT_Time_Sheet_Entry__c" />
+                                                    </td>
+                                                </aura:set>
+                                            </aura:if>
+                                        </aura:if>
+                                    </aura:iteration>
+                                    <aura:if isTrue="{!v.massUpdateEnable}">
+                                        <td>
+                                            <span onclick="{!c.deleteRecord}" data-index='{!index}'>
+                                                <lightning:icon iconName="action:close" alternativeText="Delete"
+                                                    class="some-indicator" size="x-small" title="Delete" />
+                                            </span>
+                                        </td>
+                                    </aura:if>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </div>
-</lightning:card>
+    </lightning:card>
 
-    
     <aura:if isTrue="{!v.isCancelModalOpen}">
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
