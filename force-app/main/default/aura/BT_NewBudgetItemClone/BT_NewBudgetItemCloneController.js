@@ -2412,17 +2412,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         if(component.get("v.HaveDeleteAccess")){
             component.set("v.isOpen", true);
             var recordId = event.currentTarget.dataset.id;
+            console.log(`Delete Record Id: ${recordId}`);
             component.set("v.quoteItemId", recordId);
         }
         else{
-            // var toastEvent = $A.get("e.force:showToast");
-            // toastEvent.setParams({
-            //     "type": "error",
-            //     "title": "Error!",
-            //     "message": 'You don\'t have the necessary privileges to delete record.'
-            // });
-            // toastEvent.fire();
-
             component.find('notifLib').showNotice({
                 "variant": "error",
                 "header": "Error!",
@@ -2797,8 +2790,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             "budgetId": recordId
         });
         action.setCallback(this, function (response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
+            let returnValue = response.getReturnValue();
+            if (returnValue != null) {
                 var result = response.getReturnValue();
                 component.set("v.isOpen", false);
                 window.setTimeout(
@@ -2820,15 +2813,25 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 );
                 var page = component.get("v.page") || 1
                 //To much loading on deletion problem
-                let getValue=component.get('v.displayGrouping')
+                let getValue = component.get('v.displayGrouping')
                 if (getValue) {
-                    helper.getBudgetGrouping(component, event, helper); 
-                } else{
+                    helper.getBudgetGrouping(component, event, helper);
+                } else {
                     component.set("v.TotalRecords", {});
                     helper.getBudgetGroups(component, event, helper, page, function () { });
                 }
                 // component.set("v.TotalRecords", {});
                 // helper.getBudgetGroups(component, event, helper, page, function () { });
+            } else {
+                $A.get("e.c:BT_SpinnerEvent").setParams({
+                    "action": "HIDE"
+                }).fire();
+                component.set("v.isOpen", false);j
+                component.find('notifLib').showNotice({
+                    "variant": "error",
+                    "header": "Error!",
+                    "message": "There are records associated with this Budget Line you are trying to delete.  Please remove the associated record and try again.",
+                });
             }
         });
         $A.enqueueAction(action);
@@ -2873,8 +2876,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     "recordIds": BudgetIds
                 });
                 action.setCallback(this, function (response) {
-                    var state = response.getState();
-                    if (state === "SUCCESS") {
+                    let result = response.getReturnValue();
+                    if (result === "success") {
                         component.set("v.isBudgetlinedelete", false);
                         $A.get("e.force:refreshView").fire();
 
@@ -2911,14 +2914,40 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             toastEvent.fire();
                         });
                     }
+                    } else {
+                        $A.get("e.c:BT_SpinnerEvent").setParams({
+                            "action": "HIDE"
+                        }).fire();
+                        component.set("v.isBudgetlinedelete", false);
+                        component.find('notifLib').showNotice({
+                            "variant": "error",
+                            "header": "Error!",
+                            "message": result,
+                            closeCallback: function () {
+                                component.set("v.isBudgetlinedelete", false);
+                                $A.get("e.force:refreshView").fire();
+                                component.refreshData();
+                                var noRecord = [];
+                                component.set('v.selectedRecs', noRecord);
+                                var page = component.get("v.page") || 1
+                                let getValue = component.get('v.displayGrouping')
+                                if (getValue) {
+                                    helper.getBudgetGrouping(component, event, helper);
+                                } else {
+                                    component.set("v.TotalRecords", {});
+                                    helper.getBudgetGroups(component, event, helper, page);
+                                }
+                            }
+                        });
                     }
+                    
                 });
                 $A.enqueueAction(action);
             } else {
                 component.find('notifLib').showNotice({
                     "variant": "error",
-                    "header": "Please Select Quote Line!",
-                    "message": "Please select the Quote Line you would like to Delete.",
+                    "header": "Please Select BudgetLine Line!",
+                    "message": "Please select the BudgetLine Line you would like to Delete.",
                     closeCallback: function () {
                         $A.get("e.c:BT_SpinnerEvent").setParams({
                             "action": "HIDE"
