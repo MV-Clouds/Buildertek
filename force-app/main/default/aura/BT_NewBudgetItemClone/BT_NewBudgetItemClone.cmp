@@ -1,6 +1,6 @@
 <aura:component implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction,lightning:isUrlAddressable" access="global" controller="BudgetDAO">
     <aura:attribute name="isBudgetlinedelete" type="Boolean" default="false" />
-    
+
     <aura:attribute name="pendingLabel" type="String" default="Pending Po's" access="global" />
     <aura:attribute name="BudgetlinePopupHeader" type="String" default="" />
     <aura:attribute name="budgetItemId" type="String" default="" />
@@ -62,7 +62,7 @@
     <aura:attribute name="selectedExistingPO" type="List" default="" access="public" />
     <!-- <aura:attribute name="selectedRecords" type="List" default="" access="public" /> -->
 
-    
+
     <!-- end-->
 
     <!-- check existing tc -->
@@ -74,7 +74,7 @@
     <aura:attribute name="isExistingTs" type="Boolean" default="false" access="public" />
     <aura:attribute name="selectedExistingTS" type="List" default="" access="public" />
     <!-- end-->
-    
+
 
     <!-- check existing tc -->
     <aura:attribute name="isExistingInvo" type="Boolean" default="false" access="public" />
@@ -332,15 +332,15 @@
 
     <lightning:overlayLibrary aura:id="overlay"/>
     <aura:attribute name="modalPromise" type="Aura.Action"/>
-    
+
     <aura:HTML tag="style">
         .slds-tabs_card{
-            min-height: fit-content !important; 
+            min-height: fit-content !important;
             height: fit-content !important;
         }
 
         .slds-tabs_default{
-            min-height: fit-content !important; 
+            min-height: fit-content !important;
             height: fit-content;
         }
 
@@ -358,31 +358,31 @@
         }
         @media only screen and (max-height: 990px) and (min-height: 900px){
             .slds-tabs_default{
-                min-height: calc(72vh + {!v.slds_tab_height_diff}); 
+                min-height: calc(72vh + {!v.slds_tab_height_diff});
                 height: calc(72vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 900px) and (min-height: 810px){
             .slds-tabs_default{
-                min-height: calc(77.7vh + {!v.slds_tab_height_diff}); 
+                min-height: calc(77.7vh + {!v.slds_tab_height_diff});
                 height: calc(77.5vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 810px) and (min-height: 720px){
             .slds-tabs_default{
-                min-height: calc(83vh + {!v.slds_tab_height_diff}); 
+                min-height: calc(83vh + {!v.slds_tab_height_diff});
                 height: calc(83vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 720px) and (min-height: 630px){
             .slds-tabs_default{
-                min-height:calc(88.5vh + {!v.slds_tab_height_diff}); 
+                min-height:calc(88.5vh + {!v.slds_tab_height_diff});
                 height: calc(88.5vh + {!v.slds_tab_height_diff});
             }
         }
         @media only screen and (max-height: 630px) and (min-height: 540px){
             .slds-tabs_default{
-                min-height: calc(94vh + {!v.slds_tab_height_diff}); 
+                min-height: calc(94vh + {!v.slds_tab_height_diff});
                 height: calc(94vh + {!v.slds_tab_height_diff});
             }
         } -->
@@ -433,7 +433,7 @@
                     </div>
                     <div class="rkclasses">
                         <p>Projected Gross Margin (%) </p><lightning:formattedNumber value="{!v.ProjectedGrossMargin/100}" style="percent" minimumFractionDigits="2" />
-                    </div> 
+                    </div>
                 </div> -->
                 <div class="rkclass">
                     <aura:iteration items="{!v.budgetFields}" var="item">
@@ -471,7 +471,7 @@
                                              type="search"
                                              placeholder="Search"
                                              value="{!v.searchFilter}"
-                                             onkeyup="{!c.doSearch}" 
+                                             onkeyup="{!c.doSearch}"
                                              />
                         </div> -->
                         <aura:if isTrue="{!!v.displayGrouping}">
@@ -533,7 +533,7 @@
                             <div style="width: fit-content;">
                                 <lightning:input label="Group By Cost Code" type="toggle" checked="{!v.groupByCostCode}" onchange="{!c.toggleByCost}"/>
                             </div>
-                            
+
                         </div> -->
                         <!-- <div class="slds-float_left" style="margin-right:10.6rem;">
                             <span style="display:none;" class="{!v.currentTab+' expandAllBtn_'+v.budgetId}" data-iconattr="{!'expandAllBtn_'+v.budgetId}" data-iconname="Expand All" onclick="{!c.expandCollapeAll}">
@@ -558,7 +558,7 @@
                                     <lightning:button iconName="utility:save" iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Save" class="sldsButtonGroup" />
                                     <lightning:button iconName="utility:close" iconPosition="left" onclick="{!c.onClickMassUpdateCancel}" label="Cancel" class="sldsButtonGroup" />
                                     <aura:set attribute="else">
-                                                                                
+
                                         <!--  <lightning:button iconName="utility:copy" iconPosition="left"
                                             onclick="{!c.onClickMassDuplicate}" label="Duplicate Lines" class="sldsButtonGroup" />-->
                                             <!--  <lightning:button onclick="{!c.newbudgetGroup}" label="Add Group" class="sldsButtonGroup" /> -->
@@ -566,7 +566,7 @@
                                                 class="sldsButtonGroup" /> -->
                                                 <!-- commented on 26thmay DFL <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>-->
                                                 <!--<aura:if isTrue="{!v.groupListSize > 0}">-->
-                                                                                
+
                                         <lightning:button label="Add PO" onclick="{!c.addPO}" class="sldsButtonGroup" />
                                         <lightning:button label="Add CO" onclick="{!c.addCO}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Expense" onclick="{!c.addExpense}" class="sldsButtonGroup" />
@@ -574,7 +574,7 @@
                                         <lightning:button label="Add Payable Invoice" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Sales Invoice" onclick="{!c.addSalesInvoice}" class="sldsButtonGroup" />
                                         <lightning:button label="Add Labor" onclick="{!c.addTimeCard}" class="sldsButtonGroup" />
-                                        <lightning:button label="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />    
+                                        <lightning:button label="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />
                                         <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Budget Lines" class="sldsButtonGroup" />
                                         <lightning:button iconName="utility:edit" iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup" />
                                         <!-- <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />-->
@@ -599,9 +599,9 @@
                                         <lightning:button label="Delete Lines" onclick="{!c.deleteSelectedBudgetItem}" class="sldsButtonGroup" />
                                         <aura:if isTrue="{!v.isbudget}">
                                             <!-- <a href="{!v.fromWhereBudgetIsOpen}" onclick="{!c.closetab}" class="sldsButtonGroup"> -->
-                                            <lightning:button label="Cancel" onclick="{!c.closetabs}" class="sldsButtonGroup" /> 
+                                            <lightning:button label="Cancel" onclick="{!c.closetabs}" class="sldsButtonGroup" />
                                             <!-- </a> -->
-                                                
+
                                         </aura:if>
                                         <!--</aura:if>-->
                                         <!--<div class="slds-align_absolute-center">-->
@@ -716,7 +716,7 @@
                                                             <!-- CSS Chages with BUIL-3502 == Keep in master -->
                                                             max-width: 27vw !important;
                                                             padding-top:1% !important;
-    
+
                                                         }
                                                         .pillSize{
                                                             width: 15vw !important;
@@ -728,7 +728,7 @@
                                                             <!-- width:100% !important; -->
                                                             margin-top:-23px !important;
                                                         }
-                                                    </aura:html>                                                    
+                                                    </aura:html>
                                                     <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }" prodctfamly="{!v.productfamily}" childValue="{!v.newBudgetLine.Name}" costcodeValue="{!v.newBudgetLine.buildertek__Cost_Code__c}" unitcostValue="{!v.newBudgetLine.buildertek__Unit_Price__c}"/>
                                                     <label class="slds-form-element__label" for="lookup-348"></label>
                                                 </td>
@@ -737,8 +737,8 @@
                                                     <ui:inputText value="{!v.newBudgetLine.Name}" aura:id="budgetLineID" />
                                                 </td>
                                                 <!--  <td>
-                                            <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
-                                                         _sobject="buildertek__Budget_Item__c" 
+                                            <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c"
+                                                         _sobject="buildertek__Budget_Item__c"
                                                          _target_sobject="buildertek__Cost_Codes__c"
                                                          _value="{!v.newBudgetLine.buildertek__Cost_Code__c}"
                                                          _label=""
@@ -748,7 +748,7 @@
                                                 <td>
                                                     <div class="borderdiv">
                                                         <c:BT_LookUp aura:id="groupId" _field="buildertek__Group__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Group__c}" _label="" _filter="" />
-                                                    </div>    
+                                                    </div>
                                                 </td>
                                                 <!--  <td>
                                                     <c:BT_LookUp aura:id="subGroupId" _field="buildertek__Sub_Grouping__c"
@@ -763,7 +763,7 @@
                                                             <option value="{! option.value }">{! option.key }</option>
                                                         </aura:iteration>
                                                     </ui:inputSelect>
-                                                    
+
                                                 </td> -->
                                                 <!-- <td>
                                                     <ui:inputSelect value="{! v.UOMvalues }" class="select-class pointer1">
@@ -781,7 +781,7 @@
                                                     <c:customLookup aura:id="accountId" objectAPIName="Account" IconName="standard:account" selectedRecord="{!v.selectedContractor}" />
                                                     <force:inputField aura:id="accountId" value="{!v.newBudgetLine.buildertek__Contractor__c}" />
                                                 </td> -->
-                                                
+
                                                 <td>
                                                     <!-- <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" _sobject="buildertek__Budget_Item__c" _value="{!v.newBudgetLine.buildertek__Cost_Code__c}" _label="" _filter="" /> -->
                                                     <div class="hidelabel borderdiv">
@@ -818,7 +818,7 @@
                                                     <!-- <ui:inputNumber class="costInputField" value="{!v.newBudgetLine.buildertek__Markup__c}" /> -->
                                                 </td>
                                                 <td>
-                                                    
+
                                                     <lightning:buttonIcon iconName="utility:save" alternativeText="save" onclick="{!c.saveBudgetItemRecord}" />
                                                 </td>
                                             </tr>
@@ -839,7 +839,7 @@
                                             title="Collapse All" class="pointer1" />
                                     </span>
                                     <! <lightning:button aura:id="expandCollapeseAllBtn" variant="neutral" label="" title="Expand All"  iconName="utility:add" iconPosition="left" onclick="{!c.expandCollapeAll}"/> -->
-                                <!-- </div> --> 
+                                <!-- </div> -->
 
                                 <!-- <aura:if isTrue="{!v.total > 60}">
                                     <div class="slds-align_absolute-center">
@@ -852,7 +852,7 @@
                             <!--<div class="av-list">
                             <div style="margin-top:5rem;">
                                 <c:BT_Illustration name="Setup" title="Add Group to Start Budget"/>
-                                
+
                             </div>
                         </div>-->
 
@@ -1133,10 +1133,10 @@
                                                             </aura:if>
                                                         </th>
                                                     </aura:iteration>
-                                                    
+
                                                 </tr>
                                                 <aura:iteration items="{!group.subGroupRecords}" var="subGroupRec" indexVar="subGroupIndex">
-                                                    
+
                                                     <aura:iteration items="{!subGroupRec.records}" var="recs" indexVar="recIndex">
 
                                                         <tr class="{!v.currentTab+' '+v.budgetId+' groupRows_'+parentGroupIndex}" style="display:table-row;">
@@ -1200,15 +1200,15 @@
                                                                         <span style="    white-space: nowrap; word-wrap: break-word;">
                                                                              <ui:outputURL
                                                                                 value="{!'/one/one.app?#/sObject/'+ recs.recordId + '/view' + v.additionalUrl}"
-                                                                                label="{!recs.recordName}" /> 
+                                                                                label="{!recs.recordName}" />
                                                                         </span>
                                                                     </aura:set>
 
                                                                 </aura:if>
 
                                                             </td>
-                                                            <aura:iteration items="{!recs.recordList}" var="value" indexVar="groIndex">        
-                                                                        
+                                                            <aura:iteration items="{!recs.recordList}" var="value" indexVar="groIndex">
+
                                                                 <aura:if isTrue="{!value.fieldName != 'buildertek__CostCodeDivision__c'}" >
                                                                     <td class="ShowIconClass" data-myvalue="{!groIndex}" style="font-size: 0.78rem !important;">
                                                                         <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName), v.quoteItemId == recs.recordId),and(v.enableMassUpdate,
@@ -1226,7 +1226,7 @@
                                                                                         value.fieldName=='buildertek__Group__c'),value.fieldName=='buildertek__Complete__c'),
                                                                                         value.fieldName=='buildertek__Previously_Billed__c'),value.fieldName=='buildertek__Product__c'),
                                                                                         value.fieldName=='buildertek__Regional_Factor__c'),value.fieldName=='buildertek__Trade_Type__c'),
-                                                                                        value.fieldName=='buildertek__Upgrades__c'),value.fieldName=='buildertek__Contractor__c'), value.fieldName=='buildertek__Markup__c'), value.fieldName=='buildertek__Tax__c')  
+                                                                                        value.fieldName=='buildertek__Upgrades__c'),value.fieldName=='buildertek__Contractor__c'), value.fieldName=='buildertek__Markup__c'), value.fieldName=='buildertek__Tax__c')
                                                                                         )))}">
 
                                                                             <aura:if isTrue="{!value.fieldType != 'picklist'}">
@@ -1313,16 +1313,16 @@
                                                                                         <aura:if isTrue="{!not(empty(value.originalValue))}">
                                                                                             <lightning:formattedNumber value="{!value.originalValue}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                                                             <!--</aura:if>-->
-                                                                                            <!--<lightning:formattedNumber value="{!value.originalValue}" currencyDisplayAs="code" 
+                                                                                            <!--<lightning:formattedNumber value="{!value.originalValue}" currencyDisplayAs="code"
                                                                                                                     currencyCode="{!value.iscurrencyValue}" style="currency" />-->
-                                                                                            <!--<lightning:formattedNumber value="{!value.originalValue}" currencyDisplayAs="code" 
+                                                                                            <!--<lightning:formattedNumber value="{!value.originalValue}" currencyDisplayAs="code"
                                                                                                                     currencyCode="GBP" style="currency" />-->
                                                                                             <!--  <lightning:formattedNumber
                                                                                                                     value="{!value.originalValue}"
                                                                                                                     style="currency" /> -->
                                                                                             <aura:set attribute="else">
                                                                                                 <!--<aura:if isTrue='{!v.multicurrency}'>
-                                                                                                    <lightning:formattedNumber value="0.00" currencyDisplayAs="code" 
+                                                                                                    <lightning:formattedNumber value="0.00" currencyDisplayAs="code"
                                                                                                                     currencyCode="{!value.CurrencyIsoCode}" style="currency" />
                                                                                                 </aura:if>
                                                                                                 <aura:if isTrue='{!!v.multicurrency}'>-->
@@ -1332,7 +1332,7 @@
                                                                                                 <!-- <ui:outputCurrency value="0.00"/> -->
                                                                                                 <!--<lightning:formattedNumber
                                                                                                                         value="0.00" style="currency" />-->
-                                                                                                <!--<lightning:formattedNumber value="0.00" currencyDisplayAs="code" 
+                                                                                                <!--<lightning:formattedNumber value="0.00" currencyDisplayAs="code"
                                                                                                                     currencyCode="{!value.iscurrencyValue}" style="currency" />-->
                                                                                             </aura:set>
                                                                                         </aura:if>
@@ -1380,7 +1380,7 @@
                                                                         </aura:if>
 
                                                                     </td>
-                                                                    
+
                                                                 </aura:if>
                                                             </aura:iteration>
 
@@ -1462,7 +1462,7 @@
                                                                                 <lightning:formattedNumber value="{!group.totals.TotalC0}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                                             </span>
                                                                         </aura:if>
-                                                                        
+
                                                                     </aura:if>
 
                                                                     <aura:if isTrue="{!col.fieldName == 'buildertek__Labor1__c'}">
@@ -1572,7 +1572,7 @@
                                                                     </aura:if>
 
                                                                     <!-- Ticket BUIL-3910 -->
-                                                                    
+
                                                                 </td>
                                                             </aura:if>
 
@@ -1600,7 +1600,7 @@
                                                     <td class="groupHeaderIcon">
                                                         <div id='collapseBtn' class="slds-float_left">
                                                             <span data-iconname="Expand Group" data-iconattr="{!'expandGroupBtn_'+group1.groupIndex}" id="{!'expandGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}" style="display:none">
-                                                                <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" /> 
+                                                                <lightning:buttonIcon iconName="utility:add" variant="border-filled" iconClass="dark" alternativeText="Expand Group" title="Expand Group" size="x-small" />
                                                             </span>
                                                             <span data-iconname="Collapse Group" data-iconattr="{!'collapeseGroupBtn_'+group1.groupIndex}" id="{!'collapeseGroupBtn_'+group1.groupIndex}" onclick="{!c.expandCollapeGroup}"  style="display:inline-block;">
                                                                 <lightning:buttonIcon iconName="utility:dash" variant="border-filled" iconClass="dark" alternativeText="Collapse Group" title="Collapse Group" size="x-small"/>
@@ -2463,7 +2463,7 @@
                                     <thead>
                                         <tr class="slds-text-title_caps">
                                             <!-- <th scope="col" width="5%">
-                                                
+
                                             </th> -->
                                             <th scope="col" class="slds-truncate">
                                                 <!-- <lightning:input type="checkbox"
@@ -2706,9 +2706,9 @@
                                                         {!item.buildertek__Description__c}
                                                     </td>
                                                     <td>
-                                                        
+
                                                         <lightning:formattedNumber value="{!item.buildertek__Daily_Expense__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                        
+
                                                     </td>
                                                 </tr>
                                             </aura:iteration>
@@ -2852,7 +2852,7 @@
                                                 <!-- <td class="slds-truncate" style="width: 10px;">
                                                     <lightning:input type="checkbox"
                                                                          name="{!item.Id}"
-                                                                         onchange="{!c.selectedSchedule}" /> 
+                                                                         onchange="{!c.selectedSchedule}" />
                                                 </td>-->
                                                 <td style="padding-left: 0.5rem; width: 30px;">
                                                     <lightning:input aura:id="selectInvoice" type="checkbox" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkInvoice}" />
@@ -3263,7 +3263,7 @@
                 </section>
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </aura:if>
-            
+
 
 
 
@@ -3274,7 +3274,7 @@
         </div>
     </div>
 
-    
+
     <aura:if isTrue="{!v.isBOMmodalOpen}">
         <div class="">
 

@@ -344,7 +344,7 @@ if(sum>3000000){
             if (results.size() > 0){
                 List<ContentDocument> contentDocumentsToDelete = [SELECT Id FROM ContentDocument WHERE Id IN :files];
                 if (!contentDocumentsToDelete.isEmpty()) {
-                    delete contentDocumentsToDelete;
+                    delete contentDocumentsToDelete; 
                 }
                 if (results[0].isSuccess()){
                      string Toaddresses = '';
@@ -895,6 +895,5 @@ if(sum>3000000){
 
         return relatedFiles;
     }
-
 
 }

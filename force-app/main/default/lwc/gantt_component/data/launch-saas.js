@@ -13,15 +13,14 @@ export default {
                 "name"      : "General",
                 "intervals" : [
                     {
-                        "recurrentStartDate" : "on Sat at 0:00",
-                        "recurrentEndDate"   : "on Mon at 0:00",
+                        "recurrentStartDate" : "every weekday at 12:00",
+                        "recurrentEndDate"   : "every weekday at 13:00",
                         "isWorking"          : false
                     },
                     {
-                        "startDate": "2023-03-06",
-                        "endDate": "2023-03-07",
-                        "isWorking": false,
-                        "name": "Vacation",
+                        "recurrentStartDate" : "every weekday at 17:00",
+                        "recurrentEndDate"   : "every weekday at 08:00",
+                        "isWorking"          : false
                     }
                 ],
                 "expanded" : true,

@@ -49,6 +49,16 @@ public with sharing class BT_MultiSelectLookupController {
             }
             // End Changes on 5th December 2022
             
+            if(ObjectName == 'Account') {
+                if(isPreQual){
+                    sQuery =  'select id, Name, buildertek__Email_Address__c from ' +ObjectName + ' where Name LIKE: searchKey AND Id NOT IN : lstExcludeitems AND AccountId=:recId order by createdDate DESC limit 5';
+                }else{
+                    sQuery =  'select id, Name, buildertek__Email_Address__c from ' +ObjectName + ' where Name LIKE: searchKey AND Id NOT IN : lstExcludeitems order by createdDate DESC limit 5';
+                }
+                
+                
+            }
+
             List < sObject > lstOfRecords; 
             if(ObjectName == 'contact') { 
                 if(Schema.sObjectType.contact.fields.Id.isAccessible() &&
@@ -74,6 +84,16 @@ public with sharing class BT_MultiSelectLookupController {
 
             }
             // end chnages
+
+            if(ObjectName == 'Account') { 
+                if(Schema.sObjectType.Account.fields.Id.isAccessible() &&
+                   Schema.sObjectType.Account.fields.Name.isAccessible() &&
+                   Schema.sObjectType.Account.fields.buildertek__Email_Address__c.isAccessible()){
+                       lstOfRecords = Database.query(String.escapeSingleQuotes(sQuery));
+                   } 
+            }else{
+                lstOfRecords = Database.query(String.escapeSingleQuotes(sQuery));
+            }
 
             for (sObject obj: lstOfRecords) { 
                 System.debug(obj.Id);

@@ -17,6 +17,11 @@
     </head>
 
     <style>
+
+    .dateFormat {
+    display: none;
+    }
+
     .customPopup1 {
     background-color: white;
     border-style: solid;
@@ -147,7 +152,7 @@
     }
 
         function submitQuote() {
-            var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); return false;");
+            var agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); acfsubmintQuote(); multiFiles(); return false;");
             var confirmPromptOptions = {
                 'modalPopupId': 'lightningInfoPopup',
                 'title': 'Confirm',
@@ -314,9 +319,8 @@
 
         }
 
-        function multiFiles(isError) {
-            console.log('errorres--->',isError);
-            if (uploadFileData != undefined && uploadFileData.length > 0 && isError == 'false') {
+        function multiFiles() {
+            if (uploadFileData != undefined && uploadFileData.length > 0) {
                 console.log('uploadFileData @@ ',{uploadFileData});
                 var fileData = uploadFileData[0];
                 var reader = new FileReader();
@@ -458,7 +462,7 @@
 
   <apex:actionStatus id="splashStatus" onstart="startSplash();" onstop="endSplash(); " />
 
-        <apex:actionFunction name="acfsubmintQuote" action="{!submintQuote}" oncomplete="multiFiles('{!iserrorMessage}')" status="splashStatus" rerender="form,iserrorMessage"
+        <apex:actionFunction name="acfsubmintQuote" action="{!submintQuote}" status="splashStatus" rerender="form,iserrorMessage"
         />
         <apex:actionFunction name="fileToBackEnd" action="{!submintQuote}" status="splashStatus" rerender="form,iserrorMessage"
         />
@@ -519,7 +523,7 @@
                 </script>
             </apex:outputPanel>
         </apex:outputPanel>
-        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 50px;">
+        <div class="slds-scope" style="width:80%;margin: 0 auto;">
 
             <apex:outputPanel >
                 <apex:pagemessages id="pageLoadErrorMessage" />
@@ -541,7 +545,8 @@
                             <center>
                                 <b>
                                     <ul>
-                                        <h2 style="font-size: 1.3rem;text-transform: uppercase;text-decoration: underline;margin-top: -25px;">SUBMIT YOUR QUOTE TO {!rfqToVendor.RFQ__r.Name}</h2>
+                                        <h2 style="font-size: 1.8rem; text-transform: uppercase; margin-top: -25px;color: #009beb;">
+                                            RFQ: {!rfqToVendor.RFQ__r.Name}</h2>
                                     </ul>
                                 </b>
                             </center>
@@ -589,7 +594,15 @@
                             <!--<apex:inputField value="{!rfqToVendor.Notes__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c != 'Quote Submitted'}"/>
                             <apex:outputField value="{!rfqToVendor.Notes__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>-->
                             <apex:outputField value="{!rfqToVendor.Notes__c}" />
+                            
+                         <apex:inputField ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.Anticipated_Start_Date__c}" 
+                 rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}" />
+                         <apex:inputField ignoreEditPermissionForRendering="true" style="width: 6rem;" value="{!rfqToVendor.Anticipated_Finish_Date__c}" 
+                 rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}" />
 
+                            
+                            <apex:outputField value="{!rfqToVendor.Anticipated_Start_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
+                            <apex:outputField value="{!rfqToVendor.Anticipated_Finish_Date__c}"  rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}"/>
                             <apex:outputField value="{!rfqToVendor.Submitted_Date__c}" rendered="{!rfqToVendor.Status__c == 'Quote Submitted'}" />
 
                         </apex:pageBlockSection>
@@ -619,8 +632,12 @@
                                     <th scope="col" width="10%">
                                         Estimated Work (Days)
                                     </th>
-                                     <th scope="col" width="23%">
+                                     <th scope="col" width="21%">
                                         Vendor Note
+                                    </th>
+                                    
+                                     <th scope="col" width="2%">
+                                        Public Folder
                                     </th>
                                     <th scope="col" width="4%">
                                         Delete
@@ -629,6 +646,7 @@
                             </thead>
                             <tbody>
                                 <apex:variable value="{!0}" var="rowNum" />
+                                <apex:variable value="{!0}" var="rowNumm" />
                                 <apex:repeat value="{!rfqToVendor.buildertek__Vendor_Items__r}" var="item">
                                     <tr>
                                         <td style="white-space: normal">
@@ -675,12 +693,22 @@
                                             <apex:inputTextArea value="{!item.Vendor_Note__c}" styleClass="slds-input" rendered="{!rfqToVendor.Status__c != 'Quote Submitted' && rfqToVendor.Status__c != 'Awarded' && rfqToVendor.Status__c != 'Accepted'}"
                                             />
                                         </td>
+                                        <td> 
+                                            <center>
+                <apex:outputLink value="{!forceSiteURL}/apex/buildertek__DisplayPublicFolderPage?Id={!rfqlinetofolder[rowNumm]}" target="_blank" disabled="{!rfqlinetofolder[rowNumm] == 'n'}">
+                <apex:image url="{!IF(rfqlinetofolder[rowNumm] == 'n', $Resource.gray_folder_icon, $Resource.blue_folder_icon)}" style="height:40px;"/>
+                </apex:outputLink> 
+                                            </center>
+                
+                                        </td> 
                                         <td>
-                                            <!-- <apex:commandButton styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" value="X" action="{!addNewRowToAccList}" Status="status" immediate="true" />
-                                        -->
+                                            <!-- <apex:commandButton styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" value="X" action="{!addNewRowToAccList}" Status="status" immediate="true" /> -->
+                                       
                                         </td>
 
                                     </tr>
+                                        <apex:variable var="rowNumm" value="{!rowNumm + 1}" />
+
                                 </apex:repeat>
                                 <apex:repeat value="{!wrapList}" var="eachRecord" id="theRepeat">
                                     <tr>
@@ -707,6 +735,9 @@
                                         </td>
                                         <td>
                                             <apex:inputField value="{!eachRecord.record.Vendor_Note__c}" styleClass="slds-input" />
+                                        </td>
+                                        <td>
+                                            <!-- blank space for public folder -->
                                         </td>
                                         <td>
                                             <apex:commandLink styleclass="slds-button slds-button_neutral slds-m-top--small" title="Delete" rerender="form" value="X"
