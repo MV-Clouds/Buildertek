@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
-                        <label class="slds-form-element__label" for="recipients-memo">Memo/Quote</label>
+                        <label class="slds-form-element__label" for="recipients-memo">Memo</label>
                         <div class="slds-form-element__control">
                             <div class="slds-combobox_container slds-has-inline-listbox emailBodyrk" style="padding-left: 2rem;">
                                 <lightning:input aura:id="memoquote" value="{!v.memoquote}" placeholder="Memo" class="slds-size--1-of-1"/>
