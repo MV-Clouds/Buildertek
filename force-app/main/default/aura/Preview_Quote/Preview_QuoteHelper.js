@@ -474,7 +474,7 @@
         component.set("v.showModel",false);
     },
     clearPillValues :function(component,event,heplper){
-        var selectedPillId = event.getSource().get("v.name"); 
+        var selectedPillId = event.getSource().get("v.name");    
         var AllPillsList = component.get("v.selectedfilesFill") || [];    
         var selectedFillIds = component.get("v.selectedFillIds") || [];
     

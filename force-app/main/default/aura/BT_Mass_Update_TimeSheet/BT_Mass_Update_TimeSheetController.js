@@ -1,11 +1,8 @@
 ({
     doInit : function(component, event, helper) {
         component.set("v.Spinner", true);
-        var pageNumber = component.get("v.PageNumber");
-        var pageSize = component.get("v.pageSize");
         window.setTimeout(
             $A.getCallback(function () {
-                console.log('recordId', component.get('v.recordId'));
                 helper.getTimeSheetEntries(component, event, helper);
             }),
             2000
@@ -15,7 +12,6 @@
     onMassUpdate: function(component, event, helper){
         component.set("v.Spinner", true);
         helper.validateTimeSheetEntries(component, event, helper);
-        // helper.updateTimeSheetEntries(component, event, helper);
     },
 
     onAddClick: function(component, event, helper){
@@ -73,5 +69,27 @@
         component.set("v.isCancelModalOpen", false);
     },
 
+    handleLookUpEvent: function (component, event, helper) {
+        var timeSheetEntry = component.get('v.timeSheetEntries');
+        var index = event.getParam("index");
+        var selectedRecord = event.getParam("selectedRecordId");
+        if (event.getParam("fieldName") == 'buildertek__BT_Project__c') {
+            timeSheetEntry[index].buildertek__BT_Project__c = selectedRecord[0];
+        } else if (event.getParam("fieldName") == 'buildertek__Contact__c') {
+            timeSheetEntry[index].buildertek__Contact__c = selectedRecord[0];
+        }
+        component.set('v.timeSheetEntries', timeSheetEntry);
+    },
+
+    clearSelectedHandler: function (component, event, helper) {
+        var timeSheetEntry = component.get('v.timeSheetEntries');
+        var index = event.getSource().get("v.index");
+        if (event.getParam("fieldName") == 'buildertek__BT_Project__c') {
+            timeSheetEntry[index].buildertek__BT_Project__c = '';
+        } else if (event.getParam("fieldName") == 'buildertek__Contact__c') {
+            timeSheetEntry[index].buildertek__Contact__c = '';
+        }
+        component.set('v.timeSheetEntries', timeSheetEntry);
+    },
 
 })

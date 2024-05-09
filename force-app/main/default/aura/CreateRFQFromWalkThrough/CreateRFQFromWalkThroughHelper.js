@@ -9,6 +9,7 @@
 
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
+                console.log('prject id:',result.projectId);
                 $A.get("e.force:closeQuickAction").fire();
                 if (result.Status === 'Success') {
                     component.find('notifLib').showNotice({
@@ -17,10 +18,16 @@
                         "message": result.Message,
                         closeCallback: function () {
                             $A.get('e.force:refreshView').fire();
-                            var event = $A.get('e.force:navigateToSObject');
-                            event.setParams({
-                                'recordId': result.newRecordId
-                            }).fire();
+                            // var event = $A.get('e.force:navigateToSObject');
+                            // event.setParams({
+                            //     'recordId': result.newRecordId
+                            // }).fire();
+                            if(result.projectId){
+                    window.location.href='/lightning/r/buildertek__Project__c/'+result.projectId+'/related/buildertek__RFQs__r/view?'
+
+                            }else{
+                    window.location.href = '/lightning/o/buildertek__RFQ__c/list?';
+                            }
                         }
                     });
                 } else {
@@ -48,12 +55,22 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result: ', result);
+                console.log('prject id:',result.projectId);
                 $A.get("e.force:closeQuickAction").fire();
                 if (result.Status === 'Success') {
                     component.find('notifLib').showNotice({
                         "variant": "success",
                         "header": "Success",
                         "message": result.Message,
+                         closeCallback: function () {
+                            $A.get('e.force:refreshView').fire(); 
+                            if(result.projectId){
+                    window.location.href='/lightning/r/buildertek__Project__c/'+result.projectId+'/related/buildertek__RFQs__r/view?'
+
+                            }else{
+                    window.location.href = '/lightning/o/buildertek__RFQ__c/list?';
+                            }
+                        }
                     });
                 } else {
                     component.find('notifLib').showNotice({

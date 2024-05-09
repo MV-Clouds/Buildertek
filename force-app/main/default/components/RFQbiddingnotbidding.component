@@ -1,0 +1,12 @@
+<apex:component controller="RFQbiddingnotbidding" access="global">
+    <apex:attribute name="rfqToVendorId" type="String" description="RFQ To Vendor Id" assignTo="{!recordId}"/>
+
+    <div style="display:flex; padding:20px; font-weight:bold; margin:auto; max-width:fit-content;" >
+                        <p style="border-radius:10px; background:6699CC; color:white;">
+                            <a href="{!$Setup.buildertek__RFQ_Template_Settings__c.buildertek__Sites_URL__c}/buildertek__rfqresponse?id={!recordId}" style="background:{!colorr}; color:#fff;font-size: 14px; padding: 11px 50px;border-radius: 32px; text-decoration: none; margin:0px 20px">Bidding</a>
+                        </p>
+                        <p style="border-radius:10px; background:6699CC; color:white;">
+                            <a href="{!$Setup.buildertek__RFQ_Template_Settings__c.buildertek__Sites_URL__c}/buildertek__rfqreject?id={!recordId}" style="background:{!colorr}; color:#fff;font-size: 14px; padding: 11px 50px;border-radius: 32px; text-decoration: none; margin:0px 20px">Not Bidding</a>
+                        </p>
+                    </div>
+</apex:component>

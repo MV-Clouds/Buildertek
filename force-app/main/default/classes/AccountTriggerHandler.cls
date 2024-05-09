@@ -66,56 +66,67 @@ public with sharing class AccountTriggerHandler{
     }
 
     public void OnAfterUpdate(Account[] oldAccount, Account[] updatedAccount, Map<ID, Account> newAccountMap, Map<Id, Account> oldAccountMap){
-        Map<Id, Account> accountMap = new Map<Id, Account>();
-        Set<Id> accountIds = new Set<Id>();
-        List<Account> updatedWorkCompAccountList = new List<Account>();
-        List<Account> updatedLiabilityAccountList = new List<Account>();
-        
-        for (Account acc : updatedAccount){
-            if (oldAccountMap.get(acc.Id).buildertek__Trade_Type_Lookup__c != acc.buildertek__Trade_Type_Lookup__c){
-                accountMap.put(acc.Id, acc);
+        try {
+            Map<Id, Account> accountMap = new Map<Id, Account>();
+            Set<Id> accountIds = new Set<Id>();
+            List<Account> updatedWorkCompAccountList = new List<Account>();
+            List<Account> updatedLiabilityAccountList = new List<Account>();
+            List<String> abortAccountJobList = new List<String>();
+            for (Account acc : updatedAccount){
+                if (oldAccountMap.get(acc.Id).buildertek__Trade_Type_Lookup__c != acc.buildertek__Trade_Type_Lookup__c){
+                    accountMap.put(acc.Id, acc);
+                }
+                if(oldAccountMap.get(acc.Id).buildertek__Qualification_Stage__c != acc.buildertek__Qualification_Stage__c && acc.buildertek__Qualification_Stage__c == 'Qualified'){
+                    accountIds.add(acc.Id); 
+                }
+                
+                if ((oldAccountMap.get(acc.Id).buildertek__Worker_s_Compensation_License_Expiration__c != acc.buildertek__Worker_s_Compensation_License_Expiration__c) && (acc.buildertek__Worker_s_Compensation_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c))) {
+                    updatedWorkCompAccountList.add(acc);
+                }
+
+                if ((oldAccountMap.get(acc.Id).buildertek__General_Liability_License_Expiration__c != acc.buildertek__General_Liability_License_Expiration__c) && (acc.buildertek__General_Liability_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c))) {
+                    updatedLiabilityAccountList.add(acc);
+                }
+                
+                if (acc.buildertek__Worker_s_Compensation_License_Expiration__c == null ) {
+                    abortAccountJobList.add('EmailJob-Worker License Exp-' + acc.Id);
+                }
+
+                if (acc.buildertek__General_Liability_License_Expiration__c == null ) {
+                    abortAccountJobList.add('EmailJob-Liability License Exp-' + acc.Id);
+                }
+
             }
-            if(oldAccountMap.get(acc.Id).buildertek__Qualification_Stage__c != acc.buildertek__Qualification_Stage__c 
-                    && acc.buildertek__Qualification_Stage__c == 'Qualified'){
-                accountIds.add(acc.Id); 
+            if (abortAccountJobList.size() > 0) {
+                abortJobIfLicenseExpirationIsNull(abortAccountJobList);
+            }
+
+            if(accountIds.size() > 0){
+                //QualifiedEmailController.sendEmail(accountIds);   
+            }
+            List<buildertek__Project_Task__c> projectTaskList = [Select Id, Name, buildertek__Contractor__c
+                                                                FROM buildertek__Project_Task__c
+                                                                WHERE buildertek__Contractor__c IN :accountMap.keySet()];
+            for (buildertek__Project_Task__c projectTask : projectTaskList){
+                projectTask.buildertek__Trade_Type__c = accountMap.get(projectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c;
+            }
+            ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
+            update projectTaskList;
+            ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
+            ProjectTaskTriggerHandler.isFirstTime = false;
+            if(updatedWorkCompAccountList.size() > 0){
+                scheduleEmailDate(updatedWorkCompAccountList, 'Worker License Exp');
             }
             
-            if ((oldAccountMap.get(acc.Id).buildertek__Worker_s_Compensation_License_Expiration__c != acc.buildertek__Worker_s_Compensation_License_Expiration__c) && (acc.buildertek__Worker_s_Compensation_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c))) {
-                updatedWorkCompAccountList.add(acc);
+            if (updatedLiabilityAccountList.size() > 0){
+                scheduleEmailDate(updatedLiabilityAccountList, 'Liability License Exp');
             }
-
-            if ((oldAccountMap.get(acc.Id).buildertek__General_Liability_License_Expiration__c != acc.buildertek__General_Liability_License_Expiration__c) && (acc.buildertek__General_Liability_License_Expiration__c != null || (acc.buildertek__Email_Address__c != null && oldAccountMap.get(acc.Id).buildertek__Email_Address__c != acc.buildertek__Email_Address__c))) {
-                updatedLiabilityAccountList.add(acc);
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
             }
-            
-            if (acc.buildertek__Worker_s_Compensation_License_Expiration__c == null ) {
-                abortJobIfLicenseExpirationIsNull(acc, 'Worker License Exp');
-            }
-
-            if (acc.buildertek__General_Liability_License_Expiration__c == null ) {
-                abortJobIfLicenseExpirationIsNull(acc, 'Liability License Exp');
-            }
-
-        }
-        if(accountIds.size() > 0){
-            //QualifiedEmailController.sendEmail(accountIds);   
-        }
-        List<buildertek__Project_Task__c> projectTaskList = [Select Id, Name, buildertek__Contractor__c
-                                                             FROM buildertek__Project_Task__c
-                                                             WHERE buildertek__Contractor__c IN :accountMap.keySet()];
-        for (buildertek__Project_Task__c projectTask : projectTaskList){
-            projectTask.buildertek__Trade_Type__c = accountMap.get(projectTask.buildertek__Contractor__c).buildertek__Trade_Type_Lookup__c;
-        }
-        ProjectTaskTriggerHandler.blnSkipTaskTrigger = true;
-        update projectTaskList;
-        ProjectTaskTriggerHandler.blnSkipTaskTrigger = false;
-        ProjectTaskTriggerHandler.isFirstTime = false;
-        if(updatedWorkCompAccountList.size() > 0){
-            scheduleEmailDate(updatedWorkCompAccountList, 'Worker License Exp');
-        }
-        
-        if (updatedLiabilityAccountList.size() > 0){
-            scheduleEmailDate(updatedLiabilityAccountList, 'Liability License Exp');
         }
     }
 
@@ -174,12 +185,12 @@ public with sharing class AccountTriggerHandler{
         }
     }
     
-    private void abortJobIfLicenseExpirationIsNull(Account acc, String licenseType) {
-        String jobName = 'EmailJob-' + licenseType + '-' + acc.Id;
-        List<CronTrigger> jobs = [SELECT Id FROM CronTrigger WHERE CronJobDetail.Name = :jobName LIMIT 1];
-
-        if (jobs.size() > 0) {
-            System.abortJob(jobs[0].Id);
+    private void abortJobIfLicenseExpirationIsNull(List<String> jobNameList) {
+        List<CronTrigger> jobs = [SELECT Id FROM CronTrigger WHERE CronJobDetail.Name In :jobNameList];
+        if(jobs.size() > 0) {
+            for (CronTrigger job : jobs) {
+                System.abortJob(job.Id);
+            }
         }
     }
     
