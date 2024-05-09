@@ -40,8 +40,12 @@
             padding-left: 3rem;
         }
         .slds-modal__container{
-            width: 100% !important;
+            width: 85% !important;
             max-width: 87rem !important;
+        }
+        .slds-rich-text-editor {
+            width: 80rem;
+            max-width: -webkit-fill-available;
         }
     </aura:html>
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
@@ -51,7 +55,7 @@
         <div class="slds-modal__container">
             <!-- Modal/Popup Box Header Starts here-->
             <header class="slds-modal__header">
-                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Payment Requestt</h2>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Payment Request</h2>
             </header>
             <!--Modal/Popup Box Body Starts here-->
             <div class="slds-modal__content slds-p-around_medium slds-scrollable--y" id="modal-content-id-1">

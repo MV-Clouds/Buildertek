@@ -52,6 +52,7 @@
         var recordId = component.get('v.recordId');
         subject += ' (Ref No: ' + recordId + ')';
         console.log('subject: ' + subject);
+ 
 
         var body = component.get('v.templateBody');
         var memo = component.get('v.memoquote');
@@ -85,7 +86,19 @@
 
 
 
+
+
         // helper.sendEmailHelper(component, toAddress, ccAddress, subject, body);
+        if(component.get('v.subject') == ''){
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    title: "Error!",
+                    message: "Please add Subject",
+                    type: "error"
+                });
+                toastEvent.fire();
+        }
+        else{       
         var action = component.get("c.sendEmailtoContact");
         action.setParams({
             recordId: recordId,
@@ -121,6 +134,7 @@
             }
         });
         $A.enqueueAction(action);
+    }
     },
 
     onAddEmail : function(component, event, helper){

@@ -47,6 +47,8 @@ public with sharing class SendPaymentRequestController {
             return 'Error: The total size of the attachments exceeds the limit of 3MB. Please remove some attachments and try again.';
         }
 
+        body = body.replaceAll('<p><br></p>', '<br>');
+        body = body.replaceAll('<p>', '<p style="margin-top: 0.1em; margin-bottom: 0em; ">');
 
 
 
