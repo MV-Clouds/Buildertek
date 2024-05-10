@@ -34,11 +34,11 @@
             },
             productFamilyList : [],
             ProductList : [],
-            productOptionList : [],            
+            productOptionList : [],
         };
 
         return budgetLineWrapper;
-        
+
     },
 
     createBudgetItemWrapperList : function(component, event, helper) {
@@ -49,7 +49,7 @@
         }
         console.log('budgetLineWrapperList: ', budgetLineWrapperList);
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
-        
+
 
     },
 
@@ -70,7 +70,7 @@
 
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
 
         console.log('Helper....');
         var action = component.get("c.getProductfamilyRecords");
@@ -84,7 +84,7 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 console.log('result', result);
-                
+
                 var familySet = new Set();
                 for(var i = 0; i < result.length; i++) {
                     familySet.add(result[i].productfamilyvalues);
@@ -105,7 +105,7 @@
                     }
                 });
                 var budgetLineWrapperList = component.get('v.budgetLineWrapperList');
-                
+
                 budgetLineWrapperList[index].productFamilyList = familyList;
                 budgetLineWrapperList[index].selectedLookUpRecord = {};
                 budgetLineWrapperList[index].BudgetLine = {
@@ -141,7 +141,7 @@
                     "action": "HIDE"
                 }).fire();
             }
-        }); 
+        });
         $A.enqueueAction(action);
 
         // var action = component.get("c.ProductsthroughPB");
@@ -188,7 +188,7 @@
         //                     value: productList[i].Id
         //                 });
         //             }
-        //         } 
+        //         }
         //         budgetLineWrapperList[index].productOptionList = productOptionList;
         //         budgetLineWrapperList[index].BudgetLine = {
         //             buildertek__Budget__c : component.get("v.recordId"),
@@ -204,14 +204,14 @@
         //         console.log('budgetLineWrapperList: ', budgetLineWrapperList);
         //         $A.get("e.c:BT_SpinnerEvent").setParams({
         //             "action": "HIDE"
-        //         }).fire(); 
+        //         }).fire();
         //     }
         // });
         // $A.enqueueAction(action);
     },
 
     getProduct : function(component, event, helper, index) {
-        
+
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         budgetLineWrapperList[index].selectedLookUpRecord = {}
         budgetLineWrapperList[index].BudgetLine = {
@@ -228,7 +228,7 @@
         component.set("v.budgetLineWrapperList", budgetLineWrapperList);
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "HIDE"
-        }).fire(); 
+        }).fire();
     },
 
     getAccounts : function(component, event, helper) {
@@ -284,7 +284,7 @@
     //     component.set("v.budgetLineWrapperList", budgetlineWrapperList);
     //     $A.get("e.c:BT_SpinnerEvent").setParams({
     //         "action": "HIDE"
-    //     }).fire(); 
+    //     }).fire();
     // },
 
     saveBudgetLine : function(component, event, helper,budgetLineList) {
@@ -306,12 +306,12 @@
                 toast.fire();
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
-                }).fire();     
+                }).fire();
                 helper.closeNrefresh(component, event, helper);
             } else {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
-                }).fire(); 
+                }).fire();
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title : 'Error',
@@ -366,8 +366,8 @@
                 workspaceAPI.closeTab({
                     tabId: focusedTabId
                 });
-            }) 
-         
+            })
+
             .catch(function (error) {
                 var navEvt = $A.get("e.force:navigateToSObject");
                 navEvt.setParams({
@@ -388,8 +388,7 @@
 
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
-
+        }).fire();
 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         console.log({budgetLineWrapperList});
@@ -430,9 +429,9 @@
                         }
                     }
 
-                    
-                   
-                    
+
+
+
                     component.set("v.budgetLineWrapperList" , budgetLineWrapperList);
                 }
 
@@ -454,15 +453,15 @@
                                 Product2Id: productWrapper.Id
                             };
                             setBudgetLineWrapper(createObj, index);
-                        }          
+                        }
                     })
 
                 }
             }
-            
+
         });
         $A.enqueueAction(action);
-    
+
     },
 
     getPricebooks:function(component, event, helper) {
@@ -481,7 +480,7 @@
 
                 var pricebookOptions = [];
                 var budgetlineWrapperList = component.get("v.budgetLineWrapperList");
-                
+
                 pricebookOptions.push({ key: "", value: "None" });
                 for(var key in result[0].priceWrapList){
                     pricebookOptions.push({key: result[0].priceWrapList[key].Id, value: result[0].priceWrapList[key].Name});
@@ -494,18 +493,18 @@
                         console.log(index);
                         value.pricebookEntryId=projectHavePricebook.Id;
                         budgetlineWrapperList.push(value);
-                     }); 
+                     });
                 }
                 component.set("v.pricebookOptions", pricebookOptions);
                 component.set("v.budgetlineWrapperList", budgetlineWrapperList);
 
 
                 console.log(component.get('v.budgetLineWrapperList'));
-               
-                
+
+
 
                 for(var key in budgetlineWrapperList){
-                    if(budgetlineWrapperList[key].pricebookEntryId != undefined){                            
+                    if(budgetlineWrapperList[key].pricebookEntryId != undefined){
                         helper.getFamily(component, event, helper, budgetlineWrapperList[key].pricebookEntryId, key);
                     }
                 }
@@ -513,6 +512,6 @@
         });
         $A.enqueueAction(action);
     },
-    
+
 
 })
