@@ -2,6 +2,11 @@ public without sharing class importScheduleLineController {
     @AuraEnabled
     public static string insertData(String recordId, String strFileData){
         String returnresponse = '';
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Include_Weekend__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+        Boolean checkIncludeWeekendSettings = false;
+        if (adminInterfaceNodeConfigurations.size() > 0) {
+            checkIncludeWeekendSettings = adminInterfaceNodeConfigurations[0].buildertek__Include_Weekend__c;
+        }
         System.debug('strFileData: ' + strFileData);
         Map<String, buildertek__Project_Task__c> projectInsertTaskMap = new Map<String, buildertek__Project_Task__c>();
         List<fieldWrapper> datalist = (List<fieldWrapper>)JSON.deserialize(strFileData, List<fieldWrapper>.class);
@@ -32,14 +37,14 @@ public without sharing class importScheduleLineController {
         }
 
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
-        
+
         Map<String, buildertek__Cost_Codes__c> existingCostCodeMap = new Map<String, buildertek__Cost_Codes__c>();
         List<buildertek__Cost_Codes__c> costCodeList =  [SELECT Id, Name FROM buildertek__Cost_Codes__c];
         for (buildertek__Cost_Codes__c costCodeRec : costCodeList) {
             existingCostCodeMap.put(costCodeRec.Name, costCodeRec);
         }
         System.debug('existingCostCodeMap: ' + existingCostCodeMap);
-        
+
         Map<String, buildertek__Trade_Type__c> existingTradeTypeMap = new Map<String, buildertek__Trade_Type__c>();
         List<buildertek__Trade_Type__c> tradeTypeList =  [SELECT Id, Name FROM buildertek__Trade_Type__c];
         for (buildertek__Trade_Type__c tradeTypeRec : tradeTypeList) {
@@ -58,7 +63,7 @@ public without sharing class importScheduleLineController {
         for (Account vendorRec : vendorList) {
             vendorMap.put(vendorRec.Name, vendorRec);
         }
-        
+
         Map<String, buildertek__Category__c> existingCategoryMap = new Map<String, buildertek__Category__c>();
         List<buildertek__Category__c> categoryList =  [SELECT Id, Name FROM buildertek__Category__c];
         for (buildertek__Category__c categoryRec : categoryList) {
@@ -89,11 +94,11 @@ public without sharing class importScheduleLineController {
                     schItem.buildertek__Trade_Type__c = existingTradeTypeMap.get(wrapper.tradeType).Id;
                     System.debug('TradeType: Mapped Value' + existingTradeTypeMap.get(wrapper.tradeType).Id);
                 }
-                
+
                 if (wrapper.Phase2 != null && String.isNotBlank(wrapper.Phase2) && groupingMap.containsKey(wrapper.Phase2)) {
                     schItem.buildertek__BT_Grouping__c = groupingMap.get(wrapper.Phase2).Id;
                 }
-                
+
                 if (wrapper.Phase3 != null && String.isNotBlank(wrapper.Phase3) && groupingMap.containsKey(wrapper.Phase3)) {
                     schItem.buildertek__BT_Phase3__c = groupingMap.get(wrapper.Phase3).Id;
                 }
@@ -101,7 +106,7 @@ public without sharing class importScheduleLineController {
                 if (wrapper.Vendor != null && String.isNotBlank(wrapper.Vendor) && vendorMap.containsKey(wrapper.Vendor)) {
                     schItem.buildertek__Contractor__c = vendorMap.get(wrapper.Vendor).Id;
                 }
-                
+
                 if (wrapper.Category != null && String.isNotBlank(wrapper.Category) && existingCategoryMap.containsKey(wrapper.Category)) {
                     schItem.buildertek__BT_Category__c = existingCategoryMap.get(wrapper.Category).Id;
                 }
@@ -149,7 +154,7 @@ public without sharing class importScheduleLineController {
 
                 schItem.buildertek__Duration__c = wrapper.Duration;
                 // schItem.buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(wrapper.Duration)*(24 * 60 * 60 * 1000L)).date();
-                schItem.buildertek__Finish__c = addDaysSkippingWeekends(sDate, Integer.valueOf(wrapper.Duration));
+                schItem.buildertek__Finish__c = checkIncludeWeekendSettings ? sDate.addDays(Integer.valueOf(wrapper.Duration) - 1) :  addDaysSkippingWeekends(sDate, Integer.valueOf(wrapper.Duration));
                 System.debug('schItem.buildertek__Finish__c neo '+schItem.buildertek__Finish__c);
 
                 schItem.buildertek__Original_Start_Date__c = startDate;
@@ -199,18 +204,15 @@ public without sharing class importScheduleLineController {
                 for (String key : newProjectTaskMap.keySet()) {
                     System.debug('Old newProjectTaskMap.get(key) ==> '+newProjectTaskMap.get(key));
                     if (newProjectTaskMap.get(key).buildertek__Dependency__c != null) {
-                        newProjectTaskMap.get(key).buildertek__Start__c = skipWeekend(newProjectTaskMap.get(newProjectTaskMap.get(key).buildertek__Dependency__c).buildertek__Finish__c.adddays(1));
+                        newProjectTaskMap.get(key).buildertek__Start__c = checkIncludeWeekendSettings ? newProjectTaskMap.get(newProjectTaskMap.get(key).buildertek__Dependency__c).buildertek__Finish__c.adddays(1) : skipWeekend(newProjectTaskMap.get(newProjectTaskMap.get(key).buildertek__Dependency__c).buildertek__Finish__c.adddays(1));
 
                         Date sDate = Date.newInstance(newProjectTaskMap.get(key).buildertek__Start__c.year(), newProjectTaskMap.get(key).buildertek__Start__c.month(), newProjectTaskMap.get(key).buildertek__Start__c.day());
                         // newProjectTaskMap.get(key).buildertek__Finish__c = System.BusinessHours.add(businessHourId, sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c)*(24 * 60 * 60 * 1000L)).date();
-                        newProjectTaskMap.get(key).buildertek__Finish__c = addDaysSkippingWeekends(sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c));
+                        newProjectTaskMap.get(key).buildertek__Finish__c = checkIncludeWeekendSettings ? sDate.addDays(Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c) - 1) : addDaysSkippingWeekends(sDate, Integer.valueOf(newProjectTaskMap.get(key).buildertek__Duration__c));
                         System.debug('newProjectTaskMap.get(key).buildertek__Finish__c '+newProjectTaskMap.get(key).buildertek__Finish__c);
                     }
                 }
 
-                for (String key : newProjectTaskMap.keySet()) {
-                    System.debug('New newProjectTaskMap.get(key) ==> '+newProjectTaskMap.get(key));
-                }
                 update newProjectTaskMap.values();
 
                 returnresponse = 'SUCCESS';

@@ -30,6 +30,6 @@ public with sharing class ConfigureScheduleFromSetting {
         adminInterfaceNodeConfigurations.buildertek__Include_Weekend__c =includeweekend;
 
         update adminInterfaceNodeConfigurations;
-        ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Updated Successfully'));
+        ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM,'Updated Successfully Please Note - If include weekend option is changed then please update the business hours from setup accordingly.'));
     }
 }
