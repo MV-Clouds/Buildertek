@@ -1,11 +1,11 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getFields from '@salesforce/apex/New_WTLine_Controller.getFieldSet';
-import getRecordType from '@salesforce/apex/New_WTLine_Controller.getRecordType';
-import saveData from '@salesforce/apex/New_WTLine_Controller.saveData';
-import getPricebookList from '@salesforce/apex/New_WTLine_Controller.getPricebookList';
-import getProductfamilyRecords from '@salesforce/apex/New_WTLine_Controller.getProductfamilyRecords';
-import getProductsthroughPriceBook2 from '@salesforce/apex/New_WTLine_Controller.getProductsthroughPriceBook2';
+import getFields from '@salesforce/apex/walkThroughController.getFieldSet';
+import getRecordType from '@salesforce/apex/walkThroughController.getRecordType';
+import saveData from '@salesforce/apex/walkThroughController.saveData';
+import getPricebookList from '@salesforce/apex/walkThroughController.getPricebookList';
+import getProductfamilyRecords from '@salesforce/apex/walkThroughController.getProductfamilyRecords';
+import getProductsthroughPriceBook2 from '@salesforce/apex/walkThroughController.getProductsthroughPriceBook2';
 
 export default class NewWalkThroughLineCmp extends LightningElement {
 

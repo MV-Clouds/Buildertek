@@ -1,17 +1,17 @@
 import { api, LightningElement, track, wire } from 'lwc';
+import { NavigationMixin } from "lightning/navigation";
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getCategoryRecords from '@salesforce/apex/walkThroughController.getCategoryRecords';
 import getFieldDetails from '@salesforce/apex/walkThroughController.getFieldDetails';
-import fetchWalkthroughLineData from '@salesforce/apex/walkThroughController.fetchWalkthroughLineData';
-import getFieldSet from '@salesforce/apex/walkThroughController.getFieldSetValues';
+import fetchDataAndFieldSetValues from '@salesforce/apex/walkThroughController.fetchDataAndFieldSetValues';
 import updateRecord from '@salesforce/apex/walkThroughController.updateRecord';
 import deleteRecord from '@salesforce/apex/walkThroughController.deleteRecord';
-import { NavigationMixin } from "lightning/navigation";
-import { subscribe, unsubscribe, onError } from 'lightning/empApi';
+import getSharinPixSetting from '@salesforce/apex/walkThroughController.getSharinPixSetting';
 
 const actions = [
-    { label: 'View', name: 'view'},
+    { label: 'View', name: 'view' },
     { label: 'Edit', name: 'edit' },
-    { label: 'File Upload', name: 'na' },
+    { label: 'File Upload', name: 'fileupload' },
     { label: 'Delete', name: 'delete' }
 ];
 
@@ -37,7 +37,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     @track showNewModel = false;
     @track showFileUploadModel = false;
 
-    @track isLoading = false;
+    @track isLoading = true;
 
     // @track isButtonVisible = false;
     @track originalData = [];
@@ -45,49 +45,73 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
 
     @track field_container = false;
 
-    subscription = {};
-    CHANNEL_NAME = '/event/Refresh_Related_List__e';
+    SharinPixIsEnable;
+    SharinPixPreSubValue;
+    SharinPixPostSubValue;
 
     connectedCallback() {
         this.recordId = this.getParameterByName();
-        console.log('record idd in connected callback==>', this.recordId);
+        this.getCategoryData();
+        this.getAdminSettingForSharinPix();
+    }
 
+    getCategoryData(){
         getCategoryRecords()
             .then((result) => {
                 this.categories = result;
-                console.log('len-->', result.length);
                 if (result.length > 0) {
                     this.selectedCategory = result[0].Id;
                     this.selectedCategoryLabel = result[0].Name;
                     this.assignFirstCategory();
+                } else {
+                    this.isLoading = false;
                 }
             })
             .catch((error) => {
                 console.error(error);
+                this.isLoading = false;
             });
+    }
 
-        subscribe(this.CHANNEL_NAME, -1, this.refreshList).then(response => {
-            this.subscription = response;
-        });
-        onError(error => {
-            console.error('Server Error--->' + error);
-        });
+    getAdminSettingForSharinPix() {
+        getSharinPixSetting()
+            .then((result) => {
+                if (result != null) {
+                    this.SharinPixIsEnable = result[0].buildertek__SharinPix_Feature__c;
+                    this.SharinPixPreSubValue = result[0].buildertek__SharinPix_Pre_Sub_Token__c;
+                    this.SharinPixPostSubValue = result[0].buildertek__SharinPix_Post_Sub_Token__c;
+                } else {
+                    this.SharinPixIsEnable = false;
+                }
+            })
+            .catch((error) => {
+                console.log('error-->', error);
+            })
     }
 
     assignFirstCategory() {
-        this.isLoading = true;
+        const selectedCategoryLabel = this.selectedCategoryLabel;
+
         getFieldDetails({ objectName: 'buildertek__Walk_Through_List__c', recordId: this.recordId })
             .then((result) => {
                 console.log('result-->', result);
-                this.fieldDetails = result.filter(field => field.fieldName.includes(this.selectedCategoryLabel)).map(field => ({
+                this.fieldDetails = result.filter(field => {
+                    const lowerCaseFieldName = field.fieldName.toLowerCase();
+                    const lowerCaseSelectedCategoryLabel = selectedCategoryLabel.replace(/\s+/g, '_').toLowerCase();
+                    return lowerCaseFieldName.includes(lowerCaseSelectedCategoryLabel);
+                }).map(field => ({
                     fieldLabel: field.fieldLabel,
                     fieldType: this.getFieldValue(field.fieldType),
                     fieldName: field.fieldName,
-                    fieldValue: field.fieldValue || '',
-                    isPicklist: this.returnTrueOrFalse(field.fieldType),
+                    fieldValue: field.fieldValue ? this.changefieldvalue(field.fieldValue, field.fieldType) : '',
+                    isPicklist: this.returnTrueOrFalseForPicklist(field.fieldType),
+                    isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
+                    isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
+                    isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
                     picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
                 }));
                 this.field_container = true;
+                console.log('this.fieldDetails-->', this.fieldDetails);
                 this.originalData = this.fieldDetails;
                 this.dataAvailable = true;
                 this.getRelatedRecords();
@@ -107,12 +131,19 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         getFieldDetails({ objectName: 'buildertek__Walk_Through_List__c', recordId: this.recordId })
             .then((result) => {
                 console.log('result-->', result);
-                this.fieldDetails = result.filter(field => field.fieldName.includes(selectedCategoryLabel)).map(field => ({
+                this.fieldDetails = result.filter(field => {
+                    const lowerCaseFieldName = field.fieldName.toLowerCase();
+                    const lowerCaseSelectedCategoryLabel = selectedCategoryLabel.replace(/\s+/g, '_').toLowerCase();
+                    return lowerCaseFieldName.includes(lowerCaseSelectedCategoryLabel);
+                }).map(field => ({
                     fieldLabel: field.fieldLabel,
                     fieldType: this.getFieldValue(field.fieldType),
                     fieldName: field.fieldName,
-                    fieldValue: field.fieldValue || '',
-                    isPicklist: this.returnTrueOrFalse(field.fieldType),
+                    fieldValue: field.fieldValue ? this.changefieldvalue(field.fieldValue, field.fieldType) : '',
+                    isPicklist: this.returnTrueOrFalseForPicklist(field.fieldType),
+                    isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
+                    isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
+                    isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
                     picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
                 }));
                 this.field_container = true;
@@ -151,9 +182,13 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
 
     getFieldValue(field) {
         if (field === 'DOUBLE' || field === 'INTEGER') {
-            return 'NUMBER'; // Return number as is
+            return 'NUMBER';
         } else if (field === 'STRING') {
-            return 'TEXT'; // Return text or empty string for other types
+            return 'TEXT';
+        } else if (field === 'BOOLEAN') {
+            return 'CHECKBOX';
+        } else if (field === 'DATETIME') {
+            return 'DATETIME-LOCAL';
         } else {
             return field;
         }
@@ -165,12 +200,19 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         getFieldDetails({ objectName: 'buildertek__Walk_Through_List__c', recordId: this.recordId })
             .then((result) => {
                 console.log('result-->', result);
-                this.fieldDetails = result.filter(field => field.fieldName.includes(selectedCategoryLabel)).map(field => ({
+                this.fieldDetails = result.filter(field => {
+                    const lowerCaseFieldName = field.fieldName.toLowerCase();
+                    const lowerCaseSelectedCategoryLabel = selectedCategoryLabel.replace(/\s+/g, '_').toLowerCase();
+                    return lowerCaseFieldName.includes(lowerCaseSelectedCategoryLabel);
+                }).map(field => ({
                     fieldLabel: field.fieldLabel,
                     fieldType: this.getFieldValue(field.fieldType),
                     fieldName: field.fieldName,
-                    fieldValue: field.fieldValue || '',
-                    isPicklist: this.returnTrueOrFalse(field.fieldType),
+                    fieldValue: field.fieldValue ? this.changefieldvalue(field.fieldValue, field.fieldType) : '',
+                    isPicklist: this.returnTrueOrFalseForPicklist(field.fieldType),
+                    isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
+                    isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
+                    isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
                     picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
                 }));
                 this.field_container = true;
@@ -184,11 +226,52 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             });
     }
 
-    returnTrueOrFalse(field) {
+    returnTrueOrFalseForPicklist(field) {
         if (field === 'PICKLIST') {
             return true;
         } else {
             return false;
+        }
+    }
+
+    returnTrueOrFalseForCheckbox(field) {
+        if (field === 'BOOLEAN') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    returnTrueOrFalseForDateTime(field) {
+        if (field === 'DATE' || field === 'DATETIME' || field === 'TIME') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    returnTrueOrFalseForRegular(field) {
+        if (field === 'DATE' || field === 'PICKLIST' || field === 'BOOLEAN' || field === 'DATETIME' || field === 'TIME') {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    changefieldvalue(fieldValue, fieldType) {
+        if (fieldType == 'DATETIME') {
+            let datetimeValue = '2024-05-15T19:12:00.000Z';
+            let datetimeLocalValue = datetimeValue.slice(0, -1);
+            return datetimeLocalValue;
+        } else if (fieldType == 'TIME') {
+            let timeValue = fieldValue;
+            let date = new Date(timeValue);
+            let hours = date.getHours().toString().padStart(2, '0');
+            let minutes = date.getMinutes().toString().padStart(2, '0');
+            let timeString = hours + ':' + minutes;
+            return timeString;
+        } else {
+            return fieldValue;
         }
     }
 
@@ -211,6 +294,10 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                 .datatable_class .slds-cell-fixed{
                     background: #0678FF1A !important;
                 }
+
+                .slds-dropdown_length-with-icon-10{
+                    max-height: 55vh !important;
+                }
             `;
 
             body.appendChild(style);
@@ -218,22 +305,23 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         }
     }
 
-    refreshList = () => {
-        this.getRelatedRecords();
-    }
-
-    disconnectedCallback() {
-        unsubscribe(this.subscription, () => {
-            console.log('Unsubscribed Channel');
-        });
-    }
-
     getRelatedRecords() {
         this.isLoading = true;
-        fetchWalkthroughLineData({ wtRecordId: this.recordId, categoryId: this.selectedCategory })
+        fetchDataAndFieldSetValues({
+            wtRecordId: this.recordId,
+            categoryId: this.selectedCategory,
+            sObjectName: 'buildertek__Walk_Through_Line_Items__c',
+            fieldSetName: 'buildertek__FieldsForDT'
+        })
             .then(result => {
-                if (result.length > 0) {
-                    this.data = result;
+                console.log('result', result.FieldSetValues);
+                let cols = []; result.FieldSetValues.forEach(currentItem => {
+                    let col = { label: currentItem.label, fieldName: currentItem.name, type: currentItem.type };
+                    cols.push(col);
+                }); cols.push({ type: 'action', typeAttributes: { rowActions: actions } })
+                this.columns = cols;
+                if (result.WalkthroughLineItems.length > 0) {
+                    this.data = result.WalkthroughLineItems;
                     this.error = undefined;
                     this.isColumnsDataAvailable = true;
                 } else {
@@ -249,40 +337,21 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                 this.isLoading = false;
             });
     }
-
-    @wire(getFieldSet, { sObjectName: 'buildertek__Walk_Through_Line_Items__c', fieldSetName: 'buildertek__FieldsForDT' })
-    wiredFields({ error, data }) {
-        if (data) {
-            data = JSON.parse(data);
-            let cols = [];
-            data.forEach(currentItem => {
-                let col = { label: currentItem.label, fieldName: currentItem.name, type: currentItem.type };
-                cols.push(col);
-            });
-            cols.push({ type: 'action', typeAttributes: { rowActions: actions } })
-            this.columns = cols;
-        } else if (error) {
-            console.log(error);
-            this.error = error;
-            this.columns = undefined;
-        }
-    }
-
+    
     handleRowAction(event) {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
         const recordId = row.Id;
+        const sharinPixToken = row.buildertek__SharinPix_Token__c;
         switch (actionName) {
             case 'edit':
                 this.openEditModel(recordId);
                 break;
-            case 'na':
-                this.openfileattachmodal(recordId);
-                console.log('na is pressed');
+            case 'fileupload':
+                this.openfileattachmodal(recordId, sharinPixToken);
                 break;
             case 'delete':
                 this.deleteChild(recordId);
-                console.log('delete is pressed');
                 break;
             case 'view':
                 this.navigateToRecordViewPage(recordId);
@@ -303,7 +372,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                 console.error('Error deleting record:', error);
                 this.isLoading = false;
             });
-        }
+    }
 
     navigateToRecordViewPage(recordId) {
         this[NavigationMixin.Navigate]({
@@ -315,11 +384,25 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         });
     }
 
-
-    openfileattachmodal(recordId) {
-        console.log('recordId-->', recordId);
-        this.showFileUploadModel = true;
-        this.wtlId = recordId;
+    openfileattachmodal(recordId, sharinPixToken) {
+        if (this.SharinPixIsEnable == true) {
+            if (sharinPixToken != undefined) {
+                console.log('SharingPix Token---> ', this.SharinPixPreSubValue + sharinPixToken + this.SharinPixPostSubValue);
+                const SharinPixUrl = this.SharinPixPreSubValue + sharinPixToken + this.SharinPixPostSubValue;
+                const config = {
+                    type: 'standard__webPage',
+                    attributes: {
+                        url: SharinPixUrl
+                    }
+                };
+                this[NavigationMixin.Navigate](config);
+            } else {
+                this.showToast('Error', 'Token is missing, please enter the token first.', 'error');
+            }
+        } else {
+            this.showFileUploadModel = true;
+            this.wtlId = recordId;
+        }
     }
 
     handleUploadFinished(event) {
@@ -358,7 +441,13 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     inputValueIsChanged(event) {
         console.log('input value is changed');
         const fieldName = event.target.dataset.fieldname;
-        const changedValue = event.target.value;
+        const fieldType = event.target.dataset.fieldtype;
+        var changedValue;
+        if (fieldType == 'CHECKBOX') {
+            changedValue = event.target.checked;
+        } else {
+            changedValue = event.target.value;
+        }
 
         this.changedFieldValues[fieldName] = changedValue;
         console.log('fieldDetails-->', this.changedFieldValues);
@@ -368,7 +457,10 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     }
 
     saveChanges() {
-        this.isLoading = true;
+        // this.isLoading = true;
+        const spinnerShow = this.template.querySelector('.hidden');
+        spinnerShow.classList.add('showSpinner');
+
         const changedFields = {};
         Object.keys(this.changedFieldValues).forEach(fieldName => {
             const originalValue = this.originalData.find(detail => detail.fieldName === fieldName).fieldValue;
@@ -381,15 +473,27 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         updateRecord({ recordId: this.recordId, newFieldValues: changedFields })
             .then(result => {
                 console.log('Record updated successfully-->', result);
-                this.changedFieldValues = {};
-                const saveCancelButton = this.template.querySelector('.save_cancle_btn');
-                saveCancelButton.classList.remove('add_flex');
-                this.updatethelatestvalue();
-                this.isLoading = false;
+                if (result == 'success') {
+                    this.changedFieldValues = {};
+                    const saveCancelButton = this.template.querySelector('.save_cancle_btn');
+                    saveCancelButton.classList.remove('add_flex');
+                    this.showToast('Success', 'Your record has been successfully updated.', 'success');
+                    // this.updatethelatestvalue();
+                    // this.isLoading = false;
+                    const spinnerHide = this.template.querySelector('.hidden');
+                    spinnerHide.classList.remove('showSpinner');
+                } else {
+                    this.showToast('Failed to Update Record', result, 'error');
+                    // this.revertChanges();
+                    // this.isLoading = false;
+                    const spinnerHide1 = this.template.querySelector('.hidden');
+                    spinnerHide1.classList.remove('showSpinner');
+                }
+
             })
             .catch(error => {
                 console.error('Error updating record:', error);
-                this.isLoading = false;
+                // this.isLoading = false;
             });
     }
 
@@ -417,5 +521,14 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         this.changedFieldValues = {};
 
         this.isLoading = false;
+    }
+
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(event);
     }
 }

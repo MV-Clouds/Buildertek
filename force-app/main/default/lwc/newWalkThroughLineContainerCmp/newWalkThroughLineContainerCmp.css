@@ -37,17 +37,30 @@ b{
 	padding-top: 13px;
 }
 
-.label-float input {
+.label-float .regularclass {
 	border: 1px solid lightgrey;
 	border-radius: 5px;
 	outline: none;
-	min-width: 250px;
-	padding: 10px 15px;
+	width: 70%;
+    /* padding: 15px 20px; */
 	font-size: 16px;
 	transition: all .1s linear;
 	-webkit-transition: all .1s linear;
 	-moz-transition: all .1s linear;
 	-webkit-appearance: none;
+    background-color:rgb(255, 255, 255);
+}
+
+.label-float .regularclassselect {
+	border: 1px solid lightgrey;
+	border-radius: 5px;
+	outline: none;
+	width: 70%;
+	font-size: 16px;
+	transition: all .1s linear;
+	-webkit-transition: all .1s linear;
+	-moz-transition: all .1s linear;
+    background-color:rgb(255, 255, 255);
 }
 
 .label-float input:focus {
@@ -58,20 +71,22 @@ b{
 	border: 1px solid lightgrey;
 	border-radius: 5px;
 	outline: none;
-	min-width: 250px;
-	padding: 10px 15px;
+	width: 70%;
+    /* padding: 15px 20px; */
 	font-size: 16px;
 	transition: all .1s linear;
 	-webkit-transition: all .1s linear;
 	-moz-transition: all .1s linear;
-	/* -webkit-appearance: none; */
+    background-color:rgb(255, 255, 255);
+    /* height: 8vh; */
+	-webkit-appearance: caret;
 }
 
 .label-float select:focus {
 	border: 2px solid #00AEFF;
 }
 
-.label-float label {
+.label-float .regularLabel {
 	/* font-size: 1rem; */
 	pointer-events: none;
 	position: absolute;
@@ -90,8 +105,23 @@ b{
 
 }
 
+.checkboxclass{
+    margin-left: 1rem;
+}
+
+.checkboxlabelclass{
+    font-size: 13px;
+    color: #00AEFF;
+}
+
 .my-card-border {
 	border: 1px solid #ddd;
+}
+
+.checkboxDiv{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
 }
 
 .header_css{
@@ -239,4 +269,44 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.hidden{
+    display: none;
+}
+
+.showSpinner{
+    display: block;
+}
+@media only screen and (min-width: 960px) {
+    /* styles for browsers larger than 960px; */
+}
+@media only screen and (min-width: 1440px) {
+    /* styles for browsers larger than 1440px; */
+    /* .label-float input{
+        min-width: 60%;
+        padding: 15px 20px;
+    }
+
+    .label-float select {
+        min-width: 60%;
+        padding: 15px 20px;
+    } */
+}
+@media only screen and (min-width: 2000px) {
+    /* for sumo sized (mac) screens */
+}
+@media only screen and (max-device-width: 480px) {
+   /* styles for mobile browsers smaller than 480px; (iPhone) */
+}
+@media only screen and (device-width: 768px) {
+   /* default iPad screens */
+}
+/* different techniques for iPad screening */
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+  /* For portrait layouts only */
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+  /* For landscape layouts only */
 }
