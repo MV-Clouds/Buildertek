@@ -107,21 +107,24 @@
                                 <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important; padding-top:15px;">
                                     <!-- <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" /> -->
                                 </th>
-                                <th class="" scope="col" style="width:25% !important">
+                                <th class="" scope="col" style="width:12% !important">
                                     <div class="trncatediv" title="Product Name">Product Name</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <th class="" scope="col" style="width:12% !important">
                                     <div class="slds-truncate" title="Product Family">Product Family</div>
                                 </th>
-                                <th class="" scope="col" style="width:15% !important">
+                                <th class="" scope="col" style="width:12% !important">
                                     <div class="trncatediv" title="Product Description">Product Description</div>
+                                </th>
+                                <th class="" scope="col" style="width:12% !important">
+                                    <div class="trncatediv" title="Product Description">Notes</div>
                                 </th>
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                 </th>
-                                <th class="" scope="col" style="width:10% !important">
+                                <!-- <th class="" scope="col" style="width:10% !important">
                                     <div class="mediumWidthDiv" title="Product Code">Product Code</div>
-                                </th>
+                                </th> -->
                                 <th class="" scope="col" style="width:10% !important">
                                     <div class="slds-truncate" title="Vendor">Vendor</div>
                                 </th>
@@ -141,32 +144,37 @@
                                           <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.Id}" onchange="{!c.checkboxChange}" />
                                         </div>
                                     </td>
-                                    <td data-label="Product Name" class="" style="width:20% !important">
+                                    <td data-label="Product Name" class="" style="width:12% !important">
                                         <div class="trncatediv" title='{!product.Name}'>
                                             {!product.Name}
                                         </div>
                                     </td>
-                                    <td data-label="Product Family" scope="row" style="width:25% !important">
-                                        <div class="slds-truncate" title='{!product.Family}'>
+                                    <td data-label="Product Family" scope="row" style="width:12% !important">
+                                        <div class="trncatediv" title='{!product.Family}'>
                                             {!product.Family}
                                         </div>
                                     </td>
-                                    <td data-label="Product Description" class="" style="width:25% !important">
+                                    <td data-label="Product Description" class="" style="width:12% !important">
                                         <div class="trncatediv" title='{!product.Description}'>
                                             {!product.Description}
                                         </div>
                                     </td>
-                                    <td data-label="Product Code" style="width:5% !important">
+                                    <td data-label="Notes" style="width:12% !important">
+                                        <div class="trncatediv" title='{!product.Notes}'>
+                                            {!product.Notes}
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Code" style="width:10% !important">
                                         <div class="slds-truncate" title='{!product.ProductCode}'>
                                             {!product.CostCode}
                                         </div>
                                     </td>
-                                    <td data-label="Product Code" style="width:5% !important">
+                                    <!-- <td data-label="Product Code" style="width:5% !important">
                                         <div class="mediumWidthDiv" title='{!product.ProductCode}'>
                                             {!product.ProductCode}
                                         </div>
-                                    </td>
-                                    <td data-label="Vendor" style="width:5% !important">
+                                    </td> -->
+                                    <td data-label="Vendor" style="width:10% !important">
                                         <div class="slds-truncate" title='{!product.UnitPrice}' >
                                             {!product.Vendor}
                                         </div>
