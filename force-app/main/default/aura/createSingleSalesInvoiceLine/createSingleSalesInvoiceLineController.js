@@ -1,5 +1,4 @@
 ({
-
     doInit: function (component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
@@ -11,12 +10,10 @@
         var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
         compEvent.setParams({ "recordByEvent": product });
         compEvent.fire();
-        component.set('v.newSalesInvoiceLine.Name', '');
+        component.set('v.newSalesInvoiceLine.buildertek__Item_Name__c', '');
         component.set('v.newSalesInvoiceLine.buildertek__Cost_Code__c', null);
-        component.set('v.newSalesInvoiceLine.buildertek__Unit_Price__c', '');
+        component.set('v.newSalesInvoiceLine.buildertek__Unit_Price__c', null);
         component.set('v.newSalesInvoiceLine.buildertek__Quantity__c', 1);
-        console.log(`pricebookName :${component.get('v.pricebookName')}`);
-        debugger;
         var pricebookId = component.get("v.pricebookName");
         var action = component.get("c.getProductfamilyRecords");
         action.setParams({
@@ -58,8 +55,8 @@
 
     handleComponentEvent: function (component, event, helper) {
         var selectedAccountGetFromEvent = event.getParam("recordByEvent");
-        component.set("v.Billable_Lines__c.Name", selectedAccountGetFromEvent.Name);
-        component.set("v.Billable_Lines__c.buildertek__Product__c", selectedAccountGetFromEvent.Id);
+        component.set("v.newSalesInvoiceLine.buildertek__Item_Name__c", selectedAccountGetFromEvent.Name);
+        component.set("v.newSalesInvoiceLine.buildertek__Product__c", selectedAccountGetFromEvent.Id);
         component.set("v.productId", selectedAccountGetFromEvent.Id);
 
         component.set("v.productName", selectedAccountGetFromEvent.Name);
@@ -71,11 +68,26 @@
         var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
         compEvent.setParams({ "recordByEvent": product });
         compEvent.fire();
-        component.set('v.Billable_Lines__c.Name', '');
-        component.set('v.Billable_Lines__c.buildertek__Unit_Price__c', '');
+        component.set('v.newSalesInvoiceLine.buildertek__Item_Name__c', '');
+        component.set('v.newSalesInvoiceLine.buildertek__Cost_Code__c', null);
+        component.set('v.newSalesInvoiceLine.buildertek__Unit_Price__c', null);
+        component.set('v.newSalesInvoiceLine.buildertek__Quantity__c', 1);
     },
 
     saveSalesInvoiceLineRecord: function (component, event, helper) {
+        let salesinvoiceLineName = component.find('salesInvoiceLineID').get("v.value");
+        console.log(`salesinvoiceLineName: ${salesinvoiceLineName}`);
+        if (!salesinvoiceLineName){
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: "Error",
+                message: "Please enter Sales Invoice Line name.",
+                type: "error",
+                duration: " 3000",
+            });
+            toastEvent.fire();
+            return;
+        }
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
         }).fire();
@@ -97,10 +109,10 @@
                 compEvent.setParams({ "recordByEvent": product });
                 compEvent.fire();
                 component.find('salesInvoiceLineID').set("v.value", '');
-                component.set('v.newSalesInvoiceLine.Name', '');
+                component.set('v.newSalesInvoiceLine.buildertek__Item_Name__c', '');
                 component.set('v.newSalesInvoiceLine.buildertek__Unit_Price__c', null);
                 component.set('v.newSalesInvoiceLine.buildertek__Cost_Code__c', null);
-                component.set('v.newSalesInvoiceLine.buildertek__Quantity__c', null);
+                component.set('v.newSalesInvoiceLine.buildertek__Quantity__c', 1);
                 window.setTimeout(
                     $A.getCallback(function () {
                         var toastEvent = $A.get("e.force:showToast");

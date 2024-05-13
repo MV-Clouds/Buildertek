@@ -6,7 +6,6 @@
         });
         action.setCallback(this, function (response) {
             if (response.getState() == "SUCCESS") {
-                console.log(`PriceBook Name: ${response.getReturnValue()}`);
                 component.set("v.pricebookName", response.getReturnValue());
                 var action1 = component.get('c.changeEvent');
                 $A.enqueueAction(action1);
@@ -40,7 +39,6 @@
             var res = respo.getReturnValue();
             var getProductDetails = component.get("v.newSalesInvoiceLine");
             getProductDetails.buildertek__Billings__c = component.get("v.recordId");
-            console.log(`product Details: ${JSON.stringify(res)}`);
             if (res.length >= 1) {
                 if (res[0].UnitPrice != null) {
                     getProductDetails.buildertek__Unit_Price__c = res[0].UnitPrice;
@@ -49,7 +47,7 @@
                 getProductDetails.buildertek__Unit_Price__c = 0;
             }
             getProductDetails.buildertek__Product__c = productId;
-            getProductDetails.Name = productName;
+            getProductDetails.buildertek__Item_Name__c = productName;
             component.set("v.newSalesInvoiceLine", getProductDetails);
         });
         $A.enqueueAction(action);

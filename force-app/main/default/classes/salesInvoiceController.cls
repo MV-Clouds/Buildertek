@@ -68,10 +68,12 @@ public with sharing class salesInvoiceController {
 
         buildertek__Billable_Lines__c saveSalesInvoiceLineToInsert = new buildertek__Billable_Lines__c();
 
-        if (salesInvoiceRec.Name != null && salesInvoiceRec.Name.length() > 79){
-            saveSalesInvoiceLineToInsert.buildertek__Description__c = salesInvoiceRec.Name;
-        } else{
-            saveSalesInvoiceLineToInsert.buildertek__Description__c = salesInvoiceRec.Name;
+        if (salesInvoiceRec.buildertek__Item_Name__c != null && salesInvoiceRec.buildertek__Item_Name__c.length() > 79) {
+            saveSalesInvoiceLineToInsert.buildertek__Description__c = salesInvoiceRec.buildertek__Item_Name__c.substring(0, 79);
+            saveSalesInvoiceLineToInsert.buildertek__Item_Name__c = salesInvoiceRec.buildertek__Item_Name__c.substring(0, 79);
+        } else {
+            saveSalesInvoiceLineToInsert.buildertek__Description__c = salesInvoiceRec.buildertek__Item_Name__c;
+            saveSalesInvoiceLineToInsert.buildertek__Item_Name__c = salesInvoiceRec.buildertek__Item_Name__c;
         }
 
         saveSalesInvoiceLineToInsert.buildertek__Product__c = salesInvoiceRec.buildertek__Product__c;
