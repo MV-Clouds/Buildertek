@@ -243,18 +243,18 @@
                                     </aura:html> -->
 
                                     <!-- <c:BT_LightningLookup objectAPIName="Account"  IconName="standard:account" selectedRecord="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" aura:id="accountId"  /> -->
-                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}">
+                                    <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c != ''}"> -->
                                         <lightning:select name="{!index}" value="{!budgetLineWrapper.BudgetLine.buildertek__Contractor__c}" class="vendor-class pointer1 vendor">
                                         <aura:iteration items="{!v.vendorList}" var="vendorOption">
                                                 <option name="{!budgetLineWrapper}" value="{!vendorOption.value}">{!vendorOption.label}</option>
                                             </aura:iteration>
                                         </lightning:select>
-                                    </aura:if>
-                                    <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
+                                    <!-- </aura:if> -->
+                                    <!-- <aura:if isTrue="{!budgetLineWrapper.BudgetLine.buildertek__Product__c == ''}">
                                         <lightning:select name="" value="" class="vendor-class pointer1 vendor">
-                                            <option name="" value="">--Select Vendor--</option>
+                                            <option name="" value="">-Select Vendor-</option>
                                         </lightning:select>
-                                    </aura:if>
+                                    </aura:if> -->
 
 
                                 </td>
