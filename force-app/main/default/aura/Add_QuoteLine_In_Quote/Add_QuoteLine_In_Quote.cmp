@@ -227,23 +227,26 @@
                                     <div class="slds-truncate" title="Phase">Phase</div>
                                 </th>
                                 <th class="" scope="col">
+                                    <div class="slds-truncate" title="Notes">Notes</div>
+                                </th>
+                                <th class="" scope="col">
                                     <div class="slds-truncate" title="Quantity">Quantity</div>
                                 </th>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                 </th>
-                                <th class="" scope="col">
+                                <!-- <th class="" scope="col">
                                     <div class="slds-truncate" title="Cost Code">Cost Code</div>
-                                </th>
+                                </th> -->
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="Markup %">Markup %</div>
                                 </th>
-                                <th class="" scope="col">
+                                <!-- <th class="" scope="col">
                                     <div class="slds-truncate" title="Discount %">Discount %</div>
-                                </th>
+                                </th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -270,24 +273,27 @@
                                             </aura:iteration>
                                         </lightning:select>
                                     </td>
+                                    <td style="width: 10% !important">
+                                        <lightning:input name="input9" label="" value="{!item.buildertek__Notes__c}" />
+                                    </td>
                                     <td style="width: 5% !important">
                                         <lightning:input name="input4" label="" value="{!item.buildertek__Quantity__c}" />
                                     </td>
                                     <td style="width: 9% !important">
                                         <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                     </td>
-                                    <td style="width: 7% !important">
+                                    <!-- <td style="width: 7% !important">
                                         <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
-                                    </td>
+                                    </td> -->
                                     <td style="width: 9% !important">
                                         <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                     </td>
                                     <td style="width: 5% !important">
                                         <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                     </td>
-                                    <td style="width: 5% !important">
+                                    <!-- <td style="width: 5% !important">
                                         <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}" />
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </aura:iteration>
                         </tbody>
