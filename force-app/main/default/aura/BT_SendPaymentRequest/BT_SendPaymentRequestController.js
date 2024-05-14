@@ -4,6 +4,7 @@
         var url = window.location.href;
         component.set("v.siteURL", url);
         var recordId = component.get('v.recordId');
+        console.log('recordId: ' + recordId);
         helper.getOwnerNameAndCompanyName(component, recordId);
     },
 
@@ -16,6 +17,7 @@
     },
 
     sendEmail: function(component, event, helper) {
+        component.set("v.Spinner", true);
         var toContactList = component.get("v.selectedToContact");
         console.log('toContactList: ' + toContactList);
         //iterate over the list of emailIds and add email to the list
@@ -50,6 +52,7 @@
         var recordId = component.get('v.recordId');
         subject += ' (Ref No: ' + recordId + ')';
         console.log('subject: ' + subject);
+ 
 
         var body = component.get('v.templateBody');
         var memo = component.get('v.memoquote');
@@ -83,9 +86,22 @@
 
 
 
+
+
         // helper.sendEmailHelper(component, toAddress, ccAddress, subject, body);
+        if(component.get('v.subject') == ''){
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    title: "Error!",
+                    message: "Please add Subject",
+                    type: "error"
+                });
+                toastEvent.fire();
+        }
+        else{       
         var action = component.get("c.sendEmailtoContact");
         action.setParams({
+            recordId: recordId,
             toAddress: toAddress,
             ccAddress: ccAddress,
             subject: subject,
@@ -94,6 +110,7 @@
         });
         action.setCallback(this, function(response) {
             var state = response.getState();
+            component.set("v.Spinner", false);
             if (state === "SUCCESS") {
                 console.log('Email sent successfully');
                 var toastEvent = $A.get("e.force:showToast");
@@ -117,6 +134,37 @@
             }
         });
         $A.enqueueAction(action);
+    }
+    },
+
+    onAddEmail : function(component, event, helper){
+        var emailId = component.find('emailForm').get('v.value');
+        var emailIds = component.get('v.emailIds');
+        var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+
+        if (emailId != null && emailId != '') {
+            if (reg.test(emailId)) {
+                component.set("v.toEmail", '');
+                if (!emailIds.includes(emailId) && emailId.length > 1) {
+                    emailIds.push(emailId);
+                }
+            }
+        }
+
+        if(emailIds != null && emailIds != ''){
+            component.set('v.emailIds', emailIds);  
+        }else{
+            component.set('v.emailIds', emailId);
+        }
+
+        for(var i=0; i<emailIds.length; i++){
+            if(emailIds[i].length == 1){
+                emailIds.splice(i, 1);
+            }
+        }
+        component.set('v.emailIds', emailIds);
+        
+
     },
 
     onEmailChange: function (component, event, helper) {
