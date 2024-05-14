@@ -350,7 +350,7 @@ public with sharing class PurchaseOrderTriggerHandler{
 
             PurchaseOrderTriggerHandler.firstRun = false;
 
-            list<buildertek__Purchase_Order_Item__c> purchaseOrderItem = [Select id,Name,buildertek__Purchase_Order__c,buildertek__Budget_Item__c from buildertek__Purchase_Order_Item__c where buildertek__Purchase_Order__c IN: purchaseIds order by CreatedDate limit 1];
+            list<buildertek__Purchase_Order_Item__c> purchaseOrderItem = [Select id,Name,buildertek__Purchase_Order__c,buildertek__Budget_Item__c,buildertek__Total_Amount_Tax__c from buildertek__Purchase_Order_Item__c where buildertek__Purchase_Order__c IN: purchaseIds order by CreatedDate limit 1];
             String purchaseOrderItemID;
             if (purchaseOrderItem.size() > 0) {
                 purchaseOrderItemID = purchaseOrderItem[0].Id;
