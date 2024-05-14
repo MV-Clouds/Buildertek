@@ -232,113 +232,95 @@
 
             <aura:if isTrue="{!!v.selecteProducts}">
 
-                <header class="slds-modal__header">
-                    <h2 class="slds-text-heading_medium slds-hyphenate">Edit Selected Quote Line Items</h2>
-                </header>
-                <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
-                    <div style="height: auto; min-height:150px;">
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered"
-                            aria-label="Example default base table of Opportunities">
-                            <thead>
-                                <tr class="slds-line-height_reset">
-                                    <th></th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Price Book">Price Book</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Product">Product</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Description">Description</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Phase">Phase</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:12% !important">
-                                        <div class="slds-truncate" title="Notes">Notes</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Quantity">Quantity</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
-                                    </th>
-                                    <!-- <th class="" scope="col">
+            <header class="slds-modal__header">
+                <h2 class="slds-text-heading_medium slds-hyphenate">Edit Selected Quote Line Items</h2>
+            </header>
+            <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
+                <div style="height: auto; min-height:150px;">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th></th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Price Book">Price Book</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Product">Product</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Description">Description</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Phase">Phase</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Quantity">Quantity</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
+                                </th>
+                                <th class="" scope="col">
                                     <div class="slds-truncate" title="Cost Code">Cost Code</div>
-                                </th> -->
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="List Price">List Price</div>
-                                    </th>
-                                    <th class="" scope="col">
-                                        <div class="slds-truncate" title="Markup %">Markup %</div>
-                                    </th>
-                                    <!-- <th class="" scope="col">
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="List Price">List Price</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Markup %">Markup %</div>
+                                </th>
+                                <th class="" scope="col">
                                     <div class="slds-truncate" title="Discount %">Discount %</div>
-                                </th> -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <aura:iteration items="{!v.selectedProducts}" var="item" indexVar="recIndex">
-                                    <tr title="Product">
-                                        <td style="padding-top: 15px !important;">
-                                            <span data-id="{!item.Id}" onclick="{!c.removeQuoteLine}">
-                                                <lightning:icon iconName="utility:delete" size="xx-small" />
-                                            </span>
-                                        </td>
-                                        <td style="width: 14% !important;">
-                                            <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}"
-                                                disabled="true" />
-                                        </td>
-                                        <td style="width: 16% !important">
-                                            <lightning:input name="input1" label="" value="{!item.Name}"
-                                                disabled="true" />
-                                        </td>
-                                        <td style="width: 16% !important">
-                                            <lightning:input name="input3" label=""
-                                                value="{!item.buildertek__Description__c}" />
-                                        </td>
-                                        <td style="width: 14% !important">
-                                            <lightning:select name="mySelect" label=""
-                                                value="{!item.buildertek__Grouping__c}">
-                                                <aura:iteration items="{!v.quoteLineGroupOptions}" var="rec">
-                                                    <option value="{!rec.value}">{!rec.key}</option>
-                                                </aura:iteration>
-                                            </lightning:select>
-                                        </td>
-                                        <td style="width: 10% !important">
-                                            <lightning:input name="input9" label=""
-                                                value="{!item.buildertek__Notes__c}" />
-                                        </td>
-                                        <td style="width: 5% !important">
-                                            <lightning:input name="input4" label=""
-                                                value="{!item.buildertek__Quantity__c}" />
-                                        </td>
-                                        <td style="width: 9% !important">
-                                            <lightning:input name="input6" label=""
-                                                value="{!item.buildertek__Unit_Cost__c}" formatter="currency"
-                                                type="number" maximumFractionDigits="5" step="0.01" />
-                                        </td>
-                                        <!-- <td style="width: 7% !important">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.selectedProducts}" var="item" indexVar="recIndex">
+                                <tr title="Product">
+                                    <td style="padding-top: 15px !important;">
+                                        <span data-id="{!item.Id}"  onclick="{!c.removeQuoteLine}">
+                                            <lightning:icon iconName="utility:delete" size="xx-small" />
+                                        </span>
+                                    </td>
+                                    <td style="width: 14% !important;">
+                                        <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
+                                    </td>
+                                    <td style="width: 16% !important">
+                                        <lightning:input name="input1" label="" value="{!item.Name}" disabled="true" />
+                                    </td>
+                                    <td style="width: 16% !important">
+                                        <lightning:input name="input3" label="" value="{!item.buildertek__Description__c}" />
+                                    </td>
+                                    <td style="width: 14% !important">
+                                        <lightning:select  name="mySelect" label="" value="{!item.buildertek__Grouping__c}">
+                                            <aura:iteration items="{!v.quoteLineGroupOptions}" var="rec">
+                                                <option value="{!rec.value}" >{!rec.key}</option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </td>
+                                    <td style="width: 5% !important">
+                                        <lightning:input name="input4" label="" value="{!item.buildertek__Quantity__c}" />
+                                    </td>
+                                    <td style="width: 9% !important">
+                                        <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
+                                    </td>
+                                    <td style="width: 7% !important">
                                         <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
-                                    </td> -->
-                                        <td style="width: 9% !important">
-                                            <lightning:input name="input2" label=""
-                                                value="{!item.buildertek__Unit_Price__c}" formatter="currency"
-                                                type="number" maximumFractionDigits="5" step="0.01" />
-                                        </td>
-                                        <td style="width: 5% !important">
-                                            <lightning:input name="input7" label=""
-                                                value="{!item.buildertek__Markup__c}" />
-                                        </td>
-                                        <!-- <td style="width: 5% !important">
+                                    </td>
+                                    <td style="width: 9% !important">
+                                        <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
+                                    </td>
+                                    <td style="width: 5% !important">
+                                        <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
+                                    </td>
+                                    <td style="width: 5% !important">
                                         <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}" />
-                                    </td> -->
-                                    </tr>
-                                </aura:iteration>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
                 <footer class="slds-modal__footer">
                     <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
