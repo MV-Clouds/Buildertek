@@ -11,7 +11,7 @@ import getSharinPixSetting from '@salesforce/apex/walkThroughController.getShari
 const actions = [
     { label: 'View', name: 'view' },
     { label: 'Edit', name: 'edit' },
-    { label: 'File Upload', name: 'fileupload' },
+    { label: 'Add Images', name: 'fileupload' },
     { label: 'Delete', name: 'delete' }
 ];
 
@@ -48,6 +48,14 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     SharinPixIsEnable;
     SharinPixPreSubValue;
     SharinPixPostSubValue;
+
+    @api inputFieldClassFromParent = '';
+    @api fieldLabel;
+    @api disabled = false;
+    @api placeholder = "Select";
+    @api options;
+    @api value = "";
+    @api errMsgs;
 
     connectedCallback() {
         this.recordId = this.getParameterByName();
@@ -108,7 +116,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                     isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
                     isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
                     isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
-                    picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
+                    picklistOptions: field.picklistValues ? field.picklistValues : []
                 }));
                 this.field_container = true;
                 console.log('this.fieldDetails-->', this.fieldDetails);
@@ -144,7 +152,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                     isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
                     isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
                     isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
-                    picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
+                    picklistOptions: field.picklistValues ? field.picklistValues : []
                 }));
                 this.field_container = true;
                 this.originalData = this.fieldDetails;
@@ -161,13 +169,6 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             saveCancelButton.classList.remove('add_flex');
         }
 
-    }
-
-    preprocessPicklistValues(picklistValues, fieldValue) {
-        return picklistValues.map(option => ({
-            value: option,
-            selected: option === fieldValue
-        }));
     }
 
     get isPicklist() {
@@ -213,7 +214,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                     isCheckBox: this.returnTrueOrFalseForCheckbox(field.fieldType),
                     isDateTime: this.returnTrueOrFalseForDateTime(field.fieldType),
                     isRegular: this.returnTrueOrFalseForRegular(field.fieldType),
-                    picklistOptions: field.picklistValues ? this.preprocessPicklistValues(field.picklistValues, field.fieldValue) : []
+                    picklistOptions: field.picklistValues ? field.picklistValues : []
                 }));
                 this.field_container = true;
                 this.originalData = this.fieldDetails;
@@ -303,6 +304,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             body.appendChild(style);
             this.isInitalRender = false;
         }
+
     }
 
     getRelatedRecords() {
@@ -315,11 +317,15 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         })
             .then(result => {
                 console.log('result', result.FieldSetValues);
+                const labelsToFilter = ["SharinPix Token", "SharinPix Tag"];
                 let cols = []; result.FieldSetValues.forEach(currentItem => {
                     let col = { label: currentItem.label, fieldName: currentItem.name, type: currentItem.type };
                     cols.push(col);
-                }); cols.push({ type: 'action', typeAttributes: { rowActions: actions } })
+                }); 
+                cols = cols.filter(col => !labelsToFilter.includes(col.label));
+                cols.push({ type: 'action', typeAttributes: { rowActions: actions } })
                 this.columns = cols;
+                console.log('columns-->',this.columns);
                 if (result.WalkthroughLineItems.length > 0) {
                     this.data = result.WalkthroughLineItems;
                     this.error = undefined;
@@ -343,12 +349,13 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         const row = event.detail.row;
         const recordId = row.Id;
         const sharinPixToken = row.buildertek__SharinPix_Token__c;
+        const sharinPixTag = row.buildertek__SharinPix_Tag__c;
         switch (actionName) {
             case 'edit':
                 this.openEditModel(recordId);
                 break;
             case 'fileupload':
-                this.openfileattachmodal(recordId, sharinPixToken);
+                this.openfileattachmodal(recordId, sharinPixToken, sharinPixTag);
                 break;
             case 'delete':
                 this.deleteChild(recordId);
@@ -384,11 +391,17 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         });
     }
 
-    openfileattachmodal(recordId, sharinPixToken) {
+    openfileattachmodal(recordId, sharinPixToken, sharinPixTag) {
         if (this.SharinPixIsEnable == true) {
             if (sharinPixToken != undefined) {
-                console.log('SharingPix Token---> ', this.SharinPixPreSubValue + sharinPixToken + this.SharinPixPostSubValue);
-                const SharinPixUrl = this.SharinPixPreSubValue + sharinPixToken + this.SharinPixPostSubValue;
+                var SharinPixUrl;
+                if (sharinPixTag != undefined && sharinPixTag != null && sharinPixTag != '') {
+                    SharinPixUrl = this.SharinPixPreSubValue + sharinPixToken + sharinPixTag + this.SharinPixPostSubValue;
+                } else {
+                    SharinPixUrl = this.SharinPixPreSubValue + sharinPixToken + this.SharinPixPostSubValue;
+                }
+                console.log('SharingPix url---> ', SharinPixUrl);
+                
                 const config = {
                     type: 'standard__webPage',
                     attributes: {
@@ -494,6 +507,9 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             .catch(error => {
                 console.error('Error updating record:', error);
                 // this.isLoading = false;
+                this.showToast('Failed to Update Record', 'A internal error has occurred.', 'error');
+                const spinnerHide1 = this.template.querySelector('.hidden');
+                spinnerHide1.classList.remove('showSpinner');
             });
     }
 
@@ -502,18 +518,6 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         this.isLoading = true;
 
         this.fieldDetails = JSON.parse(JSON.stringify(this.originalData));
-
-        const picklistElements = this.template.querySelectorAll('select[data-fieldname]');
-
-        if (picklistElements != null) {
-            picklistElements.forEach(picklist => {
-                const fieldName = picklist.dataset.fieldname;
-                const originalField = this.originalData.find(field => field.fieldName === fieldName);
-                if (originalField) {
-                    picklist.value = originalField.fieldValue;
-                }
-            });
-        }
 
         const saveCancelButton = this.template.querySelector('.save_cancle_btn');
         saveCancelButton.classList.remove('add_flex');
@@ -531,4 +535,51 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         });
         this.dispatchEvent(event);
     }
+
+    optionsClickHandler(event) {
+        try {
+            const fieldName = event.currentTarget.dataset.fieldname;
+            const selectedValue = event.currentTarget.dataset.value;
+    
+            const inputField = this.template.querySelector(`input[data-fieldname="${fieldName}"]`);
+            inputField.value = selectedValue;
+    
+            this.changedFieldValues[fieldName] = selectedValue;
+
+            const divElement = this.template.querySelector(`[data-dropdown-id="${fieldName}"]`);
+            divElement.classList.remove('slds-is-open');
+
+            const saveCancelButton = this.template.querySelector('.save_cancle_btn');
+            saveCancelButton.classList.add('add_flex');
+
+        } catch (error) {
+            console.error('Error in optionsClickHandler:', error);
+        }
+    }
+ 
+    closeDropdown(event) {
+        const fieldName = event.currentTarget.dataset.fieldname;
+
+        const divElement = this.template.querySelector(`[data-dropdown-id="${fieldName}"]`);
+
+        if (divElement) {
+            divElement.classList.remove('slds-is-open');
+        }
+    }
+ 
+    handleInputClick(event) {
+        const fieldName = event.currentTarget.dataset.fieldname;
+
+        const divElement = this.template.querySelector(`[data-dropdown-id="${fieldName}"]`);
+
+        if (divElement) {
+            divElement.classList.add('slds-is-open');
+        }
+
+    }
+
+    preventHide(event) {
+        event.preventDefault();
+    }
+    
 }

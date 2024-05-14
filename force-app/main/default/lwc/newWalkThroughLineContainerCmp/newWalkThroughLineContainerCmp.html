@@ -31,14 +31,66 @@
             <div class="slds-col slds-size_1-of-2" key={fieldDetail.fieldLabel}>
               <div class="label-float">
                 <template if:true={fieldDetail.isPicklist}>
-                  <select data-fieldname={fieldDetail.fieldName} data-fieldtype={fieldDetail.fieldType} object-api-name="buildertek__Walk_Through_List__c"
-                      record-id={recordId} onchange={inputValueIsChanged} class="slds-var-p-around_medium regularclassselect">
-                      <option value="">Select</option>
-                      <template for:each={fieldDetail.picklistOptions} for:item="option">
-                          <option key={option.value} value={option.value} selected={option.selected}>{option.value}</option>
-                      </template>
-                  </select>
-                  <label class="regularLabel">{fieldDetail.fieldLabel}</label>
+                    <!-- Field Label -->
+                    <label class='regularLabel'>{fieldDetail.fieldLabel}</label>
+                    <!--/ Field Label -->
+                    <div class="slds-form-element_control regularclassPL">
+                        <!-- Combobox Container -->
+                        <div class="slds-combobox_container">
+                            <div class='slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' data-dropdown-id={fieldDetail.fieldName} id={fieldDetail.fieldName} aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                    <!-- Readonly Input to display selected value -->
+                                    <input type="text"
+                                        class='slds-var-p-around_medium slds-combobox__input slds-combobox__input-value combobox-input-class' autocomplete="off" data-id={fieldDetail.fieldName}
+                                        aria-autocomplete="list" aria-controls={fieldDetail.fieldName} role="textbox"
+                                        data-fieldname={fieldDetail.fieldName} data-fieldtype={fieldDetail.fieldType} record-id={recordId}
+                                        placeholder="Select" onclick={handleInputClick} value={fieldDetail.fieldValue} readonly onblur={closeDropdown}></input>
+                                    <!--/ Readonly Input to display selected value -->
+             
+                                    <!-- Up Arrow icon div if dropdown open -->
+                                    <div if:true={isDropdownOpen}>
+                                        <span
+                                            class="slds-icon_container slds-icon-utility-up slds-input__icon slds-input__icon_right">
+                                            <lightning-icon icon-name="utility:up" size="x-small"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <!--/ Up Arrow icon div if dropdown open -->
+                                    <!-- Down Arrow icon div if dropdown close -->
+                                    <div if:false={isDropdownOpen}>
+                                        <span
+                                            class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                                            <lightning-icon icon-name="utility:down" size="x-small"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <!--/ Down Arrow icon div if dropdown close -->
+                                </div>
+                                <!-- List box to show dropdown options -->
+                                <!-- <template if:true={fieldDetail.openCloseModal}> -->
+                                  <div class="slds-dropdown slds-dropdown_fluid" role="listbox" onmousedown={preventHide}>
+                                      <ul class="slds-listbox slds-listbox_vertical slds-dropdown_length-5 customClass" tabindex="0"
+                                          role="presentation">
+                                          <template for:each={fieldDetail.picklistOptions} for:item="option">
+                                              <!-- li to display each option in the list -->
+                                              <li key={option} role="presentation" class="slds-listbox__item" data-fieldname={fieldDetail.fieldName} data-value={option} onclick={optionsClickHandler}
+                                                  title={option}>
+                                                  <div id={option}
+                                                      class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                      role="option">
+                                                      <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                                      <span class="slds-truncate">
+                                                          <span>{option}</span>
+                                                      </span>
+                                                  </div>
+                                              </li>
+                                              <!--/ li to display each option in the list -->
+                                          </template>
+                                      </ul>
+                                  </div>
+                                <!-- </template>   -->
+                            </div>
+                        </div>
+                        <!--/ Combobox Container -->
+                    </div>
                 </template>
               
                 <template if:true={fieldDetail.isRegular}>

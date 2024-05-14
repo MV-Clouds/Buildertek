@@ -176,7 +176,44 @@ public with sharing class walkThroughController {
             if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
                 BT_ExceptionHandler.Store_Exception(e);
             }
-            return e.getMessage();
+            // return e.getMessage();
+            String errorMessage = e.getMessage();
+
+            if (errorMessage.contains('STRING_TOO_LONG')) {
+                List<String> parts = errorMessage.split(':');
+                String maxLengthString;
+
+                if (parts.size() > 1) {
+                    String errorMes = parts[1].trim();
+                    String errorMes1 = parts[3].trim();
+
+                    Pattern pattern = Pattern.compile('\\(max length=(\\d+)\\)');
+                    Matcher matcher = pattern.matcher(errorMes1);
+
+                    if (matcher.find()) {
+                        maxLengthString = matcher.group(1);
+                        System.debug('Max Length: ' + maxLengthString);
+                    } else {
+                        System.debug('Max Length not found.');
+                    }
+                    List<String> errorMessageParts = errorMes.split(',');
+
+                    if (errorMessageParts.size() > 1) {
+                        String errorType = errorMessageParts[0].trim();
+                        String fieldName = errorMessageParts[1].trim();
+                        
+                        errorMessage = 'The field ' + fieldName + ' exceeds the maximum allowed length of ' + maxLengthString + ' characters. Please reduce the length of the input for this field.';
+                        System.debug(errorMessage);
+                    } else {
+                        System.debug('Error Message not found.');
+                    }
+                } else {
+                    System.debug('Error Message not found.');
+                }
+            }
+
+            return errorMessage;
+           
         }
     }
 

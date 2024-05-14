@@ -41,7 +41,21 @@ b{
 	border: 1px solid lightgrey;
 	border-radius: 5px;
 	outline: none;
-	width: 70%;
+	width: 90%;
+    /* padding: 1rem; */
+	font-size: 16px;
+	transition: all .1s linear;
+	-webkit-transition: all .1s linear;
+	-moz-transition: all .1s linear;
+	-webkit-appearance: none;
+    background-color:rgb(255, 255, 255);
+}
+
+.regularclassPL{
+    /* border: 1px solid lightgrey; */
+	border-radius: 5px;
+	outline: none;
+	width: 90%;
     /* padding: 15px 20px; */
 	font-size: 16px;
 	transition: all .1s linear;
@@ -49,6 +63,22 @@ b{
 	-moz-transition: all .1s linear;
 	-webkit-appearance: none;
     background-color:rgb(255, 255, 255);
+}
+
+.regularclassPL input{
+    /* padding: 0.55rem; */
+    /* border-color: lightgrey; */
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+    outline: none;
+    width: 100%;
+    /* padding: 1rem; */
+    font-size: 16px;
+    transition: all .1s linear;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    -webkit-appearance: none;
+    background-color: rgb(255, 255, 255);
 }
 
 .label-float .regularclassselect {
@@ -102,11 +132,12 @@ b{
 	font-size: 13px;
 	top: 0;
 	color: #00AEFF;
-
+    z-index: 99;
 }
 
 .checkboxclass{
     margin-left: 1rem;
+    /* padding: 1rem; */
 }
 
 .checkboxlabelclass{
@@ -309,4 +340,10 @@ input[type=number] {
 
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
   /* For landscape layouts only */
+}
+
+.inputStyle {
+    border: none !important;
+    border-bottom: 1px solid black  !important;
+    background-color: transparent !important;
 }
