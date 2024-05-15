@@ -1,5 +1,4 @@
 public with sharing class BT_NewCashDisbursementController {
-    public static boolean bypassrecalculateBudgetItems = false;
 
     @AuraEnabled
     public static CollectResultWrapper getFieldSet(String objectName, String fieldSetName, String recordId){
@@ -27,7 +26,8 @@ public with sharing class BT_NewCashDisbursementController {
                     storeFieldSetAndProjectId.fieldSet += jsonPart;
                 }
             }
-
+            CashDisbursementTriggerHandler.bypassrecalculateBudgetItems=true;
+            System.debug(CashDisbursementTriggerHandler.bypassrecalculateBudgetItems);
             BT_NewCashDisbursementController obj = new BT_NewCashDisbursementController();
             storeFieldSetAndProjectId.projectId = obj.getProjectFromContractorInvoice(recordId);
             storeFieldSetAndProjectId.vendorId = obj.getVendorFromContractorInvoice(recordId);
@@ -128,7 +128,10 @@ public with sharing class BT_NewCashDisbursementController {
 
     @AuraEnabled
     public static void setBypassRecalculateBudgetItems(Boolean value) {
-        bypassrecalculateBudgetItems = value;
+        System.debug('i am here fun');
+        System.debug('befor:'+CashDisbursementTriggerHandler.bypassrecalculateBudgetItems);
+        CashDisbursementTriggerHandler.bypassrecalculateBudgetItems=value;
+        System.debug('bypassrecalculateBudgetItems updated to: ' + CashDisbursementTriggerHandler.bypassrecalculateBudgetItems);
     }
 
     public class CollectResultWrapper {
