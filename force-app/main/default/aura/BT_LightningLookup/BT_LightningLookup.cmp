@@ -28,6 +28,8 @@
     <aura:attribute name="childValue" type="String" default="haveValue" />
     <aura:attribute name="costcodeValue" type="String" default="haveValue" />
     <aura:attribute name="unitcostValue" type="String" default="haveValue" />
+    <aura:attribute name="clearProductId" type="String" default="haveValue" />
+    <aura:attribute name="clearCostCode" type="String" default="haveValue" />
 
     <!-- for BT_ManageBOMlines -->
     <aura:attribute name="index" type="Integer"/>
