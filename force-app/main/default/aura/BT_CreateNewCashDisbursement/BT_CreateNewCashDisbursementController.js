@@ -57,13 +57,50 @@
         $A.get("e.force:closeQuickAction").fire();
 
     },
+    // handleSubmit: function (component, event, helper) {
+    //     console.log('in submit');
+    //     component.set('v.isdisabled', true);
+    //     event.preventDefault(); // stop form submission 
+    //     var eventFields = event.getParam("fields");
+    //     component.set('v.isLoading', true);
+    //     component.find('recordViewForm').submit(eventFields); // Submit form'
+    //     console.log(JSON.stringify(eventFields));
+    // },
     handleSubmit: function (component, event, helper) {
-        component.set('v.isdisabled', true);
-        event.preventDefault(); // stop form submission
-        var eventFields = event.getParam("fields");
-        component.set('v.isLoading', true);
-        component.find('recordViewForm').submit(eventFields); // Submit form'
-    },
+    console.log('in submit');
+    var bypassrecalculateBudgetItems = true;
+    var action = component.get("c.setBypassRecalculateBudgetItems");
+    action.setParams({ value: bypassrecalculateBudgetItems });
+    action.setCallback(this, function(response) {
+        var state = response.getState();
+        if (state === "SUCCESS") {
+            console.log('bypassrecalculateBudgetItems set to true successfully');
+            component.set('v.isdisabled', true);
+            event.preventDefault(); // stop form submission 
+            var eventFields = event.getParam("fields");
+            component.set('v.isLoading', true);
+            component.find('recordViewForm').submit(eventFields); // Submit form'
+            console.log(JSON.stringify(eventFields));
+ 
+            setTimeout(function() {
+                var resetAction = component.get("c.setBypassRecalculateBudgetItems");
+                resetAction.setParams({ value: false });
+                resetAction.setCallback(this, function(resetResponse) {
+                    var resetState = resetResponse.getState();
+                    if (resetState === "SUCCESS") {
+                        console.log('bypassrecalculateBudgetItems reset to false successfully');
+                    } else {
+                        console.log('Failed to reset bypassrecalculateBudgetItems');
+                    }
+                });
+                $A.enqueueAction(resetAction);
+            }, 1000); 
+        } else {
+            console.log('Failed to set bypassrecalculateBudgetItems');
+         }
+    });
+    $A.enqueueAction(action);
+},
     handleError: function(component, event, helper) {
         var errorMsg = event.getParam("detail");
     },

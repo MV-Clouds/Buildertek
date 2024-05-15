@@ -5,7 +5,9 @@
     <aura:attribute name="parentRecordId" type="String" default="" />
     <aura:attribute name="projectId" type="String" default="" />
     <aura:attribute name="vendorId" type="String" default="" />
-    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="btBudgetId" type="String" default="" />
+    <aura:attribute name="btBudgetLineId" type="String" default="" />
+        <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="isdisabled" type="Boolean" default="false"/>
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:html tag="style">
@@ -54,6 +56,11 @@
                             </lightning:layoutItem>
                             <br />
                         </aura:iteration>
+                                 <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+
+                                            <lightning:inputField fieldName="buildertek__BT_Budget__c" value="{!v.btBudgetId}"/>
+                                            <lightning:inputField fieldName="buildertek__BT_Budget_Line__c" value="{!v.btBudgetLineId}"/>
+                                 </lightning:layoutItem>
                     </lightning:layout>
                     <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />
