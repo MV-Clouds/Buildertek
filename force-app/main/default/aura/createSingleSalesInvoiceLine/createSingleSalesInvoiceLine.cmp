@@ -38,12 +38,11 @@
 
     <div aura:id="inlineEditSalesInvoiceLine" style="margin-top:15px; padding:10px;">
         <table class="slds-table slds-table_bordered slds-table_cell-buffer"
-            style="border:1px solid black;border-top-left-radius: 5px;
-            border-top-right-radius: 5px;">
+            style="border:1px solid grey;border-radius: 5px;">
             <thead>
                 <tr class="slds-text-title_caps">
                     <th scope="col"
-                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:3px; width: 10vw;">
+                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px; width: 10vw;">
                         <div class="slds-truncate" title="PriceBook">PriceBook</div>
                     </th>
                     <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 10vw;">
@@ -66,7 +65,7 @@
                     </th>
 
                     <th scope="col"
-                        style="background-color:rgba(27, 82, 151, 1.0); color:white;  border-top-right-radius:3px;">
+                        style="background-color:rgba(27, 82, 151, 1.0); color:white;  border-top-right-radius:5px;">
                         <div class="slds-truncate" title="Action">Save</div>
                     </th>
                 </tr>
