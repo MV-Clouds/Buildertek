@@ -316,7 +316,7 @@ public without sharing class PurchaseOrderDAO{
     public static string createAPFromPO(string poid){
         system.debug('poid---->' + poid);
         isInvoiceCreated = true;
-        string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c
+        string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c,buildertek__Budget__c,buildertek__Budget_Line__c	
                                            from purchase_order__c
                                            where Id = :poid]);
         createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c
@@ -348,8 +348,13 @@ public without sharing class PurchaseOrderDAO{
             ap.Purchase_Order__c = po.id;
             System.debug('purchase order iD => ' + ap.Purchase_Order__c);
             ap.Project__c = po.Project__c;
-            ap.Vendor__c = po.Vendor__c;
-
+            ap.Vendor__c = po.Vendor__c; 
+            if(po.buildertek__Budget__c!=null){
+                ap.buildertek__Budget__c= po.buildertek__Budget__c;
+            }
+            if(po.buildertek__Budget_Line__c!=null){
+                ap.buildertek__BT_Budget_Line__c= po.buildertek__Budget_Line__c;
+            } 
             if(po.Tax__c != null){
                 ap.Tax__c = po.Tax__c;
             }
@@ -358,7 +363,10 @@ public without sharing class PurchaseOrderDAO{
             posRecId = po.id;
         }
         /* }*/
+        AccountPayableHelper.bypassTrigger = true; 
         insert PoIdbyAp.values();
+        AccountPayableHelper.bypassTrigger = false; 
+
         return PoIdbyAp.get(posRecId).Id;
     }
 
