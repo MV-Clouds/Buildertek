@@ -1,0 +1,131 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+        <div class="maindiv slds-modal__container">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                </svg>
+                <span class="slds-assistive-text">Cancel and close</span>
+            </button>
+            <div class="slds-modal__header modalHeader">
+                <div class="hd-txt-main">
+                    <div lwc:if={step1} class="hd-txt-line">Choose Record Type</div>
+                    <div lwc:if={step2} class="hd-txt-line">New BT Walk Through Line Item</div>
+                </div>
+            </div>
+            <lightning-record-edit-form object-api-name={objectApiName} onsubmit={handleSave}>
+            <div class="slds-modal__content modalBody" id="modal-content-id-1">
+                <div class="containerBody">
+                    <template if:true={step1}>
+                        <div class="comboboxPadding">
+                            <lightning-combobox
+                                label="Select Record Type"
+                                name="recordType"
+                                value={selectedRecordType}
+                                options={recordTypeOptions}
+                                onchange={handleRecordTypeChange}
+                                required="true
+                                ">
+                            </lightning-combobox>
+                        </div>
+                    </template>
+                    <template if:true={step2}>
+                        <div class="fields slds-grid slds-wrap">
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                <lightning-record-picker
+                                    label="Walk Through"
+                                    object-api-name="buildertek__Walk_Through_List__c"
+                                    value={walkThroughId}
+                                    disabled="true">
+                                </lightning-record-picker>
+                            </div>
+                            <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                <lightning-record-picker
+                                    label="Section"
+                                    object-api-name="buildertek__Category__c"
+                                    value={categoryId}
+                                    disabled="true">
+                                </lightning-record-picker>
+                            </div>
+                            <template if:true={isProduct}>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                    <lightning-combobox
+                                        label="Price Book"
+                                        value={selectedPriceBook}
+                                        placeholder="Select Progress"
+                                        options={priceBookListOrdered}
+                                        onchange={searchPriceBook}>
+                                    </lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                    <lightning-combobox
+                                        label="Product Family"
+                                        value={selectedProductFamily}
+                                        placeholder="Select Progress"
+                                        options={pflistOrdered}
+                                        onchange={searchProductFamily} >
+                                    </lightning-combobox>
+                                </div>
+                            </template>
+                        </div>
+
+                            <div class="contentBody">
+                                <div class="fields slds-grid slds-wrap">
+                                    <template if:true={isProduct}>
+                                        <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small">
+                                            <div class="slds-card">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-input label="Product" type="search" onfocus={showProductOptions}
+                                                            onchange={searchProduct} value={selectedProductValue} onblur={clearProductResults}>
+                                                        </lightning-input>
+                                                        <div if:true={searchProductResults} class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                                                            role="listbox" onmousedown={preventHide}>
+                                                            <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                                                <template for:each={searchProductResults} for:item="searchResult">
+                                                                    <li key={searchResult.value} data-value={searchResult.value} role="presentation"
+                                                                        onclick={selectProductResult} class="slds-listbox__item">
+                                                                        <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small "
+                                                                            role="option">
+                                                                            <span class="slds-media__body">
+                                                                                <span class="slds-truncate" title={searchResult.label}>
+                                                                                    {searchResult.label}
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template for:each={fieldsForSelectedRecordType} for:item="field">
+                                        <div class="slds-col slds-size_1-of-2 slds-p-around_xx-small" key={field.name}>
+                                            <lightning-input-field field-name={field.name} variant="label-stacked" data-field={field.name}></lightning-input-field>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-modal__footer modalFooter">
+                    <template if:true={step1}>
+                        <lightning-button label="Cancel" onclick={handleClose}></lightning-button>
+                        <lightning-button variant="brand" label="Next" onclick={handleNext}></lightning-button>
+                    </template>
+                    <template if:true={step2}>
+                        <lightning-button  label="Cancel" onclick={handleClose}></lightning-button>
+                        <lightning-button  variant="brand" label="Save" type="submit" ></lightning-button>
+                    </template>
+                </div>
+            </lightning-record-edit-form>
+        </div>
+        <lightning-spinner if:true={spinner} alternative-text="Loading" class="spins" size="large" variant="brand"></lightning-spinner>
+    </section>
+
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>
