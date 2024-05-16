@@ -42,6 +42,20 @@
         console.log('validateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
+        console.log(timeSheetEntries.length);
+        if(timeSheetEntries.length==0){
+                component.set("v.Spinner", false);
+                isValid = false;
+                window.onload = showToast();        
+                function showToast() {
+                    sforce.one.showToast({
+                        "title": "Error!",
+                        "message": "Please enter at least one timesheet entry.",
+                        "type": "error"
+                    });
+                }
+                return;   
+        }
         for (var i = 0; i < timeSheetEntries.length; i++) {
             var name = timeSheetEntries[i].Name;
             name = name.replace(/^\s+|\s+$/g, '');
