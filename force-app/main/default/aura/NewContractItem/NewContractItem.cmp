@@ -221,7 +221,6 @@
                  </div>
              </div>
              <aura:set attribute="else">-->
-                <br/>
                 <aura:if isTrue="{!v.isOpen}">
                     <div class="slds-m-around_xx-large"> 
                         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
@@ -631,7 +630,7 @@
                                             <!-- </aura:if> -->
                                         </aura:iteration>
                                     </tr>
-                                    <br />
+
 
                                     <!--<br />
                                 <br />-->
