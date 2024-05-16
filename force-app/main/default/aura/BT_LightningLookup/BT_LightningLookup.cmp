@@ -29,6 +29,9 @@
     <aura:attribute name="costcodeValue" type="String" default="haveValue" />
     <aura:attribute name="unitcostValue" type="String" default="haveValue" />
     <aura:attribute name="clearProductId" type="String" default="haveValue" />
+    <aura:attribute name="clearCostCode" type="String" default="haveValue" />
+    <aura:attribute name="callingcmp" type="String" default="haveValue" />
+    <aura:attribute name="fieldName" type="String" default="haveValue" />
 
     <!-- for BT_ManageBOMlines -->
     <aura:attribute name="index" type="Integer"/>
@@ -65,7 +68,17 @@
                         <span class="slds-assistive-text"></span>
                     </span>
                     <span style = "text-align : left">
-                    <ui:inputText click="{!c.onfocus}" updateOn="keyup" change="{!c.clearOldValues}" disabled="{!v.disabled}" keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass" value="{!v.SearchKeyWord}" placeholder="search.." blur="{!c.onblur}"/>
+                        <aura:if isTrue="{!v.callingcmp == 'BT_MassUpdateTakeOffLines'}">
+                            <ui:inputText click="{!c.onfocus}" updateOn="keyup" change="{!c.clearOldValues}" disabled="{!v.disabled}"
+                                keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass"
+                                value="{!v.SearchKeyWord}" placeholder="search.." blur="{!c.onblur}" />
+                            <aura:set attribute="else">
+                                <ui:inputText click="{!c.onfocus}" updateOn="keyup" change="{!c.clearOldValues}" disabled="{!v.disabled}"
+                                    keyup="{!c.keyPressController}" class="slds-lookup__search-input slds-input leftPaddingClass"
+                                    value="{!v.SearchKeyWord}" placeholder="search.." blur="{!c.onblur}" />
+                            </aura:set>
+                        </aura:if>
+
                </span>
                     </div>
             </div>
@@ -82,7 +95,7 @@
             <lightning:spinner class="slds-hide" alternativeText="Loading" variant="brand" size="small" aura:id="mySpinner"/>
             <center> {!v.Message}</center>
             <aura:iteration items="{!v.listOfSearchRecords}" var="singleRec">
-                <c:BT_LightningLookupResult ObjectAPIName="{!v.objectAPIName}" oRecord="{!singleRec}" IconName="{!v.IconName}" change="{!c.getSelectedLookupValue}" phaseIndex="{!v.phaseIndex}" index="{!v.index}" phaseIndexValue="{!v.phaseIndexValue}"/>
+                <c:BT_LightningLookupResult ObjectAPIName="{!v.objectAPIName}" oRecord="{!singleRec}" IconName="{!v.IconName}" change="{!c.getSelectedLookupValue}" phaseIndex="{!v.phaseIndex}" index="{!v.index}" phaseIndexValue="{!v.phaseIndexValue}" fieldName="{!v.fieldName}"/>
             </aura:iteration>
         </ul>
     </div>

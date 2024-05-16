@@ -412,6 +412,7 @@
     },
 
     clearSelectedHandler :  function(component, event, helper){
+        console.log(`clearSelectedHandler`);
         var index = event.getParam("index");
         // console.log('field : ', event.getParam("fieldName"));
         if(event.getParam("fieldName") == 'buildertek__Price_Book__c' || event.getParam("fieldName") == undefined){ 
@@ -427,7 +428,8 @@
         component.set("v.isLoading", true);
         var index = event.getParam("index");
         var setProduct = true;
-        
+        var fieldName = event.getParam("fieldName");
+        console.log(`Takeoff ${fieldName} selected...`);
         // to avoid lag after set product...
         window.setTimeout(
             $A.getCallback(function () {

@@ -143,18 +143,13 @@
                                     </td>
                                     <aura:iteration items="{!v.fieldSetValues}" var="field">
                                         <aura:if isTrue="{!field.name == 'buildertek__Price_Book__c'}">
-                                            <td class="pricebookcls" style = "max-width: 11rem; min-width: 11rem;">
-                                                <c:BT_LookupFields selectedRecordId="{!row.buildertek__Price_Book__c}" childObjectName="buildertek__Project_Takeoff_Lines__c" index="{!index}"
-                                                        fieldName="{!field.name}" record="{!row}"
-                                                        callingCmpName="BT_MassUpdateTakeOffLines"
-                                                        />
+                                            <td style = "max-width: 13rem; min-width: 13rem;">
+                                                <c:BT_LightningLookup objectAPIName="Pricebook2" IconName="standard:pricebook" selectedRecord="{!row.buildertek__Price_Book__c}" aura:id="priceBookId" index="{!index}" callingcmp="BT_MassUpdateTakeOffLines" productId="{!row.buildertek__Product__c}" fieldName = "pricebook"/>
                                             </td>
                                         </aura:if>
                                         <aura:if isTrue="{!field.name == 'buildertek__Product__c'}">
-                                            <td style = " max-width: 13rem; min-width: 13rem;">
-                                                <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product"
-                                                    selectedRecord="{!row.buildertek__Product__r}" aura:id="productId"
-                                                    parentId="{!row.buildertek__Price_Book__c}" prodctfamly="All Families" index="{!index}" />
+                                            <td style = "max-width: 13rem; min-width: 13rem;">
+                                                <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!row.buildertek__Product__r}" aura:id="productId" index="{!index}" callingcmp="BT_MassUpdateTakeOffLines" fieldName="product"/>
                                             </td>
                                         </aura:if>
                                         <aura:if isTrue="{!and(field.name != 'buildertek__Price_Book__c', field.name != 'buildertek__Product__c')}">

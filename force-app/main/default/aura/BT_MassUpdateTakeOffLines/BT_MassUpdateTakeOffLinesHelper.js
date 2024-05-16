@@ -316,8 +316,10 @@
 
     setProduct: function(component, event, helper, setProduct, index){
         try {
+            console.log(`Set Product: ${setProduct} at index: ${index}`);
             // var index = event.getParam("index");
             // var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
+            console.log(`Set Product: ${JSON.stringify(event.getParam("recordByEvent"))}`);
             var listOfRecords = component.get("v.listOfRecords");
             if(setProduct){
                 // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
@@ -326,8 +328,8 @@
                     var ProductPhase_Vs_BuildPhase = component.get("v.ProductPhase_Vs_BuildPhase");
                     // console.log('selected phase : ', product.buildertek__Quote_Group__c);
                     // console.log('current phase : ', ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c]);
-                    listOfRecords[index].buildertek__Product__r = product;
-                    listOfRecords[index].buildertek__Product__c = product.Id;
+                    listOfRecords[index].buildertek__Price_Book__c = product;
+                    listOfRecords[index].buildertek__Price_Book__r = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
@@ -346,6 +348,8 @@
                 listOfRecords[index].buildertek__Build_Phase__c = null;
                 listOfRecords[index].buildertek__Quantity__c = 0;
                 listOfRecords[index].buildertek__Categories__c = null;
+                listOfRecords[index].buildertek__Price_Book__c = null;
+                listOfRecords[index].buildertek__Price_Book__r = null;
               }
 
 
