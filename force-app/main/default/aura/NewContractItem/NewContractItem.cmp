@@ -377,7 +377,7 @@
                                                         <ui:inputCheckbox value="{!group.isSelected}"
                                                             name="{!group.Name}" change="{!c.handleSelectAll}"
                                                             aura:id="selectAll" class="" />
-                                                        <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                                        <span class="slds-checkbox--faux" ></span>
                                                         <span class="slds-form-element__label text"></span>
                                                     </label>
                                                 </div>
@@ -413,7 +413,7 @@
                                         <th></th>
                                     </tr>
                                     <aura:iteration items="{!v.TotalRecords.tarTable.ListOfEachRecord}" var="tar" indexVar="quoteIndex">
-                                        <tr style="line-height: 2.5;display:table-row;" class="{!v.quoteId+' slds-hint-parent groupRows_'+groupIndex}">
+                                        <tr style="display:table-row;" class="{!v.quoteId+' slds-hint-parent groupRows_'+groupIndex}">
                                             <!-- quoteId -->
 
                                             <aura:if isTrue="{!group.Id == tar.groupId}">
@@ -429,7 +429,7 @@
                                                                     value="{!tar.isSelected}"
                                                                     change="{!c.unCheckAll}" />
                                                                 <span class="slds-checkbox--faux"
-                                                                    style="top:-2px;"></span>
+                                                                    ></span>
                                                                 <span class="slds-form-element__label text"></span>
                                                             </label>
                                                         </div>
@@ -453,7 +453,7 @@
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td scope="row" class="slds-cell-edit" data-label="Name">
+                                                <td scope="row" class="slds-cell-edit" data-label="Name" >
                                                     <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == 'Name'), v.quoteItemId == tar.recordId),and(v.enableMassUpdate))}">
                                                         <ui:inputText aura:id="inputId" value="{!tar.recordName}" change="{!c.updateQuoteData}" blur="{!c.onblur}" />
                                                         <aura:set attribute="else">
@@ -477,7 +477,7 @@
                                                     </aura:if>
                                                 </td>
                                                 <aura:iteration items="{!tar.recordList}" var="value">
-                                                    <td class="ShowIconClass" data-myvalue="{!value}">
+                                                    <td class="ShowIconClass" data-myvalue="{!value}" >
                                                         <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName),v.quoteItemId == tar.recordId),and(v.enableMassUpdate,
                                                             or(or(or(or(or(or(or(value.fieldName=='buildertek__Quantity__c',
                                                             or(or(value.fieldName == 'buildertek__Unit_Price__c',value.fieldName == 'buildertek__Priority__c'),value.fieldName == 'buildertek__Vendor__c')
