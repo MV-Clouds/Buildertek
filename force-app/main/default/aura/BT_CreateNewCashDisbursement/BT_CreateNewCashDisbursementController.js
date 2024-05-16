@@ -86,7 +86,7 @@
                     }
                 });
                 $A.enqueueAction(resetAction);
-            }, 1000); 
+            }, 10000); 
         // } else {
         //     console.log('Failed to set bypassrecalculateBudgetItems');
         //  }
