@@ -2,7 +2,7 @@
     doInit : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
         var recordId = component.get("v.recordId");
         console.log('recordId: ' + recordId);
         helper.nameTheTab(component, event, helper);
@@ -11,8 +11,6 @@
         helper.getAccounts(component, event, helper);
         helper.getUOM(component, event, helper);
         var budgetlineList = component.get("v.budgetLineWrapperList");
-        console.log(component.get('v.budgetLineWrapperList'));
-        
 
         var action = component.get("c.getpricebooks");
         action.setParams({
@@ -34,20 +32,25 @@
                     budgetlineList.forEach(function(value , index){
                         console.log(index);
                         value.pricebookEntryId=projectHavePricebook.Id;
-                     }); 
+                     });
 
                      component.set('v.selectedPricebook' , projectHavePricebook.Id);
                 }
                 component.set("v.pricebookOptions", pricebookOptions);
+
+                budgetlineList.forEach(ele => {
+                    ele.GroupingOptions = component.get("v.budgetLineGroups");
+                });
+
                 component.set("v.budgetlineWrapperList", budgetlineList);
 
 
                 component.set("v.DefaultproductOptionList", pricebookOptions);
 
-                
+
                 for(var key in budgetlineList){
                     helper.getFamily(component, event, helper, budgetlineList[key].pricebookEntryId, key);
-                }     
+                }
 
             }
         });
@@ -55,10 +58,10 @@
     },
 
     getFamily : function(component, event, helper) {
-        
+
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
 
         var index = event.getSource().get("v.name");
         console.log('index: ', index);
@@ -87,10 +90,10 @@
             component.set("v.budgetLineWrapperList", budgetlineWrapperList);
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "HIDE"
-            }).fire();      
+            }).fire();
         }
     },
-    
+
 
     getProduct : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
@@ -132,7 +135,7 @@
 
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "HIDE"
-            }).fire();  
+            }).fire();
         }
 
 
@@ -141,7 +144,7 @@
     // gotProduct : function(component, event, helper) {
     //     $A.get("e.c:BT_SpinnerEvent").setParams({
     //         "action": "SHOW"
-    //     }).fire(); 
+    //     }).fire();
 
     //     var index = event.getSource().get("v.name");
     //     var productId = component.get("v.budgetLineWrapperList")[index].productId;
@@ -162,7 +165,7 @@
     //         component.set("v.budgetLineWrapperList", budgetlineWrapperList);
     //         $A.get("e.c:BT_SpinnerEvent").setParams({
     //             "action": "HIDE"
-    //         }).fire(); 
+    //         }).fire();
     //     }
     // },
 
@@ -177,13 +180,13 @@
     onClickAddBtn : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
 
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         let budgetLineWrapper = helper.createBudgetLineWrapper(component, event, helper);
         var selectedPricebook = component.get("v.selectedPricebook");
         if(selectedPricebook != '') {
-            budgetLineWrapper.pricebookEntryId = selectedPricebook;    
+            budgetLineWrapper.pricebookEntryId = selectedPricebook;
             budgetLineWrapper.productFamilyList = component.get("v.DefaultproductFamilyList");
             budgetLineWrapper.productOptionList = component.get("v.DefaultproductOptionList");
             budgetLineWrapper.ProductList = component.get("v.DefaultproductOptionList");
@@ -193,16 +196,16 @@
 
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "HIDE"
-        }).fire(); 
+        }).fire();
 
         // console.log('inside');
         // var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
-        
+
         // for (var x = 0; x < 5; x++) {
         //     let budgetLineWrapper=helper.createBudgetLineWrapper(component, event, helper);
         //     budgetLineWrapperList.push(budgetLineWrapper);
         // }
-                
+
         // let bugetLineWrap = budgetLineWrapperList;
         // for (var i = bugetLineWrap.length - 5; i < bugetLineWrap.length; i++) {
         //     console.log(bugetLineWrap[i].pricebookEntryId);
@@ -210,7 +213,7 @@
         //     helper.getFamily(component, event, helper, component.get('v.selectedPricebook'), i);
         // }
 
-        
+
     },
 
     deleteRow : function(component, event, helper) {
@@ -223,7 +226,7 @@
     onMassUpdate : function(component, event, helper) {
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
-        }).fire(); 
+        }).fire();
         var budgetLineWrapperList = component.get("v.budgetLineWrapperList");
         var budgetLineList = [];
         for(var i = 0; i < budgetLineWrapperList.length; i++) {
@@ -259,7 +262,7 @@
             if(isDecimal) {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
-                }).fire(); 
+                }).fire();
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: 'Error',
@@ -275,7 +278,7 @@
             if(isUnitCostDecimal) {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
-                }).fire(); 
+                }).fire();
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: 'Error',
@@ -292,7 +295,7 @@
         }else{
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "HIDE"
-            }).fire(); 
+            }).fire();
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
                 title: 'Error',

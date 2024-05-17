@@ -425,6 +425,7 @@
                     'buildertek__Size__c': element.Size,
                     'buildertek__Description__c': element.Description ? element.Description : element.Name,
                     'buildertek__Product_Family__c': element.Family ? element.Family : 'No Grouping',
+                    'buildertek__Notes__c' : element.Notes,
                     'buildertek__UOM__c': element.QuantityUnitOfMeasure     //----
 
                 })

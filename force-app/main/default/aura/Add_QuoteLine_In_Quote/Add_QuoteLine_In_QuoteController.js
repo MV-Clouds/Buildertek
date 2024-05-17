@@ -229,6 +229,7 @@ console.log('selectedRecordIds------>',component.get("v.selectedRecords"));
        component.set("v.Spinner", true);
        console.log('saveQuoteLine');
        var listQlines = component.get("v.selectedProducts");
+       console.log({listQlines});
        var flag=false;
        listQlines.forEach(function(elem){
         console.log({elem});
