@@ -265,7 +265,7 @@
                     "type": 'error'
                 });
                 toastEvent.fire();
-                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                console.log(`Error: ${JSON.stringify(response.getError())}`);
             }
         });
         $A.enqueueAction(action);
@@ -308,7 +308,7 @@
                
             } else if (state === "ERROR") {
                 component.set('v.isLoading', false);
-                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                console.log(`Error: ${JSON.stringify(response.getError())}`);
             }
         });
         $A.enqueueAction(action);
@@ -370,4 +370,30 @@
             console.log('error in setProduct : ', error.stack);
         }
       },
+
+      setPriceBook: function (component, event, helper, index, setPriceBook) {
+        try {
+            var listOfRecords = component.get("v.listOfRecords");
+            if (setPriceBook) {
+                let pricebook = event.getParam("recordByEvent");
+                if (pricebook) {
+                    listOfRecords[index].buildertek__Price_Book__c = pricebook.Id;
+                    listOfRecords[index].buildertek__Price_Book__r = pricebook;
+                }
+            } else {
+                listOfRecords[index].buildertek__Price_Book__c = null;
+                listOfRecords[index].buildertek__Price_Book__r = null;
+            }
+            component.set("v.currectModifiedIndex", index);
+            component.set("v.listOfRecords", listOfRecords);
+            window.setTimeout(
+                $A.getCallback(function () {
+                    component.set("v.isLoading", false);
+                }), 500
+            );
+        } catch (error) {
+            console.log('error in setPriceBook : ', error.stack);
+        }
+    }
+    
 })

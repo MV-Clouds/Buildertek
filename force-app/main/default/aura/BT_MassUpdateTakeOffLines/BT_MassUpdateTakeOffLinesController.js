@@ -403,8 +403,8 @@
               component.set("v.rerender", !component.get("v.rerender"));
               component.set("v.listOfRecords", listOfRecords);
 
-              var setProduct = false;   // Clear product...
-              helper.setProduct(component, event, helper, setProduct, index);
+            //   var setProduct = false;   // Clear product...
+            //   helper.setProduct(component, event, helper, setProduct, index);
             }
         } catch (error) {
             console.log(' error in handleLookUpEvent: ', error.stack);
@@ -419,8 +419,9 @@
             // undefiend when function call from "BT_LightningLookup" component...
             // component.set("v.isLoading", true);
 
-            var setProduct = false;   // Clear product...
-            helper.setProduct(component, event, helper, setProduct, index);
+            var setPriceBook = false;   // Clear product...
+            // helper.setProduct(component, event, helper, setProduct, index);
+            helper.setPriceBook(component, event, helper, index, setPriceBook);
         }
     },
 
@@ -428,12 +429,14 @@
         component.set("v.isLoading", true);
         var index = event.getParam("index");
         var setProduct = true;
+        var setPriceBook = true;
         var fieldName = event.getParam("fieldName");
         console.log(`Takeoff ${fieldName} selected...`);
         // to avoid lag after set product...
         window.setTimeout(
             $A.getCallback(function () {
-              helper.setProduct(component, event, helper, setProduct, index);
+            //   helper.setProduct(component, event, helper, setProduct, index);
+              helper.setPriceBook(component, event, helper, index, setPriceBook);
           }),
           100
         );

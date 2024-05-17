@@ -22,11 +22,11 @@
         action.setCallback(this, function (response) {
           // $A.util.removeClass(component.find("mySpinner"), "slds-show");
           var state = response.getState();
-          console.log(`State: ${state} and ${response.getReturnValue()}`);
+          console.log(`State: ${state} and ${JSON.stringify(response.getReturnValue())}`);
           if (state === "SUCCESS") {
             var storeResponse = response.getReturnValue();
             console.log('storeResponse: ', JSON.stringify(storeResponse));
-            if (storeResponse.length == 0) {
+            if (storeResponse && storeResponse.length == 0) {
               component.set("v.Message", 'No Result Found...');
             } else {
               component.set("v.Message", '');
@@ -42,76 +42,51 @@
     else {
       let callingcmp = component.get("v.callingcmp");
       console.log(`calling component: ${callingcmp}`);
-      if (callingcmp == 'BT_MassUpdateTakeOffLines') {
-        component.set("v.Message", 'Loading...');
-        var action = component.get("c.getProductRecordsWithoutPriceBook");
-        action.setStorable();
-        action.setParams({
-          'searchKeyWord': getInputkeyWord
-        });
-        action.setCallback(this, function (response) {
-          $A.util.removeClass(component.find("mySpinner"), "slds-show");
-          var state = response.getState();
-          if (state === "SUCCESS") {
-            var storeResponse = response.getReturnValue();
-            console.log('storeResponse: ', JSON.stringify(storeResponse));
-            if (storeResponse.length == 0) {
-              component.set("v.Message", 'No Result Found...');
-            } else {
-              component.set("v.Message", '');
-            }
-            component.set("v.listOfSearchRecords", storeResponse);
+
+      component.set("v.Message", 'Loading...');
+      var action = component.get("c.getProductRecords");
+      action.setStorable();
+      // set param to method  
+      action.setParams({
+        'searchKeyWord': getInputkeyWord,
+        'ObjectName': component.get("v.objectAPIName"),
+        'filter': component.get("v.filter"),
+        'parentId': component.get("v.parentId"),
+        'prodctfamly': component.get("v.prodctfamly")
+      });
+      // // set a callBack  
+      // console.log( component.get("v.filter"));  
+      // console.log( component.get("v.prodctfamly"));
+
+
+
+      action.setCallback(this, function (response) {
+        $A.util.removeClass(component.find("mySpinner"), "slds-show");
+        var state = response.getState();
+        if (state === "SUCCESS") {
+          var storeResponse = response.getReturnValue();
+          // if storeResponse size is equal 0 ,display No Result Found... message on screen.                }
+          if (storeResponse.length == 0) {
+            component.set("v.Message", 'No Result Found...');
+          } else {
+            component.set("v.Message", '');
           }
 
-        });
-        $A.enqueueAction(action);
-        console.log('listof record-->', component.get("v.listOfSearchRecords").length);
+          // for(var i in storeResponse){
+          //   delete storeResponse[i].PricebookEntries;
+          // }
+          // console.log('storeResponse filter : ', storeResponse);
+          // set searchResult list with return value from server.
+          component.set("v.listOfSearchRecords", storeResponse);
+        }
 
-      } else {
-        component.set("v.Message", 'Loading...');
-        var action = component.get("c.getProductRecords");
-        action.setStorable();
-        // set param to method  
-        action.setParams({
-          'searchKeyWord': getInputkeyWord,
-          'ObjectName': component.get("v.objectAPIName"),
-          'filter': component.get("v.filter"),
-          'parentId': component.get("v.parentId"),
-          'prodctfamly': component.get("v.prodctfamly")
-        });
-        // // set a callBack  
-        // console.log( component.get("v.filter"));  
-        // console.log( component.get("v.prodctfamly"));
+      });
+      // console.log(component.get("v.parentId") + '----------------------------->>>>>>>>');
+      // enqueue the Action  
+      $A.enqueueAction(action);
+      console.log('listof record-->', component.get("v.listOfSearchRecords").length);
 
 
-
-        action.setCallback(this, function (response) {
-          $A.util.removeClass(component.find("mySpinner"), "slds-show");
-          var state = response.getState();
-          if (state === "SUCCESS") {
-            var storeResponse = response.getReturnValue();
-            // if storeResponse size is equal 0 ,display No Result Found... message on screen.                }
-            if (storeResponse.length == 0) {
-              component.set("v.Message", 'No Result Found...');
-            } else {
-              component.set("v.Message", '');
-            }
-
-            // for(var i in storeResponse){
-            //   delete storeResponse[i].PricebookEntries;
-            // }
-            // console.log('storeResponse filter : ', storeResponse);
-            // set searchResult list with return value from server.
-            component.set("v.listOfSearchRecords", storeResponse);
-          }
-
-        });
-        // console.log(component.get("v.parentId") + '----------------------------->>>>>>>>');
-        // enqueue the Action  
-        $A.enqueueAction(action);
-        console.log('listof record-->', component.get("v.listOfSearchRecords").length);
-
-      }
     }
 
   }
