@@ -6,10 +6,15 @@ public class createVoidPOController {
         returnWrapper returnWr = new returnWrapper();
         try {
             
-            List<buildertek__Purchase_Order__c> PO = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c, 
-                                                        (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Tax__c,buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
+            List<buildertek__Purchase_Order__c> PO = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c,buildertek__Status__c, 
+                                                        (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Cost_Type__c, buildertek__Cost_Code__c,buildertek__Tax__c,buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
                                                     FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
-
+            if(PO[0].buildertek__Status__c=='Paid' || PO[0].buildertek__Status__c=='Partially Paid'){
+                
+            returnWr.status = 'error';
+            returnWr.message = 'You can not void PO for Partially Paid/Paid';
+            return returnWr;
+            }
             buildertek__Purchase_Order__c VoidPOtoCreate = PO[0].clone(false, false, false, false);
             VoidPOtoCreate.buildertek__Old_Purchase_Order__c = PO[0].Id;
             insert VoidPOtoCreate;
@@ -21,6 +26,8 @@ public class createVoidPOController {
                     Poline.buildertek__Unit_Price__c = -(POline.buildertek__Unit_Price__c);
                     Poline.buildertek__Tax__c = POline.buildertek__Tax__c;
                     Poline.buildertek__Purchase_Order__c = VoidPOtoCreate.Id;
+                    Poline.buildertek__Cost_Type__c = POline.buildertek__Cost_Type__c;
+                    Poline.buildertek__Cost_Code__c = POline.buildertek__Cost_Code__c;                    
                     POlinesToCreate.add(POline);
                 }
             }
