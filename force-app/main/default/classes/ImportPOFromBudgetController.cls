@@ -5,11 +5,10 @@ public with sharing class ImportPOFromBudgetController {
                         list<buildertek__Purchase_Order__c> POList;
             
             buildertek__Budget__c bb= [SELECT Id,Name, buildertek__Project__c FROM buildertek__Budget__c WHERE Id =: recordId];
-            POList = [SELECT Id, Name, buildertek__PO_Total__c , buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Id, buildertek__Vendor__r.Name, buildertek__Cost_Code__c, buildertek__Cost_Code__r.Id, buildertek__Cost_Code__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Id, buildertek__Trade_Type__r.Name FROM buildertek__Purchase_Order__c 
-                                                WHERE buildertek__PO_Type__c = 'Standard' AND buildertek__Type__c = 'Standard' AND buildertek__Budget__c = null AND buildertek__Project__c=:bb.buildertek__Project__c
+            POList =[SELECT Id, Name, buildertek__PO_Total__c , buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Id, buildertek__Vendor__r.Name, buildertek__Cost_Code__c, buildertek__Cost_Code__r.Id, buildertek__Cost_Code__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Id, buildertek__Trade_Type__r.Name FROM buildertek__Purchase_Order__c
+                                                WHERE buildertek__PO_Type__c != 'Master' AND buildertek__Type__c != 'Master' AND buildertek__Budget__c = null AND buildertek__Project__c=:bb.buildertek__Project__c
                                                 ORDER BY Name
-                                                ASC limit 50000]; 
-                                                
+                                                ASC limit 50000];                                             
             if (POList.size() > 0) {
                 return POList;
             }  
