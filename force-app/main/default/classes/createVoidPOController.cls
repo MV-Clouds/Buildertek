@@ -12,7 +12,7 @@ public class createVoidPOController {
             if(PO[0].buildertek__Status__c=='Paid' || PO[0].buildertek__Status__c=='Partially Paid'){
                 
             returnWr.status = 'error';
-            returnWr.message = 'You can not void PO for Partially Paid/Paid';
+            returnWr.message = 'You cannot void a Paid or Partially Paid Purchase Order';
             return returnWr;
             }
             buildertek__Purchase_Order__c VoidPOtoCreate = PO[0].clone(false, false, false, false);
