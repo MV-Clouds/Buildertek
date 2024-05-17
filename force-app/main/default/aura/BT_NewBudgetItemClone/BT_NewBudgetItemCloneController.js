@@ -2826,7 +2826,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-                component.set("v.isOpen", false);j
+                component.set("v.isOpen", false);
                 component.find('notifLib').showNotice({
                     "variant": "error",
                     "header": "Error!",
