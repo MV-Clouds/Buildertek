@@ -30,7 +30,6 @@
                 <lightning:recordEditForm aura:id="recordViewForm"
                                           objectApiName="buildertek__Payment__c"
                                           onsubmit="{!c.handleSubmit}"
-                                          onsuccess="{!c.handleSuccess}"
                                           onerror = "{!handleError}">
                     <lightning:layout verticalAlign="center" multipleRows="true">
                         <aura:iteration items="{!v.listOfFields}" var="field">
@@ -57,9 +56,6 @@
                             <br />
                         </aura:iteration>
                                  <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-
-                                            <lightning:inputField fieldName="buildertek__BT_Budget__c" value="{!v.btBudgetId}"/>
-                                            <lightning:inputField fieldName="buildertek__BT_Budget_Line__c" value="{!v.btBudgetLineId}"/>
                                  </lightning:layoutItem>
                     </lightning:layout>
                     <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >

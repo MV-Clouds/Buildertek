@@ -1,8 +1,5 @@
 public with sharing class CashDisbursementTriggerHandler {
     public static Boolean isSkipExecution = false;
-    public static boolean bypassrecalculateBudgetItems;
-    static{
-        bypassrecalculateBudgetItems= true;}
     
     public static void onBeforeInsert(List<buildertek__Payment__c> newcashDisbursement){
         String budgetLineGroupId ;
@@ -194,12 +191,6 @@ public with sharing class CashDisbursementTriggerHandler {
     
 
     public static void recalculateBudgetItems(List<Id> budgetItemIds){
-        System.debug('i am here');
-        System.debug(bypassrecalculateBudgetItems);
-        if(bypassrecalculateBudgetItems){
-            System.debug('I am returning');
-            return;
-        }
         List<buildertek__Payment__c> cashDisbursements = [SELECT Id, Name, buildertek__BT_Budget_Line__c, buildertek__Payment_Amount__c FROM buildertek__Payment__c WHERE buildertek__BT_Budget_Line__c IN: budgetItemIds];
 
         //make a map of budget item id and cash disbursement
