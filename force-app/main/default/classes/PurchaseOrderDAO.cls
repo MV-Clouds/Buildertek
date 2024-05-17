@@ -349,12 +349,9 @@ public without sharing class PurchaseOrderDAO{
             System.debug('purchase order iD => ' + ap.Purchase_Order__c);
             ap.Project__c = po.Project__c;
             ap.Vendor__c = po.Vendor__c; 
-            if(po.buildertek__Budget__c!=null){
-                ap.buildertek__Budget__c= po.buildertek__Budget__c;
-            }
-            if(po.buildertek__Budget_Line__c!=null){
-                ap.buildertek__BT_Budget_Line__c= po.buildertek__Budget_Line__c;
-            } 
+            ap.buildertek__Budget__c= po.buildertek__Budget__c;
+            ap.buildertek__BT_Budget_Line__c= po.buildertek__Budget_Line__c;
+                
             if(po.Tax__c != null){
                 ap.Tax__c = po.Tax__c;
             }
