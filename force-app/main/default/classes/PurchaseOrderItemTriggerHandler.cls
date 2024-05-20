@@ -40,7 +40,7 @@ public with sharing class PurchaseOrderItemTriggerHandler {
 		Map<Id, buildertek__PO_Item_To_Budget_Item_Link__c> POItemToJunctionMap = new Map<Id, buildertek__PO_Item_To_Budget_Item_Link__c>();
 		for(buildertek__PO_Item_To_Budget_Item_Link__c POItemToBudgetItemLink : POItemToBudgetItemLinkList){
 			for(Purchase_Order_Item__c POItem : PurchaseOrderItemToDelete){
-				if(POItemToBudgetItemLink.buildertek__PO_Item__c == POItem.Id && POItemToBudgetItemLink.buildertek__Approved_PO__c != POItem.buildertek__Total_Price__c){
+				if(POItemToBudgetItemLink.buildertek__PO_Item__c == POItem.Id && POItemToBudgetItemLink.buildertek__Approved_PO__c != POItem.buildertek__Total_Amount_Tax__c){
 					POItemIds.add(POItem.Id);
 					POItemToJunctionMap.put(poItem.Id, POItemToBudgetItemLink);
 				}
@@ -51,7 +51,10 @@ public with sharing class PurchaseOrderItemTriggerHandler {
 		for(Id POItemId : POItemIds){
 			POToJunctionMap.put(PurchaseOrderItemMap.get(POItemId).buildertek__Purchase_Order__c, POItemToJunctionMap.get(POItemId));
 		}
-
+		List<buildertek__PO_Item_To_Budget_Item_Link__c>  deletePOItemToBudgetItemLinkList = [SELECT Id FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__PO_Item__c IN :POItemIds];
+		if (deletePOItemToBudgetItemLinkList.size() > 0){
+			delete deletePOItemToBudgetItemLinkList;
+		}
 		List<buildertek__Purchase_Order__c> POList = [SELECT Id, Name,buildertek__PO_Total__c, (SELECT Id, Name FROM Purchase_Order_Items__r WHERE Id NOT IN: POItemIds) FROM buildertek__Purchase_Order__c WHERE Id IN :POToJunctionMap.keyset()];
 		List<buildertek__PO_Item_To_Budget_Item_Link__c>  budgetItemLinkRecs= new List<buildertek__PO_Item_To_Budget_Item_Link__c>();
 		for(buildertek__Purchase_Order__c PO : POList){

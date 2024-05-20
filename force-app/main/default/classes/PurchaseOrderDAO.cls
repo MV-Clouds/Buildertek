@@ -26,49 +26,24 @@ public without sharing class PurchaseOrderDAO{
      **********************************************************************************************************************/
     public static boolean isInvoiceCreated = false;
     public static void createPurchaseOrderItemToBudgetItemLink(List<Purchase_Order_Item__c> purchaseOrderItems){
-        List<PO_Item_To_Budget_Item_Link__c> POItemToBudgetItemLinks = new List<PO_Item_To_Budget_Item_Link__c>();
 
-        Set<Id> purchaseOrderIds = new Set<Id>();
-        for (Purchase_Order_Item__c item : purchaseOrderItems) {
-            purchaseOrderIds.add(item.buildertek__Purchase_Order__c);
-        }
+        List<PO_Item_To_Budget_Item_Link__c> POItemToBudgeetItemLinks = new List<PO_Item_To_Budget_Item_Link__c>();
 
-        Map<Id, buildertek__Purchase_Order__c> poMap = new Map<Id, buildertek__Purchase_Order__c>();
-        for (buildertek__Purchase_Order__c po : [SELECT Id, buildertek__Budget_Line__c, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE Id IN :purchaseOrderIds]) {
-            poMap.put(po.Id, po);
-        }
-
-        Set<Id> existingBudgetItemIds = new Set<Id>();
-        List<PO_Item_To_Budget_Item_Link__c> existingBudgetItemLinks = [SELECT Budget_Item__c FROM PO_Item_To_Budget_Item_Link__c WHERE PO_Item__c IN :purchaseOrderItems OR buildertek__Purchase_Order__c IN :purchaseOrderIds];
-        for (PO_Item_To_Budget_Item_Link__c existingLink : existingBudgetItemLinks) {
-            existingBudgetItemIds.add(existingLink.Budget_Item__c);
-        }
-
-        for (Purchase_Order_Item__c POItem : purchaseOrderItems) {
-            if (POItem.Budget_Item__c != null && 
-                !existingBudgetItemIds.contains(POItem.Budget_Item__c) && 
-                (poMap.containsKey(POItem.buildertek__Purchase_Order__c) && poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__Budget_Line__c != null)) {
-                
-                if (Schema.sObjectType.PO_Item_To_Budget_Item_Link__c.fields.PO_Item__c.isCreateable() && Schema.sObjectType.PO_Item_To_Budget_Item_Link__c.fields.Budget_Item__c.isCreateable()) {
-                    PO_Item_To_Budget_Item_Link__c POItemToBudgetItemLink = new PO_Item_To_Budget_Item_Link__c();
-                    POItemToBudgetItemLink.PO_Item__c = POItem.Id;
-                    POItemToBudgetItemLink.Budget_Item__c = POItem.Budget_Item__c;
-                    POItemToBudgetItemLink.buildertek__Purchase_Order__c = POItem.buildertek__Purchase_Order__c;
-                    POItemToBudgetItemLink.buildertek__Approved_PO__c = poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__PO_Total__c;
-                    POItemToBudgetItemLinks.add(POItemToBudgetItemLink);
+        for (Purchase_Order_Item__c POItem : purchaseOrderItems){
+            if (POItem.Budget_Item__c != null){
+                if (Schema.sObjectType.PO_Item_To_Budget_Item_Link__c.fields.PO_Item__c.isCreateable() && Schema.sObjectType.PO_Item_To_Budget_Item_Link__c.fields.Budget_Item__c.isCreateable()){
+                    PO_Item_To_Budget_Item_Link__c POItemToBudgeetItemLink = new PO_Item_To_Budget_Item_Link__c();
+                    POItemToBudgeetItemLink.PO_Item__c = POItem.Id;
+                    POItemToBudgeetItemLink.Budget_Item__c = POItem.Budget_Item__c;
+                    POItemToBudgeetItemLink.buildertek__Purchase_Order__c = POItem.buildertek__Purchase_Order__c;
+                    POItemToBudgeetItemLink.buildertek__Approved_PO__c = POItem.buildertek__Total_Amount_Tax__c;
+                    POItemToBudgeetItemLinks.add(POItemToBudgeetItemLink);
                 }
-            } else if (poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__Budget_Line__c != null && !existingBudgetItemIds.contains(poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__Budget_Line__c)) {
-                PO_Item_To_Budget_Item_Link__c poLineTOBudgetLineLink = new PO_Item_To_Budget_Item_Link__c();
-                poLineTOBudgetLineLink.PO_Item__c = POItem.Id;
-                poLineTOBudgetLineLink.Budget_Item__c = poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__Budget_Line__c;
-                poLineTOBudgetLineLink.buildertek__Purchase_Order__c = POItem.buildertek__Purchase_Order__c;
-                poLineTOBudgetLineLink.buildertek__Approved_PO__c = poMap.get(POItem.buildertek__Purchase_Order__c).buildertek__PO_Total__c;
-                POItemToBudgetItemLinks.add(poLineTOBudgetLineLink);
             }
         }
 
-        if (!POItemToBudgetItemLinks.isEmpty()){
-            insert POItemToBudgetItemLinks;
+        if (!POItemToBudgeetItemLinks.isEmpty()){
+            insert POItemToBudgeetItemLinks;
         }
     }
 
@@ -343,7 +318,7 @@ public without sharing class PurchaseOrderDAO{
     public static string createAPFromPO(string poid){
         system.debug('poid---->' + poid);
         isInvoiceCreated = true;
-        string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c
+        string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c,buildertek__Budget__c,buildertek__Budget_Line__c	
                                            from purchase_order__c
                                            where Id = :poid]);
         createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c
@@ -354,7 +329,7 @@ public without sharing class PurchaseOrderDAO{
     }
 
     /**********************************************************************************************************************
-     Purpose: This method is used to create an AP from a PO
+     Purpose: This method is used to create a AP from PO
      Parameters: List<Purchase_Order__c> pos
      Returns: NA
      Throws [Exceptions]:
@@ -363,23 +338,34 @@ public without sharing class PurchaseOrderDAO{
         system.debug('Inside createAP');
         Map<Id, Account_Payable__c> PoIdbyAp = new Map<Id, Account_Payable__c>();
         Id posRecId;
-        
-        for (Purchase_Order__c po : pos){           
+        for (Purchase_Order__c po : pos){
+            /* if(Schema.sObjectType.buildertek__Account_Payable__c.isCreateable()&&
+             Schema.sObjectType.buildertek__Account_Payable__c.fields.buildertek__Purchase_Order__c.isCreateable()&&
+             Schema.sObjectType.buildertek__Account_Payable__c.fields.buildertek__Project__c.isCreateable()&&
+             Schema.sObjectType.buildertek__Account_Payable__c.fields.buildertek__Vendor__c.isCreateable()&&
+             Schema.sObjectType.buildertek__Account_Payable__c.fields.buildertek__Tax__c.isCreateable()){*/
+
             Account_Payable__c ap = new Account_Payable__c();
+            //ap.Name = po.Name;
             ap.Purchase_Order__c = po.id;
             System.debug('purchase order iD => ' + ap.Purchase_Order__c);
             ap.Project__c = po.Project__c;
-            ap.Vendor__c = po.Vendor__c;            
-        
+            ap.Vendor__c = po.Vendor__c; 
+            ap.buildertek__Budget__c= po.buildertek__Budget__c;
+            ap.buildertek__BT_Budget_Line__c= po.buildertek__Budget_Line__c;
+                
             if(po.Tax__c != null){
                 ap.Tax__c = po.Tax__c;
             }
-            
             ap.buildertek__Description__c = po.buildertek__Description__c;
             PoIdbyAp.put(po.id, ap);
             posRecId = po.id;
         }
+        /* }*/
+        AccountPayableHelper.bypassTrigger = true; 
         insert PoIdbyAp.values();
+        AccountPayableHelper.bypassTrigger = false; 
+
         return PoIdbyAp.get(posRecId).Id;
     }
 
@@ -419,7 +405,21 @@ public without sharing class PurchaseOrderDAO{
                 apItem.Tax__c = poItem.Tax__c;
             }
             apItems.add(apItem);
-        }      
+        }
+        /* if(Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Id.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Account_Payable__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Name.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Item_Title__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Description__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Cost_Code__c.isCreateable()&&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Product__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Purchase_Order_Item__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Quantity__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Unit_Price__c.isCreateable() &&
+         Schema.sObjectType.buildertek__Account_Payable_Item__c.fields.Tax__c.isCreateable()){
+        insert apItems;*/
+        /*}*/
+        //system.debug('apItems--->' + apItems);
         insert apItems;
     }
 
@@ -438,7 +438,21 @@ public without sharing class PurchaseOrderDAO{
         }
         return null;
     }
-  
+
+    // @AuraEnabled
+    // public static Map<String, String> getpricebooks(String recordId){
+    //     Map<String, String> options = new Map<String, String>();
+
+    //     list<pricebook2> PriceList;
+    //     if (Schema.sObjectType.pricebook2.fields.Id.isAccessible() && Schema.sObjectType.pricebook2.fields.Name.isAccessible()){
+    //         PriceList = [select Id, Name from pricebook2 WHERE Name != null ORDER BY Name ASC];
+    //     }
+    //     for (pricebook2 p : PriceList){
+    //         //Put Picklist Value & Label in Map
+    //         options.put(p.name, p.Id);
+    //     }
+    //     return options;
+    // }
     public class pricebookWrapper{
         @AuraEnabled
         public List<pricebook2> priceWrapList;
@@ -523,6 +537,13 @@ public without sharing class PurchaseOrderDAO{
             throw new AuraHandledException(e.getMessage());
         }
         return pickListValuesList;
+    }
+
+    @AuraEnabled
+    public static string testfromLax(String productId){
+        System.debug('########pricebook' + productId);
+
+        return 'ok';
     }
 
     @AuraEnabled
