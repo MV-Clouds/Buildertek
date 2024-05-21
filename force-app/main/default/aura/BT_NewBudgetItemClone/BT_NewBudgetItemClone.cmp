@@ -2688,6 +2688,12 @@
                                                         <div class="slds-truncate" title="Duration">PO Line Name</div>
                                                     </th>
                                                     <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Name</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Description</div>
+                                                    </th>
+                                                    <th scope="col">
                                                         <div class="slds-truncate" title="Project Description">PO Line Total Price</div>
                                                     </th>
                                                     <th scope="col">
@@ -2702,8 +2708,20 @@
                                                             <lightning:input type="checkbox" name="input1" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkPOLines}" />
                                                             <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">  <ui:inputRadio aura:id="radio" name="select" label="" value="{!item.selectedPurchaseOrder}" /> </span> -->
                                                         </td>
-                                                        <td class="slds-truncate" style="">
-                                                            {!item.Name}
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.Name}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.buildertek__Purchase_Order__r.Name}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.buildertek__Purchase_Order__r.buildertek__Description__c}
+                                                            </div>
                                                         </td>
                                                         <td>
                                                             <lightning:formattedNumber value="{!item.buildertek__Total_Price__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />

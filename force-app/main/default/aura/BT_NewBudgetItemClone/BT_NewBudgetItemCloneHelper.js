@@ -1556,6 +1556,7 @@
             console.log('result --> ',result.getReturnValue());
             if (component.isValid() && state === "SUCCESS") {
                 var resultData = result.getReturnValue();
+                console.log('resultData ',resultData);
                 for (var i in resultData.recordList) {
                     resultData.recordList[i].budgetCheck = false;
                 }
