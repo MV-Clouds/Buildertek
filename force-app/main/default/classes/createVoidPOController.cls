@@ -7,12 +7,12 @@ public class createVoidPOController {
         try {
             
             List<buildertek__Purchase_Order__c> PO = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c,buildertek__Status__c, 
-                                                        (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Cost_Type__c, buildertek__Cost_Code__c,buildertek__Tax__c,buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
+                                                        (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Tax__c, buildertek__Cost_Type__c, buildertek__Cost_Code__c, buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
                                                     FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
             if(PO[0].buildertek__Status__c=='Paid' || PO[0].buildertek__Status__c=='Partially Paid'){
                 
             returnWr.status = 'error';
-            returnWr.message = 'You can not void PO for Partially Paid/Paid';
+            returnWr.message = 'You cannot void a Paid or Partially Paid Purchase Order';
             return returnWr;
             }
             buildertek__Purchase_Order__c VoidPOtoCreate = PO[0].clone(false, false, false, false);
@@ -25,9 +25,9 @@ public class createVoidPOController {
                     buildertek__Purchase_Order_Item__c POline = line.clone(false, false, false, false);
                     Poline.buildertek__Unit_Price__c = -(POline.buildertek__Unit_Price__c);
                     Poline.buildertek__Tax__c = POline.buildertek__Tax__c;
-                    Poline.buildertek__Purchase_Order__c = VoidPOtoCreate.Id;
+                    Poline.buildertek__Cost_Code__c = POline.buildertek__Cost_Code__c;
                     Poline.buildertek__Cost_Type__c = POline.buildertek__Cost_Type__c;
-                    Poline.buildertek__Cost_Code__c = POline.buildertek__Cost_Code__c;                    
+                    Poline.buildertek__Purchase_Order__c = VoidPOtoCreate.Id;
                     POlinesToCreate.add(POline);
                 }
             }
