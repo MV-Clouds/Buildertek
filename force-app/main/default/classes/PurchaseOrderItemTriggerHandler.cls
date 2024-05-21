@@ -12,7 +12,7 @@ public with sharing class PurchaseOrderItemTriggerHandler {
 	 
     private boolean m_isExecuting = false;
     private integer BatchSize = 0;
-    
+    private static boolean firstRun = true;
     public PurchaseOrderItemTriggerHandler (boolean isExecuting, integer size){
         m_isExecuting = isExecuting;
         BatchSize = size;
@@ -74,23 +74,29 @@ public with sharing class PurchaseOrderItemTriggerHandler {
  	public void OnAfterInsert(Purchase_Order_Item__c[] newPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> newPurchaseOrderItemsMap){ 
      	
      	// Create PO Item to Budget Item link
-     	PurchaseOrderDAO.createPurchaseOrderItemToBudgetItemLink(newPurchaseOrderItems);
-     	PurchaseOrderDAO.RollUpPurchaseOrderItemAmount(newPurchaseOrderItemsMap.KeySet());
-     	
-     	// create AP Items
-     	// TODO: make this configurable
-     	//PurchaseOrderDAO.createAPItems(newPurchaseOrderItems);
-		List<Id> poids = new List<Id>();
-		for(Purchase_Order_Item__c POI : newPurchaseOrderItems){
-			poids.add(POI.Id);
+		if (PurchaseOrderItemTriggerHandler.firstRun){
+			PurchaseOrderItemTriggerHandler.firstRun = false;
+			PurchaseOrderDAO.createPurchaseOrderItemToBudgetItemLink(newPurchaseOrderItems);
+			PurchaseOrderDAO.RollUpPurchaseOrderItemAmount(newPurchaseOrderItemsMap.KeySet());
+			
+			// create AP Items
+			// TODO: make this configurable
+			//PurchaseOrderDAO.createAPItems(newPurchaseOrderItems);
+			List<Id> poids = new List<Id>();
+			for(Purchase_Order_Item__c POI : newPurchaseOrderItems){
+				poids.add(POI.Id);
+			}
+			System.debug(poids);
 		}
-		System.debug(poids);
 		// quickBookCallout(poids);
  	}
      
  	public void OnAfterUpdate(Purchase_Order_Item__c[] oldPurchaseOrderItems, Purchase_Order_Item__c[] updatedPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> PurchaseOrderItemMap, Map<Id, Purchase_Order_Item__c> oldPurchaseOrderItemsMap){
-    	
-    	PurchaseOrderDAO.RollUpPurchaseOrderItemAmount(PurchaseOrderItemMap.KeySet());
+		if(PurchaseOrderItemTriggerHandler.firstRun) {
+			PurchaseOrderItemTriggerHandler.firstRun = false;
+			PurchaseOrderDAO.createPurchaseOrderItemToBudgetItemLink(updatedPurchaseOrderItems);
+			PurchaseOrderDAO.RollUpPurchaseOrderItemAmount(oldPurchaseOrderItemsMap.KeySet());
+		}
  	}
  	
  	public void OnBeforeUpdate(Purchase_Order_Item__c[] newPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> newPurchaseOrderItemsMap){

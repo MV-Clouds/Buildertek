@@ -366,7 +366,7 @@ public with sharing class PurchaseOrderTriggerHandler{
 
                 system.debug('BudgetItemList.size()----->'+BudgetItemList.size());
 
-                List<buildertek__PO_Item_To_Budget_Item_Link__c> poLink = [SELECT Id, Name, buildertek__Approved_PO__c FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__PO_Item__c =: purchaseOrderItemID];
+                List<buildertek__PO_Item_To_Budget_Item_Link__c> poLink = [SELECT Id, Name, buildertek__Approved_PO__c, buildertek__Purchase_Order__c FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__PO_Item__c =: purchaseOrderItemID];
 
                 for(buildertek__Purchase_Order__c purchaseRec : newPurchaseOrders){
 
@@ -414,8 +414,10 @@ public with sharing class PurchaseOrderTriggerHandler{
                             }
                         }else {
                             for (buildertek__PO_Item_To_Budget_Item_Link__c po : poLink) {
-                                po.buildertek__Pending_PO__c = 0;
-                                po.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                if(po.buildertek__Purchase_Order__c == purchaseRec.Id){
+                                    po.buildertek__Pending_PO__c = 0;
+                                    po.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                }
                             }
                         }
                     }
