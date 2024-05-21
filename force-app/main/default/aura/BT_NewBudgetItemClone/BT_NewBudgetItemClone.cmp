@@ -2601,7 +2601,7 @@
                         </aura:if>
                         <aura:if isTrue="{!v.choosePO}">
                             <div class="slds-modal__container" style="width: 70%;">
-                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:90vh" >
+                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:47vh" >
                                     <header class="slds-modal__header">
                                         <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                         <p></p>
@@ -2669,7 +2669,7 @@
                         </aura:if>
                         <aura:if isTrue="{!v.choosePOLine}">
                             <div class="slds-modal__container" style="width: 70%;">
-                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:90vh" >
+                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:47vh" >
                                     <header class="slds-modal__header">
                                         <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
                                         <p></p>

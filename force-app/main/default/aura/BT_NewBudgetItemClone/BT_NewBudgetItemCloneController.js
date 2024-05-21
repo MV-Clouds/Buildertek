@@ -4786,6 +4786,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             var state = response.getState();
             if (state === "SUCCESS") {
                 var toastEvent = $A.get("e.force:showToast");
+                component.set('v.selectedRecs', []);
                 toastEvent.setParams({
                     type: 'SUCCESS',
                     message: 'PO added Successfully',
@@ -4867,6 +4868,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
             var state = response.getState();
             if (state === "SUCCESS") {
+                component.set('v.selectedRecs', []);
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     type: 'SUCCESS',
