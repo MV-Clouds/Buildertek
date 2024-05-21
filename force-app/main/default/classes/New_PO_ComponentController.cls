@@ -87,15 +87,20 @@ public with sharing class New_PO_ComponentController{
     }
 
     @AuraEnabled
-    public static string saveRecord(String data){
-        System.debug('In save method');
-        buildertek__Purchase_Order__c POInsert = (buildertek__Purchase_Order__c)JSON.deserialize(data, buildertek__Purchase_Order__c.class);
-        if (POInsert.buildertek__Type__c == null){
-            POInsert.buildertek__Type__c = 'Standard';
+    public static String saveRecord(String data) {
+        try {
+            System.debug('In save method');
+            buildertek__Purchase_Order__c POInsert = (buildertek__Purchase_Order__c)JSON.deserialize(data, buildertek__Purchase_Order__c.class);
+            if (POInsert.buildertek__Type__c == null) {
+                POInsert.buildertek__Type__c = 'Standard';
+            }
+            insert POInsert;
+            return POInsert.Id;
+        } catch (DmlException ex) {
+            throw new AuraHandledException('Error Details: ' + ex.getDmlMessage(0));
+        } catch (Exception ex) {
+            throw new AuraHandledException('Error Details: ' + ex.getMessage());
         }
-        System.debug('POInsert ==? ' + POInsert);
-        insert POInsert;
-        return POInsert.ID;
     }
 
     @AuraEnabled
