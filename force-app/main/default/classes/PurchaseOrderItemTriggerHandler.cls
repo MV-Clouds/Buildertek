@@ -92,11 +92,65 @@ public with sharing class PurchaseOrderItemTriggerHandler {
  	}
      
  	public void OnAfterUpdate(Purchase_Order_Item__c[] oldPurchaseOrderItems, Purchase_Order_Item__c[] updatedPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> PurchaseOrderItemMap, Map<Id, Purchase_Order_Item__c> oldPurchaseOrderItemsMap){
-		if(PurchaseOrderItemTriggerHandler.firstRun) {
-			PurchaseOrderItemTriggerHandler.firstRun = false;
-			PurchaseOrderDAO.createPurchaseOrderItemToBudgetItemLink(updatedPurchaseOrderItems);
-			PurchaseOrderDAO.RollUpPurchaseOrderItemAmount(oldPurchaseOrderItemsMap.KeySet());
-		}
+		try {
+			if(PurchaseOrderItemTriggerHandler.firstRun) {
+				PurchaseOrderItemTriggerHandler.firstRun = false;
+				Set<Id> poItemIds = new Set<Id>();
+				for (Purchase_Order_Item__c poItem : updatedPurchaseOrderItems) {
+					poItemIds.add(poItem.Id);
+				}
+
+				Map<Id, PO_Item_To_Budget_Item_Link__c> existingLinksMap = new Map<Id, PO_Item_To_Budget_Item_Link__c>();
+				for (PO_Item_To_Budget_Item_Link__c link : [SELECT Id, PO_Item__c, Budget_Item__c, Approved_PO__c FROM PO_Item_To_Budget_Item_Link__c WHERE PO_Item__c IN :poItemIds]) {
+					existingLinksMap.put(link.PO_Item__c, link);
+				}
+
+				List<PO_Item_To_Budget_Item_Link__c> linksToInsert = new List<PO_Item_To_Budget_Item_Link__c>();
+				List<PO_Item_To_Budget_Item_Link__c> linksToUpdate = new List<PO_Item_To_Budget_Item_Link__c>();
+				List<PO_Item_To_Budget_Item_Link__c> linksToDelete = new List<PO_Item_To_Budget_Item_Link__c>();
+
+				for (Purchase_Order_Item__c poItem : updatedPurchaseOrderItems) {
+					PO_Item_To_Budget_Item_Link__c existingLink = existingLinksMap.get(poItem.Id);
+
+					if (poItem.Budget_Item__c != null) {
+						if (existingLink == null) {
+							//* Create a new link
+							PO_Item_To_Budget_Item_Link__c newLink = new PO_Item_To_Budget_Item_Link__c();
+							newLink.PO_Item__c = poItem.Id;
+							newLink.Budget_Item__c = poItem.Budget_Item__c;
+							newLink.buildertek__Purchase_Order__c = poItem.buildertek__Purchase_Order__c;
+							newLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Price__c;
+							linksToInsert.add(newLink);
+						} else if (existingLink.buildertek__Approved_PO__c != poItem.buildertek__Total_Price__c) {
+							//* Update the existing link with the new PO amount
+							existingLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Price__c;
+							linksToUpdate.add(existingLink);
+						}
+					} else if (existingLink != null && poItem.Budget_Item__c == null) {
+						//* Delete the existing link
+						linksToDelete.add(existingLink);
+					}
+				}
+
+				if (!linksToInsert.isEmpty()) {
+					insert linksToInsert;
+				}
+
+				if (!linksToUpdate.isEmpty()) {
+					update linksToUpdate;
+				}
+
+				if (!linksToDelete.isEmpty()) {
+					delete linksToDelete;
+				}
+			}
+		} catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
  	}
  	
  	public void OnBeforeUpdate(Purchase_Order_Item__c[] newPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> newPurchaseOrderItemsMap){
