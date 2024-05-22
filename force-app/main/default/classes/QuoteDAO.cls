@@ -684,7 +684,7 @@ public with sharing class QuoteDAO{
         System.debug('########pricebook' + productId);
         list<PricebookEntry> pList = new list<PricebookEntry>();
 
-        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.buildertek__Quote_Group__r.Name, Product2.QuantityUnitOfMeasure, Product2.buildertek__Notes__c
+        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c,buildertek__Margin__c, buildertek__Discount__c, Product2Id, Product2.buildertek__Quote_Group__r.Name, Product2.QuantityUnitOfMeasure, Product2.buildertek__Notes__c
                  from PricebookEntry
                  where product2Id = :productId and pricebook2Id =: pricebookId];
 
