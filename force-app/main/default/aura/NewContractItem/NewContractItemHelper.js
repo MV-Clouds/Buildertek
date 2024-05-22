@@ -45,9 +45,11 @@
             getProductDetails.buildertek__Contract__c = component.get("v.recordId");
            // alert("getprodct----",res[0].UnitPrice); 
             if(res.length>=1) {
-                if(res[0].UnitPrice != null){
-                getProductDetails.buildertek__Unit_Price__c = res[0].UnitPrice;
+                if(res[0].buildertek__Unit_Cost__c != null){
+                    getProductDetails.buildertek__Unit_Price__c = res[0].buildertek__Unit_Cost__c;
                 }
+                getProductDetails.buildertek__Cost_Code__c = res[0].Product2.buildertek__Cost_Code__c;
+                component.set("v.costCode", res[0].Product2.buildertek__Cost_Code__r.Name);
                 if(res[0].buildertek__Discount__c !=null){
                 getProductDetails.buildertek__Discount__c = res[0].buildertek__Discount__c;
                 }

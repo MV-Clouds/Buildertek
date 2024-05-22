@@ -166,12 +166,13 @@
 
                                                     }
                                                     .pillSize{
-
+                                                        min-width: 22rem !important;
+                                                        max-width: 22rem !important;
                                                         padding-top: 1.3% !important;
                                                         padding-bottom: 1.3% !important;
                                                     }
                                                 </aura:html>
-                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" />
+                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" childValue="{!v.buildertek__Item_Name__c}" costcodeValue="{!v.costCode}" unitcostValue="{!v.newContractLine.buildertek__Unit_Price__c}" clearCostCode="{!v.newContractLine.buildertek__Cost_Code__c}"/>
                                     </td>
                                     <td>
                                         <!-- <force:inputField value="{!v.newContractLine.Name}"/>-->

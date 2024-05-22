@@ -381,15 +381,13 @@
             });
             $A.enqueueAction(action);
         } else {
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
             component.find('notifLib').showNotice({
                 "variant": "error",
                 "header": "Please Select Contract Line!",
                 "message": "Please select the Contract Line you would like to Delete.",
-                closeCallback: function () {
-                    $A.get("e.c:BT_SpinnerEvent").setParams({
-                        "action": "HIDE"
-                    }).fire();
-                }
             });
         }
 
