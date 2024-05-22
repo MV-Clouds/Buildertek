@@ -1,6 +1,6 @@
 public with sharing class AccountPayableHelper {
     
-    public static boolean bypassTrigger = false;        
+    public static boolean bypassTrigger = false; //this variable using in PucrchaseOrderDAO and on that develoment is going on so we can't remove this rightnow
     public static boolean skipInvoicePOUpdate = false;
 
 
@@ -297,7 +297,6 @@ public with sharing class AccountPayableHelper {
 
     //onbeforeInsert
     public static void onbeforeInsert(buildertek__Account_Payable__c[] invoiceList){
-        if (!bypassTrigger) {
         String budgetLineGroupId ;
         list<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name LIKE '%Invoice (PO)%'];
         if (budgetLineGroups.size() == 0){
@@ -311,7 +310,7 @@ public with sharing class AccountPayableHelper {
 
         List<buildertek__Budget_Item__c> toInsertBudgetItems = new List<buildertek__Budget_Item__c>();
         for(buildertek__Account_Payable__c invoice : invoiceList){
-            if(invoice.buildertek__Budget__c != null){
+            if(invoice.buildertek__Budget__c != null && invoice.buildertek__BT_Budget_Line__c == null){
                 buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
                 if (invoice.buildertek__Description__c != '' && invoice.buildertek__Description__c != null) {
                     if(invoice.Name.length() + invoice.buildertek__Description__c.length() <= 80){
@@ -345,8 +344,6 @@ public with sharing class AccountPayableHelper {
                 }
             }
         }
-
-    }
 }
 
 
