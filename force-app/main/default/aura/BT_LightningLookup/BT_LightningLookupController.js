@@ -103,6 +103,7 @@
         }
         component.set('v.childValue' , '');
         component.set('v.costcodeValue' , '');
+        component.set("v.clearCostCode", '');
         component.set('v.unitcostValue' , '');
         component.set('v.clearProductId' , '');
 
@@ -135,9 +136,9 @@
         var lookUpTarget = component.find("lookupField");
             $A.util.addClass(lookUpTarget, 'slds-hide');
             $A.util.removeClass(lookUpTarget, 'slds-show');
-
+        console.log(`fieldName: ${component.get("v.fieldName")}`);
         var compEvent = component.getEvent("SelectedRecordEvent");
-        compEvent.setParams({"recordByEvent" : selectedAccountGetFromEvent,"recordByEventstring": ''});
+        compEvent.setParams({"recordByEvent" : selectedAccountGetFromEvent,"recordByEventstring": '' });
         compEvent.fire();
 
 	},

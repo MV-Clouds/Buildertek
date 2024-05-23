@@ -123,10 +123,10 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                     BOMlineToCreate.Name = ProductNameProposed;
                     BOMlineToCreate.buildertek__Quantity__c = tkoffline.buildertek__Quantity__c;
                     BOMlineToCreate.buildertek__Product__c = relatedPricebookEntry != null ? relatedPricebookEntry.Product2Id : tkoffline.buildertek__Product__c;
-                    //BOMlineToCreate.buildertek__BT_Price_Book__c = relatedPricebookEntry != null ? relatedPricebookEntry.Pricebook2Id : tkoffline.buildertek__Price_Book__c;
+                    BOMlineToCreate.buildertek__BT_Price_Book__c = relatedPricebookEntry != null ? relatedPricebookEntry.Pricebook2Id : tkoffline.buildertek__Price_Book__c;
                     BOMlineToCreate.buildertek__BL_UNIT_COST__c = relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Unit_Cost__c : null;
                     BOMlineToCreate.buildertek__BL_MARKUP__c = relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Markup__c : null;
-                    //BOMlineToCreate.buildertek__Vendor__c = tkoffline.buildertek__Vendor__c != null ? tkoffline.buildertek__Vendor__c : (relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Vendor__c : null);
+                    BOMlineToCreate.buildertek__Vendor__c = tkoffline.buildertek__Vendor__c != null ? tkoffline.buildertek__Vendor__c : (relatedPricebookEntry != null ? relatedPricebookEntry.buildertek__Vendor__c : null);
                     BOMlineToCreate.buildertek__Cost_Code__c = tkoffline.buildertek__Cost_Code__c;
                     BOMlineToCreate.buildertek__Build_Phase__c = tkoffline.buildertek__Build_Phase__c;
                     BOMlineToCreate.buildertek__Selection_Sheet_Takeoff__c = BOMtoCreate.Id;
