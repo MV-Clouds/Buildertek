@@ -25,6 +25,7 @@
     <aura:attribute name="prevInput" type="String" />
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
+    <aura:attribute name="showmargin" type="Boolean" default="false" />
 
     <aura:attribute name="productFamilySet" type="List" default="[]" />
 
@@ -238,6 +239,11 @@
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
+                            <aura:if isTrue="{!v.showmargin}">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Margin %">Margin %</div>
+                                </th>
+                            </aura:if>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="Markup %">Markup %</div>
                                 </th>
@@ -282,6 +288,11 @@
                                     <td style="width: 9% !important">
                                         <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                     </td>
+                                <aura:if isTrue="{!v.showmargin}">
+                                    <td style="width: 5% !important">
+                                        <lightning:input name="input10" label="" value="{!item.buildertek__Margin__c}" />
+                                    </td>
+                                </aura:if>
                                     <td style="width: 5% !important">
                                         <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                     </td>

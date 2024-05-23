@@ -40,6 +40,8 @@
                 </apex:selectList>
                 <apex:inputcheckbox value="{!reject_Quote_on_Rejected_Lines}" label="Reject all or Acccept all">
                 </apex:inputcheckbox>
+                <apex:inputcheckbox value="{!showmargin}" label="Show Margin">
+                </apex:inputcheckbox>
 
 
                 <center>
