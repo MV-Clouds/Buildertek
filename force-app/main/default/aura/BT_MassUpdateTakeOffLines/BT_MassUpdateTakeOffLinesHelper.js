@@ -265,7 +265,7 @@
                     "type": 'error'
                 });
                 toastEvent.fire();
-                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                console.log(`Error: ${JSON.stringify(response.getError())}`);
             }
         });
         $A.enqueueAction(action);
@@ -308,7 +308,7 @@
                
             } else if (state === "ERROR") {
                 component.set('v.isLoading', false);
-                console.log('A Problem Occurred: ' + JSON.stringify(response.error));
+                console.log(`Error: ${JSON.stringify(response.getError())}`);
             }
         });
         $A.enqueueAction(action);
@@ -316,8 +316,10 @@
 
     setProduct: function(component, event, helper, setProduct, index){
         try {
+            console.log(`Set Product: ${setProduct} at index: ${index}`);
             // var index = event.getParam("index");
             // var listOfRecords = JSON.parse(JSON.stringify(component.get("v.listOfRecords")));
+            console.log(`Set Product: ${JSON.stringify(event.getParam("recordByEvent"))}`);
             var listOfRecords = component.get("v.listOfRecords");
             if(setProduct){
                 // console.log("product : ", JSON.parse(JSON.stringify(event.getParam("recordByEvent"))));
@@ -326,8 +328,8 @@
                     var ProductPhase_Vs_BuildPhase = component.get("v.ProductPhase_Vs_BuildPhase");
                     // console.log('selected phase : ', product.buildertek__Quote_Group__c);
                     // console.log('current phase : ', ProductPhase_Vs_BuildPhase[product.buildertek__Quote_Group__c]);
-                    listOfRecords[index].buildertek__Product__r = product;
-                    listOfRecords[index].buildertek__Product__c = product.Id;
+                    listOfRecords[index].buildertek__Price_Book__c = product;
+                    listOfRecords[index].buildertek__Price_Book__r = product.Id;
                     listOfRecords[index].buildertek__Description__c = product.Name;
                     listOfRecords[index].buildertek__Vendor__c = product.buildertek__Vendor__c;
                     listOfRecords[index].buildertek__Cost_Code__c = product.buildertek__Cost_Code__c;
@@ -346,6 +348,8 @@
                 listOfRecords[index].buildertek__Build_Phase__c = null;
                 listOfRecords[index].buildertek__Quantity__c = 0;
                 listOfRecords[index].buildertek__Categories__c = null;
+                listOfRecords[index].buildertek__Price_Book__c = null;
+                listOfRecords[index].buildertek__Price_Book__r = null;
               }
 
 
@@ -366,4 +370,30 @@
             console.log('error in setProduct : ', error.stack);
         }
       },
+
+      setPriceBook: function (component, event, helper, index, setPriceBook) {
+        try {
+            var listOfRecords = component.get("v.listOfRecords");
+            if (setPriceBook) {
+                let pricebook = event.getParam("recordByEvent");
+                if (pricebook) {
+                    listOfRecords[index].buildertek__Price_Book__c = pricebook.Id;
+                    listOfRecords[index].buildertek__Price_Book__r = pricebook;
+                }
+            } else {
+                listOfRecords[index].buildertek__Price_Book__c = null;
+                listOfRecords[index].buildertek__Price_Book__r = null;
+            }
+            component.set("v.currectModifiedIndex", index);
+            component.set("v.listOfRecords", listOfRecords);
+            window.setTimeout(
+                $A.getCallback(function () {
+                    component.set("v.isLoading", false);
+                }), 500
+            );
+        } catch (error) {
+            console.log('error in setPriceBook : ', error.stack);
+        }
+    }
+    
 })
