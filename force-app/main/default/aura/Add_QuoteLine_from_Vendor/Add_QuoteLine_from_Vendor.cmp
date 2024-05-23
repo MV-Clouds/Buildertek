@@ -43,6 +43,25 @@
             height: 36px !important;
             border: 1px solid rgb(201, 201, 201) !important;
         }
+        .slds-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .slds-table thead th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slds-table tbody td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .THIS .slds-truncate {
+            text-overflow: ellipsis !important;
+        }           
     </aura:html>
 
     <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
@@ -155,31 +174,34 @@
                                 <tr class="slds-line-height_reset">
                                     <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important">
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Product Name">Pricebook</div>
                                     </th>
-                                    <th class="" scope="col" style="width:20% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="trncatediv" title="Product Name">Product Name</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Product Family">Product Family</div>
                                     </th>
-                                    <th class="" scope="col" style="width:15% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="trncatediv" title="Product Description">Product Description</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
+                                        <div class="trncatediv" title="Product Notes">Notes</div>
+                                    </th>
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Vendor">Vendor</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <!-- <th class="" scope="col" style="width:10% !important">
                                         <div class="slds-truncate" title="Product Code">Product Code</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:5% !important">
+                                    </th> -->
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                     </th>
-                                    <th class="" scope="col" style="width:5% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="List Price">List Price</div>
                                     </th>
                                 </tr>
@@ -192,47 +214,52 @@
                                             <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.PriceBookEntryId}" onchange="{!c.checkboxChange}" />
                                             </div>
                                         </td>
-                                        <td data-label="Pricebook Name" class="" style="width:16% !important">
+                                        <td data-label="Pricebook Name" class="" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.PriceBookName}'>
                                                 {!product.PriceBookName}
                                             </div>
                                         </td>
-                                        <td data-label="Product Name" class="" style="width:18% !important">
+                                        <td data-label="Product Name" class="" style="width:12.8% !important">
                                             <div class="trncatediv" title='{!product.Name}'>
                                                 {!product.Name}
                                             </div>
                                         </td>
-                                        <td data-label="Product Family" scope="row" style="width:18% !important">
+                                        <td data-label="Product Family" scope="row" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.Family}'>
                                                 {!product.Family}
                                             </div>
                                         </td>
-                                        <td data-label="Product Description" class="" style="width:16% !important">
+                                        <td data-label="Product Description" class="" style="width:12.8% !important">
                                             <div class="trncatediv" title='{!product.Description}'>
                                                 {!product.Description}
                                             </div>
                                         </td>
-                                        <td data-label="Vendor" class="" style="width:6% !important">
+                                        <td data-label="Notes" style="width:12.8% !important">
+                                                <div class="trncatediv" title='{!product.Notes}'>
+                                                    {!product.Notes}
+                                                </div>
+                                        </td>
+                                        <td data-label="Vendor" class="" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.Vendor}'>
                                                 {!product.Vendor}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width:6% !important">                                        
+                                        <td data-label="Product Code" style="width:12.8% !important">                                        
                                             <div class="slds-truncate" title='{!product.CostCode}'>
                                                 {!product.CostCode}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width: 7% !important">                                        
+                                        <!-- <td data-label="Product Code" style="width: 7% !important">                                        
                                             <div class="slds-truncate" title='{!product.ProductCode}'>
                                                 {!product.ProductCode}
                                             </div>
-                                        </td>
-                                        <td data-label="Unit Cost" style="width:6% !important">
+                                        </td> -->
+                                        <td data-label="Unit Cost" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.UnitCost}' >
                                                 <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                             </div>
                                         </td>
-                                        <td data-label="List Price" style="width:2% !important">
+                                        <td data-label="List Price" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.UnitPrice}' >
                                                 <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                             </div>
