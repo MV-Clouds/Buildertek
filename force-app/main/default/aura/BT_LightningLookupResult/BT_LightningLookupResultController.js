@@ -19,6 +19,7 @@
           "phaseIndex" : component.get("v.phaseIndex"),
           "phaseIndexValue" : component.get("v.phaseIndexValue"),
           "index": component.get("v.index"),
+          "fieldName": component.get("v.fieldName"),
         });  
     // fire the event  
          compEvent.fire();

@@ -6,7 +6,7 @@ public class CreateRFQFromWalkThroughController{
 
             List<buildertek__RFQ_Item__c> newRFQLines = new List<buildertek__RFQ_Item__c>();
 
-            List<buildertek__Walk_Through_List__c> walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c, (SELECT Id, Name,buildertek__Quantity__c, buildertek__Details__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__BT_Category__c, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+            List<buildertek__Walk_Through_List__c> walkthroughrec = [SELECT Id, buildertek__Description__c, buildertek__Project__c, (SELECT Id, Name,buildertek__Quantity__c, buildertek__Details__c, buildertek__Price__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__BT_Category__c, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                                                                      FROM buildertek__Walk_Through_Line_Items__r)
                                                                      FROM buildertek__Walk_Through_List__c
                                                                      WHERE Id = :walkThroughId];
@@ -39,6 +39,7 @@ public class CreateRFQFromWalkThroughController{
                         newRFQLine.buildertek__Cost_Code__c = walkthroughline.buildertek__BT_Cost_Code__c;
                         newRFQLine.buildertek__BT_Category__c = walkthroughline.buildertek__BT_Category__c;
                         newRFQLine.buildertek__Trade_Type__c = walkthroughline.buildertek__Trade_Type__c;
+                        newRFQLine.buildertek__Walk_Through_Unit_Cost__c = walkthroughline.buildertek__Price__c;
 
                         newRFQLines.add(newRFQLine);
                     }
@@ -54,13 +55,11 @@ public class CreateRFQFromWalkThroughController{
                         msg.Status = 'Success';
                         msg.Message = 'RFQ is Created Successfully';
                         msg.newRecordId = newRFQrecord.Id;
-                        msg.projectId=walkthroughrec[0].buildertek__Project__c;
                     }
                 } else{
                     msg.Status = 'Success';
                     msg.Message = 'RFQ is Created Successfully';
                     msg.newRecordId = newRFQrecord.Id;
-                    msg.projectId=walkthroughrec[0].buildertek__Project__c;
                 }
             } else{
                 msg.Status = 'Failed';
@@ -96,7 +95,7 @@ public class CreateRFQFromWalkThroughController{
                                                                      WHERE Id = :walkThroughId];
 
             if (grpType == 'tradeType'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Description__c, buildertek__Quantity__c,buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c, buildertek__Price__c, buildertek__Description__c, buildertek__Quantity__c,buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__Trade_Type__r.Name];
@@ -136,8 +135,6 @@ public class CreateRFQFromWalkThroughController{
                         addFilesOnRfqLines(mapOfWalkThroughLineIdAndRfqLineId);
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
-                        msg.projectId=walkthroughrec[0].buildertek__Project__c;
-
                     }
 
                 } else{
@@ -146,7 +143,7 @@ public class CreateRFQFromWalkThroughController{
                 }
 
             } else if (grpType == 'costCode'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Price__c, buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__BT_Cost_Code__r.Name];
@@ -185,7 +182,6 @@ public class CreateRFQFromWalkThroughController{
 
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
-                        msg.projectId=walkthroughrec[0].buildertek__Project__c;
                     }
 
                 } else{
@@ -194,7 +190,7 @@ public class CreateRFQFromWalkThroughController{
                 }
 
             } else if (grpType == 'section'){
-                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
+                List<buildertek__Walk_Through_Line_Items__c> walkthroughLineItemList = [SELECT Id, Name, buildertek__Details__c,buildertek__Price__c,buildertek__Quantity__c, buildertek__Description__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__BT_Category__r.Name, buildertek__BT_Category__c, buildertek__BT_Cost_Code__r.Name, buildertek__BT_Cost_Code__c, buildertek__Anticipated_Finish_Date__c, buildertek__Anticipated_Start_Date__c
                                                                                         FROM buildertek__Walk_Through_Line_Items__c
                                                                                         WHERE buildertek__Walk_Through_List__c = :walkThroughId
                                                                                         ORDER BY buildertek__BT_Category__r.Name];
@@ -234,7 +230,6 @@ public class CreateRFQFromWalkThroughController{
 
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
-                        msg.projectId=walkthroughrec[0].buildertek__Project__c;
                     }
 
                 } else{
@@ -295,6 +290,7 @@ public class CreateRFQFromWalkThroughController{
                         newRFQLine.buildertek__Trade_Type__c = walkthroughline.buildertek__Trade_Type__c;
                         newRFQLine.buildertek__Cost_Code__c = walkthroughline.buildertek__BT_Cost_Code__c;
                         newRFQLine.buildertek__BT_Category__c = walkthroughline.buildertek__BT_Category__c;
+                        newRFQLine.buildertek__Walk_Through_Unit_Cost__c = walkthroughline.buildertek__Price__c;
 
                         newRFQLines.add(newRFQLine);
                     }
@@ -330,6 +326,7 @@ public class CreateRFQFromWalkThroughController{
                         newRFQLine.buildertek__Cost_Code__c = walkthroughline.buildertek__BT_Cost_Code__c;
                         newRFQLine.buildertek__BT_Category__c = walkthroughline.buildertek__BT_Category__c;
                         newRFQLine.buildertek__Trade_Type__c = walkthroughline.buildertek__Trade_Type__c;
+                        newRFQLine.buildertek__Walk_Through_Unit_Cost__c = walkthroughline.buildertek__Price__c;
 
                         newRFQLines.add(newRFQLine);
                     }
@@ -365,6 +362,7 @@ public class CreateRFQFromWalkThroughController{
                         newRFQLine.buildertek__BT_Category__c = walkthroughline.buildertek__BT_Category__c;
                         newRFQLine.buildertek__Cost_Code__c = walkthroughline.buildertek__BT_Cost_Code__c;
                         newRFQLine.buildertek__Trade_Type__c = walkthroughline.buildertek__Trade_Type__c;
+                        newRFQLine.buildertek__Walk_Through_Unit_Cost__c = walkthroughline.buildertek__Price__c;                        
 
                         newRFQLines.add(newRFQLine);
                     }
@@ -406,6 +404,214 @@ public class CreateRFQFromWalkThroughController{
         if (!allCdLinksToInsert.isEmpty()){
             database.Insert (allCdLinksToInsert, false);
         }
+
+        Set<String> rfqLineIds = new Set<String>();
+        for (String rfqLineId : mapOfWalkThroughLineIdAndRfqLineId.values()){
+            rfqLineIds.add(rfqLineId);
+        }
+
+        
+        List<buildertek__Public_Folder__c> publicFolderList = new List<buildertek__Public_Folder__c>();
+        for (String rfqLineId : rfqLineIds){
+            buildertek__Public_Folder__c publicFolder = new buildertek__Public_Folder__c();
+            publicFolder.Name = 'Images from Walkthrough';
+            publicFolder.buildertek__Description__c = 'Images from Walkthrough';
+            publicFolder.buildertek__RelatedToId__c = rfqLineId;
+            publicFolderList.add(publicFolder);
+        }
+        
+        if (!publicFolderList.isEmpty()){
+            insert publicFolderList;
+        }
+
+        //update buildertek__Public_Folder__c on buildertek__RFQ_Item__c record by iterating over publicFolderList
+        List<buildertek__RFQ_Item__c> rfqLineItemsToUpdate = new List<buildertek__RFQ_Item__c>();
+        for (buildertek__Public_Folder__c publicFolder : publicFolderList){
+            buildertek__RFQ_Item__c rfqLineItem = new buildertek__RFQ_Item__c();
+            rfqLineItem.Id = publicFolder.buildertek__RelatedToId__c;
+            rfqLineItem.buildertek__Public_Folder__c = publicFolder.Id;
+            rfqLineItemsToUpdate.add(rfqLineItem);
+        }
+
+        if (!rfqLineItemsToUpdate.isEmpty()){
+            update rfqLineItemsToUpdate;
+        }
+        
+        
+        //Make a map of RFQ Line Id and Public Folder Id
+        Map<String, String> mapOfRfqLineIdAndPublicFolderId = new Map<String, String>();
+        for (buildertek__Public_Folder__c publicFolder : publicFolderList){
+            mapOfRfqLineIdAndPublicFolderId.put(publicFolder.buildertek__RelatedToId__c, publicFolder.Id);
+        }
+        
+        //Query all the CDLs to get the ContentDocument.LatestPublishedVersionId and ContentDocument.Title
+        List<ContentDocumentLink> allCdLinksToQuery = [SELECT Id, ContentDocument.LatestPublishedVersionId, ContentDocument.Title, ContentDocumentId, LinkedEntityId
+                                                       FROM ContentDocumentLink
+                                                       WHERE LinkedEntityId IN:rfqLineIds];
+
+        //Create a map of LinkedEntityId and List of ContentDocument.LatestPublishedVersionId
+        Map<String, List<Id>> mapOfLinkedEntityIdAndCvIds = new Map<String, List<Id>>();
+        for (ContentDocumentLink cdl : allCdLinksToQuery){
+            if (!mapOfLinkedEntityIdAndCvIds.containsKey(cdl.LinkedEntityId)){
+                mapOfLinkedEntityIdAndCvIds.put(cdl.LinkedEntityId, new List<Id>());
+            }
+            mapOfLinkedEntityIdAndCvIds.get(cdl.LinkedEntityId).add(cdl.ContentDocument.LatestPublishedVersionId);
+        }
+
+        //Create a set of ContentDocument.LatestPublishedVersionId
+        Set<Id> cvIds = new Set<Id>();
+        for (ContentDocumentLink cdl : allCdLinksToQuery){
+            cvIds.add(cdl.ContentDocument.LatestPublishedVersionId);
+        }
+
+        List<buildertek__Public_File__c> ExisitingPublicFile = [SELECT Id, Name, buildertek__File_Name__c, buildertek__Content_Distrubution__c, buildertek__Content_Version__c, buildertek__Public_URL__c
+                                                                FROM buildertek__Public_File__c
+                                                                WHERE buildertek__Content_Version__c IN:cvIds];
+
+        //Create a map of ContentDocument.LatestPublishedVersionId and Public File Id
+        Map<Id, Id> mapOfCvIdAndPublicFileId = new Map<Id, Id>();
+        for (buildertek__Public_File__c publicFile : ExisitingPublicFile){
+            mapOfCvIdAndPublicFileId.put(publicFile.buildertek__Content_Version__c, publicFile.Id);
+        }
+
+        //Create a map of LinkedEntityId and List of Public File Id
+        Map<String, List<Id>> mapOfLinkedEntityIdAndPublicFileId = new Map<String, List<Id>>();
+        for (ContentDocumentLink cdl : allCdLinksToQuery){
+            if (mapOfCvIdAndPublicFileId.containsKey(cdl.ContentDocument.LatestPublishedVersionId)){
+                if (!mapOfLinkedEntityIdAndPublicFileId.containsKey(cdl.LinkedEntityId)){
+                    mapOfLinkedEntityIdAndPublicFileId.put(cdl.LinkedEntityId, new List<Id>());
+                }
+                mapOfLinkedEntityIdAndPublicFileId.get(cdl.LinkedEntityId).add(mapOfCvIdAndPublicFileId.get(cdl.ContentDocument.LatestPublishedVersionId));
+            }
+        }
+
+        //iterate over the cvIds and check if Public File already exists and if not add that cvId to a new set of cvIds
+        Set<Id> cvIdsToInsert = new Set<Id>();
+        for (Id cvId : cvIds){
+            Boolean isExists = false;
+            for (buildertek__Public_File__c publicFile : ExisitingPublicFile){
+                if (publicFile.buildertek__Content_Version__c == cvId){
+                    isExists = true;
+                    break;
+                }
+            }
+            if (!isExists){
+                cvIdsToInsert.add(cvId);
+            }
+        }
+
+        //Create list of ContentDocumentLink whose ContentDocument.LatestPublishedVersionId is in cvIdsToInsert
+        List<ContentDocumentLink> cdLinksToInsert = new List<ContentDocumentLink>();
+        for (ContentDocumentLink cdl : allCdLinksToQuery){
+            if (cvIdsToInsert.contains(cdl.ContentDocument.LatestPublishedVersionId)){
+                cdLinksToInsert.add(cdl);
+            }
+        }
+        
+        //Create record of ContentDistribution
+        List<ContentDistribution> cdList = new List<ContentDistribution>();
+        for (ContentDocumentLink cdl : cdLinksToInsert){
+            ContentDistribution cd = new ContentDistribution();
+            cd.Name = cdl.ContentDocument.Title;
+            cd.ContentVersionId = cdl.ContentDocument.LatestPublishedVersionId;
+            cd.RelatedRecordId = cdl.LinkedEntityId;
+            cd.PreferencesAllowViewInBrowser= true;
+            cd.PreferencesLinkLatestVersion=true;
+            cd.PreferencesNotifyOnVisit=false;
+            cd.PreferencesPasswordRequired=false;
+            cd.PreferencesAllowOriginalDownload= true;
+            cdList.add(cd);
+        }
+
+        if (!cdList.isEmpty()){
+            insert cdList;
+        }
+
+        //Create a map of RelatedRecordId and List of ContentDistribution Id
+        Map<Id, List<Id>> mapOfRelatedRecordIdAndCdId = new Map<Id, List<Id>>();
+        for (ContentDistribution cd : cdList){
+            if (!mapOfRelatedRecordIdAndCdId.containsKey(cd.RelatedRecordId)){
+                mapOfRelatedRecordIdAndCdId.put(cd.RelatedRecordId, new List<Id>());
+            }
+            mapOfRelatedRecordIdAndCdId.get(cd.RelatedRecordId).add(cd.Id);
+        }
+
+        //query all the ContentDistribution to get the Name, ContentVersionId, DistributionPublicUrl
+        List<ContentDistribution> cdListToQuery = [SELECT Id, Name, ContentVersionId, DistributionPublicUrl, RelatedRecordId
+                                                   FROM ContentDistribution
+                                                   WHERE Id IN:cdList];
+
+        //Create a list of Public File
+        List<buildertek__Public_File__c> publicFileList = new List<buildertek__Public_File__c>();
+        for (ContentDistribution cd : cdListToQuery){
+            buildertek__Public_File__c publicFile = new buildertek__Public_File__c();
+            publicFile.buildertek__File_Name__c = cd.Name;
+            publicFile.buildertek__Content_Distrubution__c = cd.Id;
+            publicFile.buildertek__Content_Version__c = cd.ContentVersionId;
+            publicFile.buildertek__Public_URL__c = cd.DistributionPublicUrl;
+            publicFileList.add(publicFile);
+        }
+
+        if (!publicFileList.isEmpty()){
+            insert publicFileList;
+        }
+
+        //Create a map of ContentDistribution Id and Public File Id
+        Map<Id, Id> mapOfContentDistributionIdAndPublicFileId = new Map<Id, Id>();
+        for (buildertek__Public_File__c publicFile : publicFileList){
+            mapOfContentDistributionIdAndPublicFileId.put(publicFile.buildertek__Content_Distrubution__c, publicFile.Id);
+        }
+
+        //Create a map of RelatedRecordId and List of Public File Id
+        Map<String, List<Id>> mapOfRelatedRecordIdAndPublicFileId = new Map<String, List<Id>>();
+        for (ContentDistribution cd : cdListToQuery){
+            if (mapOfContentDistributionIdAndPublicFileId.containsKey(cd.Id)){
+                if (!mapOfRelatedRecordIdAndPublicFileId.containsKey(cd.RelatedRecordId)){
+                    mapOfRelatedRecordIdAndPublicFileId.put(cd.RelatedRecordId, new List<Id>());
+                }
+                mapOfRelatedRecordIdAndPublicFileId.get(cd.RelatedRecordId).add(mapOfContentDistributionIdAndPublicFileId.get(cd.Id));
+            }
+        }
+
+        //By iterating over rfqLineIds, create a map of RFQ Line Id and List of Public File Id from mapOfLinkedEntityIdAndPublicFileId and mapOfRelatedRecordIdAndPublicFileId
+        Map<String, List<Id>> mapOfRfqLineIdAndPublicFileId = new Map<String, List<Id>>();
+        for (String rfqLineId : rfqLineIds){
+            if (mapOfLinkedEntityIdAndPublicFileId.containsKey(rfqLineId)){
+                mapOfRfqLineIdAndPublicFileId.put(rfqLineId, mapOfLinkedEntityIdAndPublicFileId.get(rfqLineId));
+            }
+            if (mapOfRelatedRecordIdAndPublicFileId.containsKey(rfqLineId)){
+                mapOfRfqLineIdAndPublicFileId.put(rfqLineId, mapOfRelatedRecordIdAndPublicFileId.get(rfqLineId));
+            }
+        }
+
+        //iterate and debug the mapOfRfqLineIdAndPublicFileId
+        for (String rfqLineId : mapOfRfqLineIdAndPublicFileId.keySet()){
+            System.debug('rfqLineId--> ' + rfqLineId);
+            System.debug('Public File Ids--> ' + mapOfRfqLineIdAndPublicFileId.get(rfqLineId));
+        }
+
+        //Create a map of Public Folder Id and List of Public File Id by iterating over publicFolderList
+        Map<String, List<Id>> mapOfPublicFolderIdAndPublicFileId = new Map<String, List<Id>>();
+        for (buildertek__Public_Folder__c publicFolder : publicFolderList){
+            if (mapOfRfqLineIdAndPublicFileId.containsKey(publicFolder.buildertek__RelatedToId__c)){
+                mapOfPublicFolderIdAndPublicFileId.put(publicFolder.Id, mapOfRfqLineIdAndPublicFileId.get(publicFolder.buildertek__RelatedToId__c));
+            }
+        }
+
+        //Create a record of buildertek__Public_File_Folder_Jn__c by iterating over mapOfPublicFolderIdAndPublicFileId
+        List<buildertek__Public_File_Folder_Jn__c> publicFileFolderJnList = new List<buildertek__Public_File_Folder_Jn__c>();
+        for (String publicFolderId : mapOfPublicFolderIdAndPublicFileId.keySet()){
+            for (Id publicFileId : mapOfPublicFolderIdAndPublicFileId.get(publicFolderId)){
+                buildertek__Public_File_Folder_Jn__c publicFileFolderJn = new buildertek__Public_File_Folder_Jn__c();
+                publicFileFolderJn.buildertek__Public_File__c = publicFileId;
+                publicFileFolderJn.buildertek__Public_Folder__c = publicFolderId;
+                publicFileFolderJnList.add(publicFileFolderJn);
+            }
+        }
+
+        if (!publicFileFolderJnList.isEmpty()){
+            insert publicFileFolderJnList;
+        }
     }
 
     public static String sliceDescriptionForName(String description){
@@ -426,10 +632,6 @@ public class CreateRFQFromWalkThroughController{
 
         @AuraEnabled
         public String newRecordId;
-
-        @AuraEnabled
-        public String projectId;
-
 
     }
 

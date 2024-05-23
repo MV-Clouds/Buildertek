@@ -1,0 +1,217 @@
+<template>
+  <!-- <template if:true={isLoading}> -->
+    <div class="hidden">
+      <div id="spinnerId" class="slds-spinner_container" style="position: fixed;">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    </div>
+<!-- </template> -->
+  <lightning-card>
+    <div class="bg">
+      <div class="parent">
+        <span class="parent_span">
+          <lightning-button-menu class="menu" alternative-text="Category Menu"
+            variant="border-filled">
+            <template for:each={categories} for:item="category">
+              <lightning-menu-item key={category.Id} value={category.Id} label={category.Name}
+                onclick={handleCategorySelect}></lightning-menu-item>
+            </template>
+          </lightning-button-menu>
+          <b><span class="text">{selectedCategoryLabel}</span></b>
+        </span>
+      </div>
+
+      <div if:true={field_container} class="field_container">
+        <div class="fields slds-grid slds-wrap">
+          <template for:each={fieldDetails} for:item="fieldDetail">
+            <div class="slds-col slds-size_1-of-2" key={fieldDetail.fieldLabel}>
+              <div class="label-float">
+                <template if:true={fieldDetail.isPicklist}>
+                    <!-- Field Label -->
+                    <label class='regularLabel'>{fieldDetail.fieldLabel}</label>
+                    <!--/ Field Label -->
+                    <div class="slds-form-element_control regularclassPL">
+                        <!-- Combobox Container -->
+                        <div class="slds-combobox_container">
+                            <div class='slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click' data-dropdown-id={fieldDetail.fieldName} id={fieldDetail.fieldName} aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                                <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                    <!-- Readonly Input to display selected value -->
+                                    <input type="text"
+                                        class='slds-var-p-around_medium slds-combobox__input slds-combobox__input-value combobox-input-class' autocomplete="off" data-id={fieldDetail.fieldName}
+                                        aria-autocomplete="list" aria-controls={fieldDetail.fieldName} role="textbox"
+                                        data-fieldname={fieldDetail.fieldName} data-fieldtype={fieldDetail.fieldType} record-id={recordId}
+                                        placeholder="Select" onclick={handleInputClick} value={fieldDetail.fieldValue} readonly onblur={closeDropdown}></input>
+                                    <!--/ Readonly Input to display selected value -->
+             
+                                    <!-- Up Arrow icon div if dropdown open -->
+                                    <div if:true={isDropdownOpen}>
+                                        <span
+                                            class="slds-icon_container slds-icon-utility-up slds-input__icon slds-input__icon_right">
+                                            <lightning-icon icon-name="utility:up" size="x-small"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <!--/ Up Arrow icon div if dropdown open -->
+                                    <!-- Down Arrow icon div if dropdown close -->
+                                    <div if:false={isDropdownOpen}>
+                                        <span
+                                            class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                                            <lightning-icon icon-name="utility:down" size="x-small"></lightning-icon>
+                                        </span>
+                                    </div>
+                                    <!--/ Down Arrow icon div if dropdown close -->
+                                </div>
+                                <!-- List box to show dropdown options -->
+                                <!-- <template if:true={fieldDetail.openCloseModal}> -->
+                                  <div class="slds-dropdown slds-dropdown_fluid" role="listbox" onmousedown={preventHide}>
+                                      <ul class="slds-listbox slds-listbox_vertical slds-dropdown_length-5 customClass" tabindex="0"
+                                          role="presentation">
+                                          <template for:each={fieldDetail.picklistOptions} for:item="option">
+                                              <!-- li to display each option in the list -->
+                                              <li key={option} role="presentation" class="slds-listbox__item" data-fieldname={fieldDetail.fieldName} data-value={option} onclick={optionsClickHandler}
+                                                  title={option}>
+                                                  <div id={option}
+                                                      class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                      role="option">
+                                                      <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                                      <span class="slds-truncate">
+                                                          <span>{option}</span>
+                                                      </span>
+                                                  </div>
+                                              </li>
+                                              <!--/ li to display each option in the list -->
+                                          </template>
+                                      </ul>
+                                  </div>
+                                <!-- </template>   -->
+                            </div>
+                        </div>
+                        <!--/ Combobox Container -->
+                    </div>
+                </template>
+              
+                <template if:true={fieldDetail.isRegular}>
+                    <input type={fieldDetail.fieldType} data-fieldtype={fieldDetail.fieldType} data-fieldname={fieldDetail.fieldName} object-api-name="buildertek__Walk_Through_List__c"
+                        record-id={recordId} value={fieldDetail.fieldValue} onkeyup={inputValueIsChanged} class="slds-var-p-around_medium regularclass"/>
+                        <label class="regularLabel">{fieldDetail.fieldLabel}</label>
+                </template>
+
+                <template if:true={fieldDetail.isCheckBox}>
+                  <div class="checkboxDiv">
+                    <input type={fieldDetail.fieldType} data-fieldtype={fieldDetail.fieldType} data-fieldname={fieldDetail.fieldName} object-api-name="buildertek__Walk_Through_List__c"
+                      record-id={recordId} checked={fieldDetail.fieldValue} onchange={inputValueIsChanged} class="slds-var-p-around_medium checkboxclass"/>
+                      <label class="checkboxlabelclass">{fieldDetail.fieldLabel}</label>
+                  </div>
+                </template>
+
+                <template if:true={fieldDetail.isDateTime}>
+                  <input type={fieldDetail.fieldType} data-fieldtype={fieldDetail.fieldType} data-fieldname={fieldDetail.fieldName} object-api-name="buildertek__Walk_Through_List__c"
+                      record-id={recordId} value={fieldDetail.fieldValue} onchange={inputValueIsChanged} class="slds-var-p-around_medium regularclass"/>
+                      <label class="regularLabel">{fieldDetail.fieldLabel}</label>    
+                </template>
+
+              </div>
+            </div>
+          </template>
+        </div>
+        <div class="save_cancle_btn">
+          <button class="save_btn" onclick={saveChanges}>Save</button>
+          <button class="cancle_btn" onclick={revertChanges}>Cancel</button>
+        </div>
+      </div>
+
+      <div if:false={field_container} class="not_field_container"><p>Please select the Category.</p></div>
+    </div>
+
+    <template if:true={dataAvailable}>
+      <lightning-card>
+        <div class="padding_class">
+          <div class="header_css">
+            <div class="heading_bt">BT Walk Through Line Items</div>
+            <div class="button_group">
+              <button onclick={handlePlusButtonClick}>
+                <svg width="12" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 5.71429H5.71429V10H4.28571V5.71429H0V4.28571H4.28571V0H5.71429V4.28571H10V5.71429Z"
+                    fill="#0176D3" />
+                </svg>
+              </button>
+              <button onclick={refreshTheDataTable}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\
+                    <path d="M21 3L15.6 3C15.2686 3 15 3.26863 15 3.6V3.6L15 9" stroke="#0176D3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> 
+                    <path d="M15.5 3.5C18.7983 4.80851 21 8.29825 21 12C21 16.8715 16.9706 21 12 21C7.02944 21 3 16.8715 3 12C3 8.73514 4.80989 5.52512 7.5 4" stroke="#0176D3" stroke-width="2" stroke-linecap="round"></path> 
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="datatable_class" if:true={isColumnsDataAvailable}>
+            <template if:true={reloadVar}>
+              <div class="inside_dt_cls">
+                <lightning-datatable key-field="id" data={data} columns={columns} hide-checkbox-column show-row-number-column onrowaction={handleRowAction}>
+                </lightning-datatable>
+              </div>
+            </template>
+          </div>
+          <div class="noData_class" if:false={isColumnsDataAvailable}>
+            <p>No Walk Through Line Available for this Category.</p>
+          </div>
+        </div>
+      </lightning-card>
+    </template>
+  </lightning-card>
+  <template if:true={showNewModel}>
+    <c-new-walk-through-line-cmp walk-through-id={recordId} category-id={selectedCategory} onclose={handleClose}></c-new-walk-through-line-cmp>
+  </template>
+  <template if:true={showFileUploadModel}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+      aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <!-- modal header start -->
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+            onclick={hideModalBox}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+              size="small"></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">File Upload</h2>
+        </header>
+    
+        <!-- modal body start -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+        <lightning-file-upload
+            record-id={wtlId}
+            accept={acceptedFormats}
+            name="fileUploader"
+            class="file-selector-large"
+            label="Upload Files"
+            title="Upload files"
+            onuploadfinished={handleUploadFinished}
+            multiple
+        >
+        </lightning-file-upload>
+        </div>
+    
+        <!-- modal footer start-->
+        <footer class="slds-modal__footer">
+          <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+        </footer>
+    
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+  <template if:true={isLoading}>
+    <!-- <div class="hidden"> -->
+      <div id="spinnerId1" class="slds-spinner_container" style="position: fixed;">
+        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+            <span class="slds-assistive-text">Loading</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+      </div>
+    <!-- </div> -->
+  </template>
+</template>

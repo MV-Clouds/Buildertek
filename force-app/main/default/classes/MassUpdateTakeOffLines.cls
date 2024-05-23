@@ -196,7 +196,7 @@ public class MassUpdateTakeOffLines{
                     searchTradeType = '%' + searchTradeType + '%';
                     query += ' AND buildertek__Trade_Type__r.Name LIKE : searchTradeType';
                 }
-                query += ' ORDER BY Name DESC NULLS LAST';
+                query += ' ORDER BY buildertek__Cost_Code__r.Name ASC NULLS LAST';
                 query += ' LIMIT : pageSize OFFSET : offset';
 
                 for (sObject s : Database.query(query)){
