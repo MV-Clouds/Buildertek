@@ -2710,6 +2710,39 @@ public with sharing class QuoteDAO{
         return returnList;
     }
 
+    // @AuraEnabled
+    // public static List<Sobject> getProductRecordsWithoutPriceBook(String searchKeyWord){
+    //     try {
+    //         String[] searchTerms = searchKeyWord.split(' ');
+    //         String searchKey = '';
+    //         for (Integer i = 0; i < searchTerms.size(); i++) {
+    //             searchKey += 'Name LIKE \'%' + searchTerms[i] + '%\'';
+    //             if (i < searchTerms.size() - 1) {
+    //                 searchKey += ' AND ';
+    //             }
+    //         }
+    //         List<sObject> returnList = new List<sObject>();
+    //         String sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c,buildertek__Category__c, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id, Pricebook2.Id, Pricebook2.Name FROM PricebookEntries order by CreatedDate DESC) from Product2 WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+    //         System.debug(sQuery);
+    //         returnList = Database.query(sQuery);
+    //         return returnList;
+    //     } catch (Exception e) {
+    //         throw new AuraHandledException(e.getMessage());
+    //     }
+    // }
+
+    @AuraEnabled
+    public static List<Pricebook2> fetchPricebook(String PId){
+        try {
+            System.debug('fetchPricebook: '+ PId);
+            List<Pricebook2> pricebooks = [SELECT Id, Name FROM Pricebook2 WHERE Id IN (SELECT Pricebook2Id FROM PricebookEntry WHERE Product2Id = :PId)];
+            System.debug('Pricebooks: ' + pricebooks);
+            return pricebooks;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static List<productWrapper> getProductsbyName(string pbookId, string pName) {
         String[] searchTerms = pName.split(' ');

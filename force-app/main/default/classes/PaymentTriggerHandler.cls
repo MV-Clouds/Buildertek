@@ -15,6 +15,7 @@ public class PaymentTriggerHandler {
         System.debug('budgetLineGroupId: ' + budgetLineGroupId);
 
         List<buildertek__Budget_Item__c> toInsertBudgetItems = new List<buildertek__Budget_Item__c>();
+        List<buildertek__Budget_Item__c> toUpdateBudgetItems = new List<buildertek__Budget_Item__c>();
         for(buildertek__BT_Payment__c payment : newPaymentline){
             //if budget line is null and budget is not null
             if(payment.buildertek__BT_Budget__c != null && payment.buildertek__BT_Budget_Line__c == null){
@@ -25,6 +26,18 @@ public class PaymentTriggerHandler {
                 budgetItem.buildertek__Payable_Invoice_Payments__c = payment.buildertek__Total_Amount__c;
                 toInsertBudgetItems.add(budgetItem);
             }
+
+            //if budget line is not null and budget is not null
+            if(payment.buildertek__BT_Budget__c != null && payment.buildertek__BT_Budget_Line__c != null){
+                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+                budgetItem.Id = payment.buildertek__BT_Budget_Line__c;
+                budgetItem.buildertek__Payable_Invoice_Payments__c += payment.buildertek__Total_Amount__c;
+                toUpdateBudgetItems.add(budgetItem);
+            }
+        }
+
+        if(toUpdateBudgetItems.size() > 0){
+            update toUpdateBudgetItems;
         }
 
         if(toInsertBudgetItems.size() > 0){
@@ -97,8 +110,10 @@ public class PaymentTriggerHandler {
         }else{
             budgetLineGroupId = budgetLineGroups[0].Id;
         }
+        
 
         List<buildertek__Budget_Item__c> toInsertBudgetItems = new List<buildertek__Budget_Item__c>();
+        List<buildertek__Budget_Item__c> toUpdateBudgetItems = new List<buildertek__Budget_Item__c>();
         for(buildertek__BT_Payment__c payment : newPayment){
             if(payment.buildertek__BT_Budget__c != null && payment.buildertek__BT_Budget_Line__c == null){
                 buildertek__BT_Payment__c oldPaymnet = oldPaymentMap.get(payment.Id);
@@ -111,6 +126,22 @@ public class PaymentTriggerHandler {
                     toInsertBudgetItems.add(budgetItem);
                 }
             }
+
+            if(payment.buildertek__BT_Budget__c != null && payment.buildertek__BT_Budget_Line__c != null){
+                buildertek__BT_Payment__c oldPaymnet = oldPaymentMap.get(payment.Id);
+                if(oldPaymnet != null && oldPaymnet.buildertek__BT_Budget_Line__c != payment.buildertek__BT_Budget_Line__c){
+                    buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+                    budgetItem.Id = payment.buildertek__BT_Budget_Line__c;
+                    budgetItem.buildertek__Payable_Invoice_Payments__c = payment.buildertek__Total_Amount__c;
+                    toUpdateBudgetItems.add(budgetItem);
+                }
+            }
+        }
+
+        System.debug('toUpdateBudgetItems: ' + toUpdateBudgetItems);
+
+        if(toUpdateBudgetItems.size() > 0){
+            update toUpdateBudgetItems;
         }
 
         if(toInsertBudgetItems.size() > 0){

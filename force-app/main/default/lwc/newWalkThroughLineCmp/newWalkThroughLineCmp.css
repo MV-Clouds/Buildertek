@@ -1,0 +1,110 @@
+.dummy{
+	color : black;
+}
+
+
+.modalFooter{
+	display: flex;
+    justify-content: center;
+    gap: 12px;
+	border-radius: 0px 0px 7px 7px;
+	background: #F6F6F6;
+}
+
+.modalHeader{
+
+	border-radius: 7px 7px 0px 0px;
+	background: #F6F6F6;
+}
+
+.hd-txt-line{
+	color: #000;
+	text-align: center;
+	font-size: 18px;
+	font-style: normal;
+	font-weight: 500;
+	line-height: normal;
+}
+
+
+.containerBody{
+	padding: 16px;
+}
+
+.main{
+	max-height: 50%;
+}
+
+.label-float {
+	position: relative;
+	padding-top: 13px;
+}
+
+.label-float input {
+	border: 1px solid lightgrey;
+	border-radius: 5px;
+	outline: none;
+	min-width: 250px;
+	padding: 15px 20px;
+	font-size: 16px;
+	transition: all .1s linear;
+	-webkit-transition: all .1s linear;
+	-moz-transition: all .1s linear;
+	-webkit-appearance: none;
+}
+
+.label-float input:focus {
+	border: 2px solid #00AEFF;
+}
+
+.label-float label {
+	/* font-size: 1rem; */
+	pointer-events: none;
+	position: absolute;
+	/* top: calc(50% - 1.1rem); */
+	left: 0.9375rem;
+	transition: all 0.1s linear;
+	-webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	background-color: white;
+	padding: 0.3125rem;
+	box-sizing: border-box;
+	border-radius: 50%;
+	font-size: 13px;
+	top: 0;
+	color: #00AEFF;
+
+}
+
+.comboboxPadding{
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+
+ 
+.modalBody{
+	max-height: 80%;
+	background-color: white;
+	overflow: auto;
+}
+
+
+.slds-modal__container{
+    width: 72% !important;
+	max-width: 80rem !important;
+}
+
+/* @media screen and (max-width: 600px) {
+	.modalBody{
+		max-height: 300px;
+	}
+} */
+
+/* add a query for desktop */
+@media screen and (orientation: landscape){
+	.modalBody{
+		max-height: 70vh !important;
+	}
+
+}

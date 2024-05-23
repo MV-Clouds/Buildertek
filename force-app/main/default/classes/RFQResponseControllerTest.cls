@@ -13,7 +13,10 @@ public class RFQResponseControllerTest {
     
     public static testMethod void test1() {
         Project__c proj = [Select Id from Project__c LIMIT 1];
-        
+        buildertek__RFQ_Template_Settings__c customSetting = new buildertek__RFQ_Template_Settings__c();
+        customSetting.Name = 'buildertek__Force_Site_URL__c';
+        customSetting.buildertek__Force_Site_URL__c = 'https://btservice360-dev-ed.my.salesforce-sites.com';
+        insert customSetting;
         RFQ__c rfq = new RFQ__c();
         rfq.Name = 'Test';
         rfq.Project__c = proj.Id;

@@ -1,0 +1,141 @@
+<aura:component
+    implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:lightningQuickAction,lightning:isUrlAddressable"
+    access="global" controller="salesInvoiceController">
+    <aura:attribute name="recordId" type="string" />
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}" />
+    <aura:attribute name="productName" type="string" />
+    <aura:attribute name="productId" type="string" />
+    <aura:attribute name="pricebookoptions" type="List" />
+
+    <aura:attribute name="save" type="Aura.Action" description="Save action Reference action" />
+
+    <aura:handler event="force:showToast" action="{!c.handleSaveSuccess}" />
+    <aura:handler name="onSaveSuccess" event="force:recordSaveSuccess" action="{!c.handleSaveSuccess}" />
+    <aura:handler name="oSelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.handleComponentEvent}" />
+    <aura:handler name="RefreshEvent" event="c:BT_RefreshEvent" action="{!c.handleEvent}" />
+
+    <aura:registerEvent name="ClearSelectedRecordEvent" type="c:BT_CLearLightningLookupEvent" />
+
+    <aura:attribute name="productfamily" type="string" />
+    <aura:attribute name="productfamilyoptions" type="List" />
+    <aura:attribute name="listofproductfamily" type="List" />
+    <aura:attribute name="pricebookName" type="string" />
+    <aura:attribute name="costCode" type="string" />
+    <aura:attribute name="costCodeFilter" type="string" />
+    <aura:attribute name="newSalesInvoiceLine" type="Billable_Lines__c" default="{'sobjectType':'Billable_Lines__c','buildertek__Quantity__c':1}" access="global" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:html tag="style">
+        .slds-tabs_card{
+        overflow:auto!important;
+        }
+
+        .pillSize{
+        width: 10vw !important;
+        height: 35px !important;
+        }
+    </aura:html>
+
+    <div aura:id="inlineEditSalesInvoiceLine" style="margin-top:15px; padding:10px;">
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer"
+            style="border:1px solid grey;border-radius: 5px;">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col"
+                        style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px; width: 10vw;">
+                        <div class="slds-truncate" title="PriceBook">PriceBook</div>
+                    </th>
+                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 10vw;">
+                        <div class="slds-truncate" title="Product Family">Product Family</div>
+                    </th>
+                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 10vw;">
+                        <div class="slds-truncate" title="Product">Product</div>
+                    </th>
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 10vw;">
+                        <div class="slds-truncate" title="Quote Line">Sales Invoice Line</div>
+                    </th>
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 10vw;">
+                        <div class="slds-truncate" title="Cost Code">Cost Code</div>
+                    </th>
+                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 3vw;">
+                        <div class="slds-truncate" title="Quantity">Quantity</div>
+                    </th>
+                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 5vw;">
+                        <div class="slds-truncate" title="Unit Price">Unit Price</div>
+                    </th>
+
+                    <th scope="col"
+                        style="background-color:rgba(27, 82, 151, 1.0); color:white;  border-top-right-radius:5px;">
+                        <div class="slds-truncate" title="Action">Save</div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr class='tableRow'>
+                    <td style="width: 10vw;">
+                        <ui:inputSelect value="{!v.pricebookName}" change="{!c.changeEvent}" class="pricebook-class">
+                            <aura:iteration var="option" items="{!v.pricebookoptions}">
+                                <option value="{!option.value}" selected="{!option.value == v.pricebookName}">
+                                    {!option.key}</option>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </td>
+
+                    <td>
+                        <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}" class="pricebook-class">
+                            <aura:iteration var="option" items="{!v.listofproductfamily}">
+                                <option value="{!option.productfamilyvalues}"
+                                    selected="{!option.productfamilyvalues == v.productfamily}">
+                                    {!option.productfamilyvalues}</option>
+                            </aura:iteration>
+                        </ui:inputSelect>
+                    </td>
+                    <td style="width: 10vw;">
+                        <aura:html tag="style">
+                            .mainDiv{
+                            padding-top:1.3% !important;
+                            max-width:27vw;
+                            }
+                            .pillSize{
+                            padding-top: 1.3% !important;
+                            padding-bottom: 1.3% !important;
+                            }
+                        </aura:html>
+                        <c:BT_LightningLookup aura:id="productId" objectAPIName="Product2" IconName="standard:product"
+                            selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName }"
+                            prodctfamly="{!v.productfamily}"
+                            childValue="{!v.newSalesInvoiceLine.buildertek__Item_Name__c}" costcodeValue="{!v.costCode}"
+                            unitcostValue="{!v.newSalesInvoiceLine.buildertek__Unit_Price__c}"
+                            clearCostCode="{!v.newSalesInvoiceLine.buildertek__Cost_Code__c}" />
+                    </td>
+                    <td style="width: 10vw;">
+                        <ui:inputText value="{!v.newSalesInvoiceLine.buildertek__Item_Name__c}"
+                            aura:id="salesInvoiceLineID" />
+                    </td>
+                    <td style="width: 10vw;">
+                        <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c"
+                            _sobject="buildertek__Billable_Lines__c"
+                            _value="{!v.newSalesInvoiceLine.buildertek__Cost_Code__c}" _text_value="{!v.costCode}"
+                            _label="" _filter="" />
+                    </td>
+                    <td style="width: 3vw;">
+                        <ui:inputNumber value="{!v.newSalesInvoiceLine.buildertek__Quantity__c}" />
+                    </td>
+                    <td style="width: 5vw;">
+                        <ui:inputCurrency value="{!v.newSalesInvoiceLine.buildertek__Unit_Price__c}"
+                            aura:id="unitPriceId" />
+                    </td>
+
+                    <td>
+                        <lightning:buttonIcon iconName="utility:save" alternativeText="save"
+                            onclick="{!c.saveSalesInvoiceLineRecord}" />
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+    </div>
+    <c:BT_Spinner />
+</aura:component>

@@ -5,7 +5,9 @@
     <aura:attribute name="parentRecordId" type="String" default="" />
     <aura:attribute name="projectId" type="String" default="" />
     <aura:attribute name="vendorId" type="String" default="" />
-    <aura:attribute name="isLoading" type="Boolean" />
+    <aura:attribute name="btBudgetId" type="String" default="" />
+    <aura:attribute name="btBudgetLineId" type="String" default="" />
+        <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="isdisabled" type="Boolean" default="false"/>
     <lightning:workspaceAPI aura:id="workspace" />
     <aura:html tag="style">
@@ -28,7 +30,6 @@
                 <lightning:recordEditForm aura:id="recordViewForm"
                                           objectApiName="buildertek__Payment__c"
                                           onsubmit="{!c.handleSubmit}"
-                                          onsuccess="{!c.handleSuccess}"
                                           onerror = "{!handleError}">
                     <lightning:layout verticalAlign="center" multipleRows="true">
                         <aura:iteration items="{!v.listOfFields}" var="field">
@@ -54,6 +55,8 @@
                             </lightning:layoutItem>
                             <br />
                         </aura:iteration>
+                                 <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                 </lightning:layoutItem>
                     </lightning:layout>
                     <div class="slds-col modal-footer slds-modal__footer slds-buttoncustom" >
                         <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.closeModel }" />

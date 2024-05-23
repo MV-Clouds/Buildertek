@@ -115,10 +115,10 @@
         <div class="slds-clearfix">
             <div class="slds-float_left">
                 <lightning:buttonGroup>
-                    <lightning:button label="Previous" disabled="{!v.startPage == 0}" onclick="{!c.previous}"
+                    <lightning:button label="Previous" disabled="{!or(v.startPage == 0 ,v.RecordExist==false)}" onclick="{!c.previous}"
                         variant="brand" iconName='utility:back' class="BorderRadius" />
                     &nbsp; &nbsp; &nbsp;
-                    <lightning:button label="Next" disabled="{!v.endPage >= v.totalRecords}" onclick="{!c.next}"
+                    <lightning:button label="Next" disabled="{!or(v.endPage >= v.totalRecords,v.RecordExist==false)}" onclick="{!c.next}"
                         variant="brand" iconName='utility:forward' iconPosition='right' class="BorderRadius" />
                 </lightning:buttonGroup>
             </div>

@@ -50,31 +50,7 @@ public with sharing class BudgetDAO{
                     bItem.buildertek__Group__c = budgetGroup.Id;
                 }
             }
-
-
         }
-
-
-        // // create new group for quote
-        // if(!newBudgetWithoutGroup.isEmpty()){
-        //     Budget_Line_Group__c budGroup = [SELECT Id FROM Budget_Line_Group__c WHERE Name = 'No Grouping'];
-        //     /*budgetIdByGroupId = new map<Id,Budget_Line_Group__c>();
-        //     for(Id budgetId: newBudgetWithoutGroup){
-        //         Budget_Line_Group__c defaultGroup = new Budget_Line_Group__c();
-        //         defaultGroup.Name = 'No Grouping';
-        //         defaultGroup.Budget__c = budgetId;
-        //         budgetIdByGroupId.put(budgetId, defaultGroup);
-        //     }
-
-        //     insert budgetIdByGroupId.values();*/
-
-        //     for(Budget_Item__c bItem:budgetItems){
-        //         if(budgetIdByGroupId.containsKey(bItem.Budget__c)){
-        //             //bItem.Group__c = budgetIdByGroupId.get(bItem.budget__c).Id;
-        //             bItem.Group__c = budGroup.Id;
-        //         }
-        //     }
-        // }
     }
 
     @AuraEnabled
@@ -692,53 +668,10 @@ public with sharing class BudgetDAO{
 
     @AuraEnabled
     public static buildertek__Budget_Item__c saveBudgetLineItem(string budgetLineRecord, String recordId, String contractor){
-        //   System.debug('---Budget Line Items' + budgetLineRecord);
         buildertek__Budget_Item__c budgetRec = new buildertek__Budget_Item__c();
         budgetRec = (buildertek__Budget_Item__c)System.JSON.deserialize(budgetLineRecord, buildertek__Budget_Item__c.class);
-        System.debug('budgetRec------------------>' + budgetRec);
-        //  system.debug('Budget Group ------------> ' + budgetRec.buildertek__Budget_Line_Group__c);
-
-        /*  if(budgetRec.buildertek__Budget_Line_Group__c == null){
-         List<buildertek__Quote_Line_Group__c> budgetGroup = [select Id, Name from buildertek__Quote_Line_Group__c where Name = 'No Grouping'];
-         if(budgetGroup.size() > 0){
-         budgetRec.buildertek__Budget_Line_Group__c = budgetGroup[0].Id;
-         }else{
-         buildertek__Quote_Line_Group__c budGroup = new buildertek__Quote_Line_Group__c();
-         if(Schema.sObjectType.buildertek__Quote_Line_Group__c.fields.Name.isCreateable()){
-         budGroup.Name = 'No Grouping';
-         }
-         insert budGroup;
-         budgetRec.buildertek__Budget_Line_Group__c = budGroup.Id;
-         }
-
-         } */
-        // Modified by laxman 08/07/2020
-        // Description :- here we goup the Budgetline items based on the buildertek__Group__c field.
-        if (budgetRec.buildertek__Group__c == null){
-            List<buildertek__Budget_Line_Group__c> budgetGroup = [select Id, Name
-                                                                  from buildertek__Budget_Line_Group__c
-                                                                  where Name = 'No Grouping'
-                                                                  ORDER BY Name ASC];
-            if (budgetGroup.size() > 0){
-                budgetRec.buildertek__Group__c = budgetGroup[0].Id;
-            } else{
-                buildertek__Budget_Line_Group__c budGroup = new buildertek__Budget_Line_Group__c();
-                budGroup.Name = 'No Grouping';
-                insert budGroup;
-                budgetRec.buildertek__Group__c = budGroup.Id;
-            }
-        }
-
-        /* if (budgetRec.buildertek__Product__c != null){
-         product2 prdctrec = [SELECT id, Name, buildertek__Cost_Code__c
-         FROM product2
-         where Id = :budgetRec.buildertek__Product__c];
-         budgetRec.buildertek__Cost_Code__c = prdctrec.buildertek__Cost_Code__c;
-         }*/
         buildertek__Budget_Item__c BudgetLineToInsert = new buildertek__Budget_Item__c();
 
-        //   System.debug('p------>---Budget Line Items recordId --> ' + budgetRec.buildertek__Product__c);
-        //System.debug('---Budget Line Items recordId --> '+recordId);
         BudgetLineToInsert.buildertek__Product__c = budgetRec.buildertek__Product__c;
         //BudgetLineToInsert.buildertek__Product__c = productId;
         if (budgetRec.Name.length() > 79){
@@ -762,11 +695,8 @@ public with sharing class BudgetDAO{
         BudgetLineToInsert.buildertek__Group__c = budgetRec.buildertek__Group__c;
         BudgetLineToInsert.buildertek__Sub_Grouping__c = budgetRec.buildertek__Sub_Grouping__c;
         BudgetLineToInsert.buildertek__Discount__c = budgetRec.buildertek__Discount__c;
-        //  System.debug('---Budget Line Items recordId 321--> ' + BudgetLineToInsert);
-        insert BudgetLineToInsert;
-        System.debug('---------------BudgetLineToInsert------------------>>>>>' + BudgetLineToInsert);
 
-        // system.debug('Created budgetLineRecord: ' + BudgetLineToInsert);
+        insert BudgetLineToInsert;
 
         return BudgetLineToInsert;
     }
@@ -2091,35 +2021,20 @@ public with sharing class BudgetDAO{
         objDT.recordEnd = totalRecords >= recordEnd ? recordEnd : totalRecords;
         objDT.totalRecords = totalRecords;
         objDT.selectedPurchaseOrder = false;
+        objDT.selectedPurchaseOrderLine = false;
         if (UserInfo.isMultiCurrencyOrganization()){
+            String status = 'Master';
             string rfqrecords = 'SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name,buildertek__PO_Type__c,buildertek__Description__c,' +
                                 'buildertek__Vendor__c,buildertek__Vendor__r.Name,buildertek__PO_Total__c' +
                                 ' FROM buildertek__Purchase_Order__c' +
-                                ' where buildertek__Budget__c = null AND buildertek__Budget_Line__c =null AND buildertek__Project__c =\'' + RFQRec.buildertek__Project__c + '\' ORDER BY Name ASC LIMIT :pageSize OFFSET :offset';
+                                ' where buildertek__Budget__c = null AND buildertek__Budget_Line__c =null AND buildertek__Project__c =\'' + RFQRec.buildertek__Project__c + '\' AND buildertek__PO_Type__c != :status AND ID NOT IN (SELECT buildertek__Purchase_Order__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__BT_Budget__c != null ) ORDER BY Name ASC';
             objDT.recordList = Database.query(rfqrecords);
         } else{
-            // objDT.recordList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name,buildertek__PO_Type__c,buildertek__Description__c,
-            //             buildertek__Vendor__c,buildertek__Vendor__r.Name,buildertek__PO_Total__c
-            //             FROM buildertek__Purchase_Order__c
-            //             where buildertek__Project__c = :RFQRec.buildertek__Project__c
-            //             ORDER BY Name
-            //             LIMIT :pageSize
-            //             OFFSET :offset];
-
-            objDT.recordList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name, buildertek__PO_Type__c, buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c
-                                FROM buildertek__Purchase_Order__c
-                                where buildertek__Budget__c = null AND buildertek__Budget_Line__c = null AND buildertek__Project__c = :RFQRec.buildertek__Project__c
-                                ORDER BY Name
-                                LIMIT :pageSize
-                                OFFSET :offset];
+            objDT.recordList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name, buildertek__PO_Type__c, buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Budget__c = null AND buildertek__Budget_Line__c = null AND buildertek__Project__c = :RFQRec.buildertek__Project__c AND buildertek__PO_Type__c != 'Master' AND ID NOT IN (SELECT buildertek__Purchase_Order__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__BT_Budget__c != null ) ORDER BY Name];
         }
-        /*objDT.recordList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name,buildertek__PO_Type__c,buildertek__Description__c,
-         buildertek__Vendor__c,buildertek__Vendor__r.Name,buildertek__PO_Total__c
-         FROM buildertek__Purchase_Order__c
-         where buildertek__Project__c = :RFQRec.buildertek__Project__c
-         ORDER BY Name
-         LIMIT :pageSize
-         OFFSET :offset];*/
+
+        objDT.poLinerecordList = [SELECT Id, Name, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order__r.buildertek__Description__c, buildertek__Purchase_Order__r.buildertek__Project__r.Name, buildertek__Purchase_Order__r.buildertek__PO_Type__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__Purchase_Order__r.buildertek__Vendor__r.Name, buildertek__Purchase_Order__r.buildertek__Project__c, buildertek__Total_Price__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__r.buildertek__Project__c = 'a1Q1K000007zaoPUAQ' AND buildertek__BT_Budget__c  = null AND buildertek__Budget_Item__c  = null AND buildertek__Purchase_Order__r.buildertek__Budget_Line__c = null AND buildertek__Purchase_Order__r.buildertek__Budget__c = null AND buildertek__Purchase_Order__r.buildertek__PO_Type__c != 'Master' ORDER BY buildertek__Purchase_Order__r.Name, Name NULLS Last];
+
         return objDT;
     }
 
@@ -2428,7 +2343,13 @@ public with sharing class BudgetDAO{
         Public Boolean selectedPurchaseOrder{ get; set; }
 
         @AuraEnabled
+        Public Boolean selectedPurchaseOrderLine{ get; set; }
+
+        @AuraEnabled
         public List<buildertek__Purchase_Order__c> recordList{ get; set; }
+
+        @AuraEnabled
+        public List<buildertek__Purchase_Order_Item__c> poLinerecordList{ get; set; }
 
     }
 
@@ -3230,6 +3151,21 @@ public with sharing class BudgetDAO{
         }
         System.debug('purchaseOrders -----------> ' + purchaseOrders);
         update purchaseOrders;
+    }
+
+    @AuraEnabled
+    public static void updatePOLine(List<String> POLineId, List<String> BudgetLineId, String budgetId){
+
+        List<buildertek__Purchase_Order_Item__c> POLineList = new List<buildertek__Purchase_Order_Item__c>();
+
+        for (String purchaseOrderLineId : POLineId){
+            buildertek__Purchase_Order_Item__c purchaseOrderLine = new buildertek__Purchase_Order_Item__c(Id = purchaseOrderLineId);
+            purchaseOrderLine.buildertek__BT_Budget__c = budgetId;
+            purchaseOrderLine.buildertek__Budget_Item__c = BudgetLineId[0];
+            POLineList.add(purchaseOrderLine);
+        }
+
+        update POLineList;
     }
 
     // ************ For Add Sales Invoice Button *************
