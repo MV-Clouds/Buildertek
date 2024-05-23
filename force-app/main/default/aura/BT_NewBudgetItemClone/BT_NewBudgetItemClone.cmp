@@ -223,6 +223,7 @@
     <aura:attribute name="addtcsection" type="Boolean" default="false" />
     <aura:attribute name="addinvsection" type="Boolean" default="false" />
     <aura:attribute name="recordList" type="Purchase_Order__c[]" />
+    <aura:attribute name="poLinerecordList" type="Purchase_Order_Item__c[]" />
     <aura:attribute name="PageNumber" type="integer" default="1" />
     <aura:attribute name="pageSize" type="integer" default="15" />
     <aura:attribute name="TotalPages" type="integer" default="0" />
@@ -325,6 +326,10 @@
     <aura:attribute name="selectedLabor" type="String" default="Time Card" />
     <aura:attribute name="chooseTimeCard" type="Boolean" default="false" />
     <aura:attribute name="chooseTimeSheet" type="Boolean" default="false" />
+    <aura:attribute name="choosePOType" type="Boolean" default="true" />
+    <aura:attribute name="selectedPOType" type="String" default="Purchase Order" />
+    <aura:attribute name="choosePO" type="Boolean" default="false" />
+    <aura:attribute name="choosePOLine" type="Boolean" default="false" />
     <aura:attribute name="timeSheetList" type="List" default="[]" />
 
     <aura:attribute name="costCodeList" type="List" />
@@ -2568,74 +2573,183 @@
                         max-width:60rem !important;
                     }
                 </aura:html>
-                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
-                    <div class="slds-modal__container" style="width: 70%;">
-                        <div aura:id="poContainer" class="c-container" style="position: relative; max-height:90vh" >
-                            <header class="slds-modal__header">
-                                <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
-                                <p></p>
-                                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Purchase Orders
-                                </h2>
-                                <p></p>
-                            </header>
-                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
-                                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
-                                    <thead>
-                                        <tr class="slds-text-title_caps">
-                                            <th scope="col" class="slds-truncate">
-                                                <lightning:input aura:id="selectAllPO" type="checkbox" name="checkAll" onchange="{!c.checkAllPO}" />
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Duration">PO Name</div>
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">Description</div>
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">PO Total</div>
-                                            </th>
-                                            <th scope="col">
-                                                <div class="slds-truncate" title="Project Description">Vendor</div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <aura:iteration items="{!v.recordList}" var="item" indexVar="index">
-                                            <tr>
-                                                <td style="padding-left: 0.5rem; width: 30px;">
-                                                    <lightning:input type="checkbox" name="input1" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkPO}" />
-                                                    <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">  <ui:inputRadio aura:id="radio" name="select" label="" value="{!item.selectedPurchaseOrder}" /> </span> -->
-                                                </td>
-                                                <td class="slds-truncate" style="">
-                                                    {!item.Name}
-                                                </td>
-                                                <td>
-                                                    {!item.buildertek__Description__c}
-                                                </td>
-                                                <td>
-                                                    <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                                                </td>
-                                                <td>
-                                                    {!item.buildertek__Vendor__r.Name}
-                                                </td>
-                                            </tr>
-                                        </aura:iteration>
-                                        <aura:if isTrue="{!empty(v.recordList)}">
-                                            <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
-                                                No Records Found
-                                            </td>
-                                        </aura:if>
-                                    </tbody>
-                                </table>
+
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <aura:if isTrue="{!v.choosePOType}">
+                            <div class="slds-modal__container" style="width: 50%;">
+                                <div aura:id="poContainer" class="c-container">
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                        <p></p>
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Any One Type
+                                        </h2>
+                                        <p></p>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                        <lightning:select name="POType" value="{!v.selectedPOType}">
+                                            <!-- <option value="" selected="true" disabled="true">Choose One</option> -->
+                                            <option value="Purchase Order" selected="true">Purchase Order</option>
+                                            <option value="Purchase Order Line">Purchase Order Line</option>
+                                        </lightning:select>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                        <lightning:button variant="brand" type="submit" name="Save" label="Next" onclick="{!c.movetoPoOrPoLineSelection}" />
+                                    </footer>
+                                </div>
                             </div>
-                            <footer class="slds-modal__footer">
-                                <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
-                                <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBLPO}" />
-                            </footer>
-                        </div>
-                    </div>
-                </section>
-                <div class="slds-backdrop slds-backdrop_open"></div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.choosePO}">
+                            <div class="slds-modal__container" style="width: 70%;">
+                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:47vh" >
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                        <p></p>
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Purchase Orders
+                                        </h2>
+                                        <p></p>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                            <thead>
+                                                <tr class="slds-text-title_caps">
+                                                    <th scope="col" class="slds-truncate">
+                                                        <lightning:input aura:id="selectAllPO" type="checkbox" name="checkAll" onchange="{!c.checkAllPO}" />
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Name</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Project Description">Description</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Project Description">PO Total</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Project Description">Vendor</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.recordList}" var="item" indexVar="index">
+                                                    <tr>
+                                                        <td style="padding-left: 0.5rem; width: 30px;">
+                                                            <lightning:input type="checkbox" name="input1" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkPO}" />
+                                                            <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">  <ui:inputRadio aura:id="radio" name="select" label="" value="{!item.selectedPurchaseOrder}" /> </span> -->
+                                                        </td>
+                                                        <td class="slds-truncate" style="">
+                                                            {!item.Name}
+                                                        </td>
+                                                        <td>
+                                                            {!item.buildertek__Description__c}
+                                                        </td>
+                                                        <td>
+                                                            <lightning:formattedNumber value="{!item.buildertek__PO_Total__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                        </td>
+                                                        <td>
+                                                            {!item.buildertek__Vendor__r.Name}
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                                <aura:if isTrue="{!empty(v.recordList)}">
+                                                    <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                        No Records Found
+                                                    </td>
+                                                </aura:if>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" title="Back" label="Back" onclick="{! c.backtoChoosePoAndPoLine }" />
+                                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                        <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBLPO}" />
+                                    </footer>
+                                </div>
+                            </div>
+                        </aura:if>
+                        <aura:if isTrue="{!v.choosePOLine}">
+                            <div class="slds-modal__container" style="width: 70%;">
+                                <div aura:id="poContainer" class="c-container" style="position: relative; max-height:47vh" >
+                                    <header class="slds-modal__header">
+                                        <lightning:buttonIcon iconName="utility:close" onclick="{!c.doCancel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close" />
+                                        <p></p>
+                                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Purchase Order Lines
+                                        </h2>
+                                        <p></p>
+                                    </header>
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1" style="max-height:80%">
+                                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                            <thead>
+                                                <tr class="slds-text-title_caps">
+                                                    <th scope="col" class="slds-truncate">
+                                                        <lightning:input aura:id="selectAllPOLines" type="checkbox" name="checkAll" onchange="{!c.checkAllPOLines}" />
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Line Name</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Name</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Duration">PO Description</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Project Description">PO Line Total Price</div>
+                                                    </th>
+                                                    <th scope="col">
+                                                        <div class="slds-truncate" title="Project Description">Vendor</div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.poLinerecordList}" var="item" indexVar="index">
+                                                    <tr>
+                                                        <td style="padding-left: 0.5rem; width: 30px;">
+                                                            <lightning:input type="checkbox" name="input1" checked="{!item.Selected}" id="{!item.Id}" onchange="{!c.checkPOLines}" />
+                                                            <!-- <span id="{!item.Id}" onchange="{!c.saveSelectedPO}">  <ui:inputRadio aura:id="radio" name="select" label="" value="{!item.selectedPurchaseOrder}" /> </span> -->
+                                                        </td>
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.Name}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.buildertek__Purchase_Order__r.Name}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="truncate">
+                                                                {!item.buildertek__Purchase_Order__r.buildertek__Description__c}
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <lightning:formattedNumber value="{!item.buildertek__Total_Amount_Tax__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                        </td>
+                                                        <td>
+                                                            {!item.buildertek__Purchase_Order__r.buildertek__Vendor__r.Name}
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                                <aura:if isTrue="{!empty(v.poLinerecordList)}">
+                                                    <td colspan="5" style="text-align: center; line-height: 10rem; font-size: 18px; ">
+                                                        No Records Found
+                                                    </td>
+                                                </aura:if>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <footer class="slds-modal__footer">
+                                        <lightning:button variant="neutral" title="Back" label="Back" onclick="{! c.backtoChoosePoAndPoLine }" />
+                                        <lightning:button variant="neutral" title="Cancel" label="Cancel" onclick="{! c.doCancel }" />
+                                        <lightning:button variant="brand" type="submit" name="Save" label="Save" onclick="{!c.updateBLPOLine}" />
+                                    </footer>
+                                </div>
+                            </div>
+                        </aura:if>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+
             </aura:if>
 
             <aura:if isTrue="{!v.addtcsection}">

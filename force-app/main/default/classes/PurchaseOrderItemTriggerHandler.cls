@@ -119,11 +119,11 @@ public with sharing class PurchaseOrderItemTriggerHandler {
 							newLink.PO_Item__c = poItem.Id;
 							newLink.Budget_Item__c = poItem.Budget_Item__c;
 							newLink.buildertek__Purchase_Order__c = poItem.buildertek__Purchase_Order__c;
-							newLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Price__c;
+							newLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Amount_Tax__c;
 							linksToInsert.add(newLink);
-						} else if (existingLink.buildertek__Approved_PO__c != poItem.buildertek__Total_Price__c) {
+						} else if (existingLink.buildertek__Approved_PO__c != poItem.buildertek__Total_Amount_Tax__c) {
 							//* Update the existing link with the new PO amount
-							existingLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Price__c;
+							existingLink.buildertek__Approved_PO__c = poItem.buildertek__Total_Amount_Tax__c;
 							linksToUpdate.add(existingLink);
 						}
 					} else if (existingLink != null && poItem.Budget_Item__c == null) {

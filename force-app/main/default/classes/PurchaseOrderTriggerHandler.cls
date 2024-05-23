@@ -409,8 +409,10 @@ public with sharing class PurchaseOrderTriggerHandler{
                     if (poLink.size()>0) {
                         if (purchaseRec.buildertek__Status__c == 'Pending') {
                             for (buildertek__PO_Item_To_Budget_Item_Link__c po : poLink) {
-                                po.buildertek__Pending_PO__c = purchaseRec.buildertek__PO_Total__c;
-                                po.buildertek__Approved_PO__c = 0;
+                                if(po.buildertek__Purchase_Order__c == purchaseRec.Id){
+                                    po.buildertek__Pending_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                    po.buildertek__Approved_PO__c = 0;
+                                }
                             }
                         }else {
                             for (buildertek__PO_Item_To_Budget_Item_Link__c po : poLink) {

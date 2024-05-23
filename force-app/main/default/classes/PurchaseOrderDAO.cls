@@ -36,7 +36,7 @@ public without sharing class PurchaseOrderDAO{
                     POItemToBudgeetItemLink.PO_Item__c = POItem.Id;
                     POItemToBudgeetItemLink.Budget_Item__c = POItem.Budget_Item__c;
                     POItemToBudgeetItemLink.buildertek__Purchase_Order__c = POItem.buildertek__Purchase_Order__c;
-                    POItemToBudgeetItemLink.buildertek__Approved_PO__c = POItem.buildertek__Total_Price__c;
+                    POItemToBudgeetItemLink.buildertek__Approved_PO__c = POItem.buildertek__Total_Amount_Tax__c;
                     POItemToBudgeetItemLinks.add(POItemToBudgeetItemLink);
                 }
             }
@@ -362,9 +362,8 @@ public without sharing class PurchaseOrderDAO{
             posRecId = po.id;
         }
         /* }*/
-        AccountPayableHelper.bypassTrigger = true; 
+ 
         insert PoIdbyAp.values();
-        AccountPayableHelper.bypassTrigger = false; 
 
         return PoIdbyAp.get(posRecId).Id;
     }
