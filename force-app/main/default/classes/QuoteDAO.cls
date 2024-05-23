@@ -9,7 +9,7 @@ public with sharing class QuoteDAO{
     /*Method to used to set default grouping in quote item*/
     public static void setDefaultGrouping(List<Quote_Item__c> quoteItems){
         set<Id> quoteIds = new set<Id>();
-        SET<Id> groupIds = new SET<Id>(); 
+        SET<Id> groupIds = new SET<Id>();
         map<String, String> quoteIdByGroupId = new map<String, String>();
         set<Id> newQuoteWithoutGroup = new set<Id>();
         system.debug('quoteItems ---------> ' + quoteItems);
@@ -2652,23 +2652,21 @@ public with sharing class QuoteDAO{
                      filter = filter + ' AND Id IN: ProdIds';
                 }else{
                      filter = 'Id IN: ProdIds';
-                } 
+                }
 
             }else if(ObjectName == 'Product2' && (parentId == null || parentId == '')){
                 System.debug('inisde 2nd if');
-     
-                 PElist = [select id, Product2Id, product2.family,buildertek__Unit_Cost__c from pricebookEntry];   
+
+                 PElist = [select id, Product2Id, product2.family,buildertek__Unit_Cost__c from pricebookEntry];
                  for (pricebookEntry PE : PElist){
                      ProdIds.add(PE.Product2Id);
-                 } 
-                 System.debug('filter: ' + filter);
-                 System.debug('ProdIds: ' + ProdIds);
+                 }
 
                  if (filter != null){
                      filter = filter + ' AND Id NOT IN: ProdIds';
                  }else{
                      filter = 'Id NOT IN: ProdIds';
-                 }      
+                 }
             }
             if(filter != null){
                 if(ObjectName == 'Product2'){
@@ -2781,16 +2779,16 @@ public with sharing class QuoteDAO{
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
             aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
             products.add(aProduct);
-        }    
+        }
         return products;
-    }   
+    }
 
 
     @AuraEnabled
     public static List<productWrapper> getProductsbyNameandFamily(string pbookId, string pName, string pfId) {
         String[] searchTerms = pName.split(' ');
         List<String> searchKeyParts = new List<String>();
-        
+
         for (String term : searchTerms) {
             searchKeyParts.add('Product2.Name LIKE \'%' + term + '%\'');
         }
