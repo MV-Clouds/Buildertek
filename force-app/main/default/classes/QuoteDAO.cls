@@ -9,7 +9,7 @@ public with sharing class QuoteDAO{
     /*Method to used to set default grouping in quote item*/
     public static void setDefaultGrouping(List<Quote_Item__c> quoteItems){
         set<Id> quoteIds = new set<Id>();
-        SET<Id> groupIds = new SET<Id>(); 
+        SET<Id> groupIds = new SET<Id>();
         map<String, String> quoteIdByGroupId = new map<String, String>();
         set<Id> newQuoteWithoutGroup = new set<Id>();
         system.debug('quoteItems ---------> ' + quoteItems);
@@ -161,13 +161,13 @@ public with sharing class QuoteDAO{
             //     pfwrapperlst.add(pf);
             // }
             List<String> sortedProductFamilies = new List<String>();
-    
+
             for (AggregateResult agg : productfamlylst) {
                 if(Family_IsActive.get(String.valueOf(agg.get('familyLabel'))) == true){ // BUIL-3925....
                     sortedProductFamilies.add(String.valueOf(agg.get('familyLabel')));
                 }
             }
-            
+
             sortedProductFamilies.sort();
 
             // List<productfamilyClass> pfwrapperlst = new List<productfamilyClass>();
@@ -255,12 +255,12 @@ public with sharing class QuoteDAO{
             list<buildertek__RFQ__c> rfqList = [SELECT Id, Name, buildertek__Added_to_Quote__c
                                                 FROM buildertek__RFQ__c
                                                 WHERE Id IN :rfqIds];
-            for (buildertek__RFQ__c rfq : rfqList){    
+            for (buildertek__RFQ__c rfq : rfqList){
                 rfq.buildertek__Added_to_Quote__c = QuoteId;
             }
             update rfqList;
-            
-            
+
+
             List<buildertek__Purchase_Order__c> purchaseOrderRecs;
             if (Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__RFQ__c.isAccessible()){
                 purchaseOrderRecs = [select id, name, buildertek__RFQ__c
@@ -372,7 +372,7 @@ public with sharing class QuoteDAO{
     //                         from buildertek__Quote_Item__c
     //                         where buildertek__Quote__c = :quoteRec];
     //     System.debug(quoteItemListRec + 'LIST');
-    //     //* sakina's new code 
+    //     //* sakina's new code
     //     // List<buildertek__Quote_Item__c> newQuoteItemListRec = new List<buildertek__Quote_Item__c>();
 
     //     // for (buildertek__Quote_Item__c quoteItem : quoteItemListRec){
@@ -466,7 +466,7 @@ public with sharing class QuoteDAO{
         return quoteItemListRec;
 
     }
-   
+
     @AuraEnabled
     public static string insertQuoteLines(List<Quote_Item__c> quoteLines){
         try{
@@ -548,7 +548,7 @@ public with sharing class QuoteDAO{
     //     }
     //     return returnList;
     // }
-    
+
     @AuraEnabled
     public static List<sObject> getTasksInSchedule(String searchKeyWord, String ObjectName, String filter, string parentId){
         system.debug('ObjectName-->' + ObjectName);
@@ -559,15 +559,15 @@ public with sharing class QuoteDAO{
         List<buildertek__Project_Task__c> taskList = new List<buildertek__Project_Task__c>();
         if (ObjectName == 'buildertek__Project_Task__c' && parentId != null){
             list<string> taskIds = new list<string>();
-           
+
                 taskList = [select Id, buildertek__Schedule__c, Name,buildertek__Dependency__c
                           from buildertek__Project_Task__c
                           where buildertek__Schedule__c = :parentId];
-                          
+
             for (buildertek__Project_Task__c PE : taskList){
                 taskIds.add(PE.Id);
             }
-            
+
             system.debug(taskIds);
             if (filter != null){
                 filter = filter + ' AND Id IN: taskIds';
@@ -583,7 +583,7 @@ public with sharing class QuoteDAO{
         system.debug('searchKey --------> ' + searchKey);
         system.debug('sQuery --------> ' + sQuery);
         List<sObject> lstOfRecords;
-        
+
         lstOfRecords = Database.query(sQuery);
         for (sObject obj : lstOfRecords){
             system.debug(obj);
@@ -591,7 +591,7 @@ public with sharing class QuoteDAO{
         }
         return returnList;
     }
-    
+
    @AuraEnabled
     public static buildertek__Project_Task__c getTaskName(string recId){
         system.debug(recId);
@@ -607,8 +607,8 @@ public with sharing class QuoteDAO{
         }
         return null;
     }
-    
-    
+
+
     @AuraEnabled
     public static List<sObject> getContractResource(String searchKeyWord, String ObjectName, String filter, string parentId){
         system.debug('ObjectName-->' + ObjectName);
@@ -619,15 +619,15 @@ public with sharing class QuoteDAO{
         List<Contact> conList = new List<Contact>();
         if (ObjectName == 'Contact' && parentId != null){
             list<string> ConIds = new list<string>();
-           
+
                 conList = [select Id, AccountId, Name
                           from Contact
                           where AccountId = :parentId];
-                          
+
             for (Contact PE : conList){
                 ConIds.add(PE.Id);
             }
-            
+
             system.debug(ConIds);
             if (filter != null){
                 filter = filter + ' AND Id IN: ConIds';
@@ -651,7 +651,7 @@ public with sharing class QuoteDAO{
          }
          }else{*/
         lstOfRecords = Database.query(sQuery);
-        
+
         /*}*/
         for (sObject obj : lstOfRecords){
             system.debug(obj);
@@ -659,8 +659,8 @@ public with sharing class QuoteDAO{
         }
         return returnList;
     }
-    
-    
+
+
     @AuraEnabled
     public static Contact getContactName(string recId){
         system.debug(recId);
@@ -676,22 +676,22 @@ public with sharing class QuoteDAO{
         }
         return null;
     }
-    
-   
- 
+
+
+
     @AuraEnabled
     public static list<PricebookEntry> getProductPrice(string productId, String pricebookId){
         System.debug('########pricebook' + productId);
         list<PricebookEntry> pList = new list<PricebookEntry>();
 
-        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.buildertek__Quote_Group__r.Name, Product2.QuantityUnitOfMeasure	
+        pList = [select id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2Id, Product2.buildertek__Quote_Group__r.Name, Product2.QuantityUnitOfMeasure, Product2.buildertek__Notes__c
                  from PricebookEntry
                  where product2Id = :productId and pricebook2Id =: pricebookId];
 
         system.debug('====pList' + pList);
         return pList;
     }
-    
+
     @AuraEnabled
     public static string  getProductUOM(string productId){
         Product2 productRec = new Product2();
@@ -748,7 +748,7 @@ public with sharing class QuoteDAO{
         } else{
             QuoteLineToInsert.Name = QuoteRec.Name;
         }
-        
+
         QuoteLineToInsert.buildertek__Quote__c = QuoteRec.buildertek__Quote__c;
         QuoteLineToInsert.buildertek__Grouping__c = QuoteRec.buildertek__Grouping__c;
         QuoteLineToInsert.buildertek__UOM__c = QuoteRec.buildertek__UOM__c;
@@ -761,7 +761,7 @@ public with sharing class QuoteDAO{
         QuoteLineToInsert.buildertek__Markup__c = QuoteRec.buildertek__Markup__c;
         QuoteLineToInsert.buildertek__Additional_Discount__c = QuoteRec.buildertek__Additional_Discount__c;
 
-        
+
 
         QuoteLineToInsert.buildertek__Product_Family__c = QuoteRec.buildertek__Product_Family__c != 'None' ? QuoteRec.buildertek__Product_Family__c:'No Grouping';
 
@@ -1313,7 +1313,7 @@ public with sharing class QuoteDAO{
             }
             System.debug(versionNumber);
             newQuote.buildertek__Original_Quote__c=quote.Id;
-            
+
             if (Schema.sObjectType.buildertek__Quote__c.fields.Name.isCreateable() && Schema.sObjectType.buildertek__Quote__c.fields.buildertek__Version_Number__c.isCreateable()){
                 insert newQuote;
             }
@@ -1751,7 +1751,7 @@ public with sharing class QuoteDAO{
         List<SObject> ListOfRecords;
         ListOfRecords = Database.query(myqueries);
 
-        
+
         system.debug('ListOfRecords --------> ' + ListOfRecords.size());
         /*}*/
         Integer count = 0;
@@ -1846,33 +1846,33 @@ public with sharing class QuoteDAO{
             update quoteItemIdMap.values();
         }
     }
-    
+
     @AuraEnabled
     public static buildertek__Quote_Item__c getquote(String recordId){
-        
+
          system.debug('recordId ---------->'+recordId);
-        
+
         buildertek__Quote_Item__c quoteRecord = [select id, name, buildertek__Markup__c,buildertek__Unit_Price__c,buildertek__Status__c ,buildertek__Net_Unit__c,buildertek__Additional_Discount__c, buildertek__Unit_Cost__c, buildertek__Notes__c from buildertek__Quote_Item__c Where Id =: recordId];
-        
-        
+
+
         system.debug('Quote record-------->'+quoteRecord);
         return quoteRecord;
-        
-        
+
+
     }
-    
+
      @AuraEnabled
     public static buildertek__Quote_Item__c updatequote(String recordId, Decimal markup){
-    
+
     system.debug('markup from controller----->'+markup);
-    
+
    buildertek__Quote_Item__c quoterec= [select id, name, buildertek__Markup__c,buildertek__Status__c ,buildertek__Net_Unit__c,buildertek__Additional_Discount__c, buildertek__Unit_Cost__c, buildertek__Notes__c from buildertek__Quote_Item__c Where Id =: recordId];
     quoterec.buildertek__Markup__c = markup;
-    
+
     update quoterec;
     system.debug('updated record--->'+quoterec);
     return quoterec;
-        
+
     }
 
     public class FieldClass{
@@ -1935,7 +1935,7 @@ public with sharing class QuoteDAO{
         // @AuraEnabled
         // public List<buildertek__Quote_Item__c> getRejectLines;
 
-        
+
 
         //all data will be saved as array of array values
     }
@@ -2014,52 +2014,52 @@ public with sharing class QuoteDAO{
        // projectName = quoterecord.buildertek__Project__r.Name;
         return quoterecord;
     }
-    
+
         @AuraEnabled
     public static List<Product2> getProducts(){
         DataTableWrapper listDtw;
         List<Product2> pp =  [SELECT Id,Name,ProductCode,Description,toLabel(Family) Family,(select UnitPrice from PricebookEntries where IsActive = True) FROM Product2 WHERE IsActive = True AND Id IN (SELECT Product2Id FROM PricebookEntry WHERE isActive = true)];
-       
+
        /*    List<String> labels = new     List<String>();
         labels.add('Product Name');
         labels.add('Product Code');
         labels.add('List Price');
         labels.add('Product Description');
         labels.add('Product Family');
-        
+
         List<String> Apis = new  List<String>();
         Apis.add('Name');
         Apis.add('ProductCode');
         Apis.add('Description');
         Apis.add('Family');
         Apis.add(pp.) */
-        
+
         return pp;
-        
+
     }
-    
+
         public class DataTableWrapper {
         @AuraEnabled
-            
+
             public List<String> fieldLabel;
-            
+
            @AuraEnabled
             public List<String> fieldApiName;
             @AuraEnabled
               public List<Product2> records;
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
         }
  @AuraEnabled
     public static List<Product2> getProductRecordsByIds(List<Id> Ids, List<String> PricebookId){
         List<Product2> productList = new  List<Product2>();
-        
+
         system.debug('PricebookId--------->'+PricebookId);
-        
+
         if(PricebookId.size() > 0){
             system.debug('ifiiifif');
             productList =  [select id,Name,ProductCode,Description,Family,buildertek__Quote_Group__r.Name, (select UnitPrice,buildertek__Unit_Cost__c,Pricebook2Id,Pricebook2.Name,buildertek__Markup__c,buildertek__Discount__c,IsActive from PricebookEntries where Pricebook2Id IN: PricebookId AND IsActive = True  )  from Product2 where Id in :Ids ];
@@ -2068,10 +2068,10 @@ public with sharing class QuoteDAO{
             system.debug('elseleseelse');
             if(Ids.size() > 0){
                 productList =  [select id,Name,ProductCode,Description,Family,buildertek__Quote_Group__r.Name,(select UnitPrice,Pricebook2Id,Pricebook2.Name,buildertek__Markup__c,buildertek__Unit_Cost__c,buildertek__Discount__c,IsActive from PricebookEntries where IsActive = True order by CreatedDate ASC )  from Product2 where Id in :Ids ];
-                system.debug('productList--------->'+productList );   
-            } 
+                system.debug('productList--------->'+productList );
+            }
         }
-        
+
         return productList;
     }
 
@@ -2124,7 +2124,7 @@ public with sharing class QuoteDAO{
         groupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c WHERE Name IN :productFamilyNameList];
         return groupList;
     }
-        
+
     @AuraEnabled
     public static List<buildertek__Quote_Item__c> QuoteLinesInsert(List<buildertek__Quote_Item__c> Quotelines,String QuoteId){
         System.debug('Quotelines => '+Quotelines);
@@ -2139,23 +2139,24 @@ public with sharing class QuoteDAO{
             }
             newQline.buildertek__Product__c = qql.buildertek__Product__c;
             if(qql.buildertek__Unit_Price__c != null){
-                newQline.buildertek__Unit_Price__c = qql.buildertek__Unit_Price__c;               
+                newQline.buildertek__Unit_Price__c = qql.buildertek__Unit_Price__c;
             }
             else{
                 newQline.buildertek__Unit_Price__c = 0;
                 // newQline.buildertek__Unit_Cost__c = 0;
-            } 
+            }
             newQline.buildertek__Unit_Cost__c = qql.buildertek__Unit_Cost__c;
             newQline.buildertek__Markup__c = qql.buildertek__Markup__c;
             newQline.buildertek__Additional_Discount__c = qql.buildertek__Additional_Discount__c;
-            newQline.buildertek__Grouping__c = qql.buildertek__Grouping__c;   
+            newQline.buildertek__Grouping__c = qql.buildertek__Grouping__c;
             newQline.buildertek__Quantity__c = qql.buildertek__Quantity__c;
             newQline.buildertek__Notes__c = newQline.buildertek__Notes__c;
             newQline.buildertek__Status__c = 'Accept';
             newQline.buildertek__Quote__c = QuoteId;
             newQline.buildertek__Product_Family__c = qql.buildertek__Product_Family__c;
             newQline.buildertek__UOM__c = qql.buildertek__UOM__c;
-            insertListofQuoteLines.add(newQline); 
+            newQline.buildertek__Notes__c = qql.buildertek__Notes__c;
+            insertListofQuoteLines.add(newQline);
         }
 
 
@@ -2163,10 +2164,10 @@ public with sharing class QuoteDAO{
             return insertListofQuoteLines;
 
     }
-    
+
   /*    @AuraEnabled
     public static List<buildertek__Quote_Line_Group__c> getQuoteLineGroupRecords(){
-        
+
         List<buildertek__Quote_Line_Group__c> quoteLineGroupRecords = [select id,Name from buildertek__Quote_Line_Group__c];
         return quoteLineGroupRecords;
     } */
@@ -2185,9 +2186,9 @@ public with sharing class QuoteDAO{
         DataTableWrapper listDtw;
         List<Product2> pp =  [select id,Name,ProductCode,Description,Family,(select UnitPrice from PricebookEntries) from Product2];
         return pp;
-        
+
     }
-    
+
     @AuraEnabled
     public static List<Product2> getProductsthroughPriceBook(string pbookId) {
         System.debug('Project Price Book Id ------------------------->'+pbookId);
@@ -2231,7 +2232,7 @@ public with sharing class QuoteDAO{
 
       return pEntries;
       }
-    
+
     @AuraEnabled
     public static String priceBookInProject(String recordId){
         pricebook2[] priceBookName = [select Id, Name  from pricebook2 where Name = 'Standard Price Book'];
@@ -2251,7 +2252,7 @@ public with sharing class QuoteDAO{
                      return '01s41000000kFZJAA2';
                          }
                 }
-                 
+
             }
             else{
                  if(priceBookName.size() > 0){
@@ -2265,8 +2266,8 @@ public with sharing class QuoteDAO{
             return 'ERROR';
         }
     }
-    
-    // new method only for search filter for product family on NewQuoteitemClone 
+
+    // new method only for search filter for product family on NewQuoteitemClone
     @AuraEnabled
     public static List<Product2> searchProdcutFamily(string searchedWord){
         try {
@@ -2283,7 +2284,7 @@ public with sharing class QuoteDAO{
     }
      /*
     Created:- 8th December 2022
-    Description:- Used to Fetch all Quotelines 
+    Description:- Used to Fetch all Quotelines
     */
     @AuraEnabled
     public static List<buildertek__Quote_Item__c> getQuoteLines(string recordId){
@@ -2311,7 +2312,7 @@ public with sharing class QuoteDAO{
 
 
         return islien;
-    }   
+    }
 
 
     @AuraEnabled
@@ -2338,7 +2339,7 @@ public with sharing class QuoteDAO{
 
         List<String> groupingLevels = new List<String>{groupingLevel1, groupingLevel2,groupingLevel3,groupingLevel4};
         return groupingLevels;
-    }   
+    }
 
 
     @AuraEnabled
@@ -2392,16 +2393,16 @@ public with sharing class QuoteDAO{
 
         @AuraEnabled
         public List<buildertek__Quote_Item__c> quoteLineList;
-    
+
         @AuraEnabled
         public List<BT_Lightning_Utils.dataTableFields> columns;
-    
+
         @AuraEnabled
         public Integer pageSize{ get; set; }
-    
+
         @AuraEnabled
         public Integer pageNumber{ get; set; }
-    
+
         @AuraEnabled
         public Integer total{ get; set; }
     }
@@ -2422,13 +2423,13 @@ public with sharing class QuoteDAO{
     @AuraEnabled
     public static List<pricebookWrapper> getPricebookList(string recordId){
         List<pricebookWrapper> priceWrapper = new List<pricebookWrapper>();
-        
+
         pricebookWrapper priceWrap = new pricebookWrapper();
         priceWrap.defaultValue= new pricebook2();
         priceWrap.priceWrapList = new List<pricebook2>();
         List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
         priceWrap.priceWrapList=PriceList;
-        
+
         if(PriceList.size() > 0){
             if(recordId != null){
                 buildertek__Quote__c quoteRecord = [Select Id, Name , buildertek__Project__c , buildertek__Project__r.buildertek__Price_Book__c , buildertek__Project__r.buildertek__Price_Book__r.Name From buildertek__Quote__c  WHERE Id = :recordId];
@@ -2455,9 +2456,9 @@ public with sharing class QuoteDAO{
     public static List<productWrapper> getProductsthroughPriceBook2(string pbookId) {
 
 
-        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description,Product2.buildertek__Notes__c, toLabel(Product2.Family),
                                             Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
-                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True 
+                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True
                                             ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
 
         List<productWrapper> products = new List<productWrapper>();
@@ -2471,20 +2472,21 @@ public with sharing class QuoteDAO{
             aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
-            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
             aProduct.Discount = pEntry.buildertek__Discount__c;
             aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
-            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;     
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
             products.add(aProduct);
         }
 
-        // List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
+        // List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family),
         //                                     Product2.IsActive, Pricebook2.Name  //----
-        //                                     FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
+        //                                     FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True
         //                                     ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
         // Set<String> ProductfamilySet = new Set<String>();
         // for(PriceBookEntry PE : pEntries2){
@@ -2505,13 +2507,13 @@ public with sharing class QuoteDAO{
 
         List<PriceBookEntry> pEntries = new List<PriceBookEntry>();
         if(pfId != '' && pfId != null ){
-            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description,Product2.buildertek__Notes__c, toLabel(Product2.Family),
                                                 Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
                                                 FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId
                                                 ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
         }
         else{
-            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+            pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode, Product2.buildertek__Vendor__r.Name ,Product2.buildertek__Cost_Code__r.Name, Product2.Description, Product2.buildertek__Notes__c, toLabel(Product2.Family),
                                                 Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
                                                 FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND IsActive = True
                                                 ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
@@ -2528,14 +2530,16 @@ public with sharing class QuoteDAO{
             aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
-            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
             aProduct.Discount = pEntry.buildertek__Discount__c;
             aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
             aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;     //----
+
             products.add(aProduct);
         }
 
@@ -2546,7 +2550,7 @@ public with sharing class QuoteDAO{
     public static List<buildertek__Quote_Line_Group__c> getQuoteLineGroups(){
         List<buildertek__Quote_Line_Group__c> quoteLineGrouping = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name ASC];
         return quoteLineGrouping;
-        
+
     }
 
 
@@ -2578,13 +2582,13 @@ public with sharing class QuoteDAO{
 
         @AuraEnabled
         public Boolean Selected;
-        
+
         @AuraEnabled
         public Decimal UnitCost;
-        
+
         @AuraEnabled
         public String Phase;
-        
+
         @AuraEnabled
         public Decimal MarkUp;
 
@@ -2598,19 +2602,22 @@ public with sharing class QuoteDAO{
         public String CostCode;
 
         @AuraEnabled
-        public String QuantityUnitOfMeasure; 
-        
+        public String QuantityUnitOfMeasure;
+
         @AuraEnabled
-        public String PriceBookId; 
-        
+        public String PriceBookId;
+
         @AuraEnabled
         public String PriceBookName;
 
         @AuraEnabled
         public String PriceBookEntryId;
 
-        @AuraEnabled 
+        @AuraEnabled
         public List<String> ProductFamilySet;
+
+        @AuraEnabled
+        public String Notes;
     }
 
     @AuraEnabled
@@ -2645,21 +2652,21 @@ public with sharing class QuoteDAO{
                      filter = filter + ' AND Id IN: ProdIds';
                 }else{
                      filter = 'Id IN: ProdIds';
-                } 
+                }
 
             }else if(ObjectName == 'Product2' && (parentId == null || parentId == '')){
                 System.debug('inisde 2nd if');
-     
-                 PElist = [select id, Product2Id, product2.family,buildertek__Unit_Cost__c from pricebookEntry];   
+
+                 PElist = [select id, Product2Id, product2.family,buildertek__Unit_Cost__c from pricebookEntry];
                  for (pricebookEntry PE : PElist){
                      ProdIds.add(PE.Product2Id);
-                 } 
-                 
+                 }
+
                  if (filter != null){
                      filter = filter + ' AND Id NOT IN: ProdIds';
                  }else{
                      filter = 'Id NOT IN: ProdIds';
-                 }      
+                 }
             }
             if(filter != null){
                 if(ObjectName == 'Product2'){
@@ -2703,21 +2710,54 @@ public with sharing class QuoteDAO{
         return returnList;
     }
 
+    // @AuraEnabled
+    // public static List<Sobject> getProductRecordsWithoutPriceBook(String searchKeyWord){
+    //     try {
+    //         String[] searchTerms = searchKeyWord.split(' ');
+    //         String searchKey = '';
+    //         for (Integer i = 0; i < searchTerms.size(); i++) {
+    //             searchKey += 'Name LIKE \'%' + searchTerms[i] + '%\'';
+    //             if (i < searchTerms.size() - 1) {
+    //                 searchKey += ' AND ';
+    //             }
+    //         }
+    //         List<sObject> returnList = new List<sObject>();
+    //         String sQuery = 'select id, Name, buildertek__Vendor__c,QuantityUnitOfMeasure,buildertek__Cost_Code__c,buildertek__Quote_Group__c,buildertek__Category__c, (SELECT Id, Name, buildertek__Unit_Cost__c,buildertek__Markup__c,Pricebook2Id, Pricebook2.Id, Pricebook2.Name FROM PricebookEntries order by CreatedDate DESC) from Product2 WHERE ' + searchKey + ' order by Name ASC LIMIT 800';
+    //         System.debug(sQuery);
+    //         returnList = Database.query(sQuery);
+    //         return returnList;
+    //     } catch (Exception e) {
+    //         throw new AuraHandledException(e.getMessage());
+    //     }
+    // }
+
+    @AuraEnabled
+    public static List<Pricebook2> fetchPricebook(String PId){
+        try {
+            System.debug('fetchPricebook: '+ PId);
+            List<Pricebook2> pricebooks = [SELECT Id, Name FROM Pricebook2 WHERE Id IN (SELECT Pricebook2Id FROM PricebookEntry WHERE Product2Id = :PId)];
+            System.debug('Pricebooks: ' + pricebooks);
+            return pricebooks;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static List<productWrapper> getProductsbyName(string pbookId, string pName) {
         String[] searchTerms = pName.split(' ');
         List<String> searchKeyParts = new List<String>();
-        
+
         for (String term : searchTerms) {
             searchKeyParts.add('Product2.Name LIKE \'%' + term + '%\'');
         }
-        
+
         String searchKey = String.join(searchKeyParts, ' AND ');
-        
-        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
-        
+
+        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.buildertek__Notes__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
+
         List<PriceBookEntry> pEntries = Database.query(sQuery);
-    
+
         List<productWrapper> products = new List<productWrapper>();
         for (PriceBookEntry pEntry : pEntries) {
             productWrapper aProduct = new productWrapper();
@@ -2729,6 +2769,7 @@ public with sharing class QuoteDAO{
             aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
             aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
@@ -2738,26 +2779,26 @@ public with sharing class QuoteDAO{
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
             aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
             products.add(aProduct);
-        }    
+        }
         return products;
-    }   
+    }
 
 
     @AuraEnabled
     public static List<productWrapper> getProductsbyNameandFamily(string pbookId, string pName, string pfId) {
         String[] searchTerms = pName.split(' ');
         List<String> searchKeyParts = new List<String>();
-        
+
         for (String term : searchTerms) {
             searchKeyParts.add('Product2.Name LIKE \'%' + term + '%\'');
         }
-        
+
         String searchKey = String.join(searchKeyParts, ' AND ');
-        
-        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
-        
+
+        String sQuery = 'SELECT Id, Product2Id, Product2.buildertek__Quote_Group__c, Product2.buildertek__Notes__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), Product2.IsActive, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure FROM PricebookEntry WHERE Pricebook2Id = :pbookId AND IsActive = True AND toLabel(Product2.Family)=:pfId AND (' + searchKey + ') ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000';
+
         List<PriceBookEntry> pEntries = Database.query(sQuery);
-    
+
         List<productWrapper> products = new List<productWrapper>();
         for (PriceBookEntry pEntry : pEntries) {
             productWrapper aProduct = new productWrapper();
@@ -2769,6 +2810,7 @@ public with sharing class QuoteDAO{
             aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
             aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
@@ -2779,9 +2821,9 @@ public with sharing class QuoteDAO{
             aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
             products.add(aProduct);
         }
-    
+
         return products;
-    }   
+    }
 
 
 
@@ -2815,7 +2857,7 @@ public with sharing class QuoteDAO{
                     return null;
                 }
             }
-            
+
         // } catch (Exception e) {
         //    System.debug('error in CheckUserHaveAcces >> ' + e);
         //    return 'error';
@@ -2823,7 +2865,7 @@ public with sharing class QuoteDAO{
     }
     // >>>>>>>>>>> Changes For CHB - 78 <<<<<<<<<<<<<<<<<<
 
-    //create a method getVendors which returns a list of vendors which have products 
+    //create a method getVendors which returns a list of vendors which have products
     @AuraEnabled
     public static List<Account> getVendors(){
         List<PriceBookEntry> pEntries = [SELECT Product2.buildertek__Vendor__c, Product2.buildertek__Vendor__r.Name FROM PricebookEntry WHERE IsActive = True AND Product2.buildertek__Vendor__c != NULL];
@@ -2841,9 +2883,9 @@ public with sharing class QuoteDAO{
         System.debug('in vendor caliing method');
 
 
-        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Pricebook2Id, Product2.Description, toLabel(Product2.Family), 
+        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.buildertek__Notes__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Pricebook2Id, Product2.Description, toLabel(Product2.Family),
                                             Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
-                                            FROM PricebookEntry WHERE Product2.buildertek__Vendor__c =: vendorId AND IsActive = True 
+                                            FROM PricebookEntry WHERE Product2.buildertek__Vendor__c =: vendorId AND IsActive = True
                                             ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
 
         List<productWrapper> products = new List<productWrapper>();
@@ -2856,16 +2898,17 @@ public with sharing class QuoteDAO{
             aProduct.Name = pEntry.Product2.Name;
             aProduct.ProductCode = pEntry.Product2.ProductCode;
             aProduct.Description = pEntry.Product2.Description;
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
-            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
             aProduct.Discount = pEntry.buildertek__Discount__c;
             aProduct.UnitCost = pEntry.buildertek__Unit_Cost__c;
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
-            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;   
+            aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
             aProduct.PriceBookId = pEntry.Pricebook2Id;
             aProduct.PriceBookName = pEntry.Pricebook2.Name;
             products.add(aProduct);
@@ -2899,9 +2942,9 @@ public with sharing class QuoteDAO{
             // searched vendors got in below
             // List<Account> vendorList = [SELECT Id, Name FROM Account WHERE Id IN :reqId ORDER BY Name ASC];
 
-            List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Pricebook2Id, Product2.Description, toLabel(Product2.Family), 
+            List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.buildertek__Notes__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Pricebook2Id, Product2.Description, toLabel(Product2.Family),
                                             Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
-                                            FROM PricebookEntry WHERE Product2.buildertek__Vendor__c IN :reqId AND IsActive = True 
+                                            FROM PricebookEntry WHERE Product2.buildertek__Vendor__c IN :reqId AND IsActive = True
                                             ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
             System.debug(pEntries);
             List<productWrapper> products = new List<productWrapper>();
@@ -2915,6 +2958,7 @@ public with sharing class QuoteDAO{
                 aProduct.Description = pEntry.Product2.Description;
                 aProduct.Family = pEntry.Product2.Family;
                 aProduct.IsActive = pEntry.Product2.IsActive;
+                aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
                 aProduct.UnitPrice = pEntry.UnitPrice;
                 aProduct.Size = pEntry.Pricebook2.Name;
                 aProduct.Selected = false;
@@ -2926,7 +2970,7 @@ public with sharing class QuoteDAO{
                 aProduct.PriceBookId = pEntry.Pricebook2Id;
                 aProduct.PriceBookName = pEntry.Pricebook2.Name;
                 products.add(aProduct);
-            }    
+            }
             System.debug(products);
             return products;
         } catch (Exception e) {
@@ -2939,9 +2983,9 @@ public with sharing class QuoteDAO{
     public static List<productWrapper> getProductsthroughPriceBook2Name(string pbookName) {
 
 
-        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family), 
+        List<PriceBookEntry> pEntries = [SELECT Id,Product2Id, Product2.buildertek__Quote_Group__c , Product2.buildertek__Notes__c, Product2.Name, Product2.ProductCode,Product2.buildertek__Vendor__r.Name,Product2.buildertek__Cost_Code__r.Name, Product2.Description, toLabel(Product2.Family),
                                             Product2.IsActive,buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Pricebook2.Name, UnitPrice, Product2.QuantityUnitOfMeasure  //----
-                                            FROM PricebookEntry WHERE Pricebook2.Name=:pbookName AND IsActive = True 
+                                            FROM PricebookEntry WHERE Pricebook2.Name=:pbookName AND IsActive = True
                                             ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 1000];
         System.debug(pEntries.size());
         List<productWrapper> products = new List<productWrapper>();
@@ -2955,7 +2999,8 @@ public with sharing class QuoteDAO{
             aProduct.Description = pEntry.Product2.Description;
             aProduct.Family = pEntry.Product2.Family;
             aProduct.IsActive = pEntry.Product2.IsActive;
-            aProduct.UnitPrice = pEntry.UnitPrice;            
+            aProduct.Notes = pEntry.Product2.buildertek__Notes__c;
+            aProduct.UnitPrice = pEntry.UnitPrice;
             aProduct.Size = pEntry.Pricebook2.Name;
             aProduct.Selected = false;
             aProduct.MarkUp = pEntry.buildertek__Markup__c;
@@ -2964,7 +3009,7 @@ public with sharing class QuoteDAO{
             aProduct.Phase = pEntry.Product2.buildertek__Quote_Group__c;
             aProduct.QuantityUnitOfMeasure = pEntry.Product2.QuantityUnitOfMeasure;
             aProduct.PriceBookId = pEntry.Pricebook2Id;
-            aProduct.PriceBookName = pEntry.Pricebook2.Name;     
+            aProduct.PriceBookName = pEntry.Pricebook2.Name;
             products.add(aProduct);
         }
         System.debug(products);
@@ -2975,9 +3020,9 @@ public with sharing class QuoteDAO{
     public static List<String> getProductFamily(String pbookId){
         try {
 
-            List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family), 
+            List<PriceBookEntry> pEntries2 = [SELECT Id,Product2Id, toLabel(Product2.Family),
                                             Product2.IsActive, Pricebook2.Name  //----
-                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True 
+                                            FROM PricebookEntry WHERE Pricebook2Id=:pbookId AND Product2.Family != null AND IsActive = True
                                             ORDER BY Product2.Family ASC NULLS LAST, Product2.Name ASC NULLS LAST LIMIT 50000];
 
             Set<String> ProductfamilySet = new Set<String>();
@@ -2988,7 +3033,7 @@ public with sharing class QuoteDAO{
             }
 
             return new List<String>(ProductfamilySet);
-            
+
         } catch (Exception e) {
             System.debug('Exception in getProductFamily : '+ e.getMessage());
             return null;

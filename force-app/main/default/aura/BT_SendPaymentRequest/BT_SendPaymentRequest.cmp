@@ -1,0 +1,193 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+                access="global" controller="SendPaymentRequestController">
+
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="spinner" type="Boolean" default="false" />
+    <aura:attribute name="selectedToContact" type="sObject[]" default="[]" />
+    <aura:attribute name="selectedCcContact" type="sObject[]" default="[]"/>
+    <aura:attribute name="toEmail" type="String" />
+    <aura:attribute name="emailIds" type="List" />
+    <aura:attribute name="subject" type="String" default=""/>
+    <aura:attribute name="templateBody" type="String" default=""/>
+    <aura:attribute name="siteURL" type="String" />
+    <aura:attribute name="orgName" type="String" />
+    <aura:attribute name="companyName" type="String" />
+    <aura:attribute name="filetype" type="List" default="['.png', '.jpg', '.jpeg',  '.zip', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.pdf', '.txt']" />
+    <aura:attribute name="selectedfilesFill" type="list"/>
+    <aura:attribute name="selectedFillIds" type="sObject[]" default="[]"/>
+    <aura:attribute name="memoquote" type="string" />
+
+
+
+
+
+
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <aura:html tag="style">
+        .quick-actions-panel {
+        overflow: hidden !important;
+        }
+        .slds-modal__content{
+        overflow: hidden !important;
+        }
+        .slds-modal__close{
+            display: none;
+        }
+        .addPadd{
+            padding-left: 3rem;
+        }
+        .slds-modal__container{
+            width: 85% !important;
+            max-width: 87rem !important;
+        }
+        .slds-rich-text-editor {
+            width: 80rem;
+            max-width: -webkit-fill-available;
+        }
+    </aura:html>
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}"/>
+    <!-- <ltng:require styles="{!$Resource.ModalPreviewCSS}"/> -->
+   
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <!-- Modal/Popup Box Header Starts here-->
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Send Payment Request</h2>
+            </header>
+            <!--Modal/Popup Box Body Starts here-->
+            <div class="slds-modal__content slds-p-around_medium slds-scrollable--y" id="modal-content-id-1">
+                <div class="slds-scrollable_y">
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-to">To</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox" style="padding-left: 2rem;">
+                                <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact" lstSelectedRecords="{!v.selectedToContact}" label="" />
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-cc">Cc</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox" style="padding-left: 2rem;">
+                                <c:BT_MultiSelectLookup objectAPIName="contact" IconName="standard:contact" lstSelectedRecords="{!v.selectedCcContact}" label="" />
+                            </div>
+                        </div>
+                    </div>  
+    
+                    <div class="slds-form-element slds-email-composer__combobox" style="margin-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-to">Additional<br/> Emails</label>
+                        <div class="slds-form-element__control slds-size--1-of-1">
+                            <div class="slds-combobox_container slds-has-inline-listbox" style="margin-left: 2rem;">
+                                <lightning:input aura:id="emailForm" type="text" name="toEmail" value="{!v.toEmail}" onchange="{!c.onEmailChange}" oncommit="{!c.onAddEmail}" class="slds-size--1-of-1" />
+                            </div>
+                        </div>
+                        <div class="slds-form-element__control slds-size--1-of-1 addPadd">
+                            <aura:iteration items="{!v.emailIds}" var="email" indexVar="index">
+                                <lightning:pill label="{!email}" name="{!index}" onremove="{!c.handleEmailRemove}">
+                                    <aura:set attribute="media">
+                                        <lightning:icon iconName="standard:email" alternativeText="Email" />
+                                    </aura:set>
+                                </lightning:pill>
+                            </aura:iteration>
+                        </div>
+                    </div>
+    
+    
+                    <div class="slds-form-element slds-email-composer__combobox"
+                        style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-subject" style="margin-left:-7px" >Subject</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox" style="padding-left: 2rem;">
+                                <ui:inputText aura:id="subject" value="{!v.subject}" placeholder="subject.." />
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-memo">Email<br/> Body</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox emailBodyrk" style="padding-left: 2rem;">
+                                <lightning:inputRichText aura:id="bodyId" placeholder="Email Body" value="{!v.templateBody}" class="slds-size--1-of-1"/>
+                            </div>
+                            <div style="padding-left: 3rem;padding-top: 5px;">
+                                <p>Here is the link to Contractor Invoice <a href="{!v.siteURL}" target="_blank">Link</a></p>
+                                <p style="padding-top: 10px;">Sincerely</p>
+                                <p>{!v.orgName}</p>
+                                <p><a href="{!v.companyName}">{!v.companyName}</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="slds-form-element slds-email-composer__combobox" style="padding-top: 10px;padding-bottom: 10px;">
+                        <label class="slds-form-element__label" for="recipients-memo">Memo</label>
+                        <div class="slds-form-element__control">
+                            <div class="slds-combobox_container slds-has-inline-listbox emailBodyrk" style="padding-left: 2rem;">
+                                <lightning:input aura:id="memoquote" value="{!v.memoquote}" placeholder="Memo" class="slds-size--1-of-1"/>
+                            </div>
+                        </div>
+                    </div>
+    
+                    
+    
+    
+                    <div style="border:1px solid lightgray;border-radius:5px;padding:10px;margin-top:10px;">
+                        <lightning:layout multipleRows = "true">
+                            <div style="display: flex; flex-direction :column;">
+                            <div style="display: flex; align-items: center;">
+                                <lightning:fileUpload label="Attachments"
+                                                        name="fileUploader"
+                                                        multiple="true"
+                                                        accept="{!v.filetype}"
+                                                        recordId="{!v.recordId}"
+                                                        aura:id="fuploader"
+                                                        onuploadfinished="{!c.handleFileChange}" />
+                            </div>
+                            <div>
+                                <aura:iteration items="{!v.selectedfilesFill}" var="sr">
+                                    <lightning:pill class="slds-m-around_xx-small slds-text-body_small slds-text-color_error" label="{!sr.Name}" name="{!sr.Id}" onremove="{!c.clear}">
+                                        <aura:set attribute="media">
+                                            <lightning:icon iconName="standard:file" size="x-small" alternativeText="icon" />
+                                        </aura:set>
+                                    </lightning:pill>
+                                </aura:iteration>
+                            </div>
+                        </div>
+                        </lightning:layout>
+                    </div>
+                </div>
+                
+                
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning:button variant="neutral"
+                                  label="Cancel"
+                                  title="Cancel"
+                                  onclick="{! c.closeModel }"/>
+                <lightning:button variant="brand"
+                                  label="Send Email"
+                                  title="OK"
+                                  onclick="{!c.sendEmail}"/>
+            </footer>
+        </div>
+    </section>
+
+
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div class="custom-loading-text">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <lightning:notificationsLibrary aura:id="notifLib" />
+
+</aura:component>

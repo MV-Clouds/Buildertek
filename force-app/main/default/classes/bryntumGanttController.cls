@@ -202,6 +202,11 @@ public with sharing class bryntumGanttController {
 
         dataTableDtls.listOfContractorAndResources = [SELECT Id, Name, (SELECT Id, Name, LastName, FirstName FROM Contacts) FROM Account WHERE buildertek__BT_Account_Type__c = 'Vendor' ORDER BY Name ASC];
         dataTableDtls.listOfInternalResources = [SELECT Id, Name FROM User WHERE isActive = TRUE ORDER BY Name ASC LIMIT 10000];
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Include_Weekend__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+
+        if (adminInterfaceNodeConfigurations.size() > 0) {
+            dataTableDtls.includeWeekend = adminInterfaceNodeConfigurations[0].buildertek__Include_Weekend__c;
+        }
 
         return dataTableDtls;
     }
@@ -598,6 +603,8 @@ public with sharing class bryntumGanttController {
         public boolean hideScheduleFromUser;
         @AuraEnabled
         public string profileName;
+        @AuraEnabled
+        public Boolean includeWeekend = false;
     }
 
     public class NotesAttachmet{

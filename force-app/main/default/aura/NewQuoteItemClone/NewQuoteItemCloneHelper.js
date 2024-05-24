@@ -839,6 +839,7 @@
                 } else {
                     ProductDetails.buildertek__Markup__c = res[0].buildertek__Markup__c;
                 }
+                ProductDetails.buildertek__Notes__c = res[0].Product2.buildertek__Notes__c;
                 ProductDetails.buildertek__Unit_Cost__c = res[0].buildertek__Unit_Cost__c;
                 ProductDetails.buildertek__Unit_Price__c = res[0].UnitPrice;
                 // ProductDetails.buildertek__Markup__c = res[0].buildertek__Markup__c / 100;

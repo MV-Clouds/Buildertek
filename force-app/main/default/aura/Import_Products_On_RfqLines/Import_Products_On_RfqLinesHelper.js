@@ -72,7 +72,7 @@
                 });
 
             } else {
-                helper.showErrorToast(component, event, helper, "Error occurs", "Something went wrong!");
+                helper.showErrorToast(component, event, helper, "Error occurs", "The RFQ status is not 'New' You can not add more lines!");
                 component.set("v.Spinner", false);
 
                 var recordId = component.get("v.mainObjectId");

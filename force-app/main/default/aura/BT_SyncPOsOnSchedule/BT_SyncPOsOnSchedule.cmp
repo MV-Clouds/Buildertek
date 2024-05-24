@@ -16,10 +16,12 @@
             Sync PO's
         </div>
 
-        <div class="container fontStyle">
+        <div style="height: auto;" class="container fontStyle">
             <p>
                 Are you sure you want to sync the Schedule Items to these Purchase Order?
-            </p>
+                <br/>
+                When syncing PO's to a Schedule item, we match the field names to ensure that there is an accurate match between the Purchase Order and the Schedule Item.
+            </p> 
         </div>
 
         <div class="slds-modal__footer">

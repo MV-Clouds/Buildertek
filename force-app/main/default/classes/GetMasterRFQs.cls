@@ -96,7 +96,7 @@ public class GetMasterRFQs {
     @AuraEnabled
     public static String addRfqLinesToBudget(List<String>rfqIds, String budgetId){
         try{
-            List<AggregateResult> aggregateResults = [SELECT buildertek__RFQ_Package__c, SUM(buildertek__Unit_Price__c) unitPrice FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :rfqIds GROUP BY buildertek__RFQ_Package__c];
+            List<AggregateResult> aggregateResults = [SELECT buildertek__RFQ_Package__c, SUM(buildertek__Total_Price__c) unitPrice FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :rfqIds GROUP BY buildertek__RFQ_Package__c];
             List<buildertek__RFQ_Item__c> rfqLines = [SELECT Id, Name, buildertek__RFQ_Package__c, buildertek__RFQ_Package__r.Name, buildertek__RFQ_Package__r.buildertek__Vendor__r.buildertek__Vendor__c FROM buildertek__RFQ_Item__c WHERE buildertek__RFQ_Package__c IN :rfqIds ];
             List<buildertek__Budget_Item__c> budgetItemList = new List<buildertek__Budget_Item__c>();
             List<buildertek__RFQ_Item__c> updateRFQLineList = new List<buildertek__RFQ_Item__c>(); 

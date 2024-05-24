@@ -1,0 +1,55 @@
+.THIS .slds-icon-text-default {
+    fill: rgba(27, 82, 151, 1.0);
+}
+
+.THIS .slds-form-element__icon {
+    top: -3px !important;
+}
+
+.THIS .slds-table thead th {
+    background-color: var(--lwc-tableColorBackgroundHeader, rgb(206, 206, 8));
+    color: var(--lwc-tableColorTextHeader, rgb(0, 0, 0));
+    font-weight: var(--lwc-fontWeightBold, 700);
+    line-height: 2;
+}
+
+.THIS .pricebook-class {
+    height: 36px !important;
+}
+
+.THIS .slds-form {
+    margin-top: -20px !important;
+}
+
+.THIS .slds-modal__content {
+    overflow-x: auto !important;
+}
+
+.THIS .slds-modal__container {
+    max-width: 95% !important;
+}
+
+.THIS .slds-modal__footer {
+    max-width: 480% !important;
+}
+
+.THIS .custom-loading-text {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: -0.5rem;
+    left: 1rem;
+    white-space: nowrap;
+    font-size: 20px;
+}
+
+.THIS .slds-button {
+    border-radius: 0.25rem;
+}
+
+.THIS .slds-grid {
+    width: 5px;
+}
+
+.THIS .tableRow {
+    background-color: #f3f3f3;
+}
