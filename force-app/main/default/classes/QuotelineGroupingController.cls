@@ -117,7 +117,7 @@ global without sharing class QuotelineGroupingController{
 
         }
 
-        if (quotesList[0].buildertek__Roll_Up_All_Lines_by_Cost_Code__c == true){
+  o      if (quotesList[0].buildertek__Roll_Up_All_Lines_by_Cost_Code__c == true){
             system.debug('QuoteItem---->' + QuoteItem.size());
             set<Id> costCodeId = new set<Id>();
             quoteCostCodemap = new map<id, list<buildertek__Quote_Item__c>>();
@@ -132,7 +132,7 @@ global without sharing class QuotelineGroupingController{
                 }
             }
 
-            QuotelineCostCode = [Select Id, Name
+            QuotelineCostCode = [Select Id, Name, buildertek__Major_Description__c
                               from buildertek__Cost_Codes__c
                               where Id = :costCodeId];
             system.debug('QuotelineCostCodesize---->' + QuotelineCostCode.size());
@@ -142,6 +142,7 @@ global without sharing class QuotelineGroupingController{
                 decimal quoteitemlistTotal = 0.0;
                 wrapperClass wrap = new wrapperClass();
                 wrap.groupName = quotelinegrouprec.Name;
+                wrap.groupMajorDescription = quotelinegrouprec.buildertek__Major_Description__c;
                 for (buildertek__Quote_Item__c quoteitemrec : quoteCostCodemap.get(quotelinegrouprec.Id)){
                     if (quoteitemrec.buildertek__Net_Unit__c != null){
                         quoteitemNetunitprice += quoteitemrec.buildertek__Net_Unit__c;
@@ -185,6 +186,7 @@ global without sharing class QuotelineGroupingController{
 
         global decimal listTotal{ get; set; }
 
+        global String groupMajorDescription{ get; set; }
     }
 
 }
