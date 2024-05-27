@@ -117,7 +117,7 @@ global without sharing class QuotelineGroupingController{
 
         }
 
-  o      if (quotesList[0].buildertek__Roll_Up_All_Lines_by_Cost_Code__c == true){
+        if (quotesList[0].buildertek__Roll_Up_All_Lines_by_Cost_Code__c == true){
             system.debug('QuoteItem---->' + QuoteItem.size());
             set<Id> costCodeId = new set<Id>();
             quoteCostCodemap = new map<id, list<buildertek__Quote_Item__c>>();
