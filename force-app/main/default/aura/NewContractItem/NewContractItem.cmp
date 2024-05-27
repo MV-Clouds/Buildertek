@@ -167,9 +167,10 @@
                                                         padding-top: 1.3% !important;
                                                         padding-bottom: 1.3% !important;
                                                         height: 2.2rem !important;
+                                                        <!-- margin-top: 0.35rem !important; -->
                                                     }
                                                 </aura:html>
-                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" childValue="{!v.buildertek__Item_Name__c}" costcodeValue="{!v.costCode}" unitcostValue="{!v.newContractLine.buildertek__Unit_Price__c}" clearCostCode="{!v.newContractLine.buildertek__Cost_Code__c}"/>
+                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" childValue="{!v.newContractLine.Name}" costcodeValue="{!v.costCode}" unitcostValue="{!v.newContractLine.buildertek__Unit_Price__c}" clearCostCode="{!v.newContractLine.buildertek__Cost_Code__c}" cleargroup="{!v.newContractLine.buildertek__Contract_Item_Group__c}" clearGroupName="{!v.groupName}"/>
                                     </td>
                                     <td style="width: 19vw;">
                                         <!-- <force:inputField value="{!v.newContractLine.Name}"/>-->

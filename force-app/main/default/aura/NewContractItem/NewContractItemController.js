@@ -17,14 +17,15 @@
         helper.getGroups(component, event, helper, page);
     },
     changefamily: function (component, event, helper) {
-
+        console.log(`HeYYYYY`);
         var product = component.get('v.selectedLookUpRecord');
         var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
         compEvent.setParams({ "recordByEvent": product });
         compEvent.fire();
         component.set('v.newContractLine.Name', '');
         component.set('v.newContractLine.buildertek__Unit_Price__c', '');
-
+        component.set('v.groupName', '');
+        component.set('v.newContractLine.buildertek__Contract_Item_Group__c', null);
 
     },
 
@@ -38,6 +39,7 @@
         compEvent.fire();
         component.set('v.newContractLine.Name', '');
         component.set('v.newContractLine.buildertek__Contract_Item_Group__c', null);
+        component.set('v.groupName', '');
         component.set('v.newContractLine.buildertek__Cost_Code__c', null);
         component.set('v.newContractLine.buildertek__Unit_Price__c', '');
         component.set('v.newContractLine.buildertek__Quantity__c', 1);
@@ -134,6 +136,16 @@
 
     saveContractLineRecord: function (component, event, helper) {
         component.set("v.Spinner", true);
+        let newContractLine = component.get("v.newContractLine.Name");
+        if(!newContractLine){
+            component.set("v.Spinner", false);
+            $A.get("e.force:showToast").setParams({
+                "title": "Error!",
+                "message": "Please fill Contractor Line field",
+                "type": "error"
+            }).fire();
+            return;
+        }
         var quoteObject = component.get("v.newContractLine");
         var recordId = component.get("v.recordId");
         component.set("v.newContractLine.buildertek__Contract__c", recordId);
@@ -161,6 +173,7 @@
                 component.set('v.newContractLine.buildertek__Unit_Price__c', null);
                 component.set('v.newContractLine.buildertek__Cost_Code__c', null);
                 component.set('v.newContractLine.buildertek__Contract_Item_Group__c', null);
+                component.set('v.groupName', '');
                 component.set('v.newContractLine.buildertek__Quantity__c', null);
                 window.setTimeout(
                     $A.getCallback(function () {
@@ -665,27 +678,23 @@
     onClickMassUpdate: function (component, event, helper) {
         component.set("v.enableMassUpdate", component.get("v.enableMassUpdate") == true ? false : true);
         if (component.get("v.enableMassUpdate") == false && component.get("v.isChangeData")) {
-            console.log(component.get("v.Spinner"));
             component.set("v.Spinner", true);
-            console.log(component.get("v.Spinner"));
             var TotalRecords = component.get("v.TotalRecords");
             var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
             var ListOfEachRecordLength = ListOfEachRecord.length;
             var newMassQi = [];
             console.log('@@ originalValue length :: ', ListOfEachRecordLength, '   @@ originalValue :: ', JSON.stringify(ListOfEachRecord));
-
             for (var i = 0; i < ListOfEachRecordLength; i++) {
                 var newMassQuoteItem = {};
-                newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
+                newMassQuoteItem.sobjectType = 'buildertek__Contract_Item__c';
                 for (var j = 0; j < ListOfEachRecord[i].recordList.length; j++) {
-                    if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Quantity__c') {
-                        newMassQuoteItem.buildertek__Quantity__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    } else if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Unit_Price__c') {
-                        newMassQuoteItem.buildertek__Unit_Price__c = ListOfEachRecord[i].recordList[j].originalValue;
-                    }
+                    var fieldName = ListOfEachRecord[i].recordList[j].fieldName;
+                    var originalValue = ListOfEachRecord[i].recordList[j].originalValue;
+                    newMassQuoteItem[fieldName] = originalValue;
                 }
 
                 newMassQuoteItem.Id = ListOfEachRecord[i].recordId;
+                newMassQuoteItem.Name = ListOfEachRecord[i].recordName;
                 newMassQi.push(newMassQuoteItem);
 
             }
