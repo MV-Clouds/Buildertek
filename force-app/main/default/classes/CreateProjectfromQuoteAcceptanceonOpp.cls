@@ -98,22 +98,22 @@ public String GroupingLevel4 { get; set; }
         admininterface.buildertek__Org_Base_URL__c = isBaseUrl;
 
 
-        if(GroupingLevel1 == GroupingLevel2){
+        if(GroupingLevel1 != null && GroupingLevel2 != null && GroupingLevel1 == GroupingLevel2){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 1 and Grouping Level 2 cannot be same.'));
             return; // Validation fails, no data saving will be performed
-        }else if(GroupingLevel1 == GroupingLevel3){
+        }else if(GroupingLevel1 != null && GroupingLevel3 != null && GroupingLevel1 == GroupingLevel3){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 1 and Grouping Level 3 cannot be same.'));
             return; // Validation fails, no data saving will be performed
-        }else if(GroupingLevel1 == GroupingLevel4){
+        }else if(GroupingLevel1 != null && GroupingLevel4 != null && GroupingLevel1 == GroupingLevel4){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 1 and Grouping Level 4 cannot be same.'));
             return; // Validation fails, no data saving will be performed
-        }else if(GroupingLevel2 == GroupingLevel3){
+        }else if(GroupingLevel2 != null && GroupingLevel3 != null && GroupingLevel2 == GroupingLevel3){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 2 and Grouping Level 3 cannot be same.'));
             return; // Validation fails, no data saving will be performed
-        }else if(GroupingLevel2 == GroupingLevel4){
+        }else if(GroupingLevel2 != null && GroupingLevel4 != null && GroupingLevel2 == GroupingLevel4){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 2 and Grouping Level 4 cannot be same.'));
             return; // Validation fails, no data saving will be performed
-        }else if(GroupingLevel3 == GroupingLevel4){
+        }else if(GroupingLevel3 != null && GroupingLevel4 != null && GroupingLevel3 == GroupingLevel4){
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 3 and Grouping Level 4 cannot be same.'));
             return; // Validation fails, no data saving will be performed
         }
