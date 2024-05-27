@@ -43,23 +43,23 @@
             height: 36px !important;
             border: 1px solid rgb(201, 201, 201) !important;
         }
-        .slds-table {
+        .custom-table-style {
             table-layout: fixed;
             width: 100%;
         }
 
-        .slds-table thead th {
+        .custom-table-style thead th {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .slds-table tbody td {
+        .custom-table-style tbody td {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .THIS .slds-truncate {
+        .custom-table-style .slds-truncate {
             text-overflow: ellipsis !important;
         }           
     </aura:html>
@@ -169,7 +169,7 @@
                     </lightning:layout>
                     <br />
                     <div style="height: auto; min-height:150px;">
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities" width="100%">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table-style" aria-label="Example default base table of Opportunities" width="100%">
                             <thead>
                                 <tr class="slds-line-height_reset">
                                     <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important">
