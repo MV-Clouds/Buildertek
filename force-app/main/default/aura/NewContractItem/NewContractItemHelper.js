@@ -49,9 +49,11 @@
                     getProductDetails.buildertek__Unit_Price__c = res[0].buildertek__Unit_Cost__c;
                 }
                 getProductDetails.buildertek__Cost_Code__c = res[0].Product2.buildertek__Cost_Code__c;
+                getProductDetails.buildertek__Contract_Item_Group__c = res[0].Product2.buildertek__Quote_Group__c;
                 component.set("v.costCode", res[0].Product2.buildertek__Cost_Code__r.Name);
+                component.set("v.groupName", res[0].Product2.buildertek__Quote_Group__r.Name);
                 if(res[0].buildertek__Discount__c !=null){
-                getProductDetails.buildertek__Discount__c = res[0].buildertek__Discount__c;
+                    getProductDetails.buildertek__Discount__c = res[0].buildertek__Discount__c;
                 }
             }else{
                 getProductDetails.buildertek__Unit_Price__c = 0;

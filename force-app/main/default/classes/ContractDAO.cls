@@ -470,7 +470,7 @@ Throws [Exceptions]:
         System.debug('########pricebook'+productId);
         list<PricebookEntry> pList = new list<PricebookEntry>();
          
-            pList = [Select Id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c, Product2.buildertek__Cost_Code__r.Name from PricebookEntry where product2Id =: productId and isActive = true and pricebook2Id IN (select id from Pricebook2 Where isActive = true)];
+            pList = [Select Id, UnitPrice, buildertek__Unit_Cost__c,Product2.buildertek__Quote_Group__r.Name, Product2.buildertek__Quote_Group__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c, Product2.buildertek__Cost_Code__r.Name from PricebookEntry where product2Id =: productId and isActive = true and pricebook2Id IN (select id from Pricebook2 Where isActive = true)];
             
         system.debug('====pList'+pList);
         return pList;

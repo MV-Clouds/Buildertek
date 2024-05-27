@@ -23,7 +23,6 @@
         compEvent.setParams({ "recordByEvent": product });
         compEvent.fire();
         component.set('v.newContractLine.Name', '');
-
         component.set('v.newContractLine.buildertek__Unit_Price__c', '');
 
 
@@ -151,6 +150,8 @@
                 group.set("v._text_value", '');
                 var costCode = component.find('costCodeId');
                 costCode.set("v._text_value", '');
+                var groupId = component.find('groupId');
+                groupId.set("v._text_value", '');
                 var product = component.get('v.selectedLookUpRecord');
                 var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
                 compEvent.setParams({ "recordByEvent": product });
