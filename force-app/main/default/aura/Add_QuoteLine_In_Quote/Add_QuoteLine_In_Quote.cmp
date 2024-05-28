@@ -27,6 +27,7 @@
     <aura:attribute name="prevInput" type="String" />
     <aura:attribute name="searchTimeout" type="Object" />
     <aura:attribute name="selectedRecords" type="List" default="[]" />
+    <aura:attribute name="showmargin" type="Boolean" default="false" />
 
     <aura:attribute name="productFamilySet" type="List" default="[]" />
 
@@ -35,6 +36,25 @@
         height: 36px !important;
         border: 1px solid rgb(201, 201, 201) !important;
         }
+        .custom-table-style {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .custom-table-style thead th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .custom-table-style tbody td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .custom-table-style .slds-truncate {
+            text-overflow: ellipsis !important;
+        }        
     </aura:html>
 
 
@@ -112,114 +132,106 @@
 
                         <!-- <lightning:datatable aura:id="accountDataTable" keyField="Id" data="{!v.tableDataList}" hideCheckboxColumn="true" columns="{!v.columns}" /> -->
 
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered"
-                            aria-label="Example default base table of Opportunities" width="100%">
-                            <thead>
-                                <tr class="slds-line-height_reset">
-                                    <th class="slds-text-align_right slds-cell_action-mode" scope="col"
-                                        style="width:5% !important; padding-top:15px;">
-                                        <!-- <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" /> -->
-                                    </th>
-                                    <th class="" scope="col" style="width:12% !important">
-                                        <div class="trncatediv" title="Product Name">Product Name</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:12% !important">
-                                        <div class="slds-truncate" title="Product Family">Product Family</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:12% !important">
-                                        <div class="trncatediv" title="Product Description">Product Description</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:12% !important">
-                                        <div class="trncatediv" title="Product Description">Notes</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:10% !important">
-                                        <div class="slds-truncate" title="Cost Code">Cost Code</div>
-                                    </th>
-                                    <!-- <th class="" scope="col" style="width:10% !important">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table-style" aria-label="Example default base table of Opportunities" width="100%">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important; padding-top:15px;">
+                                    <!-- <lightning:input aura:id="selectAll" type="checkbox" name="checkAll" onchange="{!c.checkAllProduct}" /> -->
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Product Name">Product Name</div>
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Product Family">Product Family</div>
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Product Description">Product Description</div>
+                                </th>
+                                 <th class="" scope="col" style="width:12.8% !important">
+                                        <div class="trncatediv" title="Product Notes">Notes</div>
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Cost Code">Cost Code</div>
+                                </th>
+                                <!-- <th class="" scope="col" style="width:10% !important">
                                     <div class="mediumWidthDiv" title="Product Code">Product Code</div>
                                 </th> -->
-                                    <th class="" scope="col" style="width:10% !important">
-                                        <div class="slds-truncate" title="Vendor">Vendor</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:5% !important">
-                                        <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:5% !important">
-                                        <div class="slds-truncate" title="List Price">List Price</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <aura:iteration items="{!v.tableDataList}" var="product">
-                                    <tr class="slds-hint-parent">
-                                        <td class="slds-text-align_right slds-cell_action-mode" role="gridcell"
-                                            style="width:5% !important">
-                                            <div class="slds-checkbox">
-                                                <lightning:input type="checkbox" name="input1"
-                                                    checked="{!product.Selected}" id="{!product.Id}"
-                                                    onchange="{!c.checkboxChange}" />
-                                            </div>
-                                        </td>
-                                        <td data-label="Product Name" class="" style="width:12% !important">
-                                            <div class="trncatediv" title='{!product.Name}'>
-                                                {!product.Name}
-                                            </div>
-                                        </td>
-                                        <td data-label="Product Family" scope="row" style="width:12% !important">
-                                            <div class="trncatediv" title='{!product.Family}'>
-                                                {!product.Family}
-                                            </div>
-                                        </td>
-                                        <td data-label="Product Description" class="" style="width:12% !important">
-                                            <div class="trncatediv" title='{!product.Description}'>
-                                                {!product.Description}
-                                            </div>
-                                        </td>
-                                        <td data-label="Notes" style="width:12% !important">
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Vendor">Vendor</div>
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="Unit Cost">Unit Cost</div>
+                                </th>
+                                <th class="" scope="col" style="width:12.8% !important">
+                                    <div class="trncatediv" title="List Price">List Price</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.tableDataList}" var="product">
+                                <tr class="slds-hint-parent">
+                                    <td class="slds-text-align_right slds-cell_action-mode" role="gridcell" style="width:5% !important">
+                                        <div class="slds-checkbox">
+                                          <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.Id}" onchange="{!c.checkboxChange}" />
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Name" class="" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.Name}'>
+                                            {!product.Name}
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Family" scope="row" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.Family}'>
+                                            {!product.Family}
+                                        </div>
+                                    </td>
+                                    <td data-label="Product Description" class="" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.Description}'>
+                                            {!product.Description}
+                                        </div>
+                                    </td>
+                                    <td data-label="Notes" style="width:12.8% !important">
                                             <div class="trncatediv" title='{!product.Notes}'>
                                                 {!product.Notes}
                                             </div>
-                                        </td>
-                                        <td data-label="Product Code" style="width:10% !important">
-                                            <div class="slds-truncate" title='{!product.ProductCode}'>
-                                                {!product.CostCode}
-                                            </div>
-                                        </td>
-                                        <!-- <td data-label="Product Code" style="width:5% !important">
+                                    </td>
+                                    <td data-label="Product Code" style="width:12.8% !important">
+                                        <div class="slds-truncate" title='{!product.ProductCode}'>
+                                            {!product.CostCode}
+                                        </div>
+                                    </td>
+                                    <!-- <td data-label="Product Code" style="width:5% !important">
                                         <div class="mediumWidthDiv" title='{!product.ProductCode}'>
                                             {!product.ProductCode}
                                         </div>
                                     </td> -->
-                                        <td data-label="Vendor" style="width:10% !important">
-                                            <div class="slds-truncate" title='{!product.UnitPrice}'>
-                                                {!product.Vendor}
-                                            </div>
-                                        </td>
-                                        <td data-label="Unit Cost" style="width:5% !important">
-                                            <div class="slds-truncate" title='{!product.UnitCost}'>
-                                                <lightning:formattedNumber value="{!product.UnitCost}"
-                                                    style="currency" />
-                                            </div>
-                                        </td>
-                                        <td data-label="List Price" style="width:5% !important">
-                                            <div class="slds-truncate" title='{!product.UnitPrice}'>
-                                                <lightning:formattedNumber value="{!product.UnitPrice}"
-                                                    style="currency" />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </aura:iteration>
-                            </tbody>
-                        </table>
-                        <aura:if isTrue="{!v.selectedPricebookId == ''}">
-                            <center class="elseMsg">Please Select a PriceBook.</center>
-                            <aura:set attribute="else">
-                                <aura:if isTrue="{!v.tableDataList.length == 0}">
-                                    <center class="elseMsg">No Products Found!!!</center>
-                                </aura:if>
-                            </aura:set>
-                        </aura:if>
-                    </div>
+                                    <td data-label="Vendor" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.UnitPrice}' >
+                                            {!product.Vendor}
+                                        </div>
+                                    </td>
+                                    <td data-label="Unit Cost" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.UnitCost}' >
+                                            <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
+                                        </div>
+                                    </td>
+                                    <td data-label="List Price" style="width:12.8% !important">
+                                        <div class="trncatediv" title='{!product.UnitPrice}' >
+                                            <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <aura:if isTrue="{!v.selectedPricebookId == ''}">
+                        <center class="elseMsg">Please Select a PriceBook.</center>
+                        <aura:set attribute="else" >
+                            <aura:if isTrue="{!v.tableDataList.length == 0}">
+                                <center class="elseMsg">No Products Found!!!</center>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
                 </div>
 
                 <footer class="slds-modal__footer">
@@ -265,6 +277,11 @@
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="List Price">List Price</div>
                                 </th>
+                            <aura:if isTrue="{!v.showmargin}">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Margin %">Margin %</div>
+                                </th>
+                            </aura:if>
                                 <th class="" scope="col">
                                     <div class="slds-truncate" title="Markup %">Markup %</div>
                                 </th>
@@ -309,6 +326,11 @@
                                     <td style="width: 9% !important">
                                         <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                     </td>
+                                <aura:if isTrue="{!v.showmargin}">
+                                    <td style="width: 5% !important">
+                                        <lightning:input name="input10" label="" value="{!item.buildertek__Margin__c}" />
+                                    </td>
+                                </aura:if>
                                     <td style="width: 5% !important">
                                         <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                     </td>
