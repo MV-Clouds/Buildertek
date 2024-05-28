@@ -1,4 +1,6 @@
-<aura:component controller="QuoteDAO" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes" access="global">
+<aura:component controller="QuoteDAO"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes"
+    access="global">
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <aura:attribute name="quoteId" type="String" />
@@ -20,7 +22,7 @@
     <aura:attribute name="quoteLineGroupOptions" type="List" />
     <aura:attribute name="selectedQuoteLineGroupId" type="Id" />
     <aura:attribute name="getPhase" type="String" />
-    <aura:attribute name="trueCheckBoxList" type="List"/>
+    <aura:attribute name="trueCheckBoxList" type="List" />
     <aura:attribute name="myTime" type="Date" />
     <aura:attribute name="prevInput" type="String" />
     <aura:attribute name="searchTimeout" type="Object" />
@@ -31,8 +33,8 @@
 
     <aura:html tag="style">
         .slds-input{
-            height: 36px !important;
-            border: 1px solid rgb(201, 201, 201) !important;
+        height: 36px !important;
+        border: 1px solid rgb(201, 201, 201) !important;
         }
         .custom-table-style {
             table-layout: fixed;
@@ -57,9 +59,10 @@
 
 
 
-    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open">
 
-    <aura:if isTrue="{!v.Spinner}">
+        <aura:if isTrue="{!v.Spinner}">
             <div class="slds-spinner_container">
                 <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
                     <span class="slds-assistive-text">Loading</span>
@@ -70,56 +73,64 @@
                     </div>
                 </div>
             </div>
-    </aura:if>
-     <div class="slds-modal__container">
+        </aura:if>
+        <div class="slds-modal__container">
             <aura:if isTrue="{!v.selecteProducts}">
-            <header class="slds-modal__header">
+                <header class="slds-modal__header">
                     <h2 class="slds-text-heading_medium slds-hyphenate">Products</h2>
-            </header>
+                </header>
 
-            <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
-                <lightning:layout>
-                    <lightning:layoutItem padding="around-small" size="3">
-                        <label class="slds-form-element__label slds-size_4-of-12">Pricebook</label>
-                        <div>
-                            <ui:inputSelect aura:id="selectedPricebook" value="{!v.selectedPricebookId}" change="{!c.changePricebook}" class="pricebook-class">
-                                <aura:iteration items="{!v.pricebookoptions}" var="option" >
-                                    <option value="{!option.value}" selected="{!option.value == v.selectedPricebookId}">{!option.key}</option>
-                                </aura:iteration>
-                            </ui:inputSelect>
-                        </div>
-                    </lightning:layoutItem>
-                    <lightning:layoutItem padding="around-small" size="3">
-                        <label class="slds-form-element__label slds-size_5-of-12" >Product Family</label>
-                        <div>
-                            <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}" change="{!c.changeProductFamily}" class="pricebook-class">
-                                <aura:if isTrue="{!v.selectedPricebookId}">
-                                    <aura:iteration items="{!v.productFamilyOptions}" var="option" >
-                                        <option value="{!option.value}" selected="{!option.value == v.sProductFamily}">{!option.key}</option>
+                <div class="slds-modal__content" id="modal-content-id-1" style="max-height: 70vh;">
+                    <lightning:layout>
+                        <lightning:layoutItem padding="around-small" size="3">
+                            <label class="slds-form-element__label slds-size_4-of-12">Pricebook</label>
+                            <div>
+                                <ui:inputSelect aura:id="selectedPricebook" value="{!v.selectedPricebookId}"
+                                    change="{!c.changePricebook}" class="pricebook-class">
+                                    <aura:iteration items="{!v.pricebookoptions}" var="option">
+                                        <option value="{!option.value}"
+                                            selected="{!option.value == v.selectedPricebookId}">{!option.key}</option>
                                     </aura:iteration>
-                                </aura:if>
-                            </ui:inputSelect>
-                        </div>
-                    </lightning:layoutItem>
-                    <lightning:layoutItem padding="around-small" size="3">
-                        <label class="slds-form-element__label slds-size_5-of-12" >Product Name</label>
-                        <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sProductName}" onchange="{!c.searchInDatatable}" placeholder="Search Product Name"/>
-                            <!-- <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="{!c.searchInDatatable}"/> -->
-                        </div>
-                    </lightning:layoutItem>
-                    <lightning:layoutItem padding="around-small" size="3">
-                        <label class="slds-form-element__label slds-size_4-of-12" >Vendor</label>
-                        <div>
-                            <lightning:input type="search" label="Searh" variant="label-hidden" value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}" placeholder="Search Vendor Name"/>
-                            <!-- <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="{!c.searchVendorInDatatable}"/> -->
-                        </div>
-                    </lightning:layoutItem>
-                </lightning:layout>
-                <br />
-                <div style="height: auto; min-height:150px;">
+                                </ui:inputSelect>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="3">
+                            <label class="slds-form-element__label slds-size_5-of-12">Product Family</label>
+                            <div>
+                                <ui:inputSelect aura:id="selectedProductFamily" value="{!v.sProductFamily}"
+                                    change="{!c.changeProductFamily}" class="pricebook-class">
+                                    <aura:if isTrue="{!v.selectedPricebookId}">
+                                        <aura:iteration items="{!v.productFamilyOptions}" var="option">
+                                            <option value="{!option.value}"
+                                                selected="{!option.value == v.sProductFamily}">{!option.key}</option>
+                                        </aura:iteration>
+                                    </aura:if>
+                                </ui:inputSelect>
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="3">
+                            <label class="slds-form-element__label slds-size_5-of-12">Product Name</label>
+                            <div>
+                                <lightning:input type="search" label="Searh" variant="label-hidden"
+                                    value="{!v.sProductName}" onchange="{!c.searchInDatatable}"
+                                    placeholder="Search Product Name" />
+                                <!-- <ui:inputText class="pricebook-class" value="{!v.sProductName}" placeholder="Search Product Name" click="{!c.searchInDatatable}"/> -->
+                            </div>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="3">
+                            <label class="slds-form-element__label slds-size_4-of-12">Vendor</label>
+                            <div>
+                                <lightning:input type="search" label="Searh" variant="label-hidden"
+                                    value="{!v.sVendorName}" onchange="{!c.searchVendorInDatatable}"
+                                    placeholder="Search Vendor Name" />
+                                <!-- <ui:inputText class="pricebook-class" value="{!v.sVendorName}" placeholder="Search Vendor Name" click="{!c.searchVendorInDatatable}"/> -->
+                            </div>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                    <br />
+                    <div style="height: auto; min-height:150px;">
 
-                    <!-- <lightning:datatable aura:id="accountDataTable" keyField="Id" data="{!v.tableDataList}" hideCheckboxColumn="true" columns="{!v.columns}" /> -->
+                        <!-- <lightning:datatable aura:id="accountDataTable" keyField="Id" data="{!v.tableDataList}" hideCheckboxColumn="true" columns="{!v.columns}" /> -->
 
                     <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table-style" aria-label="Example default base table of Opportunities" width="100%">
                         <thead>
@@ -222,16 +233,16 @@
                         </aura:set>
                     </aura:if>
                 </div>
-            </div>
 
-            <footer class="slds-modal__footer">
-                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeCmp}">Cancel</button>
-                <button class="slds-button slds-button_brand" onclick="{!c.goToEditModal}">Next</button>
-            </footer>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                        onclick="{!c.closeCmp}">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.goToEditModal}">Next</button>
+                </footer>
 
-        </aura:if>
+            </aura:if>
 
-        <aura:if isTrue="{!!v.selecteProducts}">
+            <aura:if isTrue="{!!v.selecteProducts}">
 
             <header class="slds-modal__header">
                 <h2 class="slds-text-heading_medium slds-hyphenate">Edit Selected Quote Line Items</h2>
@@ -333,17 +344,19 @@
                 </div>
             </div>
 
-            <footer class="slds-modal__footer">
-                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.closeCmp}">Cancel</button>
-                <button class="slds-button slds-button_neutral" aria-label="Cancel and close" onclick="{!c.goToProductModal}">Back</button>
-                <button class="slds-button slds-button_brand" onclick="{!c.saveQuoteLine}">Save</button>
-            </footer>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                        onclick="{!c.closeCmp}">Cancel</button>
+                    <button class="slds-button slds-button_neutral" aria-label="Cancel and close"
+                        onclick="{!c.goToProductModal}">Back</button>
+                    <button class="slds-button slds-button_brand" onclick="{!c.saveQuoteLine}">Save</button>
+                </footer>
 
 
 
-        </aura:if>
+            </aura:if>
 
-    </div>
+        </div>
     </section>
     <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
 

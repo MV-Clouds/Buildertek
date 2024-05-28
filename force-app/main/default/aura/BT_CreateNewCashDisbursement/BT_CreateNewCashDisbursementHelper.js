@@ -14,6 +14,9 @@
 					component.set("v.listOfFields", listOfFields);
 					component.set("v.vendorId", result.vendorId);
 					component.set("v.projectId", result.projectId);
+					component.set("v.btBudgetId", result.btBudgetId);
+					component.set("v.btBudgetLineId", result.btBudgetLineId);
+					console.log(result.btBudgetLineId);
 			} else {
 				console.log('Error', response.getError());
 				helper.showToast('Error', 'Something went wrong!', 'error');

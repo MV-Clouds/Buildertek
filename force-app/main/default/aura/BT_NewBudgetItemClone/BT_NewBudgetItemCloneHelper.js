@@ -55,8 +55,8 @@
     /* helperFun : function(component,event,secId) {
        var acc = component.find(secId);
              for(var cmp in acc) {
-             //$A.util.toggleClass(acc[cmp], 'slds-show');  
-             $A.util.toggleClass(acc[cmp], 'slds-hide');  
+             //$A.util.toggleClass(acc[cmp], 'slds-show');
+             $A.util.toggleClass(acc[cmp], 'slds-hide');
         }
      },*/
 
@@ -165,12 +165,12 @@
                     mode: 'dismissible'
                 });
                 toastEvent.fire();
-                //component.get("v.onCancel")(); 
+                //component.get("v.onCancel")();
                 //$A.get('e.force:refreshView').fire();
                  }else{
-                component.set("v.isDescription", false); 
+                component.set("v.isDescription", false);
             }
-             
+
              if(component.get("v.isDescription") == false){*/
         var action = component.get("c.getProductPrice");
 
@@ -394,7 +394,7 @@
                                             // console.log('data[i].recordList[j]',data[i].recordList);
                                             /*if(data[i].recordList[j].fieldName == 'buildertek__Contractor__c' && data[i].recordList[j].originalValue == ''){
                                                 data[i].recordList[j].originalValue = 'No Vendor';
-                                              
+
                                                 if (!recordsMap.has('' + '(#&%*)' + 'No Vendor')) {
                                                     recordsMap.set('' + '(#&%*)' + 'No Vendor', []);
                                                 }
@@ -463,7 +463,7 @@
                                         result.groupHierarchy = Object.values(groupRecords(records));
                                         // result.groupHierarchy = Object.values(groupRecords(records)).sort((a, b) => a.groupName.localeCompare(b.groupName));
                                         console.log("Group Name By ASC" , result.groupHierarchy);
-                                        // alert(JSON.stringify(records)); 
+                                        // alert(JSON.stringify(records));
                                         function groupRecords(data) {
                                             var listOfRecords = [];
                                             let recordsMap = new Map();
@@ -552,14 +552,14 @@
                                     var recordsMap = {};
                                     var subGroupRecordsMap = {};
                                     var subGroupRecords = [];
-            
+
                                     result.groupHierarchy.forEach(element => {
                                         records = [];
                                         subGroupRecordsMap = {};
                                         subGroupRecords = [];
-                        
+
                                         var totalObj = {};
-                        
+
                                         totalObj['unitPrice'] = 0;
                                         totalObj['unitPricekey'] = '';
                                         totalObj['orignalbudget'] = 0;
@@ -569,7 +569,7 @@
                                         totalObj['TotalApprovals'] = 0;
                                         totalObj['TotalApprovalskey'] = '';
                                         totalObj['TotalC0'] = 0;
-                                        totalObj['TotalCOkey'] = '';    
+                                        totalObj['TotalCOkey'] = '';
                                         totalObj['CommittedCost'] = 0;
                                         totalObj['CommittedCostkey'] = 0;
                                         totalObj['AdditionalCosts'] = 0;
@@ -604,13 +604,13 @@
                                         totalObj['equipmentKey'] = '';
                                         totalObj['misc'] = 0;
                                         totalObj['miscKey'] = '';
-                                        
 
-                                    
 
-                                                                
-                        
-                        
+
+
+
+
+
                                         result.tarTable.records.forEach((ele, index) => {
                                             if (element['groupId'] == ele.buildertek__Group__c) {
                                                 recordsMap = {};
@@ -621,7 +621,7 @@
                                                 recordsMap['recordName'] = ele.Name;
                                                 recordsMap['recordList'] = recordsList;
                                                 records.push(recordsMap);
-                        
+
                                                 totalObj = helper.setTotalHelper(recordsList, totalObj);
                                             }else if(element['groupId'] == 'undefined'){
                                                 recordsMap = {};
@@ -632,7 +632,7 @@
                                                 recordsMap['recordName'] = ele.Name;
                                                 recordsMap['recordList'] = recordsList;
                                                 records.push(recordsMap);
-                        
+
                                                 totalObj = helper.setTotalHelper(recordsList, totalObj);
 
                                             }
@@ -649,7 +649,7 @@
                                     if (result.tarTable != undefined && result.tarTable.ListOfEachRecord != undefined) {
                                         var records = result.tarTable.ListOfEachRecord;
                                         result.groupHierarchy = Object.values(groupRecords(records)).sort((a, b) => a.groupName.localeCompare(b.groupName));
-                                        // alert(JSON.stringify(records)); 
+                                        // alert(JSON.stringify(records));
                                         function groupRecords(data) {
                                             var listOfRecords = [];
                                             let recordsMap = new Map();
@@ -732,7 +732,7 @@
                                         console.log('-- Set groupHierarchy --');
                                         var records = result.tarTable.ListOfEachRecord;
                                         result.groupHierarchy = groupRecords(records);
-                                        // alert(JSON.stringify(records)); 
+                                        // alert(JSON.stringify(records));
                                         function groupRecords(data) {
 
                                             var listOfRecords = [];
@@ -754,7 +754,7 @@
                                                     var keyVal = '';
                                                     for (let key of recordsMap.keys()) {
                                                         if(key.includes("No Grouping")){
-                                                            keyVal = key; 
+                                                            keyVal = key;
                                                         }
                                                     }
                                                     recordsMap.get(keyVal).push(JSON.parse(JSON.stringify(data[i])));
@@ -772,7 +772,7 @@
                                             }
 
                                             listOfRecords = helper.countFunction(component, listOfRecords);
-                                            
+
                                             return listOfRecords;
                                         }
 
@@ -830,7 +830,7 @@
                                     if (result.tarTable != undefined && result.tarTable.ListOfEachRecord != undefined) {
                                         var records = result.tarTable.ListOfEachRecord;
                                         result.groupHierarchy = groupRecords(records);
-                                        // alert(JSON.stringify(records)); 
+                                        // alert(JSON.stringify(records));
                                         function groupRecords(data) {
                                             var listOfRecords = [];
                                             let recordsMap = new Map();
@@ -1086,7 +1086,7 @@
                         totalObj['equipmentKey'] = '';
                         totalObj['misc'] = 0;
                         totalObj['miscKey'] = '';
-                        
+
 
                         result.tarTable.ListOfEachRecord.forEach(element => {
                             totalObj = helper.setTotalHelper(element.recordList, totalObj);
@@ -1128,7 +1128,7 @@
                         component.set("v.TotalRecords", result);
                         component.set("v.TotalRecordsCopy", result);
                         console.log('budget lines::', result);
-                        
+
                     }
 
                     // To set slds_tab_defaul height for responsive display ==> BUIL - 3466
@@ -1166,7 +1166,7 @@
           ////console.log("----productId",productId);
           action.setParams({"productId":productId});
           action.setCallback(this,function(respo){
-              var res = respo.getReturnValue(); 
+              var res = respo.getReturnValue();
               ////console.log("----respo---",res.length);
               var getProductDetails = component.get("v.newBudgetLine");
               delete getProductDetails.buildertek__Grouping__r;
@@ -1179,12 +1179,12 @@
                   getProductDetails.buildertek__Unit_Price__c = 0;
               }
               getProductDetails.buildertek__Product__c = productId;
-              
+
               getProductDetails.Name = productName;
               component.set("v.newBudgetLine",getProductDetails);
-              
+
               ////console.log("getprodct----",JSON.stringify(getProductDetails));
-              
+
               ////console.log("----log",res);
           });
           $A.enqueueAction(action);
@@ -1278,7 +1278,7 @@
                     result[0].priceWrapList.forEach(function(element){
                         pricebookOptions.push({ key: element.Name, value: element.Id });
                     });
-                    component.set("v.pricebookName", pricebookOptions[0].value);                
+                    component.set("v.pricebookName", pricebookOptions[0].value);
 
                 }
 
@@ -1392,7 +1392,7 @@
         if (budgetItemId) {
             // isExpenseUpdate = true;
         }
-        //Update Expense  
+        //Update Expense
         if (budgetItemId != undefined && isExpenseUpdate) {
             var action = component.get("c.updateBudgetItemFromExpenseItem");
             //  alert('^^^');
@@ -1543,7 +1543,7 @@
         }
 
     },
-    getpoList: function (component, pageNumber, pageSize) {
+    getPoAndPoLineList: function (component, pageNumber, pageSize) {
         var recId = component.get("v.recordId");
         var action = component.get("c.getBudgetData");
         action.setParams({
@@ -1553,12 +1553,15 @@
         });
         action.setCallback(this, function (result) {
             var state = result.getState();
+            console.log('result --> ',result.getReturnValue());
             if (component.isValid() && state === "SUCCESS") {
                 var resultData = result.getReturnValue();
+                console.log('resultData ',resultData);
                 for (var i in resultData.recordList) {
                     resultData.recordList[i].budgetCheck = false;
                 }
                 component.set("v.recordList", resultData.recordList);
+                component.set("v.poLinerecordList", resultData.poLinerecordList);
                 component.set("v.PageNumber", resultData.pageNumber);
                 component.set("v.TotalRecord", resultData.totalRecords);
                 component.set("v.RecordStart", resultData.recordStart);
@@ -1570,6 +1573,56 @@
             }
         });
         $A.enqueueAction(action);
+    },
+
+    doCancel: function (component, event, helper) {
+        component.set("v.selectedExistingPO", "");
+        component.set("v.selectedExistingTC", "");
+        component.set("v.selectedExistingINVO", "");
+        component.set("v.isExistingPo", false);
+        component.set("v.isExistingTc", false);
+        component.set("v.isExistingInvo", false);
+        component.set("v.addposection", false);
+        component.set("v.addtcsection", false);
+        component.set("v.addinvsection", false);
+        component.set("v.addcosection", false);
+        component.set("v.addExpenseSection", false);
+
+        component.set("v.showSelectSchedule", false);
+        component.set("v.isNewExpense", false);
+        component.set("v.duplicateExp", false);
+        component.set("v.createNewSchedule", false);
+        component.set("v.showSelectSchedule", false);
+        component.set("v.addSalesInvoiceSection", false); // to close add sales invoice popup
+        component.set("v.selectedSalesInvoices", []); // to clear selected sales invoices
+        component.set('v.allSLChecked', false); // for check-all checkbox
+
+
+
+        component.set("v.expenseDescription", null);
+        component.set("v.expensebudget", null);
+        component.set("v.expenseType", null);
+        component.set("v.expenseCostCode", null);
+        component.set("v.expensePaymentMethod", null);
+        component.set("v.expenseRefNo", null);
+        component.set("v.expenseAmount", null);
+        component.set("v.expenseNote", null);
+        component.set('v.budgetItemId', '');
+
+        component.set('v.addInvoicePOSection', false);
+
+        component.set("v.chooseLabor", true);
+        component.set("v.selectedLabor", "");
+        component.set("v.chooseTimeCard", false);
+        component.set("v.chooseTimeSheet", false);
+
+        component.set("v.choosePOType", true);
+        component.set("v.selectedPOType", "Purchase Order");
+        component.set("v.choosePO", false);
+        component.set("v.choosePOLine", false);
+
+
+        // $A.get('e.force:refreshView').fire();
     },
     getInvoiceList: function (component, pageNumber, pageSize) {
         console.log('method getInvoiceList calling ');
@@ -1667,7 +1720,7 @@
           var expenseNote = component.get("v.expenseNote");
           var isExpenseUpdate = component.get("v.isExpenseUpdate");
           var budgetItemId = component.get("v.budgetItemId");
-          //Update Expense  
+          //Update Expense
           if (budgetItemId != undefined && isExpenseUpdate) {
               var action = component.get("c.updateBudgetItemFromExpenseItem");
               action.setParams({
@@ -1799,7 +1852,7 @@
               });
               $A.enqueueAction(action);
           }
-  
+
       },
     getUOMValues: function (component, event, helper) {
         var action = component.get("c.getProductUOM");
@@ -1962,7 +2015,7 @@
                 totalObj['equipmentKey'] = '';
                 totalObj['misc'] = 0;
                 totalObj['miscKey'] = '';
-                
+
 
 
                 result.tarTable.records.forEach((ele, index) => {
@@ -2146,7 +2199,7 @@
             obj['ProfitLoss'] = 0;
             obj['ProfitLosskey'] = '';
             obj['fieldType'] = '';
-            
+
             obj['unitSalesPrice'] = 0;
             obj['unitSalesPricekey'] = '';
 
@@ -2174,7 +2227,7 @@
             // obj['amountIn'] = 0;
             // obj['amountInKey'] = '';
             // obj['amountOut'] = 0;
-            // obj['amountOutKey'] = '';            
+            // obj['amountOutKey'] = '';
             // obj['foreCastToComplete'] = 0;
             // obj['foreCastToCompleteKey'] = '';
             // obj['coTotal'] = 0;
@@ -2282,12 +2335,12 @@
                             obj['miscKey'] = 'buildertek__Misc_Budget__c'
                         }
 
-                        
+
 
                         obj['fieldType'] = recList[k].fieldType;
                     }
                 }
-    
+
                 listOfRecords[i]['totals'] = obj;
             }
         }
@@ -2366,7 +2419,7 @@
                     "action": "HIDE"
                 }).fire();
                 let salesInvoiceList = response.getReturnValue();
-                
+
                 salesInvoiceList.forEach(element => {
                     if(element.Name.length > 30){
                         element.Name = element.Name.slice(0, 40) + '...';
@@ -2416,7 +2469,7 @@
                 component.set("v.selectedSalesInvoices", []); // to clear selected sales invoics
                 component.set('v.allSLChecked', false); // for check-all checkbox
                 $A.get("e.force:refreshView").fire();
-                document.location.reload(true);    
+                document.location.reload(true);
                 // window.location.reload();
 
 
@@ -2504,12 +2557,12 @@
         var action = component.get("c.getProductfamilyRecords");
         var pribooknames = component.get("v.pricebookName");
         console.log('pribooknames',pribooknames);
-        // set param to method  
+        // set param to method
         action.setParams({
             'ObjectName': "Product2",
             'parentId': component.get("v.pricebookName")
         });
-        // set a callBack    
+        // set a callBack
         action.setCallback(this, function(response) {
             $A.util.removeClass(component.find("mySpinner"), "slds-show");
             var state = response.getState();
@@ -2533,10 +2586,10 @@
             }
 
         });
-        // enqueue the Action  
+        // enqueue the Action
         $A.enqueueAction(action);
     },
-    
+
     applyCSSBasedOnURL: function(component) {
         var isBudget = component.get("v.isbudget");
         console.log('isBudget',isBudget);
@@ -2544,7 +2597,7 @@
         var headerDiv1 = component.find("headerDiv1");
         console.log('headerDiv',headerDiv1);
         console.log('v.total => ', component.get("v.total"));
-        
+
         // Check if the current URL contains a specific keyword or phrase
         // To set slds_tab_defaul height for responsive display ==> BUIL - 3466
         if (isBudget) {
@@ -2663,7 +2716,7 @@
                 "title": "Error!",
                 "message": 'Please Select At Least One Field'
             });
-            toastEvent.fire();           
+            toastEvent.fire();
         } else{
             var selectedFieldList = [];
             if (valueofField1 != "") {
@@ -2679,7 +2732,7 @@
             //     selectedFieldList.push(valueofField4)
             // }
             console.log('selectedFieldList ==> ',{selectedFieldList});
-            component.set("v.isBOMmodalOpen", false); 
+            component.set("v.isBOMmodalOpen", false);
             component.set("v.displayGrouping", true);
 
             component.set("v.groupFieldList", selectedFieldList);
@@ -2716,7 +2769,7 @@
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
-                console.log('getting result ', response.getReturnValue());                
+                console.log('getting result ', response.getReturnValue());
                 var budgetLineWrapper = response.getReturnValue();
                 var budgetLineList = budgetLineWrapper.budgetLineList;
                 component.set("v.totalColumn", budgetLineWrapper.columns.length);
@@ -2811,10 +2864,10 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-            }                
+            }
         });
         $A.enqueueAction(action);
-    }, 
+    },
     addSecondGrouping : function(component, helper, budgetLines1, groupFieldList, columns){
         var group2Wrapper = [];
         if (budgetLines1.length > 0) {
@@ -2918,7 +2971,7 @@
             });
             return group3Wrapper;
         }
-    }, 
+    },
 
     addFourthGrouping : function(component, helper, budgetLines3, groupFieldList, columns){
         var group4Wrapper = [];
@@ -2986,7 +3039,7 @@
         });
         totalObj['fieldTotalList'] = budgetLineTotalData;
         return totalObj;
-    }, 
+    },
     expandRecordsHelper : function(component, event, helper, spanGroupId){
         console.log('in expandrec===>',spanGroupId);
         let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
@@ -3004,7 +3057,7 @@
         let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
         let collapeallIcon = document.getElementById("collapeseGroupBtn_" + spanGroupId);
         let expandallIcon = document.getElementById("expandGroupBtn_" + spanGroupId);
-        
+
         collapeallIcon.style.display = 'none';
         expandallIcon.style.display = 'block';
         for(let index = 0; index < recordDivList.length; index++) {
@@ -3023,13 +3076,13 @@
                 component.set('v.valueofField1' , groupingLevel[0]);
                 component.set('v.valueofField2' , groupingLevel[1]);
 
-               
+
             }else{
                 console.log(response.getError());
             }
         });
         $A.enqueueAction(action);
-    
+
     },
     getCostCodes : function(component, event, helper) {
         var action = component.get("c.getCostCodes");
@@ -3074,6 +3127,6 @@
             }
         });
         $A.enqueueAction(action);
-    } 
+    }
 
 })
