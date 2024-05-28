@@ -431,7 +431,8 @@
         component.set('v.newQuote.buildertek__Unit_Cost__c', '');
         component.set('v.newQuote.buildertek__Unit_Price__c', null);
         component.set('v.newQuote.buildertek__Markup__c', '');
-
+        component.set('v.newQuote.buildertek__Margin__c', '');
+        component.set('v.newQuote.buildertek__Notes__c', '');
     },
     changeEvent: function(component, event, helper) {
         var group = component.find('groupId');
@@ -452,6 +453,8 @@
         component.set('v.newQuote.buildertek__Unit_Price__c', null);
         component.set('v.newQuote.buildertek__Quantity__c', 1);
         component.set('v.newQuote.buildertek__Markup__c', '');
+        component.set('v.newQuote.buildertek__Margin__c', '');
+        component.set('v.newQuote.buildertek__Notes__c', '');
         var pribooknames = component.get("v.pricebookName");
         console.log("PriceBook Name : ======= : ", pribooknames);
         console.log({ product });

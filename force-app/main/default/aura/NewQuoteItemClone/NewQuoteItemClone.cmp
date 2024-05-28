@@ -690,22 +690,22 @@
                                     style="border:1px solid grey;border-radius: 5px;">
                                     <thead style="border:1px solid rgb(216, 237, 255);">
                                         <tr class="slds-text-title_caps">
-                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px; width:13%">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px; width:13vw !important;">
                                                 <div class="slds-truncate" title="Pricebook">Pricebook</div>
                                             </th>
-                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width:13vw !important;">
                                                 <div class="slds-truncate" title="Product Family">Product Family</div>
                                             </th>
-                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width:20%;">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width:11vw !important;">
                                                 <div class="slds-truncate" title="Product">Product</div>
                                             </th>
-                                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                            <th style="background-color:rgba(27, 82, 151, 1.0); color:white; width: 16vw !important;">
                                                 <div class="slds-truncate" title="Description">Description</div>
                                             </th>
-                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  ">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width:16vw !important;">
                                                 <div class="slds-truncate" title="Grouping">Phase</div>
                                             </th>
-                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                            <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; width:16vw !important;">
                                                 <div class="slds-truncate" title="note">Notes</div>
                                             </th>
                                             <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
@@ -732,7 +732,7 @@
                                     </thead>
                                     <tbody>
                                         <tr class="tableRow">
-                                            <td style="width:13%">
+                                            <td style="width:13vw !important;">
                                                 <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}"
                                                     class="pricebook-class">
                                                     <aura:iteration var="option" items="{! v.pricebookoptions }">
@@ -743,7 +743,7 @@
                                                     </aura:iteration>
                                                 </ui:inputSelect>
                                             </td>
-                                            <td>
+                                            <td style="width:13vw !important;">
                                                 <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}"
                                                     class="pricebook-class">
                                                     <option value="--None--" id="noneValue">--None--</option>
@@ -754,17 +754,18 @@
                                                     </aura:iteration>
                                                 </ui:inputSelect>
                                             </td>
-                                            <td style="width:20%; ">
+                                            <td>
                                                  <aura:html tag="style">
                                                     .mainDiv{
                                                         padding-top:1.3% !important;
-                                                        max-width:27vw;
-
+                                                        max-width:11vw;
+                                                        min-width:11vw;
                                                     }
                                                     .pillSize{
 
                                                         padding-top: 1.3% !important;
                                                         padding-bottom: 1.3% !important;
+                                                        height: 2.2rem !important;
                                                     }
                                                    <!-- .subDiv{
                                                         width:100% !important;
@@ -781,9 +782,9 @@
                                             <!-- <td>
                                             <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID" />
                                         </td> -->
-                                            <td>
+                                            <td style="width:16vw !important;">
                                                 <!-- <aura:if isTrue="{!v.parentValue != 'haveValue'}"> -->
-                                                    <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID1" />
+                                                    <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID1"/>
                                                     <!-- <aura:set attribute="else">
                                                     <ui:inputText value="{!v.newQuote.Name}" aura:id="quoteLineID1" /> -->
 
@@ -791,23 +792,7 @@
                                                 <!-- </aura:if> -->
 
                                             </td>
-                                            <td>
-                                                <aura:html tag="style">
-                                                    .slds-lookup__menu{
-                                                    width: 100% !important;
-                                                    height: 200px !important;
-                                                    }
-
-                                                    .slds-lookup__list{
-                                                    width: auto !important;
-                                                    height: 190px !important;
-                                                    }
-
-                                                    .borderdiv .slds-input{
-                                                        border: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorderInput,rgb(201, 201, 201));
-                                                    }
-                                                    
-                                                </aura:html>
+                                            <td style="width: 16vw !important;">
                                                 <div class="borderdiv">
                                                     <c:BT_LookUp aura:id="groupId" _field="buildertek__Grouping__c"
                                                         _sobject="buildertek__Quote_Item__c"
@@ -824,7 +809,7 @@
                                                 </aura:iteration>
                                             </ui:inputSelect>
                                         </td> -->
-                                            <td>
+                                            <td style="width:16vw !important;">
                                                 <ui:inputTextArea value="{!v.newQuote.buildertek__Notes__c}" />
                                             </td>
                                             <td style="width: 6% !important;">
