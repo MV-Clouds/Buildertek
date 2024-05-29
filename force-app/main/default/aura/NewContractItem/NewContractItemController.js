@@ -17,7 +17,6 @@
         helper.getGroups(component, event, helper, page);
     },
     changefamily: function (component, event, helper) {
-        console.log(`HeYYYYY`);
         var product = component.get('v.selectedLookUpRecord');
         var compEvent = $A.get('e.c:BT_CLearLightningLookupEvent');
         compEvent.setParams({ "recordByEvent": product });

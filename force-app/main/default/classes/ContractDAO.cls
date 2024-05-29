@@ -583,6 +583,7 @@ Throws [Exceptions]:
         contractLineToInsert.buildertek__Contract__c = contractRec.buildertek__Contract__c; 
         contractLineToInsert.buildertek__Contract_Item_Group__c = contractRec.buildertek__Contract_Item_Group__c;
         contractLineToInsert.buildertek__Unit_Price__c = contractRec.buildertek__Unit_Price__c;
+        contractLineToInsert.buildertek__Unit_Cost__c = contractRec.buildertek__Unit_Cost__c;
         contractLineToInsert.buildertek__Quantity__c = contractRec.buildertek__Quantity__c;
         contractLineToInsert.buildertek__Cost_Code__c = contractRec.buildertek__Cost_Code__c;
         contractLineToInsert.buildertek__Discount__c = contractRec.buildertek__Discount__c;

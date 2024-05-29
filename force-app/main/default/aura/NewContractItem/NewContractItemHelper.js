@@ -52,6 +52,10 @@
                     getProductDetails.buildertek__Unit_Price__c = productDetails.buildertek__Unit_Cost__c;
                 }
     
+                if (productDetails.UnitPrice!= null) {
+                    getProductDetails.buildertek__Unit_Cost__c = productDetails.UnitPrice;
+                }
+
                 if (productDetails.Product2) {
                     if (productDetails.Product2.buildertek__Cost_Code__c != null) {
                         getProductDetails.buildertek__Cost_Code__c = productDetails.Product2.buildertek__Cost_Code__c;
