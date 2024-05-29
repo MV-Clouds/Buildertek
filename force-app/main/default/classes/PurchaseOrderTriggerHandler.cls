@@ -366,7 +366,7 @@ public with sharing class PurchaseOrderTriggerHandler{
 
                 system.debug('BudgetItemList.size()----->'+BudgetItemList.size());
 
-                List<buildertek__PO_Item_To_Budget_Item_Link__c> poLink = [SELECT Id, Name, buildertek__Approved_PO__c FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__PO_Item__c =: purchaseOrderItemID];
+                List<buildertek__PO_Item_To_Budget_Item_Link__c> poLink = [SELECT Id, Name, buildertek__Approved_PO__c, buildertek__Purchase_Order__c FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__PO_Item__c =: purchaseOrderItemID];
 
                 for(buildertek__Purchase_Order__c purchaseRec : newPurchaseOrders){
 
@@ -392,7 +392,7 @@ public with sharing class PurchaseOrderTriggerHandler{
                                         buildertek__PO_Item_To_Budget_Item_Link__c potobudgetRec = new buildertek__PO_Item_To_Budget_Item_Link__c();
                                         potobudgetRec.buildertek__Budget_Item__c = budgetRec.Id;
                                         potobudgetRec.buildertek__PO_Item__c = poitemRec.Id;
-                                        potobudgetRec.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c + poitemRec.buildertek__Total_Amount_Tax__c;
+                                        potobudgetRec.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
                                         potobudgetRec.buildertek__Purchase_Order__c = purchaseRec.Id;
                                         budgetItemLinkRecs.add(potobudgetRec);
                                     }
@@ -409,13 +409,17 @@ public with sharing class PurchaseOrderTriggerHandler{
                     if (poLink.size()>0) {
                         if (purchaseRec.buildertek__Status__c == 'Pending') {
                             for (buildertek__PO_Item_To_Budget_Item_Link__c po : poLink) {
-                                po.buildertek__Pending_PO__c = purchaseRec.buildertek__PO_Total__c;
-                                po.buildertek__Approved_PO__c = 0;
+                                if(po.buildertek__Purchase_Order__c == purchaseRec.Id){
+                                    po.buildertek__Pending_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                    po.buildertek__Approved_PO__c = 0;
+                                }
                             }
                         }else {
                             for (buildertek__PO_Item_To_Budget_Item_Link__c po : poLink) {
-                                po.buildertek__Pending_PO__c = 0;
-                                po.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                if(po.buildertek__Purchase_Order__c == purchaseRec.Id){
+                                    po.buildertek__Pending_PO__c = 0;
+                                    po.buildertek__Approved_PO__c = purchaseRec.buildertek__PO_Total__c;
+                                }
                             }
                         }
                     }
@@ -577,12 +581,10 @@ public with sharing class PurchaseOrderTriggerHandler{
 
     public void removePOFromBudgetLine(Purchase_Order__c[] oldPO, Map<ID, Purchase_Order__c> oldPurchaseOrderMap) {
         try {
-            System.debug('HEYYYYYYYYYY CHECKKKKKKKK THISSSSSSSS OUTTTTTTTTT:'+oldPO);
-            System.debug('HEYYYYYYYYYY oldPurchaseOrderMap:'+oldPurchaseOrderMap);
             List<buildertek__Purchase_Order__c> deleteViaPOList = new List<buildertek__Purchase_Order__c>();
             if (oldPurchaseOrderMap != null) {
                 for (buildertek__Purchase_Order__c PO : oldPO) {
-                    if (oldPurchaseOrderMap.containsKey(PO.Id) && oldPurchaseOrderMap.get(PO.Id).buildertek__Budget_Line__c != null && PO.buildertek__Budget_Line__c == null) {
+                    if (oldPurchaseOrderMap.containsKey(PO.Id) && oldPurchaseOrderMap.get(PO.Id).buildertek__Budget_Line__c != null) {
                         System.debug('Check PO Name ======== ' + PO.Name);
                         deleteViaPOList.add(PO);
                     }
@@ -593,6 +595,7 @@ public with sharing class PurchaseOrderTriggerHandler{
                 List<buildertek__PO_Item_To_Budget_Item_Link__c> poBudgetItemLinkList = [SELECT Id, Name, buildertek__Purchase_Order__c FROM buildertek__PO_Item_To_Budget_Item_Link__c WHERE buildertek__Purchase_Order__c IN :deleteViaPOList];
 
                 if (!poBudgetItemLinkList.isEmpty()) {
+                    System.debug('Deleting PO Item To Budget Item Links: ' + poBudgetItemLinkList);
                     delete poBudgetItemLinkList;
                 }
             }

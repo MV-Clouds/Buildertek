@@ -6,7 +6,6 @@
  Date: 15/09/2017
  */
 trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, after undelete, after update, before delete, before insert, before update ){
-    System.debug('In trigger');
 
     PurchaseOrderTriggerHandler handler = new PurchaseOrderTriggerHandler(Trigger.isExecuting, Trigger.size);
 
@@ -27,7 +26,7 @@ trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, af
             // handler.removePOFromBudgetLine(Trigger.new, Trigger.oldMap);
         } else if (Trigger.isDelete && Trigger.isBefore){
             // PurchaseOrder_handler.handledelete(Trigger.old);
-            // handler.removePOFromBudgetLine(Trigger.old, Trigger.oldMap);
+            handler.removePOFromBudgetLine(Trigger.old, Trigger.oldMap);
         } else if (Trigger.isDelete && Trigger.isAfter){
             handler.OnAfterDelete(Trigger.old);
             handler.updateprojectonpodelete(Trigger.old);
@@ -40,6 +39,8 @@ trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, af
             // handler.removePOFromBudgetLine(Trigger.new, Trigger.oldMap);
         } else if (Trigger.isDelete && Trigger.isAfter){
             handler.updateprojectonpodelete(Trigger.old);
+        } else if (Trigger.isBefore && Trigger.isDelete) {
+            handler.removePOFromBudgetLine(Trigger.old, Trigger.oldMap);
         }
     }
 }
