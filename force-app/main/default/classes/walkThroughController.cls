@@ -1,8 +1,18 @@
 public with sharing class walkThroughController {
 
     @AuraEnabled
-    public static List<buildertek__Category__c> getCategoryRecords() {
-        return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+    public static List<buildertek__Category__c> getCategoryRecords(String recordId) {
+
+        //BUIL-4153
+        buildertek__Walk_Through_List__c walkThroughList = [SELECT Id, Name, buildertek__Sections__c FROM buildertek__Walk_Through_List__c WHERE Id = :recordId LIMIT 1];
+        List<String> sectionNames = new List<String>();
+        for (String section : walkThroughList.buildertek__Sections__c.split(';')) {
+            sectionNames.add(section);
+        }
+        System.debug('sectionNames: ' + sectionNames);
+        return [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :sectionNames AND buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+
+        // return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
     }
 
     public class FieldWrapper {
@@ -318,7 +328,7 @@ public with sharing class walkThroughController {
             pricebookWrapper priceWrap = new pricebookWrapper();
             priceWrap.defaultValue= new pricebook2();
             priceWrap.priceWrapList = new List<pricebook2>();
-            List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
+            List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 WHERE buildertek__BT_Visible__c = true ORDER BY Name ASC ];
             priceWrap.priceWrapList=PriceList;
             
             if(PriceList.size() > 0){
@@ -371,7 +381,7 @@ public with sharing class walkThroughController {
             List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel
                                                     FROM Product2
                                                     WHERE (Id IN :ProdIds AND family != null)
-                                                    group by family];
+                                                    group by family order by family];
             list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
 
             if (productfamlylst.size() > 0){
