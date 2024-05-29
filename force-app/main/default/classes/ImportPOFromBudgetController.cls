@@ -1,14 +1,14 @@
 public with sharing class ImportPOFromBudgetController {
     @AuraEnabled
-    public static object getAllPO(){
+    public static object getAllPO(String recordId){
         try {
-            list<buildertek__Purchase_Order__c> POList;
-
-            POList = [SELECT Id, Name, buildertek__PO_Total__c , buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Id, buildertek__Vendor__r.Name, buildertek__Cost_Code__c, buildertek__Cost_Code__r.Id, buildertek__Cost_Code__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Id, buildertek__Trade_Type__r.Name FROM buildertek__Purchase_Order__c 
-                                                WHERE buildertek__PO_Type__c = 'Standard' AND buildertek__Type__c = 'Standard'
+                        list<buildertek__Purchase_Order__c> POList;
+            
+            buildertek__Budget__c bb= [SELECT Id,Name, buildertek__Project__c FROM buildertek__Budget__c WHERE Id =: recordId];
+            POList =[SELECT Id, Name, buildertek__PO_Total__c , buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Id, buildertek__Vendor__r.Name, buildertek__Cost_Code__c, buildertek__Cost_Code__r.Id, buildertek__Cost_Code__r.Name, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Id, buildertek__Trade_Type__r.Name FROM buildertek__Purchase_Order__c
+                                                WHERE buildertek__PO_Type__c != 'Master' AND buildertek__Type__c != 'Master' AND buildertek__Budget__c = null AND buildertek__Project__c=:bb.buildertek__Project__c
                                                 ORDER BY Name
-                                                ASC limit 50000]; 
-                                                
+                                                ASC limit 50000];                                             
             if (POList.size() > 0) {
                 return POList;
             }  
@@ -29,8 +29,10 @@ public with sharing class ImportPOFromBudgetController {
         MessageClass msg = new MessageClass();
         try {
             List<buildertek__Budget_Item__c> newBudgetLinelst = new List<buildertek__Budget_Item__c>();
-
+            List<buildertek__Purchase_Order__c> selectedPOListtochange = new List<buildertek__Purchase_Order__c>();
             List<buildertek__Purchase_Order__c> selectedPOList = [SELECT Id, Name, buildertek__PO_Total__c , buildertek__Description__c, buildertek__Vendor__c, buildertek__Cost_Code__c, buildertek__Trade_Type__c FROM buildertek__Purchase_Order__c WHERE Id IN :poIds];
+
+            buildertek__Budget_Line_Group__c bg = [SELECT Id FROM buildertek__Budget_Line_Group__c WHERE Name='No Grouping'];
 
             System.debug('selectedPOList--> '+ selectedPOList);
             for (buildertek__Purchase_Order__c PO : selectedPOList) {
@@ -44,15 +46,32 @@ public with sharing class ImportPOFromBudgetController {
                 newBudgetLine.buildertek__Contractor__c = PO.buildertek__Vendor__c;
                 newBudgetLine.buildertek__Cost_Code__c = PO.buildertek__Cost_Code__c;
                 newBudgetLine.buildertek__Trade_Type__c = PO.buildertek__Trade_Type__c;                 
-
+                newBudgetLine.buildertek__Group__c = bg.Id;
                 newBudgetLinelst.add(newBudgetLine);
+
             }
             System.debug('newBudgetLinelst---> ' + newBudgetLinelst);
             if (newBudgetLinelst.size() > 0) {
-                insert newBudgetLinelst;
-                msg.Status = 'Success';
-                msg.Message = 'Budget Line(s) created Successfully.';
-            }
+                System.debug('in insert');
+            insert newBudgetLinelst;
+                System.debug('in insert done');
+            
+
+        for (Integer i = 0; i < newBudgetLinelst.size(); i++) {
+            buildertek__Purchase_Order__c pu = selectedPOList[i];
+            pu.buildertek__Budget__c = recordId;
+            pu.buildertek__Budget_Line__c = newBudgetLinelst[i].Id;
+            selectedPOListtochange.add(pu);
+        }
+        System.debug('pochangelist------->'+selectedPOListtochange);
+        if(selectedPOListtochange.size()>0){
+            System.debug('in update');
+        update selectedPOListtochange;
+            System.debug('in update done');
+        }
+    }      
+            msg.Status = 'Success';
+            msg.Message = 'Budget Line(s) created Successfully.';
             return msg;
         } catch (Exception exp) {
             msg.Status = 'Failed';

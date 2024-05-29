@@ -11,28 +11,28 @@
         action.setCallback(this, function (response) {
             var result = response.getReturnValue();
             if (result) {
-                console.log('result', result);
-                if (result.timesheetentryObject.length === 0) {
-                    window.onload = showToast();
-                    function showToast() {
-                        sforce.one.showToast({
-                            "title": "Error!",
-                            "message": "No Time Sheet Entry found for this Time Sheet!",
-                            "type": "error"
-                        });
-                    }
-                    var appEvent = $A.get("e.c:myEvent");
-                    appEvent.setParams({
-                        "message": "Event fired"
-                    });
-                    appEvent.fire();
-                    sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
-                } else {
+                // console.log('result', result);
+                // if (result.timesheetentryObject.length === -1) {
+                //     window.onload = showToast();
+                //     function showToast() {
+                //         sforce.one.showToast({
+                //             "title": "Error!",
+                //             "message": "No Time Sheet Entry found for this Time Sheet!",
+                //             "type": "error"
+                //         });
+                //     }
+                //     var appEvent = $A.get("e.c:myEvent");
+                //     appEvent.setParams({
+                //         "message": "Event fired"
+                //     });
+                //     appEvent.fire();
+                //     sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                // } else {
                     component.set("v.timeSheetEntries", result.timesheetentryObject);
                     component.set("v.fieldSetValues", result.FieldSetValues);
                     console.log('timeSheetEntries', component.get('v.timeSheetEntries'));
                     component.set("v.Spinner", false);
-                }
+                // }
             }
         });
         $A.enqueueAction(action);
@@ -42,6 +42,20 @@
         console.log('validateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
+        console.log(timeSheetEntries.length);
+        if(timeSheetEntries.length==0){
+                component.set("v.Spinner", false);
+                isValid = false;
+                window.onload = showToast();        
+                function showToast() {
+                    sforce.one.showToast({
+                        "title": "Error!",
+                        "message": "Please enter at least one timesheet entry.",
+                        "type": "error"
+                    });
+                }
+                return;   
+        }
         for (var i = 0; i < timeSheetEntries.length; i++) {
             var name = timeSheetEntries[i].Name;
             name = name.replace(/^\s+|\s+$/g, '');

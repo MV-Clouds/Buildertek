@@ -31,6 +31,7 @@
     <aura:attribute name="productFamilyOptions" type="List" />
     <aura:attribute name="sPricebookFamily" type="String" />
     <aura:attribute name="pricebookFamilyOptions" type="List" />
+    <aura:attribute name="showmargin" type="Boolean" default="false" />
 
     <aura:attribute name="selectedRecords" type="List" default="[]" />
     <aura:attribute name="selectedProducts" type="List" />
@@ -42,6 +43,25 @@
             height: 36px !important;
             border: 1px solid rgb(201, 201, 201) !important;
         }
+        .custom-table-style {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .custom-table-style thead th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .custom-table-style tbody td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .custom-table-style .slds-truncate {
+            text-overflow: ellipsis !important;
+        }           
     </aura:html>
 
     <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01" class="slds-modal slds-fade-in-open">
@@ -149,36 +169,39 @@
                     </lightning:layout>
                     <br />
                     <div style="height: auto; min-height:150px;">
-                        <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-label="Example default base table of Opportunities" width="100%">
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered custom-table-style" aria-label="Example default base table of Opportunities" width="100%">
                             <thead>
                                 <tr class="slds-line-height_reset">
                                     <th class="slds-text-align_right slds-cell_action-mode" scope="col" style="width:5% !important">
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Product Name">Pricebook</div>
                                     </th>
-                                    <th class="" scope="col" style="width:20% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="trncatediv" title="Product Name">Product Name</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Product Family">Product Family</div>
                                     </th>
-                                    <th class="" scope="col" style="width:15% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="trncatediv" title="Product Description">Product Description</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
+                                        <div class="trncatediv" title="Product Notes">Notes</div>
+                                    </th>
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Vendor">Vendor</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                     </th>
-                                    <th class="" scope="col" style="width:10% !important">
+                                    <!-- <th class="" scope="col" style="width:10% !important">
                                         <div class="slds-truncate" title="Product Code">Product Code</div>
-                                    </th>
-                                    <th class="" scope="col" style="width:5% !important">
+                                    </th> -->
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="Unit Cost">Unit Cost</div>
                                     </th>
-                                    <th class="" scope="col" style="width:5% !important">
+                                    <th class="" scope="col" style="width:12.8% !important">
                                         <div class="slds-truncate" title="List Price">List Price</div>
                                     </th>
                                 </tr>
@@ -191,47 +214,52 @@
                                             <lightning:input type="checkbox" name="input1" checked="{!product.Selected}" id="{!product.PriceBookEntryId}" onchange="{!c.checkboxChange}" />
                                             </div>
                                         </td>
-                                        <td data-label="Pricebook Name" class="" style="width:16% !important">
+                                        <td data-label="Pricebook Name" class="" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.PriceBookName}'>
                                                 {!product.PriceBookName}
                                             </div>
                                         </td>
-                                        <td data-label="Product Name" class="" style="width:18% !important">
+                                        <td data-label="Product Name" class="" style="width:12.8% !important">
                                             <div class="trncatediv" title='{!product.Name}'>
                                                 {!product.Name}
                                             </div>
                                         </td>
-                                        <td data-label="Product Family" scope="row" style="width:18% !important">
+                                        <td data-label="Product Family" scope="row" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.Family}'>
                                                 {!product.Family}
                                             </div>
                                         </td>
-                                        <td data-label="Product Description" class="" style="width:16% !important">
+                                        <td data-label="Product Description" class="" style="width:12.8% !important">
                                             <div class="trncatediv" title='{!product.Description}'>
                                                 {!product.Description}
                                             </div>
                                         </td>
-                                        <td data-label="Vendor" class="" style="width:6% !important">
+                                        <td data-label="Notes" style="width:12.8% !important">
+                                                <div class="trncatediv" title='{!product.Notes}'>
+                                                    {!product.Notes}
+                                                </div>
+                                        </td>
+                                        <td data-label="Vendor" class="" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.Vendor}'>
                                                 {!product.Vendor}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width:6% !important">                                        
+                                        <td data-label="Product Code" style="width:12.8% !important">                                        
                                             <div class="slds-truncate" title='{!product.CostCode}'>
                                                 {!product.CostCode}
                                             </div>
                                         </td>
-                                        <td data-label="Product Code" style="width: 7% !important">                                        
+                                        <!-- <td data-label="Product Code" style="width: 7% !important">                                        
                                             <div class="slds-truncate" title='{!product.ProductCode}'>
                                                 {!product.ProductCode}
                                             </div>
-                                        </td>
-                                        <td data-label="Unit Cost" style="width:6% !important">
+                                        </td> -->
+                                        <td data-label="Unit Cost" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.UnitCost}' >
                                                 <lightning:formattedNumber value="{!product.UnitCost}" style="currency"/>
                                             </div>
                                         </td>
-                                        <td data-label="List Price" style="width:2% !important">
+                                        <td data-label="List Price" style="width:12.8% !important">
                                             <div class="slds-truncate" title='{!product.UnitPrice}' >
                                                 <lightning:formattedNumber value="{!product.UnitPrice}" style="currency"/>
                                             </div>
@@ -293,6 +321,11 @@
                                     <th class="" scope="col">
                                         <div class="slds-truncate" title="List Price">List Price</div>
                                     </th>
+                                <aura:if isTrue="{!v.showmargin}">                                    
+                                    <th class="" scope="col">
+                                        <div class="slds-truncate" title="Margin %">Margin %</div>
+                                    </th>
+                                </aura:if>                                    
                                     <th class="" scope="col">
                                         <div class="slds-truncate" title="Markup %">Markup %</div>
                                     </th>
@@ -337,6 +370,11 @@
                                         <td style="width:9% !important">
                                             <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
+                                <aura:if isTrue="{!v.showmargin}">                                                                            
+                                        <td style="width:5% !important">
+                                            <lightning:input name="input10" label="" value="{!item.buildertek__Margin__c}" />
+                                        </td>
+                                </aura:if>
                                         <td style="width:5% !important">
                                             <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                         </td>

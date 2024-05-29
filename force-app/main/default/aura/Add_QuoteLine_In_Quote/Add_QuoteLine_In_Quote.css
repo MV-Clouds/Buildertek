@@ -19,7 +19,6 @@
     fill:rgb(116, 116, 116) !important;
  }
  .THIS .trncatediv {
-    width: 16rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
