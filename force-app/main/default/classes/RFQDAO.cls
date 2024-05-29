@@ -89,23 +89,13 @@ Throws [Exceptions]: NA
                     'buildertek__Description__c, buildertek__Budget_Line_Amount__c, buildertek__Estimated_Work_Days__c, buildertek__Vendor_Note__c,buildertek__isVendorRFQSubmited__c'+
                     ' from buildertek__Vendor_Items__r), (Select Id, Name, File__r.Name, File__r.buildertek__File_Presigned_URL__c, File__r.buildertek__Download_Link__c,CurrencyIsoCode,'+
                     'File__r.buildertek__Download_Link1__c from buildertek__RFQ_To_Vendor_Document_Links__r), (Select Id, buildertek__File_Presigned_URL__c,CurrencyIsoCode,'+
-                    'buildertek__Download_Link__c,buildertek__Download_Link1__c, Name from buildertek__Files__r) from buildertek__RFQ_To_Vendor__c where RFQ__c = :rfqId ';
+                    'buildertek__Download_Link__c,buildertek__Download_Link1__c, Name from buildertek__Files__r) from buildertek__RFQ_To_Vendor__c where buildertek__RFQ__c = :rfqId ORDER By buildertek__Vendor__r.Name, buildertek__Contact__r.Name NULLS LAST';
 
                 System.debug('rfqrecords>>'+rfqrecords);
                 rfqVendorsList = Database.query(rfqrecords);
                 system.debug('rfqVendorsList'+rfqVendorsList);
             }else{
-                rfqVendorsList = [select Id, Name, buildertek__Contact__c, buildertek__Contact__r.Name,buildertek__Contact__r.Email, buildertek__RFQ__r.buildertek__Status__c,
-                                  buildertek__RFQ__r.buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Status__c, buildertek__Vendor__c, buildertek__Vendor__r.buildertek__Pre_Qualified__c,
-                                  buildertek__Quote_Amount__c, (Select id, Name, buildertek__Item_Name__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c,
-                                                                buildertek__Description__c, buildertek__Estimated_Work_Days__c, buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c,buildertek__isVendorRFQSubmited__c
-                                                                from buildertek__Vendor_Items__r order by CreatedDate), (Select Id, Name, File__r.Name, File__r.buildertek__File_Presigned_URL__c, File__r.buildertek__Download_Link__c, File__r.buildertek__Download_Link1__c
-                                                                                                                         from buildertek__RFQ_To_Vendor_Document_Links__r), (Select Id, buildertek__File_Presigned_URL__c, buildertek__Download_Link__c, buildertek__Download_Link1__c, Name
-                                                                                                                                                                             from buildertek__Files__r)
-                                  from buildertek__RFQ_To_Vendor__c
-                                  where RFQ__c = :rfqId
-                                  ORDER By Order_By_Skip_zero__c ASC, Quote_Amount__c ASC
-                                  NULLS LAST];
+                rfqVendorsList = [select Id, Name, buildertek__Contact__c, buildertek__Contact__r.Name,buildertek__Contact__r.Email, buildertek__RFQ__r.buildertek__Status__c,buildertek__RFQ__r.buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Status__c, buildertek__Vendor__c, buildertek__Vendor__r.buildertek__Pre_Qualified__c,buildertek__Quote_Amount__c, (Select id, Name, buildertek__Item_Name__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c,buildertek__Description__c, buildertek__Estimated_Work_Days__c, buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c,buildertek__isVendorRFQSubmited__c from buildertek__Vendor_Items__r order by CreatedDate), (Select Id, Name, buildertek__File__r.Name, buildertek__File__r.buildertek__File_Presigned_URL__c, buildertek__File__r.buildertek__Download_Link__c, buildertek__File__r.buildertek__Download_Link1__c from buildertek__RFQ_To_Vendor_Document_Links__r), (Select Id, buildertek__File_Presigned_URL__c, buildertek__Download_Link__c, buildertek__Download_Link1__c, Name from buildertek__Files__r) from buildertek__RFQ_To_Vendor__c where buildertek__RFQ__c =:rfqId ORDER By buildertek__Vendor__r.Name, buildertek__Contact__r.Name NULLS LAST];
             }
 
             return rfqVendorsList;
@@ -2096,7 +2086,7 @@ Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Trade_Type__c.isAc
 && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Unit_Price__c.isAccessible()
 && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Description__c.isAccessible()
 && Schema.sObjectType.buildertek__Trade_Type__c.fields.Name.isAccessible()){*/
-        if(UserInfo.isMultiCurrencyOrganization()){ 
+        if(UserInfo.isMultiCurrencyOrganization()){
     string rfqItemrecords = 'SELECT Id, Name,CurrencyIsoCode, buildertek__Product__c, buildertek__Trade_Type__c, buildertek__Trade_Type__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c,buildertek__Description__c '+
         'FROM buildertek__RFQ_Item__c WHERE buildertek__Master_Item__c = true';
     if(String.isNotBlank(searchString)){
