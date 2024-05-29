@@ -371,7 +371,7 @@ public with sharing class walkThroughController {
             List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel
                                                     FROM Product2
                                                     WHERE (Id IN :ProdIds AND family != null)
-                                                    group by family];
+                                                    group by family order by family];
             list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
 
             if (productfamlylst.size() > 0){
