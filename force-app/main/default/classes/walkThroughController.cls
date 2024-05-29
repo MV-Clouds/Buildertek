@@ -10,7 +10,13 @@ public with sharing class walkThroughController {
             sectionNames.add(section);
         }
         System.debug('sectionNames: ' + sectionNames);
-        return [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :sectionNames AND buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+        List<buildertek__Category__c> cats = [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :sectionNames AND buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+
+        if (cats.size() > 0) {
+            return cats;
+        } else {
+            return null;
+        }
 
         // return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
     }
