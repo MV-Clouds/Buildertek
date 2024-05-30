@@ -21,6 +21,8 @@
         var timeSheetEntry = {
             'Name': '',
             'buildertek__BT_Time_Sheet__c': component.get('v.recordId'),
+            'buildertek__BT_Project__c': component.get("v.TimeSheetProject"),
+            'buildertek__Contact__c': component.get("v.TimeSheetResource")
         };
         //push on the top of the list
         timeSheetEntries.unshift(timeSheetEntry);
