@@ -57,7 +57,7 @@
                 function showToast() {
                     sforce.one.showToast({
                         "title": "Error!",
-                        "message": "The BT Time Sheet Entry Name must be populated",
+                        "message": "The BT Time Sheet Entry Name must be populated.",
                         "type": "error"
                     });
                 }
@@ -77,7 +77,7 @@
                     function showToast() {
                         sforce.one.showToast({
                             "title": "Error!",
-                            "message": "Start Time cannot be greater than End Time on row " + (i + 1),
+                            "message": "Start Time cannot be greater than End Time",
                             "type": "error"
                         });
                     }
@@ -92,7 +92,7 @@
                 function showToast() {
                     sforce.one.showToast({
                         "title": "Error!",
-                        "message": "Hours should be between 0 and 24 on row " + (i + 1),
+                        "message": "Hours should be between 0 and 24",
                         "type": "error"
                     });
                 }
