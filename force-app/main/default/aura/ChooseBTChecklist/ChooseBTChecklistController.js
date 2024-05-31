@@ -1,9 +1,7 @@
 ({
     doInit: function (component, event, helper) {
 
-        helper.fetchChecklists(component);
-
-        /* var workspaceAPI = component.find("workspace");
+        var workspaceAPI = component.find("workspace");
         workspaceAPI.getEnclosingTabId().then((response) => {
             let opendTab = response.tabId;
             workspaceAPI.setTabLabel({
@@ -87,7 +85,7 @@
 
             }
         });
-        $A.enqueueAction(action); */
+        $A.enqueueAction(action);
 
 
     },
