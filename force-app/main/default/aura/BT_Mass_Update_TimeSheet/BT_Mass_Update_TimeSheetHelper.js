@@ -57,7 +57,7 @@
                 function showToast() {
                     sforce.one.showToast({
                         "title": "Error!",
-                        "message": "Name cannot be empty on row " + (i + 1),
+                        "message": "The BT Time Sheet Entry Name must be populated",
                         "type": "error"
                     });
                 }
