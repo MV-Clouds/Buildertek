@@ -1,59 +1,65 @@
-.THIS .Header{
-    background: white;
-    padding: 10px;
+.THIS .slds-table {
+    width: 100%;
 }
 
-.THIS .innerIcon .slds-icon--xx-small{
-    margin-bottom: 40% !important;
+.THIS .heading-text-box{
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: 500;
+    color: #0678ff;
+    background: #e6f1ff;
+    margin: 0 2rem;
 }
 
-.THIS .Menu{
-    padding: 10px ;
-    background-color: #C7DFE9;
-    color: black ;
-    margin: 6px;
-    border-radius: 5px;
-}
-.THIS .Menu:hover{
-    	background-color:black;
-    	color:White;
-}
-.THIS .scrollbar{
-
-	float: left;
-	background: #F5F5F5;
-	overflow-y: scroll;
-	margin-bottom: 25px;
-}
-.THIS .style-4::-webkit-scrollbar-track{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-	background-color: #F5F5F5;
+.THIS .slds-truncate {
+    max-width: 200px;
 }
 
-.THIS .style-4::-webkit-scrollbar{
-	width: 15px;
-	background-color: #F5F5F5;
+.THIS .header-margin{
+    margin: 1rem 2rem;
 }
 
-.THIS .style-4::-webkit-scrollbar-thumb{
-	background-color: #c1c1c1;
-	
-}
-.THIS .slds-theme--info {
-    background-color: #969696;
+.THIS .slds-table thead th {
+    background-color: #0070d2; /* Blue header background */
+    color: white; /* White text color for headers */
 }
 
-.THIS .texticon{
-    padding-top: 7px;
-    padding-right: 5px;
+.THIS .slds-table tbody tr:nth-child(even) {
+    background-color: #E6F1FF; /* Light blue for even rows */
 }
-@media (min-width: 48em){
-.THIS .Cslds-box{
-        margin-top:20px;
-    }
+
+.THIS .slds-table tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
 }
-@media (max-width: 47em){
-.THIS .Cslds-box{
-        margin-top:0px;
-    }
+
+.THIS .slds-button_brand {
+    background-color: #0070d2; /* Blue button background */
+    border-color: #005fb2; /* Darker blue border */
+    color: white; /* White text color for buttons */
+}
+
+.THIS .slds-button_icon {
+    fill: #0070d2; /* Blue icon color */
+}
+
+.THIS .slds-card .slds-card__header {
+    background-color: #f4f6f9; /* Light blue header background */
+    border-bottom: 1px solid #d8dde6; /* Light grey border */
+}
+
+.THIS .slds-card__body {
+    background-color: #ffffff; /* White card body background */
+}
+
+.THIS .parent1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.THIS .parent2 {
+    padding: 0 2rem !important;
+}
+
+.THIS .height-header-row{
+    height: 4vh;
 }

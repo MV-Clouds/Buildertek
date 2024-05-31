@@ -1,4 +1,6 @@
 <template>
+
+    <!-- Project and schedule selection component -->
     <div if:false={recordId}>
         <lightning-card title="Manage Schedule Resources" icon-name="custom:custom14">
             <div class="slds-p-around_x-small picklistcombo">
@@ -18,6 +20,7 @@
         </lightning-card>
     </div>
 
+    <!-- Schedule Item Datatable -->
     <div if:true={isScheduleSelected}>
         <lightning-card class="custom-card">
             <div class="slds-p-around_medium">
