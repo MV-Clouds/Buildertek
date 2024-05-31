@@ -56,11 +56,13 @@
     <aura:attribute name="checklists" type="List" />
 
     <lightning:card class="slds-card slds-card_boundary">
+
+        <div>
+            <div class="heading-text-box">Checklist Configuration</div>
+        </div>
+
         <aura:if isTrue="{!v.isEditrecord}">
             <div>
-                <div>
-                    <div class="heading-text-box">Checklist Configuration</div>
-                </div>
                 <div class="parent1">
                     <div class="slds-text-heading_medium header-margin">Manage Checklist Configuration</div>
                     <div class="header-margin">
@@ -106,9 +108,9 @@
                                     <td data-label="Action">
                                         <div data-id="{!view.Id}">
                                             <lightning:buttonIcon iconName="utility:edit" alternativeText="Edit"
-                                            onclick="{!c.callUpdateRecord}" class="slds-m-right_x-small" />
+                                                onclick="{!c.callUpdateRecord}" class="slds-m-right_x-small" />
                                             <lightning:buttonIcon iconName="utility:delete" alternativeText="Delete"
-                                            onclick="{!c.callDeleteRecord}" />
+                                                onclick="{!c.callDeleteRecord}" />
                                         </div>
                                     </td>
                                 </tr>
@@ -124,7 +126,8 @@
 
                 <aura:if isTrue="{!v.Spinner}">
                     <div aura:id="spinnerId" class="slds-spinner_container">
-                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                        <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative"
+                            role="alert">
                             <span class="slds-assistive-text">Loading</span>
                             <div class="slds-spinner__dot-a"></div>
                             <div class="slds-spinner__dot-b"></div>
@@ -172,8 +175,8 @@
                                             class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left">
                                             <lightning:icon iconName="utility:filterList" size="xx-small"
                                                 class="slds-input__icon slds-icon-text-default innerIcon" />
-                                            <input onkeyup="{!c.AvalQuestions}" id="AvailImp" type="text" class="slds-input"
-                                                placeholder="Filter Available Questions" />
+                                            <input onkeyup="{!c.AvalQuestions}" id="AvailImp" type="text"
+                                                class="slds-input" placeholder="Filter Available Questions" />
                                         </div>
                                     </div>
                                 </div>
@@ -182,7 +185,8 @@
                                     <ul class="slds-scrollable--y style-4" id="available"
                                         style="height:300px;width:100%;background-color:#F5F6FA;padding: 10px;border: 1px solid #aaaaaa;">
                                         <aura:iteration items="{!v.Questions}" var="item">
-                                            <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}" draggable="true">
+                                            <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"
+                                                draggable="true">
                                                 {!item.buildertek__Customize__c}-[{!item.buildertek__group_name__c}]
                                             </li>
                                             <!-- <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"  draggable="true">{!item.selectedgroup}</li>-->
@@ -326,7 +330,8 @@
                                                 </ui:inputSelect>
                                             </div>
                                             <div style="padding-left:2px">
-                                                <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}">New
+                                                <button class="slds-button slds-button--neutral"
+                                                    onclick="{!c.AddGroup}">New
                                                     Group</button>
                                             </div>
                                         </div>
@@ -344,8 +349,8 @@
                                 </div>
                                 <aura:if isTrue="{!v.isMulti}">
                                     <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
-                                        <lightning:textarea name="Options" value="{!v.NewQuestion.buildertek__Options__c}"
-                                            label="Options" />
+                                        <lightning:textarea name="Options"
+                                            value="{!v.NewQuestion.buildertek__Options__c}" label="Options" />
                                         <aura:if isTrue="{!v.isOptionError}">
                                             <span style="color:rgb(194, 57, 52);">Please Enter Options</span>
                                         </aura:if>
@@ -394,7 +399,8 @@
                             </div>
                         </aura:if>
                         <div class="slds">
-                            <div aria-hidden="true" role="dialog" class="slds-modal slds-modal--prompt slds-fade-in-open"
+                            <div aria-hidden="true" role="dialog"
+                                class="slds-modal slds-modal--prompt slds-fade-in-open"
                                 aura:id="modaldialogNewQuestion">
                                 <div class="slds-modal__container"
                                     style="padding: 0rem 0 !important;width:75%;min-width:60rem;">
@@ -402,8 +408,8 @@
                                         <button style="background: white;"
                                             class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
                                             title="Close" onclick="{!c.CancelQuestionsModel}">
-                                            <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"
-                                                class="buttonclass" />
+                                            <lightning:icon iconName="utility:close" alternativeText="close"
+                                                size="x-small" class="buttonclass" />
                                         </button>
                                         <h2 class="slds-text-heading--medium">Manage Question</h2>
                                     </div>
@@ -456,16 +462,17 @@
                                                                 <div class="slds-truncate">
 
                                                                     <button onclick="{!c.callEditQuestion}"
-                                                                        class="slds-button slds-button_icon" title="Edit"
-                                                                        data-id="{!view.Id}">
+                                                                        class="slds-button slds-button_icon"
+                                                                        title="Edit" data-id="{!view.Id}">
                                                                         <lightning:icon iconName="action:edit"
                                                                             size="xx-small" alternativeText="Delete" />
                                                                         <span class="slds-assistive-text">edit</span>
                                                                     </button>
 
                                                                     <button onclick="{!c.callDeleteQuestion}"
-                                                                        class="slds-button slds-button_icon" title="Delete"
-                                                                        data-id="{!view.Id}" data-index="{!questionIndex}">
+                                                                        class="slds-button slds-button_icon"
+                                                                        title="Delete" data-id="{!view.Id}"
+                                                                        data-index="{!questionIndex}">
                                                                         <lightning:icon iconName="action:delete"
                                                                             size="xx-small" alternativeText="Delete" />
                                                                         <span class="slds-assistive-text">Delete</span>
@@ -552,7 +559,8 @@
                                                 </ui:inputSelect>
                                             </div>
                                             <div style="padding-left:2px">
-                                                <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}">New
+                                                <button class="slds-button slds-button--neutral"
+                                                    onclick="{!c.AddGroup}">New
                                                     Group</button>
                                             </div>
                                         </div>
@@ -562,7 +570,8 @@
                                     </aura:if>
                                 </div>
                                 <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
-                                    <lightning:textarea name="QuestionText" value="{!v.TextName}" label="Question Text" />
+                                    <lightning:textarea name="QuestionText" value="{!v.TextName}"
+                                        label="Question Text" />
                                     <aura:if isTrue="{!v.isQuestionError}">
                                         <span style="color:rgb(194, 57, 52);">Please Enter Question</span>
                                     </aura:if>
@@ -622,7 +631,8 @@
                     <!--Modal Box Button Start-->
                     <footer class="slds-modal__footer">
                         <lightning:button name='No' label='No' onclick='{!c.handleConfirmDialogNo}' />
-                        <lightning:button variant="brand" name='Yes' label='Yes' onclick='{!c.handleConfirmDialogYes}' />
+                        <lightning:button variant="brand" name='Yes' label='Yes'
+                            onclick='{!c.handleConfirmDialogYes}' />
                     </footer>
                     <!--Modal Box Button End-->
                 </div>

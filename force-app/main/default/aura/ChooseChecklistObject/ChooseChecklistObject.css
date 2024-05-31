@@ -1,0 +1,65 @@
+.THIS .slds-table {
+    width: 100%;
+}
+
+.THIS .heading-text-box{
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: 500;
+    color: #0678ff;
+    background: #e6f1ff;
+    margin: 0 2rem;
+}
+
+.THIS .slds-truncate {
+    max-width: 200px;
+}
+
+.THIS .header-margin{
+    margin: 1rem 2rem;
+}
+
+.THIS .slds-table thead th {
+    background-color: #0070d2; /* Blue header background */
+    color: white; /* White text color for headers */
+}
+
+.THIS .slds-table tbody tr:nth-child(even) {
+    background-color: #E6F1FF; /* Light blue for even rows */
+}
+
+.THIS .slds-table tbody tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+}
+
+.THIS .slds-button_brand {
+    background-color: #0070d2; /* Blue button background */
+    border-color: #005fb2; /* Darker blue border */
+    color: white; /* White text color for buttons */
+}
+
+.THIS .slds-button_icon {
+    fill: #0070d2; /* Blue icon color */
+}
+
+.THIS .slds-card .slds-card__header {
+    background-color: #f4f6f9; /* Light blue header background */
+    border-bottom: 1px solid #d8dde6; /* Light grey border */
+}
+
+.THIS .slds-card__body {
+    background-color: #ffffff; /* White card body background */
+}
+
+.THIS .parent1 {
+    display: flex;
+    justify-content: space-between;
+}
+
+.THIS .parent2 {
+    padding: 0 2rem !important;
+}
+
+.THIS .height-header-row{
+    height: 4vh;
+}
