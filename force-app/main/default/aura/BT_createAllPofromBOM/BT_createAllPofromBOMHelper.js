@@ -5,7 +5,7 @@
             
         var action = component.get("c.createAllPO");
         action.setParams({
-            BomId : recordId,
+            BOMId : recordId
         })
         action.setCallback(this, function(response){
             var result = response.getReturnValue();

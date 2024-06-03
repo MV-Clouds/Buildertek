@@ -4,9 +4,13 @@ public class createAllPOfromBOM_controller {
     public static responseWrapper createAllPO(string BOMId){
         responseWrapper returnValue = new responseWrapper();
         try {
+            System.debug('BOMId ==> ' + BOMId);
+
             buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
                                                                   FROM buildertek__Project_Selection_Sheet_Takeoff__c
                                                                   WHERE Id =: BOMId];
+
+            System.debug('BOM ==> ' + BOM);
 
             List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
                                                           buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
