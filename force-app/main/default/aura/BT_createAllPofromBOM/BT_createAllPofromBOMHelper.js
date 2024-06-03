@@ -1,10 +1,11 @@
 ({
     createPOwithVendor : function(component, event, helper) {
         var recordId = component.get("v.recordId");
+        console.log('recordId : ', recordId);
             
         var action = component.get("c.createAllPO");
         action.setParams({
-            BOMId : recordId,
+            BomId : recordId,
         })
         action.setCallback(this, function(response){
             var result = response.getReturnValue();
