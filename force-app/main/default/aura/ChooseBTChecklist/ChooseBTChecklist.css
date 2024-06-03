@@ -75,13 +75,13 @@
 
 .THIS .Menu{
     padding: 10px ;
-    background-color: #C7DFE9;
+    background-color: #e6f1ff;
     color: black ;
     margin: 6px;
     border-radius: 5px;
 }
 .THIS .Menu:hover{
-    	background-color:black;
+    	background-color:#0176d3;
     	color:White;
 }
 .THIS .scrollbar{
@@ -122,4 +122,19 @@
 .THIS .Cslds-box{
         margin-top:0px;
     }
+}
+.THIS .ChecklistName .slds-input {
+    height: 2.5rem;
+}
+.THIS .ChecklistObject .slds-select {
+    height: 2.5rem;
+}
+.THIS .ChecklistName .slds-form-element__label {
+    color: #0176d3; 
+}
+.THIS .ChecklistObject .slds-form-element__label {
+    color: #0176d3; 
+}
+.THIS .slds-icon_xx-small {
+    fill: white;
 }

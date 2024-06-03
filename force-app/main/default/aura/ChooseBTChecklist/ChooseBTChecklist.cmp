@@ -134,7 +134,7 @@
                         </div>
                     </div>
                 </aura:if>
-                <div class="slds-form-element">
+                <div class="slds-form-element" style="margin-top:-1.5%;padding: 0.8%;">
                     <lightning:input type="text" label="Checklist Name" class="ChecklistName" name="myname"
                         value="{!v.ChecklistName}" minlength="4"
                         messageWhenBadInput="Your entry must be at least 4 characters." onblur="{!c.afterSelect}"
@@ -143,9 +143,9 @@
                         <span style="color:rgb(194, 57, 52);">Checklist Name is required</span>
                     </aura:if>
                 </div>
-                <div class="slds-form-element" style="margin-top:0.8%;">
+                <div class="slds-form-element" style="margin-top:-1.5%;padding: 0.8%;">
                     <lightning:select value="{!v.SelectedChecklistObject}" name="ServeyObjects" label="Checklist Object"
-                        onchange="{!c.checkTheObject}">
+                        class="ChecklistObject" onchange="{!c.checkTheObject}">
                         <option value="--None--">--None--</option>
                         <aura:iteration items="{!v.ChecklistObjects}" var="row">
                             <option value="{!row.buildertek__Object_API_Name__c}"
@@ -166,7 +166,7 @@
                             <div class="slds-size--1-of-2 slds-medium-size--1-of-1 slds-large-size--1-of-2">
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
-                                    <center>Available Questions</center>
+                                    <center style="font-weight: bold;font-size: 14px; text-align: left;">Available Questions</center>
                                 </div>
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
@@ -183,7 +183,7 @@
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
                                     <ul class="slds-scrollable--y style-4" id="available"
-                                        style="height:300px;width:100%;background-color:#F5F6FA;padding: 10px;border: 1px solid #aaaaaa;">
+                                        style="height:300px;width:100%;background-color:#ffffff;padding: 10px;border: 1px solid #aaaaaa; border-radius: 5px; margin-top: 10px;">
                                         <aura:iteration items="{!v.Questions}" var="item">
                                             <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"
                                                 draggable="true">
@@ -198,7 +198,7 @@
                             <div class="slds-size--1-of-2 slds-medium-size--1-of-1 slds-large-size--1-of-2">
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
-                                    <center>Selected Questions</center>
+                                    <center style="font-weight: bold;font-size: 14px; text-align: left;" >Selected Questions</center>
                                 </div>
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
@@ -215,18 +215,18 @@
                                 <div
                                     class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
                                     <ul class="slds-scrollable--y style-4" id="Selected"
-                                        style="height:300px;width:100%;background-color:#F5F6FA;padding: 10px;border: 1px solid #aaaaaa;">
+                                        style="height:300px;width:100%;background-color:#ffffff;padding: 10px;border: 1px solid #aaaaaa;border-radius: 5px; margin-top: 10px;">
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         <div class="slds-grid slds-wrap">
-                            <div style="padding: 1%;"
+                            <div style="padding-top: 1%;"
                                 class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-4 slds-large-size--1-of-4">
                                 <lightning:layout>
                                     <lightning:layoutitem size="6">
-                                        <div onclick="{!c.addQuestionsModel}" style="cursor: pointer;"
-                                            class="slds-float--right slds-button slds-button--neutral slds-not-selected"
+                                        <div onclick="{!c.addQuestionsModel}" style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
+                                            class="slds-float--left slds-button slds-button--neutral slds-not-selected"
                                             aria-live="assertive">
                                             <span class="slds-text-not-selected">
                                                 <lightning:icon iconName="utility:add" size="xx-small"
@@ -236,17 +236,17 @@
                                         </div>
                                     </lightning:layoutitem>
                                     <lightning:layoutitem size="6">
-                                        <div style="width:170px">
-                                            <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer;"
-                                                class="slds-float--right slds-button slds-button--neutral slds-not-selected"
+                                        <!-- <div style="width:170px"> -->
+                                            <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer; border-color: #0176d3; margin-left:-3.3rem" 
+                                                class="slds-float--left slds-button slds-button--neutral slds-not-selected"
                                                 aria-live="assertive">
-                                                Manage Question
+                                                <span class="slds-text-not-selected">Manage Question</span>
                                                 <!-- <span class="" >
                                 <lightning:icon  size="xx-small"  class="slds-input__icon slds-icon-text-default texticon " />
                                 Manage Question
                             </span>-->
                                             </div>
-                                        </div>
+                                        <!-- </div> -->
                                     </lightning:layoutitem>
                                 </lightning:layout>
 
@@ -254,20 +254,17 @@
                                 &nbsp;&nbsp;
 
                             </div>
-                            <div style="padding: 1%;text-align:right"
+                        </div>
+                            <div style="text-align: center;width: auto;"
                                 class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-4 slds-large-size--3-of-4">
-                                <div onclick="{!c.saveConfigureBack}" style="cursor: pointer;"
+                                <div onclick="{!c.saveConfigureBack}" style="cursor: pointer;width: 6rem;height: 2.2rem;"
                                     class=" slds-button slds-button--brand slds-not-selected" aria-live="assertive">
                                     Back
                                 </div>
-                                <div onclick="{!c.saveSelectedQuestions}" style="margin-left:1%;cursor: pointer;"
+                                <div onclick="{!c.saveSelectedQuestions}" style="margin-left:1%;cursor: pointer;width: 6rem;height: 2.2rem;"
                                     class=" slds-button slds-button--brand slds-not-selected" aria-live="assertive">
                                     Save
                                 </div>
-
-
-                            </div>
-
                         </div>
 
                     </div>
