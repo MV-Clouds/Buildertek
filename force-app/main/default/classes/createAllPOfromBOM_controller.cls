@@ -34,12 +34,11 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    // returnValue.returnMessage = 'No lines are available with vendors assigned to them in order to create a purchase order.';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';               
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines are already assiged to a PO.';    
                 }
                 else{
 
@@ -226,7 +225,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'You must create at least one PO line in order to create a PO.';
             }
 
             return returnValue;
@@ -282,14 +281,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveCostCode == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No cost code assigned to available lines.';
+                    returnValue.returnMessage = 'We were unable to create a PO. No cost codes were assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have already been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -472,7 +471,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'You must create at least one PO line in order to create a PO.';
             }
             return returnValue;
         }
@@ -527,14 +526,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveTradeType == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No trade type assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create purchase order. No trade types have been assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -731,7 +730,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'Please create atleast one line to create PO.';
             }
             return returnValue;
 
@@ -786,14 +785,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveBuildPhase == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No build phase assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a purchase order. No build phase was assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -887,7 +886,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'Please create atleast one line to create PO.';
             }
             return returnValue;
         }
@@ -948,10 +947,10 @@ public class createAllPOfromBOM_controller {
 
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
