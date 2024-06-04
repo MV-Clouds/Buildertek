@@ -4,20 +4,26 @@ public class createVoidPOController {
     @AuraEnabled
     public static returnWrapper createVoidPO(String recordId){
         returnWrapper returnWr = new returnWrapper();
+        
         try {
             
-            List<buildertek__Purchase_Order__c> PO = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c,buildertek__Status__c, (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Tax__c, buildertek__Cost_Type__c, buildertek__Cost_Code__c, buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
+            List<buildertek__Purchase_Order__c> PO = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c,buildertek__Status__c, buildertek__Schedule__c, 
+                                                        (SELECT Id, Name, buildertek__Unit_Price__c,buildertek__Tax__c, buildertek__Cost_Type__c, 
+                                                          buildertek__Cost_Code__c, buildertek__Quantity__c, buildertek__Description__c,buildertek__Product__c  FROM buildertek__Purchase_Order_Items__r)
                                                     FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
-            if(PO[0].buildertek__Status__c=='Paid' || PO[0].buildertek__Status__c=='Partially Paid'){
-                
-            returnWr.status = 'error';
-            returnWr.message = 'You cannot void a Paid or Partially Paid Purchase Order';
-            return returnWr;
-            }
+            
+            if(PO[0].buildertek__Status__c=='Paid' || PO[0].buildertek__Status__c=='Partially Paid'){                
+                returnWr.status = 'error';
+                returnWr.message = 'You cannot void a Paid or Partially Paid Purchase Order';
+                return returnWr;                
+            }                        
+            
             buildertek__Purchase_Order__c VoidPOtoCreate = PO[0].clone(false, false, false, false);
             VoidPOtoCreate.buildertek__Old_Purchase_Order__c = PO[0].Id;
+            VoidPOtoCreate.buildertek__Status__c='Canceled';
+            VoidPOtoCreate.buildertek__Schedule__c=null;
             insert VoidPOtoCreate;
-
+            
             List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
             if(PO[0].buildertek__Purchase_Order_Items__r.size() > 0){
                 for(buildertek__Purchase_Order_Item__c line : PO[0].buildertek__Purchase_Order_Items__r){
@@ -32,14 +38,19 @@ public class createVoidPOController {
             }
 
             if(POlinesToCreate.size() > 0){
-                insert POlinesToCreate;
+                insert POlinesToCreate;                               
             }
-
+            
+             //If the secondary PO is create then update the initial PO fields.  2024/06/03 BC
+             List<buildertek__Purchase_Order__c> POFields = [SELECT Id, Name,buildertek__Vendor__c, buildertek__Project__c, buildertek__Status__c, buildertek__Schedule__c 
+                                                         FROM buildertek__Purchase_Order__c WHERE Id =: recordId LIMIT 1];
             returnWr.status = 'success';
             returnWr.message = 'Void PO created Successfully.';
             returnWr.createRecordId = VoidPOtoCreate.Id;
-            return returnWr;
-        } catch (Exception e) {
+            return returnWr;                        
+            
+        } catch (Exception e) {                    
+            
             System.debug('Error in createVoidPO ..' + e.getMessage() + '\n' + e +'\n Exception line no : '+ e.getLineNumber() +'--->'+ e.getStackTraceString());
             List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
                 if(!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
