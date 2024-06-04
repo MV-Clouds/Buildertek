@@ -20,9 +20,17 @@ public class createVoidPOController {
             
             buildertek__Purchase_Order__c VoidPOtoCreate = PO[0].clone(false, false, false, false);
             VoidPOtoCreate.buildertek__Old_Purchase_Order__c = PO[0].Id;
-            VoidPOtoCreate.buildertek__Status__c='Canceled';
-            VoidPOtoCreate.buildertek__Schedule__c=null;
             insert VoidPOtoCreate;
+
+            //BUIL-4167 PO's - Void PO button needs some additional logic.
+            PO[0].buildertek__Status__c='Canceled';
+            PO[0].buildertek__Schedule__c=null;
+            PO[0].buildertek__Schedule_Item__c=null;
+            PO[0].buildertek__Completion__c=null;
+            PO[0].buildertek__Projected_Start_Date__c=null;
+            PO[0].buildertek__Projected_Completion_Date__c=null;
+            update PO[0];
+
             
             List<buildertek__Purchase_Order_Item__c> POlinesToCreate = new List<buildertek__Purchase_Order_Item__c>();
             if(PO[0].buildertek__Purchase_Order_Items__r.size() > 0){
