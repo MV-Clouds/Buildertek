@@ -1,0 +1,14 @@
+<aura:component  implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasSObjectName,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:isUrlAddressable" access="global"
+                controller="approveallpolinesContrroller" >
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <center>
+        <img alt="Approving All PO Lines for Payment" src="{!$Resource.gearsloading}" style="height:150px !important;" />
+        <br />
+        <div style="margin-block: 10px;">
+            <p>Please don't leave this page until All PO Lines Approved for Payment.</p>
+        </div>
+    </center>
+
+</aura:component>
