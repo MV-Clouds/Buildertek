@@ -32,6 +32,8 @@
                     sObjectEvent.fire();
             	}
                 else{
+                    console.log('we are here');
+                    $A.get("e.force:closeQuickAction").fire();
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         title : 'Error Message',
@@ -42,6 +44,7 @@
                         mode: 'pester'
                     });
                     toastEvent.fire();                
+                    component.destroy();
                 }
             }
         });
