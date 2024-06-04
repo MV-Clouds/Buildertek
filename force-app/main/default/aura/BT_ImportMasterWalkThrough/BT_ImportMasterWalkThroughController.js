@@ -12,22 +12,9 @@
         }, 300);
     },
 
-    handleCheckedWalkThrough: function (component, event, helper) {
-        var checkbox = event.getSource();
-        var isChecked = checkbox.get("v.value");
-        var recordId = checkbox.get("v.text");
-        var checkedRecordIds = component.get("v.checkedRecordIds");
-
-        if (isChecked) {
-            checkedRecordIds.push(recordId);
-        } else {
-            var index = checkedRecordIds.indexOf(recordId);
-            if (index !== -1) {
-                checkedRecordIds.splice(index, 1);
-            }
-        }
-        console.log(`checked WT: ${checkedRecordIds}`);
-        component.set("v.checkedRecordIds", checkedRecordIds);
+    handleRadioChange: function (component, event, helper) {
+        var selectedWalkThroughId = event.getSource().get("v.text");
+        component.set("v.selectedWalkThroughId", selectedWalkThroughId);
     },
 
     closeModal: function (component, event, helper) {
@@ -35,37 +22,45 @@
     },
 
     importWalkThrough: function (component, event, helper) {
-        try {
-            var checkedWalkThroughIds = component.get("v.checkedRecordIds");
-            if (checkedWalkThroughIds.length === 0) {
-                helper.showToast('error', 'Error', 'Please check at least one record before importing.');
-                return;
-            } else {
-                $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "SHOW" }).fire();
+        var walkThroughID = component.get("v.selectedWalkThroughId");
+        if (!walkThroughID) {
+            helper.showToast('error', 'Error', 'Please select Walk Through to import.');
+            return;
+        } else {
+            $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "SHOW" }).fire();
 
-                var action = component.get("c.importWalkThroughFromMaster");
-                action.setParams({
-                    "importWT": checkedWalkThroughIds,
-                    "WTId": component.get("v.recordId")
-                });
+            var action = component.get("c.importWalkThroughFromMaster");
+            action.setParams({
+                "importWT": walkThroughID,
+                "WTId": component.get("v.recordId")
+            });
 
-                action.setCallback(this, function (response) {
+            action.setCallback(this, function (response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
                     var result = response.getReturnValue();
                     console.log(`RESPONSE: ${result}`);
                     if (result === 'Success') {
                         helper.showToast('success', 'Success', 'Walk Through(s) imported successfully.');
+                        $A.get("e.force:refreshView").fire();
                     } else {
                         console.error("Error importing Walk Through(s)", result);
-                        var errorMessage = result;
-                        helper.showToast('error', 'Error', errorMessage);
+                        helper.showToast('error', 'Error', result);
                     }
-                    $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "HIDE" }).fire();
-                    helper.close(component, event, helper);
-                });
-                $A.enqueueAction(action);
-            }
-        } catch (error) {
-            console.log('ERROR: ' + error);
+                } else if (state === "ERROR") {
+                    var errors = response.getError();
+                    if (errors && errors[0] && errors[0].message) {
+                        console.error("Error message: " + errors[0].message);
+                        helper.showToast('error', 'Error', errors[0].message);
+                    } else {
+                        console.error("Unknown error");
+                        helper.showToast('error', 'Error', 'Unknown error');
+                    }
+                }
+                $A.get("e.c:BT_SpinnerEvent").setParams({ "action": "HIDE" }).fire();
+                helper.close(component, event, helper);
+            });
+            $A.enqueueAction(action);
         }
     }
 

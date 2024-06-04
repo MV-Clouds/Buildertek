@@ -3,8 +3,7 @@
     access="global">
 
     <aura:attribute name="masterWTList" type="List" />
-    <!-- <aura:attribute name="searchWT" type="String" /> -->
-    <aura:attribute name="checkedRecordIds" type="List" />
+    <aura:attribute name="selectedWalkThroughId" type="String" />
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
@@ -36,10 +35,6 @@
     </div>
     <div class="slds-modal__content slds-p-around--large">
         <div class="slds slds-scope scrollable-table">
-            <!-- <lightning:layoutItem padding="around-small" size="12">
-                <lightning:input value="{!v.searchWT}" placeholder="Search By Walk Through Name..." name="searchField"
-                    onkeyup="{! c.handleSearchKeyChange }" />
-            </lightning:layoutItem> -->
             <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                 <thead>
                     <tr class="slds-text-title_caps">
@@ -68,8 +63,7 @@
                     <aura:iteration items="{!v.masterWTList}" var="rec">
                         <tr class="slds-hint-parent">
                             <td style="width:50px;">
-                                <ui:inputCheckbox aura:id="checkWT" value="{!rec.WT}" text="{!rec.Id}"
-                                    change="{!c.handleCheckedWalkThrough}" />
+                                <ui:inputRadio name="walkthroughRadio" text="{!rec.Id}" change="{!c.handleRadioChange}" />
                             </td>
                             <td role="gridcell">
                                 <ui:outputText value="{!rec.Name}" />
