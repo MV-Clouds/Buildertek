@@ -862,6 +862,7 @@ public with sharing class QuoteDAO{
         wrap.columns = Detail.columns;
         wrap.totalColumns = Detail.columns.size() / 2;
         wrap.Totalcols = Detail.columns.size()+3;
+        wrap.grandTotalSumUpMap = getGrandTotalSumUp(wrapperList);
 
         wrap.groups = Detail.groups;
         wrap.pageSize = pageSize;
@@ -1875,6 +1876,20 @@ public with sharing class QuoteDAO{
 
     }
 
+    public static Map<String, Decimal> getGrandTotalSumUp(List<wrapperClass> wrapperList){
+        Map<String, Decimal> grandTotalSumUpMap = new Map<String, Decimal>();
+        for (wrapperClass wrap : wrapperList){
+            if (grandTotalSumUpMap.containsKey(wrap.fieldLabel) && wrap.totalValue != null){
+                grandTotalSumUpMap.put(wrap.fieldLabel, grandTotalSumUpMap.get(wrap.fieldLabel) + wrap.totalValue);
+            } else {
+                if (wrap.totalValue != null) {
+                    grandTotalSumUpMap.put(wrap.fieldLabel, wrap.totalValue);
+                }
+            }
+        }
+        return grandTotalSumUpMap;
+    }
+
     public class FieldClass{
         @AuraEnabled
         public String fieldName; //Record Id used for Firing Events
@@ -2001,6 +2016,8 @@ public with sharing class QuoteDAO{
         @AuraEnabled
         public Integer Totalcols{ get; set; }
 
+        @AuraEnabled
+        public Map<String, Decimal> grandTotalSumUpMap{ get; set; }
     }
 
     public class productfamilyClass{
@@ -2436,7 +2453,7 @@ public with sharing class QuoteDAO{
         priceWrap.priceWrapList = new List<pricebook2>();
         List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
         priceWrap.priceWrapList=PriceList;
-       
+
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__ShowMargin__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Quote Configuration'];
         priceWrap.showmargin = adminInterfaceNodeConfigurations.buildertek__ShowMargin__c;
         if(PriceList.size() > 0){
@@ -2599,7 +2616,7 @@ public with sharing class QuoteDAO{
 
         @AuraEnabled
         public String Phase;
-        
+
         @AuraEnabled
         public Decimal Margin;
 
