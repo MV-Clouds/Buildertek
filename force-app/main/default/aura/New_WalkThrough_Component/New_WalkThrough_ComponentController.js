@@ -52,6 +52,7 @@
             });
             $A.enqueueAction(action);
         }
+        helper.fetchWalkThroughs(component, event, helper);
     },
 
     handleSubmit: function (component, event, helper) {
@@ -63,7 +64,8 @@
 
         var action = component.get("c.saveData");
         action.setParams({
-            allData : allData
+            allData: allData,
+            selectedMasterId: component.get("v.selectedWalkThroughId"),
         });
         action.setCallback(this, function(response){
             if(response.getState() == 'SUCCESS') {            
@@ -138,5 +140,10 @@
             }), 1000
         );
    },
+
+    handleRadioChange: function (component, event, helper) {
+        var selectedWalkThroughId = event.getSource().get("v.text");
+        component.set("v.selectedWalkThroughId", selectedWalkThroughId);
+    }
 
 })

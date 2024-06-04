@@ -5,16 +5,34 @@
     <aura:attribute name="isLoading" type="Boolean" default="false" />
     <aura:attribute name="parentprojectRecordId" type="String" default="" />
     <aura:attribute name="parentRecordId" type="String" default="" />
+    <aura:attribute name="masterWTList" type="List" />
+    <aura:attribute name="selectedWalkThroughId" type="String" />
+    
     <lightning:workspaceAPI aura:id="workspace"/>
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
 
     <aura:html tag="style">
-        .slds-modal__container{
-            width: 60% !important;
-            padding: 0 !important;
-            max-width: 80rem !important;
+        .slds-modal__container {
+            max-width: 72rem !important;
+            width: 72% !important;
+        }
+        
+        .slds-modal__content {
+            overflow-y: auto;x
+            height: unset !important;
+        }
+        
+        .scrollable-table {
+            max-height: calc(80vh - 400px);
+            overflow-y: auto;
+        }
+
+        .truncate-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </aura:html>
     <div class="slds-modal__container">
@@ -23,7 +41,7 @@
         </header>
         <div class="slds-modal__content" id="modal-content-id-1">
             <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Walk_Through_List__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
-                <div class="" style="height:50vh;width:100%;overflow: auto;">
+                <div style="width:100%;overflow: auto;">
                     <div class="slds-p-around_medium" style="background-color:white;">
                         <lightning:layout multipleRows="true">
                         <aura:iteration items="{!v.listOfFields0}" var="field">
@@ -39,6 +57,63 @@
                             </aura:if> 
                         </aura:iteration>
                     </lightning:layout>
+                    </div>
+                </div>
+                <div class="slds-modal__content slds-p-around--large">
+                    <div class="slds slds-scope scrollable-table">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                            <thead>
+                                <tr class="slds-text-title_caps">
+                                    <th scope="col"
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white; vertical-align: middle;line-height: 2; width:50px;">
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Walk Through Name #
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Name
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Project
+                                    </th>
+                                    <th
+                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                                        Total Price
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.masterWTList}" var="rec">
+                                    <tr class="slds-hint-parent">
+                                        <td style="width:50px;">
+                                            <ui:inputRadio name="walkthroughRadio" text="{!rec.Id}"
+                                                change="{!c.handleRadioChange}" />
+                                        </td>
+                                        <td role="gridcell">
+                                            <ui:outputText value="{!rec.Name}" />
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="truncate-text">
+                                                <ui:outputText value="{!rec.buildertek__Description__c}" />
+                                            </div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <div class="truncate-text">
+                                                <ui:outputText value="{!rec.buildertek__Project__r.Name}" />
+                                            </div>
+                                        </td>
+                                        <td role="gridcell">
+                                            <lightning:formattedNumber value="{!rec.buildertek__Total_Price__c}"
+                                                style="currency" />
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                        <br />
                     </div>
                 </div>
                 <footer aura:id="footer" class="slds-modal__footer">
