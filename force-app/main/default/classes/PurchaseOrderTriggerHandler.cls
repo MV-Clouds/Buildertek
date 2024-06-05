@@ -69,6 +69,7 @@ public with sharing class PurchaseOrderTriggerHandler{
     }
 
     public void OnBeforeUpdate(Purchase_Order__c[] oldPurchaseOrders, Purchase_Order__c[] updatedPurchaseOrders, Map<ID, Purchase_Order__c> oldPurchaseOrderMap, Map<ID, Purchase_Order__c> PurchaseOrderMap){
+        System.debug('OnBeforeUpdate PO Trigger');
         try {
             for (Purchase_Order__c PO : updatedPurchaseOrders){
                 if ((PO.buildertek__Completion__c == 100 && PO.buildertek__Completion__c != oldPurchaseOrderMap.get(PO.Id).buildertek__Completion__c)){
@@ -291,7 +292,44 @@ public with sharing class PurchaseOrderTriggerHandler{
         }
         // remove PO from schedule item
         removePOFromScheduleItem(updatedPurchaseOrders, oldPurchaseOrdersMap);
+        deleteoldbudgetlineonupdate(oldPurchaseOrders, updatedPurchaseOrders, PurchaseOrderMap, oldPurchaseOrdersMap);
     }
+
+public void deleteoldbudgetlineonupdate(
+    Purchase_Order__c[] oldPurchaseOrders,
+    Purchase_Order__c[] updatedPurchaseOrders,
+    Map<ID, Purchase_Order__c> PurchaseOrderMap,
+    Map<Id, Purchase_Order__c> oldPurchaseOrdersMap
+) {
+    List<buildertek__Budget_Item__c> budgetLinesToDelete = new List<buildertek__Budget_Item__c>();
+
+    // Collect the IDs of the updated Purchase Orders' Budget Lines
+    Set<Id> oldBudgetLineIds = new Set<Id>();
+    for (Purchase_Order__c updatedPurchaseOrder : updatedPurchaseOrders) {
+        Purchase_Order__c oldPurchaseOrder = oldPurchaseOrdersMap.get(updatedPurchaseOrder.Id);
+
+        if (updatedPurchaseOrder.buildertek__Budget_Line__c != oldPurchaseOrder.buildertek__Budget_Line__c && oldPurchaseOrder.buildertek__Budget_Line__c != null) {
+            oldBudgetLineIds.add(oldPurchaseOrder.buildertek__Budget_Line__c);
+        }
+    }
+
+    if (!oldBudgetLineIds.isEmpty()) {
+        budgetLinesToDelete = [
+            SELECT Id 
+            FROM buildertek__Budget_Item__c 
+            WHERE Id IN :oldBudgetLineIds
+        ];
+    }
+
+    // Perform the deletion
+    if (!budgetLinesToDelete.isEmpty()) {
+        delete budgetLinesToDelete;
+        System.debug('Budget Lines deleted successfully.');
+    } else {
+        System.debug('No Budget Lines to delete.');
+    }
+
+}
 
     public void OnBeforeUpdate(Purchase_Order__c[] newPurchaseOrders, Map<ID, Purchase_Order__c> newPurchaseOrdersMap, Map<ID, Purchase_Order__c> oldPurchaseOrdersMap){
         //* added this lines by Nishit (MV Clouds)
