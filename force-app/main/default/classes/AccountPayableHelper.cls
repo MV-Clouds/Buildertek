@@ -1,6 +1,5 @@
 public with sharing class AccountPayableHelper {
-    
-    public static boolean bypassTrigger = false; //this variable using in PucrchaseOrderDAO and on that develoment is going on so we can't remove this rightnow
+
     public static boolean skipInvoicePOUpdate = false;
 
 
