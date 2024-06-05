@@ -42,7 +42,13 @@
                     console.log(`RESPONSE: ${result}`);
                     if (result === 'Success') {
                         helper.showToast('success', 'Success', 'Walk Through(s) imported successfully.');
-                        $A.get("e.force:refreshView").fire();
+
+                        var evt = $A.get("e.force:navigateToRelatedList");
+                        evt.setParams({
+                            "relatedListId": "buildertek__Walk_Through_Line_Items__r",
+                            "parentRecordId": component.get('v.recordId')
+                        });
+                        evt.fire(); 
                     } else {
                         console.error("Error importing Walk Through(s)", result);
                         helper.showToast('error', 'Error', result);
