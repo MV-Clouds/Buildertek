@@ -106,7 +106,8 @@
 
 }
 .THIS .slds-theme--info {
-    background-color: #969696;
+    background-color: white;
+    color: black;
 }
 
 .THIS .texticon{

@@ -221,10 +221,8 @@
                             </div>
                         </div>
                         <div class="slds-grid slds-wrap">
-                            <div style="padding-top: 1%;"
-                                class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-4 slds-large-size--1-of-4">
-                                <lightning:layout>
-                                    <lightning:layoutitem size="6">
+                            <div style="padding: 1.1%;"
+                                class="text-align: left;width: auto;">
                                         <div onclick="{!c.addQuestionsModel}" style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
                                             class="slds-float--left slds-button slds-button--neutral slds-not-selected"
                                             aria-live="assertive">
@@ -234,25 +232,12 @@
                                                 Add Questions
                                             </span>
                                         </div>
-                                    </lightning:layoutitem>
-                                    <lightning:layoutitem size="6">
-                                        <!-- <div style="width:170px"> -->
-                                            <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer; border-color: #0176d3; margin-left:-3.3rem" 
+                                            <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer; border-color: #0176d3; " 
                                                 class="slds-float--left slds-button slds-button--neutral slds-not-selected"
                                                 aria-live="assertive">
                                                 <span class="slds-text-not-selected">Manage Question</span>
-                                                <!-- <span class="" >
-                                <lightning:icon  size="xx-small"  class="slds-input__icon slds-icon-text-default texticon " />
-                                Manage Question
-                            </span>-->
                                             </div>
-                                        <!-- </div> -->
-                                    </lightning:layoutitem>
-                                </lightning:layout>
-
-
-                                &nbsp;&nbsp;
-
+                                         &nbsp;&nbsp;
                             </div>
                         </div>
                             <div style="text-align: center;width: auto;"
@@ -408,27 +393,28 @@
                                             <lightning:icon iconName="utility:close" alternativeText="close"
                                                 size="x-small" class="buttonclass" />
                                         </button>
-                                        <h2 class="slds-text-heading--medium">Manage Question</h2>
+                                        <h2 class="slds-text-heading--medium" style="font-weight: 500;">Manage Question</h2>
+                                        <hr/>
                                     </div>
 
                                     <aura:if isTrue="{!!v.message}">
-                                        <div class="slds" style="height:300px;overflow:auto;background-color:white">
+                                        <div class="slds" style="height:300px;overflow:auto;background-color:white; margin-top: -58px;">
 
                                             <table data-reactroot=""
                                                 class="slds-table slds-table_bordered slds-table_cell-buffer">
                                                 <thead>
                                                     <tr class="slds-text-title_caps">
                                                         <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
                                                             <div class="slds-truncate" title="Name">Question</div>
                                                         </th>
                                                         <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
                                                             <div class="slds-truncate" title="Object Name">Question Type
                                                             </div>
                                                         </th>
                                                         <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242))">
+                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
                                                             <div class="slds-truncate" title="Object Name"></div>
                                                         </th>
 
@@ -485,7 +471,7 @@
                                         </div>
                                         <aura:set attribute="else">
                                             <div
-                                                style="line-height: 131px;background-color: white;font-size: 21px;text-align: center;">
+                                                style="line-height: 131px;background-color: white;font-size: 21px;text-align: center;margin-top: -58px;">
                                                 Please Add Questions </div>
                                         </aura:set>
                                     </aura:if>
@@ -524,7 +510,7 @@
                                         <lightning:icon iconName="utility:close" alternativeText="close" size="x-small"
                                             class="buttonclass" />
                                     </button>
-                                    <h2 class="slds-text-heading--medium">New Question</h2>
+                                    <h2 style="font-weight: 500;" class="slds-text-heading--medium">New Question</h2>
                                 </div>
                                 <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
 
