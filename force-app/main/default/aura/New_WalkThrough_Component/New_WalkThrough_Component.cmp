@@ -21,8 +21,7 @@
         }
         
         .slds-modal__content {
-            overflow-y: auto;x
-            height: unset !important;
+            overflow-y: auto;
         }
         
         .scrollable-table {
@@ -35,6 +34,19 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .sticky-header thead{
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sticky-header thead th{
+            background-color: rgba(27, 82, 151, 1.0);
+            color: white;
+            line-height: 2;
+        }
+
     </aura:html>
     <div class="slds-modal__container">
         <header class="slds-modal__header">
@@ -67,38 +79,23 @@
                         </lightning:layout>
                     </div>
                 </div>
-                <div class="slds-modal__content">
-                    <div class="slds slds-scope scrollable-table">
-                        <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <div class="slds-modal__content" style="height: 25vh;">
+                    <div class="slds slds-scope scrollable-table" style="height: 100%;">
+                        <table class="slds-table slds-table_bordered slds-table_fixed-layout sticky-header" role="grid">
                             <thead>
                                 <tr class="slds-text-title_caps">
-                                    <th scope="col"
-                                        style="background-color:rgba(27, 82, 151, 1.0); color:white; vertical-align: middle;line-height: 2; width:50px;">
-                                    </th>
-                                    <th
-                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                        Walk Through Name #
-                                    </th>
-                                    <th
-                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                        Name
-                                    </th>
-                                    <th
-                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                        Project
-                                    </th>
-                                    <th
-                                        style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
-                                        Total Price
-                                    </th>
+                                    <th scope="col" style="width:50px; padding-left: 1rem;"></th>
+                                    <th>Walk Through Name #</th>
+                                    <th>Name</th>
+                                    <th>Project</th>
+                                    <th>Total Price</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <aura:iteration items="{!v.masterWTList}" var="rec">
                                     <tr class="slds-hint-parent">
-                                        <td style="width:50px;">
-                                            <ui:inputRadio name="walkthroughRadio" text="{!rec.Id}"
-                                                change="{!c.handleRadioChange}" />
+                                        <td style="width:50px; padding-left: 1rem;">
+                                            <ui:inputRadio name="walkthroughRadio" text="{!rec.Id}" change="{!c.handleRadioChange}" />
                                         </td>
                                         <td role="gridcell">
                                             <a href="{!'/' + rec.Id}" target="_blank">{!rec.Name}</a>
@@ -114,8 +111,7 @@
                                             </div>
                                         </td>
                                         <td role="gridcell">
-                                            <lightning:formattedNumber value="{!rec.buildertek__Total_Price__c}"
-                                                style="currency" />
+                                            <lightning:formattedNumber value="{!rec.buildertek__Total_Price__c}" style="currency" />
                                         </td>
                                     </tr>
                                 </aura:iteration>
