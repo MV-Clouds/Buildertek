@@ -106,6 +106,9 @@
         component.set("v.clearCostCode", '');
         component.set('v.unitcostValue' , '');
         component.set('v.clearProductId' , '');
+        component.set('v.cleargroup' , '');
+        component.set('v.clearGroupName' , '');
+
 
         var compEvent = component.getEvent("oClearRecordEvent");
         compEvent.setParams({

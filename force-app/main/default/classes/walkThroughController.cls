@@ -318,7 +318,7 @@ public with sharing class walkThroughController {
             pricebookWrapper priceWrap = new pricebookWrapper();
             priceWrap.defaultValue= new pricebook2();
             priceWrap.priceWrapList = new List<pricebook2>();
-            List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
+            List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 WHERE buildertek__BT_Visible__c = true ORDER BY Name ASC ];
             priceWrap.priceWrapList=PriceList;
             
             if(PriceList.size() > 0){
@@ -371,7 +371,7 @@ public with sharing class walkThroughController {
             List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel
                                                     FROM Product2
                                                     WHERE (Id IN :ProdIds AND family != null)
-                                                    group by family];
+                                                    group by family order by family];
             list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
 
             if (productfamlylst.size() > 0){

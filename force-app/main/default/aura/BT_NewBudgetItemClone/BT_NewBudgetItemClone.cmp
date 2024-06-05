@@ -2724,7 +2724,7 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <lightning:formattedNumber value="{!item.buildertek__Total_Price__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                            <lightning:formattedNumber value="{!item.buildertek__Total_Amount_Tax__c}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
                                                         </td>
                                                         <td>
                                                             {!item.buildertek__Purchase_Order__r.buildertek__Vendor__r.Name}

@@ -55,11 +55,13 @@ public class CreateRFQFromWalkThroughController{
                         msg.Status = 'Success';
                         msg.Message = 'RFQ is Created Successfully';
                         msg.newRecordId = newRFQrecord.Id;
+                        msg.projectId = walkthroughrec[0].buildertek__Project__c;
                     }
                 } else{
                     msg.Status = 'Success';
                     msg.Message = 'RFQ is Created Successfully';
                     msg.newRecordId = newRFQrecord.Id;
+                    msg.projectId = walkthroughrec[0].buildertek__Project__c;
                 }
             } else{
                 msg.Status = 'Failed';
@@ -135,6 +137,7 @@ public class CreateRFQFromWalkThroughController{
                         addFilesOnRfqLines(mapOfWalkThroughLineIdAndRfqLineId);
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
+                        msg.projectId = walkthroughrec[0].buildertek__Project__c;
                     }
 
                 } else{
@@ -182,6 +185,7 @@ public class CreateRFQFromWalkThroughController{
 
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
+                        msg.projectId = walkthroughrec[0].buildertek__Project__c;
                     }
 
                 } else{
@@ -230,6 +234,7 @@ public class CreateRFQFromWalkThroughController{
 
                         msg.Status = 'Success';
                         msg.Message = 'All of your RFQs have been created';
+                        msg.projectId = walkthroughrec[0].buildertek__Project__c;
                     }
 
                 } else{
@@ -633,6 +638,8 @@ public class CreateRFQFromWalkThroughController{
         @AuraEnabled
         public String newRecordId;
 
+        @AuraEnabled
+        public String projectId;
     }
 
 }

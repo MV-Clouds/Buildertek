@@ -62,9 +62,12 @@ public with sharing class BT_MassUpdate_TimeSheet {
                     }
                 }
             }
-            String QueryString = 'SELECT ' + String.join(new List<String>(queryFields), ', ') + ' FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c =: RecordId ORDER BY Name';
+            String QueryString = 'SELECT ' + String.join(new List<String>(queryFields), ', ') + ', buildertek__BT_Time_Sheet__r.buildertek__BT_Project__c, buildertek__BT_Time_Sheet__r.buildertek__Contact__c FROM buildertek__BT_Time_Sheet_Entry__c WHERE buildertek__BT_Time_Sheet__c =: RecordId ORDER BY Name';
             List<buildertek__BT_Time_Sheet_Entry__c> timesheetentries = Database.query(QueryString);
-
+            if(timesheetentries.size() == 0){
+                List<buildertek__BT_Time_Sheet__c> timesheetRecord = [Select buildertek__BT_Project__c, buildertek__Contact__c from buildertek__BT_Time_Sheet__c where Id =: RecordId];
+                result.put('timesheetObject', timesheetRecord);
+            }
             result.put('FieldSetValues', fieldSetValues);
             result.put('timesheetentryObject', timesheetentries);
         } catch (Exception e) {

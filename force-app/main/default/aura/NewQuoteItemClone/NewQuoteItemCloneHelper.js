@@ -617,7 +617,7 @@
         //$A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
         $A.enqueueAction(action);
     },
-    // get an Price from 
+    // get an Price from
     /* getProductDetails:function(component,event,helper){
         var action = component.get("c.getProductPrice");
         var productId = component.get("v.productId");
@@ -625,7 +625,7 @@
         //console.log("----productId",productId);
         action.setParams({"productId":productId});
         action.setCallback(this,function(respo){
-            var res = respo.getReturnValue(); 
+            var res = respo.getReturnValue();
             //console.log("----respo---",res.length);
             var getProductDetails = component.get("v.newQuote");
             delete getProductDetails.buildertek__Grouping__r;
@@ -638,12 +638,12 @@
                 getProductDetails.buildertek__Unit_Cost__c = 0;
             }
             getProductDetails.buildertek__Product__c = productId;
-            
+
             getProductDetails.Name = productName;
             component.set("v.newQuote",getProductDetails);
-            
+
             //console.log("getprodct----",JSON.stringify(getProductDetails));
-			
+
             //console.log("----log",res);
         });
         $A.enqueueAction(action);
@@ -715,7 +715,9 @@
                     // if (response.groups == undefined) {
 
                     // }
-
+                    result.columns.forEach(col => {
+                        col['grandTotal'] = result.grandTotalSumUpMap[col.fieldName];
+                    });
                     component.set("v.TotalRecords", result); //This Line has slow performance past 200 objects being loaded.
                     if (result != undefined && result.wrapperList != undefined) {
                         console.log(':::: WRAPPER LIST::::' , result.wrapperList );
@@ -757,13 +759,13 @@
     /*updateMarkupOnUI : function(component, event, helper, page) {
         //alert('Hii');
 		//component.set("v.groupLoaded", false);
-		
+
         if(component.get("v.recordId")) {
             var action = component.get("c.retrieveGroups");
             action.setStorable({
                 ignoreExisting: true
             });
-            action.setParams({ 
+            action.setParams({
                 quoteId : component.get("v.recordId"),
                 pageNumber : page,
                 recordToDisply : 50
@@ -771,21 +773,21 @@
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
-                    var result = response.getReturnValue(); 
+                    var result = response.getReturnValue();
                     //alert('result -----> '+JSON.stringify(result));
                     //var t0 = performance.now();
                     component.set("v.TotalRecords", result);//This Line has slow performance past 200 objects being loaded.
                     console.log('total records....'+JSON.stringify(component.get("v.TotalRecords")));
                     //var t1 = performance.now();
-                    //console.log("------------> component.set took " + (t1 - t0) + " milliseconds to execute."); 
+                    //console.log("------------> component.set took " + (t1 - t0) + " milliseconds to execute.");
                     component.set("v.columns", result.columns);
                     component.set("v.page", result.page);
                     component.set("v.total", result.total);
                     component.set("v.pages", Math.ceil(result.total / 50));
-                    //component.set("v.Spinner", false); 
-                    
+                    //component.set("v.Spinner", false);
+
                     $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
-					
+
 					window.setTimeout(
                         $A.getCallback(function() {
                             var toastEvent = $A.get("e.force:showToast");
@@ -793,7 +795,7 @@
                                 mode: 'sticky',
                                 message: 'Quote line markup(%) updated successfully.',
                                 type : 'success',
-                                duration: '10000', 
+                                duration: '10000',
                                 mode: 'dismissible'
                             });
                             toastEvent.fire();
@@ -805,7 +807,7 @@
         }
 	},*/
 
-    // get an Price from 
+    // get an Price from
     getProductDetails: function(component, event, helper) {
         var action = component.get("c.getProductPrice");
         var productId = component.get("v.productId");
@@ -829,7 +831,7 @@
                     var mark = (diffVal / res[0].buildertek__Unit_Cost__c);
                     //ProductDetails.buildertek__Markup__c = (diffVal/res[0].buildertek__Unit_Cost__c) * 100;
                     if (mark != 'Infinity') {
-                        //  ProductDetails.buildertek__Markup__c = (diffVal/res[0].buildertek__Unit_Cost__c).toFixed(2); 
+                        //  ProductDetails.buildertek__Markup__c = (diffVal/res[0].buildertek__Unit_Cost__c).toFixed(2);
                         ProductDetails.buildertek__Markup__c = res[0].buildertek__Markup__c;
                         console.log(ProductDetails.buildertek__Markup__c)
                     } else {
@@ -839,6 +841,7 @@
                 } else {
                     ProductDetails.buildertek__Markup__c = res[0].buildertek__Markup__c;
                 }
+                ProductDetails.buildertek__Margin__c = res[0].buildertek__Margin__c;
                 ProductDetails.buildertek__Notes__c = res[0].Product2.buildertek__Notes__c;
                 ProductDetails.buildertek__Unit_Cost__c = res[0].buildertek__Unit_Cost__c;
                 ProductDetails.buildertek__Unit_Price__c = res[0].UnitPrice;
@@ -969,16 +972,16 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             }
         });
-        $A.enqueueAction(action);        
+        $A.enqueueAction(action);
     },
-    
+
     getTableData : function(component, event, allFields, fieldType){
         var recordId = component.get("v.recordId");
         allFields.push('Id','buildertek__Grouping__c');
         fieldType.push({"fieldName":'Id', "fieldType":'', "isEditable": false});
         fieldType.push({"fieldName":'buildertek__Grouping__c', "fieldType":'Reference', "isEditable": false});
         var finalString = JSON.stringify(fieldType)
-        var action = component.get("c.getQuoteItemData"); 
+        var action = component.get("c.getQuoteItemData");
         action.setParams({
             "recordId" : recordId,
             "fieldsList" : allFields,
@@ -1028,12 +1031,12 @@
                 console.log("PriceBook Name : ======= : ", pribooknames)
                     //alert(pribooknames)
                 var action20 = component.get("c.getProductfamilyRecords");
-                // set param to method  
+                // set param to method
                 action20.setParams({
                     'ObjectName': "Product2",
                     'parentId': component.get("v.pricebookName")
                 });
-                // set a callBack    
+                // set a callBack
                 action20.setCallback(this, function(response) {
                     $A.util.removeClass(component.find("mySpinner"), "slds-show");
                     var state = response.getState();
@@ -1058,7 +1061,7 @@
                     }
 
                 });
-                // enqueue the Action  
+                // enqueue the Action
                 $A.enqueueAction(action20);
                 /* Code closed */
             }
@@ -1156,7 +1159,7 @@
 
     getQuoteGrouping : function(component, event, helper) {
         try {
-            
+
             console.log('*** getQuoteGrouping Method ***');
             $A.get("e.c:BT_SpinnerEvent").setParams({
                 "action": "SHOW"
@@ -1182,7 +1185,7 @@
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 if (state === "SUCCESS") {
-                    console.log('getting result ', response.getReturnValue());                
+                    console.log('getting result ', response.getReturnValue());
                     var quoteLineWrapper = response.getReturnValue();
                     var quoteLineList = quoteLineWrapper.quoteLineList;
                     component.set("v.totalColumn", quoteLineWrapper.columns.length);
@@ -1202,7 +1205,7 @@
                                     refrenceValue = element.buildertek__Cost_Code__c ? element.buildertek__Cost_Code__r.Name : '';
                                 }
                                 // ----
-                                
+
                                 var fieldData = {fieldName: ele.fieldName, fieldType: ele.type, fieldValue: element[ele.fieldName], refrenceValue: refrenceValue};
                                 quoteLineFieldData.push(fieldData);
                             });
@@ -1246,17 +1249,17 @@
                                 totalObj = helper.createTotalWrapper(component, helper, totalObj, columns);
                                 var wrapperData = {groupIndex: group1Wrapper.length+1, groupName : group1Value, quoteLineList: quoteLines1, fieldTotals: totalObj};
                                 group1Wrapper.push(wrapperData);
-    
+
                                 totalObj = {};
                                 columns.forEach(ele => {
                                     totalObj[ele.fieldName] = 0;
                                 });
                                 totalObj = helper.countTotal(component, helper, totalObj, element);
-    
+
                                 quoteLines1 = [];
                                 group1Value = element[groupFieldList[0]];
                                 quoteLines1.push(element);
-    
+
                                 if (quoteLineList.length == index+1) {
                                     if (groupFieldList[1] != undefined) {
                                         quoteLines1 = helper.addSecondGrouping(component, helper, quoteLines1, groupFieldList, columns);
@@ -1285,14 +1288,14 @@
                     $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
                     }).fire();
-                }                
+                }
             });
             $A.enqueueAction(action);
         } catch (error) {
             console.log('error in getQuoteGrouping : ', error.stack);
-            
+
         }
-    }, 
+    },
 
     addSecondGrouping : function(component, helper, quoteLines1, groupFieldList, columns){
         var group2Wrapper = [];
@@ -1398,7 +1401,7 @@
             });
             return group3Wrapper;
         }
-    }, 
+    },
 
     addFourthGrouping : function(component, helper, quoteLines3, groupFieldList, columns){
         var group4Wrapper = [];
@@ -1442,7 +1445,7 @@
             });
             return group4Wrapper;
         }
-    }, 
+    },
 
     countTotal : function(component, helper, totalObj, element){
         element.FieldDataList.forEach(ele => {
@@ -1451,7 +1454,7 @@
             }
         });
         return totalObj;
-    }, 
+    },
 
     createTotalWrapper : function(component, helper, totalObj, columns){
         var quoteLineTotalData = [];
@@ -1468,7 +1471,7 @@
         });
         totalObj['fieldTotalList'] = quoteLineTotalData;
         return totalObj;
-    }, 
+    },
 
     expandRecordsHelper : function(component, event, helper, spanGroupId){
         let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
@@ -1480,13 +1483,13 @@
         for(let index = 0; index < recordDivList.length; index++) {
             recordDivList[index].style.display = 'table-row';
         }
-    }, 
+    },
 
     collapeRecordsHelper : function(component, event, helper, spanGroupId){
         let recordDivList = document.getElementsByClassName('record_'+spanGroupId);
         let collapeallIcon = document.getElementById("collapeseGroupBtn_" + spanGroupId);
         let expandallIcon = document.getElementById("expandGroupBtn_" + spanGroupId);
-        
+
         collapeallIcon.style.display = 'none';
         expandallIcon.style.display = 'block';
         for(let index = 0; index < recordDivList.length; index++) {
@@ -1523,7 +1526,7 @@
                 "title": "Error!",
                 "message": 'Please Select At Least One Field'
             });
-            toastEvent.fire();           
+            toastEvent.fire();
         } else{
             var selectedFieldList = [];
             if (valueofField1 != "") {
@@ -1539,7 +1542,7 @@
                 selectedFieldList.push(valueofField4)
             }
             console.log('selectedFieldList ==> ',{selectedFieldList});
-            component.set("v.isBOMmodalOpen", false); 
+            component.set("v.isBOMmodalOpen", false);
             component.set("v.displayGrouping", true);
 
             component.set("v.groupFieldList", selectedFieldList);
@@ -1641,13 +1644,13 @@
                 component.set('v.valueofField3' , groupingLevel[2]);
                 component.set('v.valueofField4' , groupingLevel[3]);
 
-               
+
             }else{
                 console.log(response.getError());
             }
         });
         $A.enqueueAction(action);
-    
+
     }
 
 

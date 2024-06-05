@@ -32,6 +32,9 @@
     <aura:attribute name="clearCostCode" type="String" default="haveValue" />
     <aura:attribute name="callingcmp" type="String" default="haveValue" />
     <aura:attribute name="fieldName" type="String" default="haveValue" />
+    <aura:attribute name="cleargroup" type="String" default="haveValue" />
+    <aura:attribute name="clearGroupName" type="String" default="haveValue" />
+
 
     <!-- for BT_ManageBOMlines -->
     <aura:attribute name="index" type="Integer"/>

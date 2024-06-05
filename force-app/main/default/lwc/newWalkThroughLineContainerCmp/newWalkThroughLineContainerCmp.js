@@ -318,14 +318,29 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             .then(result => {
                 console.log('result', result.FieldSetValues);
                 const labelsToFilter = ["SharinPix Token", "SharinPix Tag"];
-                let cols = []; result.FieldSetValues.forEach(currentItem => {
+                let cols = [
+                    {
+                        label: '',
+                        fieldName: 'cameraButton',
+                        type: 'button-icon',
+                        fixedWidth: 50,
+                        typeAttributes: {
+                            iconName: 'utility:photo',
+                            name: 'camera_icon_click',
+                            title: 'Camera Icon',
+                            variant: 'bare',
+                            alternativeText: 'Camera Icon'
+                        },
+                        hideDefaultActions: true
+                    }
+                ];
+                result.FieldSetValues.forEach(currentItem => {
                     let col = { label: currentItem.label, fieldName: currentItem.name, type: currentItem.type };
                     cols.push(col);
-                }); 
+                });
                 cols = cols.filter(col => !labelsToFilter.includes(col.label));
-                cols.push({ type: 'action', typeAttributes: { rowActions: actions } })
+                cols.push({ type: 'action', typeAttributes: { rowActions: actions } });
                 this.columns = cols;
-                console.log('columns-->',this.columns);
                 if (result.WalkthroughLineItems.length > 0) {
                     this.data = result.WalkthroughLineItems;
                     this.error = undefined;
@@ -355,6 +370,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
                 this.openEditModel(recordId);
                 break;
             case 'fileupload':
+            case 'camera_icon_click':
                 this.openfileattachmodal(recordId, sharinPixToken, sharinPixTag);
                 break;
             case 'delete':

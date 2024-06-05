@@ -30,42 +30,64 @@
         }
 	},
 	
-    getProductDetails:function(component,event,helper){
+    getProductDetails: function(component, event, helper) {
         var action = component.get("c.getProductPrice");
         var productId = component.get("v.productId");
         var productName = component.get("v.productName");
-        //console.log("----productId",productId);
-        action.setParams({"productId":productId});
-        action.setCallback(this,function(respo){
-            var res = respo.getReturnValue(); 
-            //console.log("----respo---",res.length);
+    
+        action.setParams({"productId": productId});
+    
+        action.setCallback(this, function(respo) {
+            var res = respo.getReturnValue();
             var getProductDetails = component.get("v.newContractLine");
+    
             delete getProductDetails.buildertek__Grouping__r;
-            //console.log("@Contract@",component.get("v.recordId"));
+    
             getProductDetails.buildertek__Contract__c = component.get("v.recordId");
-           // alert("getprodct----",res[0].UnitPrice); 
-            if(res.length>=1) {
-                if(res[0].UnitPrice != null){
-                getProductDetails.buildertek__Unit_Price__c = res[0].UnitPrice;
+    
+            if (res && res.length >= 1) {
+                var productDetails = res[0];
+    
+                if (productDetails.buildertek__Unit_Cost__c != null) {
+                    getProductDetails.buildertek__Unit_Price__c = productDetails.buildertek__Unit_Cost__c;
                 }
-                if(res[0].buildertek__Discount__c !=null){
-                getProductDetails.buildertek__Discount__c = res[0].buildertek__Discount__c;
+    
+                if (productDetails.UnitPrice!= null) {
+                    getProductDetails.buildertek__Unit_Cost__c = productDetails.UnitPrice;
                 }
-            }else{
+
+                if (productDetails.Product2) {
+                    if (productDetails.Product2.buildertek__Cost_Code__c != null) {
+                        getProductDetails.buildertek__Cost_Code__c = productDetails.Product2.buildertek__Cost_Code__c;
+                    }
+    
+                    if (productDetails.Product2.buildertek__Quote_Group__c != null) {
+                        getProductDetails.buildertek__Contract_Item_Group__c = productDetails.Product2.buildertek__Quote_Group__c;
+                    }
+    
+                    if (productDetails.Product2.buildertek__Quote_Group__r && productDetails.Product2.buildertek__Quote_Group__r.Name != null) {
+                        component.set("v.groupName", productDetails.Product2.buildertek__Quote_Group__r.Name);
+                    }
+    
+                    if (productDetails.Product2.buildertek__Cost_Code__r && productDetails.Product2.buildertek__Cost_Code__r.Name != null) {
+                        component.set("v.costCode", productDetails.Product2.buildertek__Cost_Code__r.Name);
+                    }
+                }
+    
+                if (productDetails.buildertek__Discount__c != null) {
+                    getProductDetails.buildertek__Discount__c = productDetails.buildertek__Discount__c;
+                }
+            } else {
                 getProductDetails.buildertek__Unit_Price__c = 0;
-                 getProductDetails.buildertek__Discount__c =0;
+                getProductDetails.buildertek__Discount__c = 0;
             }
+    
             getProductDetails.buildertek__Product__c = productId;
-            
             getProductDetails.Name = productName;
-            component.set("v.newContractLine",getProductDetails);
-            
-            //console.log("getprodct----",JSON.stringify(getProductDetails));
-			
-            //console.log("----log",res);
+            component.set("v.newContractLine", getProductDetails);
         });
         $A.enqueueAction(action);
-    },
+    },    
     
     updateData: function(component, event, helper, dataToUpdate){
 			var groupId = component.get("v.group").Id;
