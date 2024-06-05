@@ -17,6 +17,7 @@
         .slds-modal__container {
             max-width: 72rem !important;
             width: 72% !important;
+            height: 90vh !important;
         }
         
         .slds-modal__content {
@@ -25,7 +26,7 @@
         }
         
         .scrollable-table {
-            max-height: calc(80vh - 400px);
+            max-height: calc(100vh - 600px);
             overflow-y: auto;
         }
 
@@ -42,24 +43,31 @@
         <div class="slds-modal__content" id="modal-content-id-1">
             <lightning:recordEditForm aura:id="recordViewForm" objectApiName="buildertek__Walk_Through_List__c" onsubmit="{!c.handleSubmit}" density="Comfy" >
                 <div style="width:100%;overflow: auto;">
-                    <div class="slds-p-around_medium" style="background-color:white;">
+                    <div style="background-color:white;">
                         <lightning:layout multipleRows="true">
-                        <aura:iteration items="{!v.listOfFields0}" var="field">
-                            <aura:if isTrue="{!field.name == 'buildertek__Project__c'}">
-                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-                                    <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
-                                </lightning:layoutItem> 
-                                <aura:set attribute="else">
+                            <aura:iteration items="{!v.listOfFields0}" var="field">
+                                <aura:if isTrue="{!field.name == 'buildertek__Project__c'}">
                                     <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-                                        <lightning:inputField fieldName="{!field.name}"/>
-                                    </lightning:layoutItem>  
-                                </aura:set>
-                            </aura:if> 
-                        </aura:iteration>
-                    </lightning:layout>
+                                        <lightning:inputField fieldName="{!field.name}" value="{!v.parentprojectRecordId}" />
+                                    </lightning:layoutItem>
+                                    <aura:set attribute="else">
+                                        <aura:if isTrue="{!field.name == 'buildertek__Description__c'}">
+                                            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                <lightning:inputField fieldName="{!field.name}" required="true" />
+                                            </lightning:layoutItem>
+                                            <aura:set attribute="else">
+                                                <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                                                    <lightning:inputField fieldName="{!field.name}" />
+                                                </lightning:layoutItem>
+                                            </aura:set>
+                                        </aura:if>
+                                    </aura:set>
+                                </aura:if>
+                            </aura:iteration>
+                        </lightning:layout>
                     </div>
                 </div>
-                <div class="slds-modal__content slds-p-around--large">
+                <div class="slds-modal__content">
                     <div class="slds slds-scope scrollable-table">
                         <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                             <thead>
@@ -93,7 +101,7 @@
                                                 change="{!c.handleRadioChange}" />
                                         </td>
                                         <td role="gridcell">
-                                            <ui:outputText value="{!rec.Name}" />
+                                            <a href="{!'/' + rec.Id}" target="_blank">{!rec.Name}</a>
                                         </td>
                                         <td role="gridcell">
                                             <div class="truncate-text">
