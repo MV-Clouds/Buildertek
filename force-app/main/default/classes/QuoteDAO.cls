@@ -705,6 +705,7 @@ public with sharing class QuoteDAO{
     public static buildertek__Quote_Item__c saveQuoteLineItem(string quoteLineRecord){
         System.debug('------------------ saveQuoteLineItem ------------------');
         System.debug('---quote Items' + quoteLineRecord);
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__ShowMargin__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Quote Configuration'];
         buildertek__Quote_Item__c QuoteRec = new buildertek__Quote_Item__c();
         QuoteRec = (buildertek__Quote_Item__c)System.JSON.deserialize(quoteLineRecord, buildertek__Quote_Item__c.class);
         if (QuoteRec.buildertek__Grouping__c == null){
@@ -757,7 +758,9 @@ public with sharing class QuoteDAO{
         QuoteLineToInsert.buildertek__Quantity__c = QuoteRec.buildertek__Quantity__c;
         QuoteLineToInsert.buildertek__Notes__c = QuoteRec.buildertek__Notes__c;
         QuoteLineToInsert.buildertek__Cost_Code__c = QuoteRec.buildertek__Cost_Code__c;
-        QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
+        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c){
+            QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
+        }
         QuoteLineToInsert.buildertek__Markup__c = QuoteRec.buildertek__Markup__c;
         QuoteLineToInsert.buildertek__Additional_Discount__c = QuoteRec.buildertek__Additional_Discount__c;
 
@@ -769,7 +772,7 @@ public with sharing class QuoteDAO{
 
         insert QuoteLineToInsert;
 
-        if(QuoteLineToInsert.buildertek__Markup__c !=0.0000){
+        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c && QuoteLineToInsert.buildertek__Markup__c !=0.0000){
             QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
         }
         update QuoteLineToInsert;
