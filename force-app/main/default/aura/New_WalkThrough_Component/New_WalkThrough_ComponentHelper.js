@@ -10,9 +10,7 @@
 	},
 
 	fetchWalkThroughs: function (component, event, helper) {
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "SHOW"
-        }).fire();
+        component.set("v.isLoading", true);
         let action = component.get("c.getMasterWalkThroughDetails");
 
         action.setCallback(this, function(response) {
@@ -20,19 +18,30 @@
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
                 if (!result || result.length === 0) {
-                    helper.showToast('error', 'Error', 'No Master Walk Through(s) Available');
+                    let toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "message": "No Master Walk Through(s) Available",
+                        "type": "error"
+                    });
+                    toastEvent.fire();
                     component.set("v.masterWTList", []);
                 } else {
                     component.set("v.masterWTList", result);
                 }
             } else {
                 console.error("Error fetching Walk Through details");
-                helper.showToast('error', 'Error', 'Error fetching Walk Through details');
+                let toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    "title": "Error!",
+                    "message": "Error fetching Walk Through details",
+                    "type": "error"
+                });
+                toastEvent.fire();
+
             }
         });
         $A.enqueueAction(action);
-        $A.get("e.c:BT_SpinnerEvent").setParams({
-            "action": "HIDE"
-        }).fire();
-    },
+        component.set("v.isLoading", false);
+    }
 })
