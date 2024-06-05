@@ -10,6 +10,7 @@ Date: 11-Mar-2020
 public with sharing class QuoteItemTriggerHandler {
     //Boolean variable to allow skipping execution of trigger in certain scenarios
     public static Boolean blnSkipQuoteItemTrigger = false;
+    public static Boolean isInsertCostCodeExecuted = true;
      
     private boolean m_isExecuting = false;
     private integer BatchSize = 0;
@@ -100,6 +101,10 @@ public with sharing class QuoteItemTriggerHandler {
 // Changes for BUIL-3608 starts from here
     public void insertCostCode(List<Quote_Item__c> newQuoteItems) {
 		try {
+            if (!isInsertCostCodeExecuted) {
+                return;
+            }
+            isInsertCostCodeExecuted = true;
 			List<String> productIds = new List<String>();
 		
 			// Collect Product IDs from Budget Lines

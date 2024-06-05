@@ -750,6 +750,9 @@ public with sharing class QuoteDAO{
             QuoteLineToInsert.Name = QuoteRec.Name;
         }
 
+        System.debug('QuoteRec.buildertek__Margin__c line 753 '+QuoteRec.buildertek__Margin__c);
+        System.debug('QuoteRec.buildertek__Markup__c '+QuoteRec.buildertek__Markup__c);
+
         QuoteLineToInsert.buildertek__Quote__c = QuoteRec.buildertek__Quote__c;
         QuoteLineToInsert.buildertek__Grouping__c = QuoteRec.buildertek__Grouping__c;
         QuoteLineToInsert.buildertek__UOM__c = QuoteRec.buildertek__UOM__c;

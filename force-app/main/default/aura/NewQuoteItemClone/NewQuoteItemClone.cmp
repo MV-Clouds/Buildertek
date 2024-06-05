@@ -241,7 +241,7 @@
 
 
 
-    <div style="background: white;border-radius: 5px;height: 100%;" class="slds" id="slds">
+    <div style="background: white;border-radius: 5px;height: 66vh;" class="slds" id="slds">
 
 
     <aura:if isTrue="{!v.isproject}">
@@ -847,7 +847,7 @@
                     </aura:if>
 
                     <aura:if isTrue="{!or(or(or(v.isDuplicate,v.isMassDuplicate),v.isOpen),v.isQuoteRecChange)}">
-                        <div class="slds-m-around_xx-large">
+                        <div>
                             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                                 <div class="slds-modal__container">
@@ -911,7 +911,7 @@
                     </aura:if>
 
                     <aura:if isTrue="{!v.isQuotelinedelete}">
-                        <div class="slds-m-around_xx-large">
+                        <div>
                             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
                                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                                 <aura:if isTrue="{!v.Spinner22}">
@@ -1439,62 +1439,56 @@
                                             <!--<br />
                                     <br />-->
                                         </aura:iteration>
-                                        <tr class="groupHeader">
-                                            <td colspan="{!v.TotalRecords.Totalcols}" style="line-height:3vh;">
-                                                <div class="setting slds-grid slds-gutters  ">
-                                                    <div class="slds-col slds-size_6-of-12 width" style="font-size: 17px;padding-left: 4em;">
-                                                        Grand Total
+                                        <aura:if isTrue="{!!empty(v.TotalRecords.groups)}">
+                                            <tr class="groupHeader">
+                                                <td colspan="{!v.TotalRecords.Totalcols}" style="line-height:3vh;">
+                                                    <div class="setting slds-grid slds-gutters  ">
+                                                        <div class="slds-col slds-size_6-of-12 width" style="font-size: 17px;padding-left: 4em;">
+                                                            Grand Total
+                                                        </div>
+                                                        <div class="slds-col slds-size_6-of-12 slds-float_right" style="font-size: 10px; height:1.5rem; width:0px;">
+                                                        </div>
                                                     </div>
-                                                    <div class="slds-col slds-size_6-of-12 slds-float_right" style="font-size: 10px; height:1.5rem; width:0px;">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr class="slds-text-heading--label" style="line-height: 1;font-size: 12px;">
-                                            <th></th>
-                                            <th class="slds-is-sortable tabletitle" scope="col" width="5px"></th>
-                                            <th style="width: 80px !important;"></th>
+                                                </td>
+                                            </tr>
+                                            <tr class="slds-text-heading--label" style="line-height: 1;font-size: 12px;">
+                                                <th></th>
+                                                <th class="slds-is-sortable tabletitle" scope="col" width="5px"></th>
+                                                <th style="width: 80px !important;"></th>
 
-                                            <aura:iteration items="{!v.columns}" var="col">
-                                                <aura:if isTrue="{!col.type == 'currency'}">
-                                                    <th class="slds-is-sortable inputCss tabletitle">
-                                                        <aura:if isTrue="{!col.grandTotal != null}">
-                                                            <span style="font-weight: bold;">
-                                                                <lightning:formattedNumber value="{!col.grandTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                                                                <aura:set attribute="else">
-                                                                    <lightning:formattedNumber value="0.00" style="currency" class="inputCss" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
-                                                                </aura:set>
-                                                            </span>
-                                                        </aura:if>
-                                                    </th>
-                                                </aura:if>
+                                                <aura:iteration items="{!v.columns}" var="col">
+                                                    <aura:if isTrue="{!col.type == 'currency'}">
+                                                        <th class="slds-is-sortable inputCss tabletitle">
+                                                            <aura:if isTrue="{!col.grandTotal != null}">
+                                                                <span style="font-weight: bold;">
+                                                                    <lightning:formattedNumber value="{!col.grandTotal}" style="currency" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:formattedNumber value="0.00" style="currency" class="inputCss" currencyCode="{!v.currencycode}" currencyDisplayAs="code" />
+                                                                    </aura:set>
+                                                                </span>
+                                                            </aura:if>
+                                                        </th>
+                                                    </aura:if>
 
-                                                <aura:if isTrue="{! and(col.type == 'number', col.fieldName == 'buildertek__Quantity__c')}">
-                                                    <th>
-                                                        <aura:if isTrue="{!col.grandTotal != null}">
-                                                            <span style="font-weight: bold;">
-                                                                <lightning:formattedNumber value="{!col.grandTotal}" />
-                                                                <aura:set attribute="else">
-                                                                    <lightning:formattedNumber value="0.00" />
-                                                                </aura:set>
-                                                            </span>
-                                                        </aura:if>
-                                                    </th>
-                                                </aura:if>
+                                                    <aura:if isTrue="{! and(col.type == 'number', col.fieldName == 'buildertek__Quantity__c')}">
+                                                        <th>
+                                                            <aura:if isTrue="{!col.grandTotal != null}">
+                                                                <span style="font-weight: bold;">
+                                                                    <lightning:formattedNumber value="{!col.grandTotal}" />
+                                                                    <aura:set attribute="else">
+                                                                        <lightning:formattedNumber value="0.00" />
+                                                                    </aura:set>
+                                                                </span>
+                                                            </aura:if>
+                                                        </th>
+                                                    </aura:if>
 
-                                                <aura:if isTrue="{!not(or(col.type == 'number', col.type == 'currency'))}">
-                                                    <th>
-                                                    </th>
-                                                </aura:if>
-                                            </aura:iteration>
-                                        </tr>
-                                        <aura:if isTrue="{!empty(v.TotalRecords.groups)}">
-                                            <div class="slds-col slds-size_6-of-12 slds-float_right"
-                                                style="font-size: 10px; height:1.5rem;">
-                                                <lightning:button variant="neutral" label="Add Quote Line"
-                                                    name="{!groupIndex}" title="Add Quote Line"
-                                                    class="addBudgetLineStyle" onclick="{!c.askforFilter}" />
-                                            </div>
+                                                    <aura:if isTrue="{!not(or(col.type == 'number', col.type == 'currency'))}">
+                                                        <th>
+                                                        </th>
+                                                    </aura:if>
+                                                </aura:iteration>
+                                            </tr>
                                         </aura:if>
                                     </tbody>
                                 </table>
@@ -2577,7 +2571,7 @@
     </div>
 
 
-    <div class="slds-m-around_xx-large">
+    <div>
         <aura:if isTrue="{!v.isBOMmodalOpen}">
 
             <!-- Modal/Popup Box starts here-->
