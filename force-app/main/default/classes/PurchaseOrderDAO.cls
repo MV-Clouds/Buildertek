@@ -333,7 +333,7 @@ public static string createAPFromPO(string poid){
         string accountPaybleId = createAP([Select Id, Name, Project__c, Vendor__c, Period__c, Tax__c, buildertek__Status__c, buildertek__Description__c,buildertek__Budget__c,buildertek__Budget_Line__c	
                                            from purchase_order__c
                                            where Id = :poid]);
-        createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c,buildertek__Status__c
+        createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c,buildertek__Status__c,buildertek__Contractor_Invoice_Line__c
                        from Purchase_Order_Item__c
                        where purchase_order__c = :poid]);
         return accountPaybleId;
@@ -402,8 +402,12 @@ public static string createAPFromPO(string poid){
             apItem.Cost_Code__c = poItem.Cost_Code__c;
             apItem.Product__c = poItem.Product__c;
             apItem.Purchase_Order_Item__c = poItem.Id;
-            apItem.Quantity__c = poItem.Quantity__c; //(this changes made by brian)
-            
+            if(poItem.buildertek__Contractor_Invoice_Line__c==null){
+            apItem.Quantity__c = poItem.Quantity_Remaining__c; 
+            }
+            else{
+                apItem.Quantity__c=0;
+            }
             if(poItem.Unit_Price__c != null){
                 apItem.Unit_Price__c = poItem.Unit_Price__c;
             }
@@ -421,14 +425,14 @@ public static string createAPFromPO(string poid){
 
     for (buildertek__Account_Payable_Item__c apItem : insertedApItems) {
         for (Purchase_Order_Item__c poItem : poItems) {
-            if (poItem.buildertek__Status__c == 'Approved_For_Payment' && poItem.Id == apItem.Purchase_Order_Item__c ) {
+            if (poItem.buildertek__Status__c == 'Approved_For_Payment' && poItem.Id == apItem.Purchase_Order_Item__c && poItem.buildertek__Contractor_Invoice_Line__c==null) {
                 poItem.buildertek__Contractor_Invoice_Line__c = apItem.Id;
                 poItemsToUpdate.add(poItem);
             }
         }
     }
+
     update poItemsToUpdate;        
-    
     }
 
     @AuraEnabled
