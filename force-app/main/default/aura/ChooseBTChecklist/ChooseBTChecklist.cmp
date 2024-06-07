@@ -398,7 +398,7 @@
                                     </div>
 
                                     <aura:if isTrue="{!!v.message}">
-                                        <div class="slds" style="height:300px;overflow:auto;background-color:white; margin-top: -58px;">
+                                        <div class="slds" style="height:400px;overflow:auto;background-color:white; margin-top: -58px;">
 
                                             <table data-reactroot=""
                                                 class="slds-table slds-table_bordered slds-table_cell-buffer">

@@ -20,9 +20,7 @@
     refreshList: function (component, event) {
 
         var availableMenus = document.getElementById('available').childNodes;
-        console.log(`availableMenus: ${availableMenus}`);
         var selectedIdsMenus = document.getElementById('Selected').childNodes;
-        console.log(`selectedIdsMenus: ${selectedIdsMenus}`);
         var selectedIds = [];
         for (var i = 0; i < selectedIdsMenus.length; i++) {
             selectedIds[i] = selectedIdsMenus[i].getAttribute('id');
