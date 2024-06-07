@@ -750,6 +750,9 @@ public with sharing class QuoteDAO{
             QuoteLineToInsert.Name = QuoteRec.Name;
         }
 
+        System.debug('QuoteRec.buildertek__Margin__c line 753 '+QuoteRec.buildertek__Margin__c);
+        System.debug('QuoteRec.buildertek__Markup__c '+QuoteRec.buildertek__Markup__c);
+
         QuoteLineToInsert.buildertek__Quote__c = QuoteRec.buildertek__Quote__c;
         QuoteLineToInsert.buildertek__Grouping__c = QuoteRec.buildertek__Grouping__c;
         QuoteLineToInsert.buildertek__UOM__c = QuoteRec.buildertek__UOM__c;
@@ -758,9 +761,7 @@ public with sharing class QuoteDAO{
         QuoteLineToInsert.buildertek__Quantity__c = QuoteRec.buildertek__Quantity__c;
         QuoteLineToInsert.buildertek__Notes__c = QuoteRec.buildertek__Notes__c;
         QuoteLineToInsert.buildertek__Cost_Code__c = QuoteRec.buildertek__Cost_Code__c;
-        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c){
-            QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
-        }
+        QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
         QuoteLineToInsert.buildertek__Markup__c = QuoteRec.buildertek__Markup__c;
         QuoteLineToInsert.buildertek__Additional_Discount__c = QuoteRec.buildertek__Additional_Discount__c;
 
@@ -772,7 +773,7 @@ public with sharing class QuoteDAO{
 
         insert QuoteLineToInsert;
 
-        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c && QuoteLineToInsert.buildertek__Markup__c !=0.0000){
+        if(QuoteLineToInsert.buildertek__Markup__c !=0.0000){
             QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
         }
         update QuoteLineToInsert;
@@ -2454,7 +2455,7 @@ public with sharing class QuoteDAO{
         pricebookWrapper priceWrap = new pricebookWrapper();
         priceWrap.defaultValue= new pricebook2();
         priceWrap.priceWrapList = new List<pricebook2>();
-        List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 ORDER BY Name ASC ];
+        List<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 WHERE buildertek__BT_Visible__c = true ORDER BY Name ASC ];
         priceWrap.priceWrapList=PriceList;
 
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__ShowMargin__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Quote Configuration'];
