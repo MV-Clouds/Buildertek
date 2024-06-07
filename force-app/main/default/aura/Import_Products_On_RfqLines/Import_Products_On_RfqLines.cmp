@@ -66,6 +66,25 @@
             max-width: 80rem !important;
             width:90% !important;
         }
+        .slds-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .slds-table thead th {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slds-table tbody td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .THIS .slds-truncate {
+            text-overflow: ellipsis !important;
+        }
     </aura:html> 
 
        <div class="slds-modal__header" style="padding-top:0px">
@@ -185,7 +204,7 @@
             <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                 <thead>
                     <tr class="slds-text-heading--label">
-                        <th class="slds-is-sortable" scope="col" width="5px">
+                        <th class="slds-is-sortable" scope="col" width="5%">
                             <div class="slds-form-element">
                                 <div class="slds-form-element__control">
                                     <label class="slds-checkbox" style="width:10px;">
@@ -201,7 +220,7 @@
                                 Product Family
                             </div>
                         </th>
-                        <th scope="col" >
+                        <th scope="col" style="width:15%">
                             <div class="slds-truncate" title="Product Name">
                                 Product Name
                             </div>
@@ -252,8 +271,8 @@
                                     {!item.product.Family}
                                 </div>
                             </td>
-                            <td>
-                                <div class="slds-truncate" title="{!item.product.Name}" style="white-space: pre-wrap;">
+                            <td style="width:15%">
+                                <div class="slds-truncate" title="{!item.product.Name}" >
                                     {!item.product.Name}
                                 </div>
                             </td>
