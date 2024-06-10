@@ -16,7 +16,6 @@
     <aura:attribute name="isShowcancel" type="boolean" default="false" />
     <aura:attribute name="ischecklistNameError" type="boolean" default="false" />
     <aura:attribute name="isDisableButton" type="boolean" default="true" />
-    <aura:attribute name="parentId" type="Id" default="a4UKk000000001iMAA" />
     <aura:attribute name="fileName" type="String" default="No File Selected.." />
 
     <div>
