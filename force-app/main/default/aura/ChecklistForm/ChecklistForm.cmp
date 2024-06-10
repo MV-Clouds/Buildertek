@@ -18,7 +18,7 @@
     <aura:attribute name="isDisableButton" type="boolean" default="true" />
     <aura:attribute name="parentId" type="Id" default="a4UKk000000001iMAA" />
     <aura:attribute name="fileName" type="String" default="No File Selected.." />
-    
+
     <div>
         <lightning:layout multipleRows="true">
             <lightning:layoutitem size="2"></lightning:layoutitem>
@@ -76,13 +76,16 @@
                                 </aura:if>
                             </aura:iteration>
                         </aura:iteration>
-                        <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false"/>
-                        <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
-                        <div class="slds-align_absolute-center slds-m-top_small">
-                            <aura:if isTrue="{!v.isDisableButton}">
-                                <lightning:button variant="brand" label="Submit" title="Submit"
-                                    onclick="{! c.handleClick }" />
-                            </aura:if>
+                        <div style="margin: 1rem 0;">
+                            <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false"/>
+                            <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                            <div class="slds-align_absolute-center slds-m-top_small">
+                                <aura:if isTrue="{!v.isDisableButton}">
+                                    <lightning:button variant="brand" label="Submit" title="Submit"
+                                        onclick="{! c.handleClick }" />
+                                </aura:if>
+                            </div>
+
                         </div>
                     </aura:if>
                 </div>

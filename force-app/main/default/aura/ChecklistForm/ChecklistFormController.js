@@ -92,8 +92,13 @@
 
         var fileName = 'No File Selected..';
         if (event.getSource().get("v.files").length > 0 && file.size > 4500000) {
-            component.set("v.fileName", 'Alert : File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
-            alert('File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
+            try {
+                component.set("v.fileName", 'Alert : File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
+                alert('File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
+
+            } catch (error) {
+                console.log('error in upload ',error);
+            }
         } else {
             fileName = event.getSource().get("v.files")[0]['name'];
             component.set("v.fileName", fileName);

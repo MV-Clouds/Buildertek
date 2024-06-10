@@ -299,7 +299,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static Id SaveFile(Id parentId, String fileName, String base64Data, String contentType) {
+    public static void SaveFile(Id parentId, String fileName, String base64Data, String contentType) {
         base64Data = EncodingUtil.urlDecode(base64Data, 'UTF-8');
 
         ContentVersion conVer = new ContentVersion();
@@ -316,8 +316,86 @@ public without sharing class checkListQuestionsCtrl{
         conDocLink.shareType = 'I';
         conDocLink.Visibility='AllUsers';
         insert conDocLink;
+    }
 
-        return conVer.Id;
+    @AuraEnabled
+    public static string createChecklistWithFilesAndQuestion(string QuestionString, string recordId, string checkName, String fileName, String base64Data, String contentType ){
+        try{
+            String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
+            system.debug(objectname);
+            system.debug(QuestionString);
+            if (objectname.contains('__c')){
+                objectname = objectname.replace('__c', '');
+            }
+            if (objectname.contains('__')){
+                string[] obj = objectname.split('__');
+                objectname = obj[1];
+            }
+            list<groupinnerclass> QuestionsInner = (list<groupinnerclass>)System.JSON.deserialize(QuestionString, list<groupinnerclass>.class);
+            buildertek__Checklist_Response__c checklistresponse = new buildertek__Checklist_Response__c();
+            checklistresponse.buildertek__Submitted_Date__c = System.Now();
+            checklistresponse.buildertek__Checklist_Name__c = checkName;
+            String fieldname = objectname;
+            if (!Test.isRunningTest()){
+                checklistresponse.put(objectname + 'Checklist__c', recordId);
+            }
+            system.debug(QuestionsInner);
+            system.debug(objectname + 'Checklist__c');
+            insert checklistresponse;
+
+            SaveFile(checklistresponse.Id, fileName, base64Data, contentType);
+
+            list<buildertek__Questionnaire__c> Questionnairelist = new list<buildertek__Questionnaire__c>();
+            List<string> questionList = new List<string>();
+            Map<string, string> questionMap = new Map<string, string>();
+            List<buildertek__Questions__c> bclist;
+
+            for (groupinnerclass groups : QuestionsInner){
+                for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
+                    questionList.add(Ques.QuestionId);
+                }
+            }
+            if (!questionList.isEmpty()){
+                bclist = [select id, buildertek__Customize__c
+                          from buildertek__Questions__c
+                          where id IN:questionList];
+            }
+
+            for (buildertek__Questions__c b : bclist){
+                questionMap.put(b.id, b.buildertek__Customize__c);
+            }
+            for (groupinnerclass groups : QuestionsInner){
+                for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
+                    buildertek__Questionnaire__c Questionnaire = new buildertek__Questionnaire__c();
+                    Questionnaire.buildertek__Questions__c = Ques.QuestionId;
+                    Questionnaire.buildertek__Checklist_Response__c = checklistresponse.Id;
+                    if (bclist.size() > 0){
+                        Questionnaire.buildertek__QuestionireQuestion__c = questionMap.get(Ques.QuestionId);
+                    }
+                    if (Ques.QuestionType != 'Multi Select Answer'){
+                        Questionnaire.buildertek__Answer__c = Ques.QuestionValue;
+                    } else{
+                        if (Ques.QuestionValues == null){
+                            Questionnaire.buildertek__Answer__c = '';
+                        } else{
+                            Questionnaire.buildertek__Answer__c = '' + Ques.QuestionValues;
+                        }
+                    }
+                    Questionnairelist.add(Questionnaire);
+                }
+            }
+            insert Questionnairelist;
+            return 'Success';
+        } catch (Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c
+                                                                                     FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true){
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            system.debug(e.getMessage());
+            system.debug('@!@!@' + e.getLineNumber());
+            return e.getMessage() + e.getLineNumber();
+        }
     }
 
     @AuraEnabled
