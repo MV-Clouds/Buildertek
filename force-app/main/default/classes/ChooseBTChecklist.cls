@@ -12,40 +12,23 @@ public class ChooseBTChecklist {
     
     @AuraEnabled
     public static list<string> getAllGroup( ){
-        list<buildertek__Questions__c> Questions = [select id,buildertek__group_name__c
-                                                           from buildertek__Questions__c ];
-        set<string> groupNames = new set<string>();
+        List<AggregateResult> lg = [SELECT COUNT(Id) recordsCount, buildertek__group_name__c FROM buildertek__Questions__c WHERE buildertek__group_name__c != null GROUP BY buildertek__group_name__c];
         list<string> groupNameList = new list<string>();
-        for(buildertek__Questions__c question : Questions){
-            if(question.buildertek__group_name__c != '' && question.buildertek__group_name__c != null){
-                groupNames.add(question.buildertek__group_name__c);
-            }
-        }
-        for(string groupName : groupNames){
-            groupNameList.add(groupName);
+        for(AggregateResult ar : lg){
+            groupNameList.add((string)ar.get('buildertek__group_name__c'));
         }
         return groupNameList;
     }
     
     @AuraEnabled
     public static list<buildertek__Questions__c> getQuestions(){
-        list<buildertek__Questions__c> Questions = [select id,
-                                                                            buildertek__Customize__c,
-                                                                            buildertek__Options__c,
-                                                                            buildertek__Question_Type__c,
-                                                                            buildertek__group_name__c
-                                                                            from buildertek__Questions__c   ];
+        list<buildertek__Questions__c> Questions = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c order by buildertek__group_name__c nulls last];
         return Questions;
     }
       @AuraEnabled
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
         system.debug('QuestionIds.......'+QuestionIds);
-        list<buildertek__Questions__c> Questionlist = [select id,
-                                                                            buildertek__Customize__c,
-                                                                            buildertek__Options__c,
-                                                                            buildertek__Question_Type__c,
-                                                                            buildertek__group_name__c
-                                                                            from buildertek__Questions__c   WHERE Id IN: QuestionIds ];
+        list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c   WHERE Id IN: QuestionIds order by buildertek__group_name__c nulls last];
           system.debug(Questionlist);                                                                  
         return Questionlist;
     }
