@@ -19,6 +19,12 @@
     <aura:attribute name="fileName" type="String" default="No File Selected.." />
 
     <div>
+    <aura:html tag="style">
+        .slds-form-element__legend {
+            font-size: 1rem !important;
+            font-weight: unset !important;
+        }
+    </aura:html>
         <lightning:layout multipleRows="true">
             <lightning:layoutitem size="2"></lightning:layoutitem>
             <lightning:layoutitem size="8">
@@ -34,34 +40,31 @@
                         </div>
                     </aura:if>
                     <aura:if isTrue="{!v.SuccessMessage}">
-                        <div class="slds-col slds-size_12-of-12 slds-var-p-around_small"
-                            style="background:Green;color: white;font-weight: bold;;z-index: 100;top: 0px;font-size:18px;padding:20px">
-                            Checklist Submitted Successfully
-                        </div>
-                        <div class="slds-align_absolute-center slds-m-top_small">
-                            <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
-                        </div>
+                         <div class="slds-col slds-size_12-of-12 slds-var-p-around_small" style="background:Green;color: white;font-weight: bold;z-index: 100;top: 0px;font-size:18px;padding:20px">
+                    		Checklist Submitted Successfully
+                		</div>
+                         <div class="slds-align_absolute-center slds-m-top_small">
+                        	 <lightning:button variant="neutral" label="Close" title="Close" onclick="{!c.closePage}" />
+                        </div> 
                     </aura:if>
                     <aura:if isTrue="{!!v.SuccessMessage}">
                         <div style="width: 100%;text-align: center;margin-bottom: 20px;">
                             <img src="{!v.imgUrl}" id="logoImg" style="width:60%;" />
                         </div>
                         <aura:iteration items="{!v.Questions}" var="Group">
-                            <div
-                                style="background: #e2e2e2;padding: 10px;border-radius: 5px;font-weight: 600;font-size: 15px;margin-top:10px;margin-bottom:10px">
+                            <div style="background: #e2e2e2;padding: 10px;border-radius: 5px;font-weight: 600;font-size: 15px;margin-top:10px;margin-bottom:10px; font-size: 1rem;">
                                 <aura:if isTrue="{!and(Group.GroupName != '',Group.GroupName != null)}">
-                                    {!Group.GroupName}
+                                    <b>{!Group.GroupName}</b>
                                 </aura:if>
                                 <aura:if isTrue="{!or(Group.GroupName == '',Group.GroupName == null)}">
-                                    No Grouping
+                                    <b>No Grouping </b>
                                 </aura:if>
                             </div>
                             <aura:iteration items="{!Group.QuestionsInnerclasslist}" var="Question">
                                 <aura:if isTrue="{!Question.QuestionType == 'Text Response'}">
-                                    <label class="slds-form-element__label"><b>{!Question.QuestionName}</b></label>
-                                    <lightning:input name="input2" variant="label-hidden"
-                                        value="{!Question.QuestionValue}" style="width:80%" />
-                                </aura:if>
+                                    <label class="slds-form-element__label" style="font-size: medium;">{!Question.QuestionName}</label> 
+                                    <lightning:textarea name="input2" variant="label-hidden" value="{!Question.QuestionValue}" rows="3"/>
+                                </aura:if> 
                                 <aura:if isTrue="{!Question.QuestionType == 'Single Select Answer'}">
                                     <lightning:radioGroup name="{!Question.QuestionId}" label="{!Question.QuestionName}"
                                         options="{! Question.QuestionOptions }" value="{! Question.QuestionValue }"
