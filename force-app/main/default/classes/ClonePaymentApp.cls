@@ -37,10 +37,10 @@ public class ClonePaymentApp {
             system.debug('paymentold1.Project------->'+paymentold1.buildertek__Project__c);
             
             if(paymentold1.recordtype.name == 'AP'){
-                paymentold = [select id,buildertek__Project__c, buildertek__Application__c,buildertek__Application_Number__c, buildertek__IsNextPayment__c,buildertek__Status__c, recordtype.name from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AP' order by buildertek__Application_Number__c desc limit 1 ];
+                paymentold = [select id,buildertek__Project__c, buildertek__Application__c,buildertek__Application_Number__c, buildertek__IsNextPayment__c,buildertek__Status__c, recordtype.name from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AP' AND id=:recordId order by buildertek__Application_Number__c desc limit 1 ];
                 
             }else{
-                paymentold = [select id,buildertek__Project__c, buildertek__Application__c,buildertek__Application_Number__c, buildertek__IsNextPayment__c,buildertek__Status__c, recordtype.name from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AR' order by buildertek__Application_Number__c desc limit 1 ];
+                paymentold = [select id,buildertek__Project__c, buildertek__Application__c,buildertek__Application_Number__c, buildertek__IsNextPayment__c,buildertek__Status__c, recordtype.name from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AR' AND id=:recordId order by buildertek__Application_Number__c desc limit 1 ];
                 PaymentAppNumber = Integer.ValueOf(paymentold.buildertek__Application__c);
                 Projectid = paymentold.buildertek__Project__c;
                 PaymentAppNumber++;
@@ -83,6 +83,7 @@ public class ClonePaymentApp {
             system.debug('payList------>'+payList);
             //  ClonePaymentAppwithoutSharing innerClassHandler = New ClonePaymentAppwithoutSharing();
             List<buildertek__SOV_Continuation__c> conSheet = [select Id, Name, buildertek__IsNextPayment__c,buildertek__SOV_Payment_Application__r.buildertek__Status__c, buildertek__SOV_Payment_Application__r.buildertek__PA_Type__c, buildertek__SOV_Payment_Application__r.RecordTypeId, buildertek__SOV_Payment_Application__r.recordtype.name  from buildertek__SOV_Continuation__c where buildertek__SOV_Payment_Application__c =: paymentold.id];
+            System.debug('conSheet --> '+conSheet);
             innerclass inn = new innerclass(); 
             if (conSheet.size()> 1) {
                 inn.multipleContinuationSheet = true;
@@ -153,6 +154,8 @@ public class ClonePaymentApp {
     @AuraEnabled
     public static String cloneAnySobjet(String recordId){
         
+        System.debug('recordId--->'+recordId);
+        
         String OldPayAppId ;
         
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Get_Lines_From_CO__c
@@ -182,10 +185,10 @@ public class ClonePaymentApp {
             
             
             if(paymentold1.recordtype.name == 'AP'){
-                sovPaymentAppRec = [SELECT Id,Name,recordtype.name,buildertek__Application_Number__c, buildertek__Project__c, buildertek__Status__c, buildertek__Less__c, buildertek__Total_Completed__c,buildertek__Total_Earned_Less_Retainage__c, buildertek__Amount_Certified__c from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AP' order by buildertek__Application_Number__c desc limit 1 ];
+                sovPaymentAppRec = [SELECT Id,Name,recordtype.name,buildertek__Application_Number__c, buildertek__Project__c, buildertek__Status__c, buildertek__Less__c, buildertek__Total_Completed__c,buildertek__Total_Earned_Less_Retainage__c, buildertek__Amount_Certified__c from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AP' AND Id =: recordId  order by buildertek__Application_Number__c desc limit 1 ];
                 
             }else{
-                sovPaymentAppRec = [SELECT Id,Name,recordtype.name,buildertek__Application_Number__c, buildertek__Project__c, buildertek__Status__c, buildertek__Less__c, buildertek__Total_Completed__c,buildertek__Total_Earned_Less_Retainage__c, buildertek__Amount_Certified__c from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AR' order by buildertek__Application_Number__c desc limit 1 ];
+                sovPaymentAppRec = [SELECT Id,Name,recordtype.name,buildertek__Application_Number__c, buildertek__Project__c, buildertek__Status__c, buildertek__Less__c, buildertek__Total_Completed__c,buildertek__Total_Earned_Less_Retainage__c, buildertek__Amount_Certified__c from buildertek__SOV_Payment_Application__c where buildertek__Project__c =: paymentold1.buildertek__Project__c AND recordtype.name = 'AR' AND Id =: recordId order by buildertek__Application_Number__c desc limit 1 ];
                 
             }
             
