@@ -45,7 +45,7 @@ public class ChooseBTChecklist {
                                                         buildertek__Customize__c, 
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: Questions.id];
+                                                       from buildertek__Questions__c where id=: Questions.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
     }
     
@@ -88,7 +88,7 @@ public class ChooseBTChecklist {
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c,
                                                         buildertek__group_name__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
@@ -111,7 +111,7 @@ public class ChooseBTChecklist {
                                                         buildertek__Customize__c, 
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
@@ -134,7 +134,7 @@ public class ChooseBTChecklist {
                                                         buildertek__Customize__c, 
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
@@ -271,7 +271,7 @@ public class ChooseBTChecklist {
     
         buildertek__Checklist_Configuration__c CheckListCofigRecord = [select id,
     buildertek__Object_Name__c,
-Name,(select id,buildertek__Questions__r.Id,buildertek__Questions__r.buildertek__Customize__c from buildertek__Checklist_Questions__r) 
+Name,(select id,buildertek__Questions__r.Id,buildertek__Questions__r.buildertek__Customize__c from buildertek__Checklist_Questions__r order by buildertek__Questions__r.buildertek__group_name__c nulls last) 
 from buildertek__Checklist_Configuration__c 
 where id=:recId];
          //update CheckListCofigRecord;
@@ -286,7 +286,7 @@ where id=:recId];
                                                                             buildertek__Options__c,
                                                                             buildertek__Question_Type__c,
                                                                             buildertek__group_name__c
-                                                                            from buildertek__Questions__c where id=:recId];
+                                                                            from buildertek__Questions__c where id=:recId order by buildertek__group_name__c nulls last];
     
       
         return Questions;
