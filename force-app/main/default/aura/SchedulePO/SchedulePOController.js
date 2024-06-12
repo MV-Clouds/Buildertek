@@ -217,11 +217,9 @@
                 }
             }
     
-            var formattedFinishDate = finishDate.getFullYear() + '-' +
-                ('0' + (finishDate.getMonth() + 1)).slice(-2) + '-' +
-                ('0' + finishDate.getDate()).slice(-2);
-    
-            component.set('v.FinishDate', formattedFinishDate);
+            let t = new Date(finishDate.toUTCString());
+            let yyyyMMdd = t.toISOString().slice(0, 10);
+            component.set('v.FinishDate', yyyyMMdd);
     
             // Reset any custom validity
             var inputField = component.find('finishDate');
