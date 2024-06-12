@@ -335,7 +335,7 @@ public static string createAPFromPO(string poid){
                                            where Id = :poid]);
         createAPItems([Select Id, Name, Tax__c, purchase_order__c, Item_Name__c, Description__c, Cost_Code__c, Product__c, Quantity__c, Unit_Price__c, buildertek__Quantity_Remaining__c, buildertek__Quantity_Received__c,buildertek__Status__c,buildertek__Contractor_Invoice_Line__c
                        from Purchase_Order_Item__c
-                       where purchase_order__c = :poid]);
+                       where purchase_order__c = :poid],accountPaybleId);
         return accountPaybleId;
     } else {
         return null;
@@ -374,28 +374,27 @@ public static string createAPFromPO(string poid){
         return PoIdbyAp.get(posRecId).Id;
     }
 
-    public static void createAPItems(List<Purchase_Order_Item__c> poItems){
+    public static void createAPItems(List<Purchase_Order_Item__c> poItems,String accountPaybleId){
         system.debug('In createAPItems');
-        Map<Id, Account_Payable__c> PoIdbyAp = new Map<Id, Account_Payable__c>();
+        // Map<Id, Account_Payable__c> PoIdbyAp = new Map<Id, Account_Payable__c>();
 
-        set<Id> poIds = new set<Id>();
-        for (Purchase_Order_Item__c poItem : poItems){
-            poIds.add(poItem.Purchase_Order__c);
-        }
+        // set<Id> poIds = new set<Id>();
+        // for (Purchase_Order_Item__c poItem : poItems){
+        //     poIds.add(poItem.Purchase_Order__c);
+        // }
 
-        for (Account_Payable__c ap : [Select Id, Purchase_Order__c
-                                      from Account_Payable__c
-                                      where Purchase_Order__c IN :poIds]){
-            PoIdbyAp.put(ap.Purchase_Order__c, ap);
-        }
-        System.debug('PoIdbyAp---->' +  PoIdbyAp);
+        // for (Account_Payable__c ap : [Select Id, Purchase_Order__c
+        //                               from Account_Payable__c
+        //                               where Purchase_Order__c IN :poIds]){
+        //     PoIdbyAp.put(ap.Purchase_Order__c, ap);
+        // }
+        // System.debug('PoIdbyAp---->' +  PoIdbyAp);
 
         List<buildertek__Account_Payable_Item__c> apItems = new List<buildertek__Account_Payable_Item__c>();
         for (Purchase_Order_Item__c poItem : poItems){        
-            System.debug('poItem.purchaseorder--->' + PoIdbyAp.get(poItem.Purchase_Order__c));
             if(poItem.buildertek__Status__c=='Approved_For_Payment'){
             Account_Payable_Item__c apItem = new Account_Payable_Item__c();
-            apItem.Account_Payable__c = PoIdbyAp.get(poItem.Purchase_Order__c).Id;
+            apItem.Account_Payable__c = accountPaybleId;
             apItem.Name = poItem.Name;
             apItem.Item_Title__c = poItem.Item_Name__c;
             apItem.Description__c = poItem.Description__c;

@@ -44,6 +44,15 @@ public class BillLineItemTriggerHandler {
 
     //OnAfterDelete
     public void OnAfterDelete(buildertek__Account_Payable_Item__c[] oldBillLineItem){
+        System.debug('i am also here');
+        Set<Id> polineId = new Set <Id>();
+        for(buildertek__Account_Payable_Item__c invoiceLine : oldBillLineItem){
+            polineId.add(invoiceLine.buildertek__Purchase_Order_Item__c);
+        }
+        List<buildertek__Purchase_Order_Item__c> polinelist = [SELECT Id, Name,buildertek__Quantity_Received__c from buildertek__Purchase_Order_Item__c WHERE Id IN :polineId];
+        for(buildertek__Purchase_Order_Item__c poline : polinelist){
+            poline.buildertek__Quantity_Received__c=0;
+        }
         Set<Id> InoviceId = new Set<Id>();
         for(buildertek__Account_Payable_Item__c invoiceLine : oldBillLineItem){
             InoviceId.add(invoiceLine.buildertek__Account_Payable__c);
