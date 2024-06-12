@@ -13,6 +13,8 @@
     <aura:attribute name="imgUrl" type="String" default="" />
     <aura:attribute name="siteUrl" type="String" default="" />
     <aura:attribute name="DynamiccheckListName" type="string" />
+    <aura:attribute name="contactId" type="string" default=""/>
+    <aura:attribute name="checkListType" type="string" default=""/>
     <aura:attribute name="isShowcancel" type="boolean" default="false" />
     <aura:attribute name="ischecklistNameError" type="boolean" default="false" />
     <aura:attribute name="isDisableButton" type="boolean" default="true" />

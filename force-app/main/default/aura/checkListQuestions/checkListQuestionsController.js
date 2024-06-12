@@ -416,7 +416,7 @@
                            var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({
                                 "title": "Error!",
-                                "message": "Please enter an email address or select an email recipient.",
+                                "message": "The selected contact doesn't have email recipient. Please add and try again.",
                                 "type":"error"
                             });
                             toastEvent.fire();
@@ -446,7 +446,8 @@
                             "Url" : component.get("v.Url"),
                             "subject":component.get("v.subject"),
                             "contactEmail" : component.get("v.SelectedContactEmail"),
-                            "selectCheckListName" : component.get("v.checklistName")
+                            "selectCheckListName" : component.get("v.checklistName"),
+                            "contactId" : component.get("v.SelectedContactId"),
                         });
                         action.setCallback(this,function(a){
                             component.set("v.Spinner",false);

@@ -3,6 +3,10 @@
         //Site Url Get
         var url = window.location.href;
         var siteUrl = url.split('?');
+        var conId = helper.getParameterByName('contactId', url);
+        var checklistName = helper.getParameterByName('selectCheckListName', url);
+        component.set("v.checkListType", checklistName);
+        component.set("v.contactId", conId);
         if (siteUrl[0] != '' && siteUrl[0] != undefined) {
             component.set("v.siteUrl", siteUrl[0].replace('/buildertek__ChecklistForm', ''));
         }

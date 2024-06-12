@@ -220,7 +220,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string createchecklistquestion(string QuestionString, string recordId, string checkName){
+    public static string createchecklistquestion(string QuestionString, string recordId, string checkName, string conId, string checkListType){
         try{
             String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
             system.debug(objectname);
@@ -236,6 +236,8 @@ public without sharing class checkListQuestionsCtrl{
             buildertek__Checklist_Response__c checklistresponse = new buildertek__Checklist_Response__c();
             checklistresponse.buildertek__Submitted_Date__c = System.Now();
             checklistresponse.buildertek__Checklist_Name__c = checkName;
+            checklistresponse.buildertek__ContactChecklist__c = conId;
+            checklistresponse.buildertek__Checklist_Typte__c = checkListType;
             String fieldname = objectname;
             if (!Test.isRunningTest()){
                 checklistresponse.put(objectname + 'Checklist__c', recordId);
@@ -319,7 +321,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string createChecklistWithFilesAndQuestion(string QuestionString, string recordId, string checkName, String fileName, String base64Data, String contentType ){
+    public static string createChecklistWithFilesAndQuestion(string QuestionString, string recordId, string checkName, String fileName, String base64Data, String contentType, String conId, String checkListType){
         try{
             String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
             system.debug(objectname);
@@ -335,6 +337,8 @@ public without sharing class checkListQuestionsCtrl{
             buildertek__Checklist_Response__c checklistresponse = new buildertek__Checklist_Response__c();
             checklistresponse.buildertek__Submitted_Date__c = System.Now();
             checklistresponse.buildertek__Checklist_Name__c = checkName;
+            checklistresponse.buildertek__ContactChecklist__c = conId;
+            checklistresponse.buildertek__Checklist_Typte__c = checkListType;
             String fieldname = objectname;
             if (!Test.isRunningTest()){
                 checklistresponse.put(objectname + 'Checklist__c', recordId);
@@ -399,7 +403,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string sendchecklist(string checklistId, Id recordId, string Email, string FieldName, Boolean isparent, string parentObj, string recipient, string text, string subject, string contactEmail, string selectCheckListName){
+    public static string sendchecklist(string checklistId, Id recordId, string Email, string FieldName, Boolean isparent, string parentObj, string recipient, string text, string subject, string contactEmail, string selectCheckListName, string contactId){
         system.debug('Email' + Email);
         system.debug('FieldName' + FieldName);
         system.debug('isparent' + isparent);
@@ -461,7 +465,7 @@ public without sharing class checkListQuestionsCtrl{
                 emaillist.add(contactEmail);
             }
             system.debug('emaillist' + emaillist);
-            text = text.replace('{URL}', '<a href="' + sitesUrl.buildertek__Site_URL__c + '/buildertek__ChecklistForm?id=' + recordId + '&checklistId=' + checklistId + '&selectCheckListName=' + selectCheckListName + '">Checklist Form</a>');
+            text = text.replace('{URL}', '<a href="' + sitesUrl.buildertek__Site_URL__c + '/buildertek__ChecklistForm?id=' + recordId + '&checklistId=' + checklistId + '&selectCheckListName=' + selectCheckListName + '&contactId=' + contactId + '">Checklist Form</a>');
 
             Messaging.SingleEmailMessage sendMessage = new Messaging.SingleEmailMessage();
             sendMessage.toAddresses = emaillist;
