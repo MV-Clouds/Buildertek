@@ -46,13 +46,26 @@ public class BillLineItemTriggerHandler {
     public void OnAfterDelete(buildertek__Account_Payable_Item__c[] oldBillLineItem){
         System.debug('i am also here');
         Set<Id> polineId = new Set <Id>();
+        Map<Id, Decimal> poItemIdToQuantityMap = new Map<Id, Decimal>();
+
         for(buildertek__Account_Payable_Item__c invoiceLine : oldBillLineItem){
+            if(invoiceLine.buildertek__Purchase_Order_Item__c!=null){
             polineId.add(invoiceLine.buildertek__Purchase_Order_Item__c);
+        if (!poItemIdToQuantityMap.containsKey(invoiceLine.buildertek__Purchase_Order_Item__c)) {
+            poItemIdToQuantityMap.put(invoiceLine.buildertek__Purchase_Order_Item__c, 0);
+        }
+        poItemIdToQuantityMap.put(invoiceLine.buildertek__Purchase_Order_Item__c, poItemIdToQuantityMap.get(invoiceLine.buildertek__Purchase_Order_Item__c) + invoiceLine.Quantity__c);
+            }    
         }
         List<buildertek__Purchase_Order_Item__c> polinelist = [SELECT Id, Name,buildertek__Quantity_Received__c from buildertek__Purchase_Order_Item__c WHERE Id IN :polineId];
         for(buildertek__Purchase_Order_Item__c poline : polinelist){
-            poline.buildertek__Quantity_Received__c=0;
+
+        if (poItemIdToQuantityMap.containsKey(poline.Id)) {
+            poline.buildertek__Quantity_Received__c -= poItemIdToQuantityMap.get(poline.Id);
         }
+    }
+        update polinelist;
+        
         Set<Id> InoviceId = new Set<Id>();
         for(buildertek__Account_Payable_Item__c invoiceLine : oldBillLineItem){
             InoviceId.add(invoiceLine.buildertek__Account_Payable__c);
