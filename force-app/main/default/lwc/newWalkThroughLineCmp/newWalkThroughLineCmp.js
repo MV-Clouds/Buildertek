@@ -115,7 +115,7 @@ export default class NewWalkThroughLineCmp extends LightningElement {
             if (this.recordTypeName === 'Product') {
                 if (fields['buildertek__Description__c'] == null || fields['buildertek__Description__c'] == '') {
                     this.spinner = false;
-                    this.showToast('Error', 'Please select a Product', 'error');
+                    this.showToast('Error', 'Please add description', 'error');
                     return;
                 } else {
                     fields['RecordTypeId'] = this.selectedRecordType;

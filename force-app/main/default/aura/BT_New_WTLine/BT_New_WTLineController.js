@@ -53,7 +53,7 @@
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     title: "Error",
-                    message: "Please select a Product",
+                    message: "Please add Description",
                     type: "error"
                 });
                 toastEvent.fire();
