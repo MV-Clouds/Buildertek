@@ -5,12 +5,32 @@ public with sharing class CreatePOFromRFQ{
         Map<Id, buildertek__Purchase_Order__c> purchaseOrder = new Map<Id, buildertek__Purchase_Order__c>();
         string recordid = '';
         try{
+            // List<buildertek__RFQ__c> RFQ =[Select Id,Name,buildertek__Project__c,buildertek__Vendor__c,buildertek__Budget__c,buildertek__Added_to_Quote__c FROM buildertek__RFQ__c WHERE Id=:RFQId];
+            // String standardRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Purchase_Order__c' AND Name = 'Standard' limit 1].Id;
+
+            //     buildertek__Purchase_Order__c PO = new buildertek__Purchase_Order__c();
+            //     PO.buildertek__Project__c = RFQ[0].buildertek__Project__c;
+            //     PO.buildertek__Status__c = 'Approved';
+            //     PO.buildertek__Type__c = 'Sales';
+            //     PO.buildertek__Vendor__c = RFQ[0].buildertek__Vendor__c;
+            //     PO.buildertek__Budget__c = RFQ[0].buildertek__Budget__c;
+            //     PO.buildertek__Quote__c = RFQ[0].buildertek__Quote__c;
+            //     PO.buildertek__RFQ__c = RFQ[0];
+            //     PO.buildertek__Description__c = RFQ[0].Name;
+            //     PO.RecordTypeId = standardRecordId;
+            //     insert PO;
+                      
             List<buildertek__RFQ_To_Vendor__c> RFQ;
             if (Schema.sObjectType.buildertek__RFQ__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Project__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Budget__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Quote__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Due_Date__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Status__c.isAccessible() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Vendor__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_To_Vendor__c.fields.buildertek__Vendor__c.isAccessible()){
-                RFQ = [Select Id, Name,buildertek__Rfq__c,buildertek__Rfq__r.Name ,buildertek__Vendor__c, buildertek__Rfq__r.buildertek__Project__c,buildertek__Rfq__r.buildertek__Budget__c,buildertek__Rfq__r.buildertek__Quote__c, (SELECT Id, Name, buildertek__Cost_Code__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c, buildertek__Item_Name__c, buildertek__Vendor__c, buildertek__RFQ_Item__c, buildertek__Vendor_Name__c, buildertek__Description__c, buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c
+                RFQ = [Select Id, Name,buildertek__Rfq__c,buildertek__Rfq__r.Name ,buildertek__Vendor__c, buildertek__Rfq__r.buildertek__Project__c,buildertek__Rfq__r.buildertek__Budget__c,buildertek__Rfq__r.buildertek__Quote__c,buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c, (SELECT Id, Name, buildertek__Cost_Code__c, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Total_Price__c, buildertek__Item_Name__c, buildertek__Vendor__c, buildertek__RFQ_Item__c, buildertek__Vendor_Name__c, buildertek__Description__c, buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c
                                                                                                                                                                                         FROM buildertek__Vendor_Items__r)
                        FROM buildertek__RFQ_To_Vendor__c
                        WHERE buildertek__RFQ__c = :RFQId AND (buildertek__Status__c =: 'Awarded' OR buildertek__Status__c =: 'Accepted')];
+            }
+            if(RFQ[0].buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c!=null){
+                response.strMessage = 'PO already Created';
+                
+                return response;
             }
             System.debug('Number of RFQ records : '+RFQ.size());
             String standardRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Purchase_Order__c' AND Name = 'Standard' limit 1].Id;
@@ -32,10 +52,11 @@ public with sharing class CreatePOFromRFQ{
                     insert purchaseOrder.values();
                 }
                 //Update the RFQ with the Associate Purchase Order
-                // RFQ.buildertek__Associated_Purchase_Order__c = PO.Id;
-                // if (Schema.sObjectType.buildertek__RFQ__c.isUpdateable() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Associated_Purchase_Order__c.isUpdateable()){
-                //     update RFQ;
-                // }
+                String poId = [SELECT Id FROM buildertek__Purchase_Order__c WHERE buildertek__RFQ__c = :RFQId LIMIT 1].Id;
+                 RFQ[0].buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c = poId;
+                 if (Schema.sObjectType.buildertek__RFQ__c.isUpdateable() && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Associated_Purchase_Order__c.isUpdateable()){
+                    update RFQ[0].buildertek__Rfq__r;
+                 }
                 List<buildertek__Purchase_Order_Item__c> POLines = new List<buildertek__Purchase_Order_Item__c>();
                 // List<buildertek__RFQ_Item__c> RfqItemList;
                 // if (Schema.sObjectType.buildertek__RFQ_Item__c.fields.Id.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Name.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Cost_Code__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Description__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Product__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Quantity__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Total_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.Unit_Price__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__Budget_Item__c.isAccessible() && Schema.sObjectType.buildertek__RFQ_Item__c.fields.buildertek__RFQ_Package__c.isAccessible()){

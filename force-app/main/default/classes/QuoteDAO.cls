@@ -258,7 +258,9 @@ public with sharing class QuoteDAO{
             for (buildertek__RFQ__c rfq : rfqList){
                 rfq.buildertek__Added_to_Quote__c = QuoteId;
             }
+            RFQTriggerHandler.blnSkipRFQUpdateTrigger=true;
             update rfqList;
+            RFQTriggerHandler.blnSkipRFQUpdateTrigger=false;
 
 
             List<buildertek__Purchase_Order__c> purchaseOrderRecs;
@@ -344,7 +346,6 @@ public with sharing class QuoteDAO{
             }
             System.debug('quoteItemsToInsert' + quoteItemsToInsert);
             insert quoteItemsToInsert;
-
             List<buildertek__RFQ_Item__c> rfqLinesList =[Select Id ,buildertek__RFQ_Package__c  , buildertek__Quote_Item__c ,Name From buildertek__RFQ_Item__c where buildertek__RFQ_Package__c=:rfqIds];
 
             for (buildertek__Quote_Item__c qItem : quoteItemsToInsert){
