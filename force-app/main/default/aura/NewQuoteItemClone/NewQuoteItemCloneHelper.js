@@ -516,6 +516,7 @@
                                         toastEvent.fire();
                                     }), 3000
                                 );
+                                $A.get('e.force:refreshView').fire();
                                 component.refreshComponent();
                             } else if (state === "INCOMPLETE") {
                                 // do something
@@ -601,7 +602,6 @@
                         toastEvent.fire();
                     }), 3000
                 );
-
                 component.refreshComponent();
                 //$A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             } else {
