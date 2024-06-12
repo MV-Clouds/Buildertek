@@ -54,6 +54,32 @@
 
     <!-- Design for Checklist Configuration -->
     <aura:attribute name="checklists" type="List" />
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+            max-width: 52rem !important;
+            width: 52% !important;
+        }
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content {
+            height: unset !important;
+            max-height: unset !important;
+            box-shadow: none !important;
+        }
+        .slds-modal__container {
+            max-width: 72rem !important;
+            width: 72% !important;
+        }
+        .scrollable {
+            height: 400px;
+            overflow-y: auto;
+        }
+    </aura:html>
 
     <lightning:card class="slds-card slds-card_boundary">
 
@@ -380,88 +406,64 @@
                                 </div>
                             </div>
                         </aura:if>
-                        <div class="slds">
-                            <div aria-hidden="true" role="dialog"
-                                class="slds-modal slds-modal--prompt slds-fade-in-open"
-                                aura:id="modaldialogNewQuestion">
-                                <div class="slds-modal__container"
-                                    style="padding: 0rem 0 !important;width:75%;min-width:60rem;">
-                                    <div class="slds-modal__header slds-theme--info">
-                                        <button style="background: white;"
-                                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
-                                            title="Close" onclick="{!c.CancelQuestionsModel}">
-                                            <lightning:icon iconName="utility:close" alternativeText="close"
-                                                size="x-small" class="buttonclass" />
-                                        </button>
-                                        <h2 class="slds-text-heading--medium" style="font-weight: 500;">Manage Question</h2>
-                                        <hr/>
-                                    </div>
-
-                                    <aura:if isTrue="{!!v.message}">
-                                        <div class="slds" style="height:300px;overflow:auto;background-color:white; margin-top: -58px;">
-
-                                            <table data-reactroot=""
-                                                class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <div class="slds-modal slds-fade-in-open" aria-hidden="false" role="dialog">
+                            <div class="slds-modal__container">
+                                <div class="slds-modal__header">
+                                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.CancelDeleteModel}">
+                                        <lightning:icon iconName="utility:close" size="small" alternativeText="Close" class="closeIcon"/>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                    <h2 class="slds-text-heading_medium">Manage Question</h2>
+                                </div>
+                    
+                                <aura:if isTrue="{!!v.message}">
+                                    <div class="slds-modal__content">
+                                        <div class="slds">
+                                            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
                                                 <thead>
-                                                    <tr class="slds-text-title_caps">
-                                                        <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
-                                                            <div class="slds-truncate" title="Name">Question</div>
+                                                    <tr class="slds-text-title_caps" style="height: 3rem;">
+                                                        <th class="slds-is-resizable slds-is-sortable" scope="col" style="width: 50%;">
+                                                            <div class="slds-truncate slds-m-left_medium">Question</div>
                                                         </th>
-                                                        <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
-                                                            <div class="slds-truncate" title="Object Name">Question Type
-                                                            </div>
+                                                        <th class="slds-is-resizable slds-is-sortable" scope="col" style="width: 20%;">
+                                                            <div class="slds-truncate">Group</div>
                                                         </th>
-                                                        <th scope="col"
-                                                            style="background:var(--lwc-colorBackgroundRowHover,rgb(243, 242, 242)); background-color: #0070d2; color: white;">
-                                                            <div class="slds-truncate" title="Object Name"></div>
+                                                        <th class="slds-is-resizable slds-is-sortable" scope="col" style="width: 20%;">
+                                                            <div class="slds-truncate">Question Type</div>
                                                         </th>
-
+                                                        <th class="slds-is-resizable" scope="col" style="width: 10%;">
+                                                            <div class="slds-truncate"></div>
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
-
-                                                    <aura:iteration items="{!v.QuestionType}" var="view"
-                                                        indexVar="questionIndex">
-
-                                                        <!--<c:displayCheckListConfigRecords view="{!row}"/>-->
-
-                                                        <tr>
-                                                            <th scope="row" data-label="Account Name">
-                                                                <div class="slds-truncate"><a href="{!('/'+view.Id)}"
-                                                                        target="_blank">{!view.buildertek__Customize__c}</a>
+                                                    <aura:iteration items="{!v.QuestionType}" var="view" indexVar="questionIndex">
+                                                        <tr class="slds-hint-parent">
+                                                            <th scope="row" data-label="Question">
+                                                                <div class="slds-truncate  slds-m-left_medium" style="max-width: unset;">
+                                                                    <a href="{!('/'+view.Id)}" target="_blank">{!view.buildertek__Customize__c}</a>
                                                                 </div>
                                                             </th>
-                                                            <td data-label="Object Name">
-                                                                <div class="slds-truncate slds-is-sortable">
-                                                                    {!view.buildertek__Question_Type__c}</div>
-                                                            </td>
-
-
-
-                                                            <td data-label="">
+                                                            <td data-label="Group">
                                                                 <div class="slds-truncate">
-
-                                                                    <button onclick="{!c.callEditQuestion}"
-                                                                        class="slds-button slds-button_icon"
-                                                                        title="Edit" data-id="{!view.Id}">
-                                                                        <lightning:icon iconName="action:edit"
-                                                                            size="xx-small" alternativeText="Delete" />
-                                                                        <span class="slds-assistive-text">edit</span>
+                                                                    {!view.buildertek__group_name__c}
+                                                                </div>
+                                                            </td>
+                                                            <td data-label="Question Type">
+                                                                <div class="slds-truncate">
+                                                                    {!view.buildertek__Question_Type__c}
+                                                                </div>
+                                                            </td>
+                                                            <td data-label="Actions">
+                                                                <div class="slds-button-group" role="group">
+                                                                    <button onclick="{!c.callEditQuestion}" class="slds-button slds-button_icon slds-p-right_small" title="Edit" data-id="{!view.Id}">
+                                                                        <lightning:icon iconName="action:edit" size="xx-small" alternativeText="Edit" />
+                                                                        <span class="slds-assistive-text">Edit</span>
                                                                     </button>
-
-                                                                    <button onclick="{!c.callDeleteQuestion}"
-                                                                        class="slds-button slds-button_icon"
-                                                                        title="Delete" data-id="{!view.Id}"
-                                                                        data-index="{!questionIndex}">
-                                                                        <lightning:icon iconName="action:delete"
-                                                                            size="xx-small" alternativeText="Delete" />
+                                                                    <button onclick="{!c.callDeleteQuestion}" class="slds-button slds-button_icon slds-m-right_medium" title="Delete" data-id="{!view.Id}" data-index="{!questionIndex}">
+                                                                        <lightning:icon iconName="action:delete" size="xx-small" alternativeText="Delete" />
                                                                         <span class="slds-assistive-text">Delete</span>
                                                                     </button>
-
-
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -469,26 +471,20 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <aura:set attribute="else">
-                                            <div
-                                                style="line-height: 131px;background-color: white;font-size: 21px;text-align: center;margin-top: -58px;">
-                                                Please Add Questions </div>
-                                        </aura:set>
-                                    </aura:if>
-
-
-                                    <div class="slds-modal__footer">
-                                        <div class="slds-x-small-buttons--horizontal slds-float--right">
-                                            <button class="slds-button slds-button--neutral"
-                                                onclick="{!c.CancelDeleteModel}">Cancel</button>
-                                        </div>
                                     </div>
-
+                                    <aura:set attribute="else">
+                                        <div class="slds-text-align_center slds-p-around_large" style="background-color: white; font-size: 21px;">
+                                            Please Add Questions
+                                        </div>
+                                    </aura:set>
+                                </aura:if>
+                    
+                                <div class="slds-modal__footer">
+                                    <button class="slds-button slds-button_neutral" onclick="{!c.CancelDeleteModel}">Cancel</button>
                                 </div>
                             </div>
-
-                            <div class="slds-backdrop slds-backdrop--open" aura:id="backdropNewQuestion"></div>
                         </div>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
 
 
 

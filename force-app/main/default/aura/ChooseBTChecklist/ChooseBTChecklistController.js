@@ -49,6 +49,7 @@
                     debugger;
                     if (selectedIds.length > 0) {
                         var result = a.getReturnValue()
+                        console.log(`result: ${result}`);
                         //component.set("v.Question",a.getReturnValue());
                         for (var i = 0; i < result.length; i++) {
                             var data = result[i].Id;
@@ -58,8 +59,9 @@
                         }
                         for (var j = 0; j < selectedIds.length; j++) {
                             var data = selectedIds[j];
-                            if (document.getElementById("Selected") != null && document.getElementById(data) != null)
+                            if (document.getElementById("Selected") != null && document.getElementById(data) != null){
                                 document.getElementById("Selected").appendChild(document.getElementById(data));
+                            }
                         }
                     }
                 }, 500)
@@ -370,7 +372,7 @@
 
     },
     SelectedQuestions: function (component, event, helper) {
-
+        console.log(`SelectedQuestions`);
         var input, filter, ul, li, a, i;
         input = document.getElementById("selectedImp");
         filter = input.value.toUpperCase();

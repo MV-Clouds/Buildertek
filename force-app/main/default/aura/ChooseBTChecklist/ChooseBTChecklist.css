@@ -139,3 +139,7 @@
 .THIS .slds-icon_xx-small {
     fill: white;
 }
+
+.THIS .closeIcon svg {
+    fill: #fff;
+}
