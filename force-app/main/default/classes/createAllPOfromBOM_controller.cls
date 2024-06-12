@@ -4,9 +4,13 @@ public class createAllPOfromBOM_controller {
     public static responseWrapper createAllPO(string BOMId){
         responseWrapper returnValue = new responseWrapper();
         try {
+            System.debug('BOMId ==> ' + BOMId);
+
             buildertek__Project_Selection_Sheet_Takeoff__c BOM = [SELECT Id, Name, buildertek__Name__c, buildertek__Takeoff__c, buildertek__Project__c
                                                                   FROM buildertek__Project_Selection_Sheet_Takeoff__c
                                                                   WHERE Id =: BOMId];
+
+            System.debug('BOM ==> ' + BOM);
 
             List<buildertek__Select_Sheet__c> BOMLines = [SELECT Id, Name, buildertek__Selection_Sheet_Takeoff__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__Purchase_Order__c, buildertek__Purchase_Order__r.Name,
                                                           buildertek__Purchase_Order_Line__c, buildertek__Quantity__c, buildertek__Total_Sales_Price__c, buildertek__Total_Costs__c, buildertek__BL_UNIT_COST__c, buildertek__BT_Price_Book__c, buildertek__BT_Price_Book__r.Name, buildertek__Product__c, buildertek__Product__r.Name, buildertek__Cost_Code__c, buildertek__Build_Phase__c, buildertek__Build_Phase__r.Name, buildertek__Category__c
@@ -30,12 +34,11 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    // returnValue.returnMessage = 'No lines are available with vendors assigned to them in order to create a purchase order.';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';               
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines are already assiged to a PO.';    
                 }
                 else{
 
@@ -165,15 +168,19 @@ public class createAllPOfromBOM_controller {
                                         // schedule item cost code == PO cost code (first BOM cost code)
                                         // schedule item category == PO categorty (first BOM category)
                                         // get first schedule items that match above conditions....
+                                        List<Id> matchedSchItems = new List<Id>();
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c //SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c
                                             // && schItemPhaseName == poPhaseName 
                                             //&& SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
+
                                         }
                                     }
                                 }
@@ -222,7 +229,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'You must create at least one PO line in order to create a PO.';
             }
 
             return returnValue;
@@ -278,14 +285,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveCostCode == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No cost code assigned to available lines.';
+                    returnValue.returnMessage = 'We were unable to create a PO. No cost codes were assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have already been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -401,6 +408,7 @@ public class createAllPOfromBOM_controller {
 
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
+                        List<Id> matchedSchItems = new List<Id>();
 
                         if(ScheduleItems.size() > 0){
                                 for(buildertek__Purchase_Order__c PO : CreatedPOs){
@@ -410,14 +418,18 @@ public class createAllPOfromBOM_controller {
                                         String key = PO.buildertek__Cost_Code__c + '_' + PO.buildertek__Vendor__c;
                                         String Category = PO.buildertek__Category__c;
 
-
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
+                                            // Integer index =  ScheduleItems.indexOf(SchItem);
+                                            // ScheduleItems.remove(index);
                                         }
+
                                     }
                                 }
         
@@ -468,7 +480,8 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'You must create at least one PO line in order to create a PO.';
+
             }
             return returnValue;
         }
@@ -523,14 +536,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveTradeType == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No trade type assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create purchase order. No trade types have been assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'Unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -607,7 +620,7 @@ public class createAllPOfromBOM_controller {
                         createdPOsIds.add(PO.Id);
                     }
 
-                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name, buildertek__Trade_Type__c FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
+                    List<buildertek__Purchase_Order__c> CreatedPOs = [SELECT Id, Name,buildertek__Project__c,buildertek__Bill_of_Material__c,buildertek__Vendor__c,buildertek__Cost_Code__c,buildertek__BT_Build_Phase__c,buildertek__BT_Build_Phase__r.Name FROM buildertek__Purchase_Order__c WHERE ID IN : createdPOsIds];
 
                     Map<String, Id> TradeTypeVendorId_POId = new Map<String, Id>();
 
@@ -663,6 +676,7 @@ public class createAllPOfromBOM_controller {
 
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
+                        List<Id> matchedSchItems = new List<Id>();
 
                         if(ScheduleItems.size() > 0){
                                 for(buildertek__Purchase_Order__c PO : CreatedPOs){
@@ -671,15 +685,16 @@ public class createAllPOfromBOM_controller {
                                         String poPhaseName = PO.buildertek__BT_Build_Phase__r.Name != null ? PO.buildertek__BT_Build_Phase__r.Name.toLowercase() : null;
                                         String key = PO.buildertek__Trade_Type__c + '_' + PO.buildertek__Vendor__c;
                                         String Category = TradeTypeVendorId_Category.get(key);
-                                        String TradeType = PO.buildertek__Trade_Type__c;
 
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
                                         }
                                     }
                                 }
@@ -728,7 +743,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'Please create atleast one line to create PO.';
             }
             return returnValue;
 
@@ -783,14 +798,14 @@ public class createAllPOfromBOM_controller {
 
                 if(AllBOMlinesNotHaveBuildPhase == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No build phase assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a purchase order. No build phase was assigned to an available line.';
                 }
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
@@ -884,7 +899,7 @@ public class createAllPOfromBOM_controller {
             }
             else{
                 returnValue.state = 'error';
-                returnValue.returnMessage = 'Please create atleast on line to create PO.';
+                returnValue.returnMessage = 'Please create atleast one line to create PO.';
             }
             return returnValue;
         }
@@ -945,10 +960,10 @@ public class createAllPOfromBOM_controller {
 
                 else if(AllBOMlinesAssigesWithPO == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'All PO lines are already assiged to PO.';
+                    returnValue.returnMessage = 'All PO lines have been assiged to a PO.';
                 }else if(AllBOMlinesNotHaveVendor == true){
                     returnValue.state = 'error';
-                    returnValue.returnMessage = 'Unable to create purchase order. No vendor assigned to available lines.';
+                    returnValue.returnMessage = 'We are unable to create a PO. There are no vendors assigned to any PO lines.';
                 }
                 else{
                     Map<String, Id> recordTypeMap = new Map<String, Id>();
