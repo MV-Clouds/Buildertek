@@ -28,7 +28,7 @@ public with sharing class salesInvoiceController {
     @AuraEnabled
     public static list<PricebookEntry> getProductPrice(String productId){
         List<PricebookEntry> pList = new List<PricebookEntry>();
-        pList=[Select Id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c from PricebookEntry where product2Id =: productId and isActive = true and pricebook2Id IN (select id from Pricebook2 Where isActive = true)];
+        pList=[Select Id, UnitPrice, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Discount__c, Product2.buildertek__Cost_Code__c, Product2.buildertek__Cost_Code__r.Name from PricebookEntry where product2Id =: productId and isActive = true and pricebook2Id IN (select id from Pricebook2 Where isActive = true)];
         return pList;
     }
 

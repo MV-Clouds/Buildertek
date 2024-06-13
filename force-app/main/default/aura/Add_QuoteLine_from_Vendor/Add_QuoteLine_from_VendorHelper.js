@@ -13,8 +13,9 @@
                 if (state === "SUCCESS") {
                     var vendors = response.getReturnValue();
                     console.log('vendors: ', vendors);
-                    component.set("v.MainvendorList", vendors);
-                    component.set("v.ItervendorList", vendors);
+                    component.set('v.showmargin' , vendors.showmargin);
+                    component.set("v.MainvendorList", vendors.vendorList);
+                    component.set("v.ItervendorList", vendors.vendorList);
                     // component.set("v.Spinner", false);
                     $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
@@ -155,6 +156,7 @@
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
                     'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
+                    'buildertek__Margin__c':element.Margin ? element.Margin : 0,
                     'buildertek__Markup__c': element.MarkUp ? element.MarkUp : 0,
                     'buildertek__Product__c': element.Id,
                     'buildertek__Size__c': element.Size,

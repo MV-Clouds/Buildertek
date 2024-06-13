@@ -11,30 +11,20 @@
         action.setCallback(this, function (response) {
             var result = response.getReturnValue();
             if (result) {
-                console.log('result', result);
-                if (result.timesheetentryObject.length === 0) {
-                    window.onload = showToast();
-                    function showToast() {
-                        sforce.one.showToast({
-                            "title": "Error!",
-                            "message": "No Time Sheet Entry found for this Time Sheet!",
-                            "type": "error"
-                        });
-                    }
-                    var appEvent = $A.get("e.c:myEvent");
-                    appEvent.setParams({
-                        "message": "Event fired"
-                    });
-                    appEvent.fire();
-                    sforce.one.navigateToSObject(component.get('v.recordId'), 'detail');
+                console.log(`result = ${JSON.stringify(result)}`);
+                component.set("v.timeSheetEntries", result.timesheetentryObject);
+                component.set("v.fieldSetValues", result.FieldSetValues);
+                if (result.timesheetentryObject.length > 0) {
+                    component.set("v.TimeSheetProject", result.timesheetentryObject[0].buildertek__BT_Time_Sheet__r.buildertek__BT_Project__c);
+                    component.set("v.TimeSheetResource", result.timesheetentryObject[0].buildertek__BT_Time_Sheet__r.buildertek__Contact__c);
                 } else {
-                    component.set("v.timeSheetEntries", result.timesheetentryObject);
-                    component.set("v.fieldSetValues", result.FieldSetValues);
-                    console.log('timeSheetEntries', component.get('v.timeSheetEntries'));
-                    component.set("v.Spinner", false);
+                    component.set("v.TimeSheetProject", result.timesheetObject[0].buildertek__BT_Project__c);
+                    component.set("v.TimeSheetResource", result.timesheetObject[0].buildertek__Contact__c);
                 }
+                console.log('timeSheetEntries', component.get('v.timeSheetEntries'));
             }
         });
+        component.set("v.Spinner", false);
         $A.enqueueAction(action);
     },
 
@@ -42,6 +32,20 @@
         console.log('validateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
+        console.log(timeSheetEntries.length);
+        if (timeSheetEntries.length == 0) {
+            component.set("v.Spinner", false);
+            isValid = false;
+            window.onload = showToast();
+            function showToast() {
+                sforce.one.showToast({
+                    "title": "Error!",
+                    "message": "Please enter at least one timesheet entry.",
+                    "type": "error"
+                });
+            }
+            return;
+        }
         for (var i = 0; i < timeSheetEntries.length; i++) {
             var name = timeSheetEntries[i].Name;
             name = name.replace(/^\s+|\s+$/g, '');
@@ -53,7 +57,7 @@
                 function showToast() {
                     sforce.one.showToast({
                         "title": "Error!",
-                        "message": "Name cannot be empty on row " + (i + 1),
+                        "message": "The BT Time Sheet Entry Name must be populated.",
                         "type": "error"
                     });
                 }
@@ -73,7 +77,7 @@
                     function showToast() {
                         sforce.one.showToast({
                             "title": "Error!",
-                            "message": "Start Time cannot be greater than End Time on row " + (i + 1),
+                            "message": "Start Time cannot be greater than End Time",
                             "type": "error"
                         });
                     }
@@ -88,7 +92,7 @@
                 function showToast() {
                     sforce.one.showToast({
                         "title": "Error!",
-                        "message": "Hours should be between 0 and 24 on row " + (i + 1),
+                        "message": "Hours should be between 0 and 24",
                         "type": "error"
                     });
                 }

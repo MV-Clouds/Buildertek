@@ -53,7 +53,7 @@ public with sharing class CreatePOFromRFQ{
                 
                 return response;
             }
-            
+
             System.debug('Number of RFQ records : '+RFQ.size());
             
             String standardRecordId = [SELECT Id, Name FROM RecordType WHERE SobjectType = 'buildertek__Purchase_Order__c' AND Name = 'Standard' limit 1].Id;

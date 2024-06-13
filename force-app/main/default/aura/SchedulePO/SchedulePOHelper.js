@@ -25,7 +25,7 @@
         window.setTimeout(
             $A.getCallback(function () {
                 component.set("v.Spinner", false);
-            }), 1500
+            }), 2000
         );
 		var action = component.get("c.getSchedulelist"); 
 		action.setParams({

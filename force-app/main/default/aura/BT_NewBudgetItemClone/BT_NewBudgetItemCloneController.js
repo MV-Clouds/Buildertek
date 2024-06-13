@@ -95,11 +95,11 @@
                             }
                             if(document.getElementsByClassName(tabId+' expandAllBtn_'+budgetIdele)[0]){
                                 document.getElementsByClassName(tabId+' expandAllBtn_'+budgetIdele)[0].style.display="none";
-                            } 
+                            }
                         }
-                       
-                        
-                       
+
+
+
                         component.find('expandCollapeseAllBtn').set("v.title", "Collapse All");
                         component.find('expandCollapeseAllBtn').set("v.iconName", "utility:add");
                     }
@@ -293,19 +293,19 @@
                 console.log(error);
             });
         var navService = component.find("navService");
-        var pageReference = {    
+        var pageReference = {
             "type": "standard__recordPage", //example for opening a record page, see bottom for other supported types
             "attributes": {
                 "recordId": component.get("v.recordId"), //place your record id here that you wish to open
                 "actionName": "view"
             }
         }
-        
+
         navService.generateUrl(pageReference)
         .then($A.getCallback(function(url) {
             console.log('success: ' + url); //you can also set the url to an aura attribute if you wish
             window.location.href = url; //this opens your page in a seperate tab here
-        }), 
+        }),
               $A.getCallback(function(error) {
                   console.log('error: ' + error);
               }));
@@ -323,10 +323,10 @@
             "action": "SHOW"
         }).fire();
         var page = component.get("v.page") || 1;
-        // get the previous button label  
+        // get the previous button label
         var direction = event.getSource().get("v.label");
-        ///alert('direction ---------> '+direction); 
-        // set the current page,(using ternary operator.)  
+        ///alert('direction ---------> '+direction);
+        // set the current page,(using ternary operator.)
         page = direction === "Previous" ? (page - 1) : (page + 1);
         // call the helper function
 
@@ -433,10 +433,10 @@
             "action": "SHOW"
         }).fire();
         if(component.get("v.HaveCreateAccess")){
-            
+
             var selectedRecs = component.get('v.selectedRecs');
             selectedRecs.filter((item, index) => selectedRecs.indexOf(item) === index);
-    
+
             console.log('v.selectedRecs ==> ', { selectedRecs });
             if (selectedRecs.length > 0) {
                 if (selectedRecs.length == 1) {
@@ -466,8 +466,8 @@
                         }
                     });
                     $A.enqueueAction(action);
-    
-    
+
+
                     // } else {
                     //     $A.get("e.c:BT_SpinnerEvent").setParams({
                     //         "action": "HIDE"
@@ -479,8 +479,8 @@
                     //         closeCallback: function() {}
                     //     });
                     // }
-    
-    
+
+
                 } else {
                     $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "HIDE"
@@ -493,9 +493,9 @@
                         //"message": "Please select a Budget Line.",
                         closeCallback: function () { }
                     });
-    
+
                 }
-    
+
             } else {
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
@@ -507,7 +507,7 @@
                 component.set("v.isExistingTc", true);
                 helper.gettcList(component, pageNumber, pageSize);
                 helper.gettsList(component, pageNumber, pageSize);
-    
+
             }
         }
         else{
@@ -547,7 +547,7 @@
                 var BudgetIds = [];
                 var rowData;
                 var newPOItems = [];
-    
+
                 if (selectedRecs.length > 0 && selectedRecs.length == 1) {
                     var budgetlineid = BudgetIds[0];
                     var action;
@@ -667,7 +667,6 @@
                 var BudgetIds = [];
                 var rowData;
                 var newPOItems = [];
-    
                 if (selectedRecs.length > 0) {
                     var budgetlineid = BudgetIds[0];
                     var action;
@@ -682,13 +681,13 @@
                                 var pageNumber = component.get("v.PageNumber");
                                 var pageSize = component.get("v.pageSize");
                                 component.set("v.isExistingPo", true);
-                                helper.getpoList(component, pageNumber, pageSize);
+                                helper.getPoAndPoLineList(component, pageNumber, pageSize);
                             }
                         }
                     });
                     $A.enqueueAction(action);
-    
-    
+
+
                 } else {
                     component.find('notifLib').showNotice({
                         "variant": "error",
@@ -737,7 +736,7 @@
                     // "_gFiled": "buildertek__Group__c",
                     //"_gSobject": "buildertek__Budget_Item__c",
                     //"_gFilter": "buildertek__Budget__c = '" + component.get("v.recordId") + "'"
-                    
+
                 }*/
                 componentAttributes: {
                     recordId: component.get("v.recordId"),
@@ -1255,7 +1254,7 @@
 
                         let getValue=component.get('v.displayGrouping')
                         if (getValue) {
-                            helper.getBudgetGrouping(component, event, helper); 
+                            helper.getBudgetGrouping(component, event, helper);
                         } else{
                             var action1 = component.get("c.doInit");
                             $A.enqueueAction(action1);
@@ -1378,14 +1377,14 @@
 
                         let getValue=component.get('v.displayGrouping')
                         if (getValue) {
-                            helper.getBudgetGrouping(component, event, helper); 
+                            helper.getBudgetGrouping(component, event, helper);
                         } else{
                             var action1 = component.get("c.doInit");
                             $A.enqueueAction(action1);
 
                         }
 
-                       
+
                     } else {
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
@@ -1681,7 +1680,7 @@
                                 Invoice.buildertek__Budget__c = component.get("v.sampleNewRecord").Id;
                                 Invoice.buildertek__Project__c = component.get("v.sampleNewRecord").buildertek__Project__c;
                                 //Invoice.buildertek__Purchase_Order__c = "a1W1K000003mQzWUAU";
-                                //Invoice.RecordTypeId = component.get("v.InvoiceCustomerRecordType"); 
+                                //Invoice.RecordTypeId = component.get("v.InvoiceCustomerRecordType");
                                 var overlayLib;
                                 $A.get("e.c:BT_SpinnerEvent").setParams({
                                     "action": "HIDE"
@@ -1877,7 +1876,7 @@
         var expenseNote = component.get("v.expenseNote");
         var isExpenseUpdate = component.get("v.isExpenseUpdate");
         var budgetItemId = component.get("v.budgetItemId");
-        //Update Expense  
+        //Update Expense
         if (budgetItemId != undefined && isExpenseUpdate) {
             var action = component.get("c.updateBudgetItemFromExpenseItem");
             action.setParams({
@@ -2010,48 +2009,7 @@
 
     },*/
     doCancel: function (component, event, helper) {
-        component.set("v.selectedExistingPO", "");
-        component.set("v.selectedExistingTC", "");
-        component.set("v.selectedExistingINVO", "");
-        component.set("v.isExistingPo", false);
-        component.set("v.isExistingTc", false);
-        component.set("v.isExistingInvo", false);
-        component.set("v.addposection", false);
-        component.set("v.addtcsection", false);
-        component.set("v.addinvsection", false);
-        component.set("v.addcosection", false);
-        component.set("v.addExpenseSection", false);
-
-        component.set("v.showSelectSchedule", false);
-        component.set("v.isNewExpense", false);
-        component.set("v.duplicateExp", false);
-        component.set("v.createNewSchedule", false);
-        component.set("v.showSelectSchedule", false);
-        component.set("v.addSalesInvoiceSection", false); // to close add sales invoice popup
-        component.set("v.selectedSalesInvoices", []); // to clear selected sales invoices
-        component.set('v.allSLChecked', false); // for check-all checkbox
-
-
-
-        component.set("v.expenseDescription", null);
-        component.set("v.expensebudget", null);
-        component.set("v.expenseType", null);
-        component.set("v.expenseCostCode", null);
-        component.set("v.expensePaymentMethod", null);
-        component.set("v.expenseRefNo", null);
-        component.set("v.expenseAmount", null);
-        component.set("v.expenseNote", null);
-        component.set('v.budgetItemId', '');
-
-        component.set('v.addInvoicePOSection', false);
-
-        component.set("v.chooseLabor", true);
-        component.set("v.selectedLabor", "");
-        component.set("v.chooseTimeCard", false);
-        component.set("v.chooseTimeSheet", false);
-
-
-        // $A.get('e.force:refreshView').fire();
+        helper.doCancel(component, event, helper);
     },
     importCSV: function (component, event, helper) {
 
@@ -2080,8 +2038,8 @@
         component.set("v.addcosection", false);
         component.set("v.addExpenseSection", false);
 
-        
-        
+
+
 
 
         // $A.get('e.force:refreshView').fire();
@@ -2103,15 +2061,20 @@
             component.set("v.chooseTimeSheet", false);
             component.set("v.chooseLabor", false);
         }
-        // }else{
-        //     var toastEvent = $A.get("e.force:showToast");
-        //     toastEvent.setParams({
-        //         title: "Error",
-        //         message: "Please Select Labor",
-        //         type: "error"
-        //     });
-        //     toastEvent.fire();
-        // }
+    },
+
+    movetoPoOrPoLineSelection: function (component, event, helper) {
+        var selectedPOType = component.get("v.selectedPOType");
+        console.log('selectedPOType--->>>'+  selectedPOType);
+        if(selectedPOType == 'Purchase Order'){
+            component.set("v.choosePO", true);
+            component.set("v.choosePOLine", false);
+            component.set("v.choosePOType", false);
+        }else{
+            component.set("v.choosePOLine", true);
+            component.set("v.choosePO", false);
+            component.set("v.choosePOType", false);
+        }
     },
 
     backtoChooseLabor: function (component, event, helper) {
@@ -2132,6 +2095,26 @@
             element.Selected = false;
         });
         component.set("v.timeSheetList", timeSheetList);
+    },
+
+    backtoChoosePoAndPoLine: function (component, event, helper) {
+        component.set("v.choosePO", false);
+        component.set("v.choosePOLine", false);
+        component.set("v.choosePOType", true);
+        component.set("v.selectedPOType", "Purchase Order");
+
+        //make check box false
+        var recordList = component.get("v.recordList");
+        recordList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.recordList", recordList);
+
+        var poLinerecordList = component.get("v.poLinerecordList");
+        poLinerecordList.forEach(function (element) {
+            element.Selected = false;
+        });
+        component.set("v.poLinerecordList", poLinerecordList);
     },
 
     onSaveSuccess: function (component, event, helper) {
@@ -2170,11 +2153,11 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 }
 });
 $A.enqueueAction(action);
-},	
+},
 handleComponentEvent : function(component, event, helper) {
-// get the selected Account record from the COMPONETN event 	 
+// get the selected Account record from the COMPONETN event
 var selectedAccountGetFromEvent = event.getParam("recordByEvent");
-//console.log("##################################record By Event",JSON.stringify(selectedAccountGetFromEvent)); 
+//console.log("##################################record By Event",JSON.stringify(selectedAccountGetFromEvent));
 component.set("v.productId",selectedAccountGetFromEvent.Id);
 component.set("v.productName",selectedAccountGetFromEvent.Name);
 helper.getProductDetails(component,event,helper);
@@ -2226,14 +2209,14 @@ helper.getProductDetails(component,event,helper);
             console.log(component.get('v.newBudgetLine.name'));
             console.log(component.find('budgetLineID').get('v.value'));
             var getDescriptionValue = component.find('budgetLineID').get('v.value');
-    
+
             var recordId = component.get("v.recordId");
             component.set("v.newBudgetLine.buildertek__Budget__c", recordId);
             //alert('Budget --> '+component.get("v.newBudgetLine.buildertek__Product__c"));
             var uom = component.get("v.UOMvalues");
             component.set("v.newBudgetLine.buildertek__UOM__c", uom);
             var budgetLineObject = component.get("v.newBudgetLine");
-    
+
             var tradeType;
             var contractor;
             /*  Comment by Laxman 08-07-2020
@@ -2251,14 +2234,14 @@ helper.getProductDetails(component,event,helper);
             } else {
                 contractor = null;
             }
-    
+
             /*var selectedCostcode = component.get("v.selectedCostcode");
             if (selectedCostcode != undefined) {
                 contractors = selectedCostcode.Id;
             } else {
                 contractors = null;
             }*/
-    
+
             // If we want tarade type value we have to pass parameter like "tradeType:tradeType"
             if (getDescriptionValue != '' && getDescriptionValue != undefined) {
                 var action = component.get("c.saveBudgetLineItem");
@@ -2266,7 +2249,7 @@ helper.getProductDetails(component,event,helper);
                     "budgetLineRecord": JSON.stringify(budgetLineObject),
                     recordId: recordId,
                     contractor: contractor,
-    
+
                 });
                 action.setCallback(this, function (respo) {
                     if (component.isValid() && respo.getState() === "SUCCESS") {
@@ -2298,14 +2281,14 @@ helper.getProductDetails(component,event,helper);
                         component.set('v.newBudgetLine.buildertek__Cost_Code__c', '');
                         component.set('v.UOMvalues', '');
                         component.set('v.pricebookName', '');
-    
+
                         //  component.set('v.Notevalues', '');
-    
+
                         $A.enqueueAction(component.get("c.clearLookupValue"));
                         $A.get("e.c:BT_SpinnerEvent").setParams({
                             "action": "HIDE"
                         }).fire();
-    
+
                         /*$A.get('e.force:refreshView').fire();
                         alert('TS');*/
                         window.setTimeout(
@@ -2325,8 +2308,8 @@ helper.getProductDetails(component,event,helper);
                         // component.refreshData();
                         let getValue=component.get('v.displayGrouping')
                         if (getValue) {
-                            helper.getBudgetGrouping(component, event, helper); 
-                        } 
+                            helper.getBudgetGrouping(component, event, helper);
+                        }
                         component.refreshData();
                     }
                 });
@@ -2335,7 +2318,7 @@ helper.getProductDetails(component,event,helper);
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-    
+
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     mode: 'sticky',
@@ -2376,7 +2359,7 @@ helper.getProductDetails(component,event,helper);
         var retnMsg = childCmp.clearLookup();
     },
     handleComponentEvent: function (component, event, helper) {
-        // get the selected Account record from the COMPONETN event 	 
+        // get the selected Account record from the COMPONETN event
         var selectedAccountGetFromEvent = event.getParam("recordByEvent");
         component.set("v.productId", selectedAccountGetFromEvent.Id);
         component.set("v.productName", selectedAccountGetFromEvent.Name);
@@ -2406,7 +2389,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         editRecordEvent.fire();
     },
 
-    
+
       deleteBudget: function (component, event, helper) {
 
         if(component.get("v.HaveDeleteAccess")){
@@ -2481,9 +2464,9 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     }
                 }else{
                     BudgetIds = component.get('v.selectedRecs');
-    
+
                 }
-                
+
                 // var BudgetIds = component.get('v.selectedRecs');
                 var rowData;
                 var newRFQItems = [];
@@ -2513,7 +2496,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     var state = response.getState();
                     if (state === "SUCCESS") {
                         $A.get("e.force:refreshView").fire();
-                        //$A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire(); 
+                        //$A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         window.setTimeout(
                             $A.getCallback(function () {
                                 var toastEvent = $A.get("e.force:showToast");
@@ -2529,10 +2512,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         );
                          window.setTimeout(
                             $A.getCallback(function() {
-                                document.location.reload(true);    
+                                document.location.reload(true);
                             }), 4000
-                        ); 
-                        
+                        );
+
                     }
                 });
                 $A.enqueueAction(action); */
@@ -2711,7 +2694,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
 
     newgroupcloseModel: function (component, event, helper) {
-        // for Hide/Close Model,set the "new budgetline group" attribute to "Fasle"  
+        // for Hide/Close Model,set the "new budgetline group" attribute to "Fasle"
 
         component.set("v.budgetllinegroupdescription", '');
         component.set("v.budgetllinegroupName", '');
@@ -2724,12 +2707,12 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         component.set("v.isNewBudgetSubGroup", false);
     },
     closeModel: function (component, event, helper) {
-        // for Hide/Close Model,set the "isOpen" attribute to "Fasle"  
+        // for Hide/Close Model,set the "isOpen" attribute to "Fasle"
         component.set("v.isOpen", false);
         component.set("v.isBOMmodalOpen", false);
     },
     removegroupingcloseModel: function (component, event, helper) {
-        // for Hide/Close Model,set the "isremovegroup" attribute to "Fasle"  
+        // for Hide/Close Model,set the "isremovegroup" attribute to "Fasle"
 
         component.set("v.isremovegroup", false);
 
@@ -2826,7 +2809,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-                component.set("v.isOpen", false);j
+                component.set("v.isOpen", false);
                 component.find('notifLib').showNotice({
                     "variant": "error",
                     "header": "Error!",
@@ -2864,7 +2847,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     }
                 }else{
                     BudgetIds = component.get('v.selectedRecs');
-    
+
                 }
             console.log('BudgetIds--->>>', { BudgetIds });
             var rowData;
@@ -2898,7 +2881,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                     mode: 'dismissible'
                                 });
                                 toastEvent.fire();
-                            }); 
+                            });
                         } else {
                         component.set("v.TotalRecords", {});
                         helper.getBudgetGroups(component, event, helper, page, function () {
@@ -2940,7 +2923,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             }
                         });
                     }
-                    
+
                 });
                 $A.enqueueAction(action);
             } else {
@@ -3142,7 +3125,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         }
     },
     closeDuplicateModel: function (component, event, helper) {
-        // for Hide/Close Model,set the "isDuplicate" attribute to "Fasle"  
+        // for Hide/Close Model,set the "isDuplicate" attribute to "Fasle"
         component.set("v.isOpen", false);
         component.set("v.isDuplicate", false);
         component.set("v.isMassDuplicate", false);
@@ -3191,10 +3174,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         }), 3000
                     );
                     var page = component.get("v.page") || 1
-                    
+
                     let getValue=component.get('v.displayGrouping')
                     if (getValue) {
-                        helper.getBudgetGrouping(component, event, helper); 
+                        helper.getBudgetGrouping(component, event, helper);
                     } else{
                         component.set("v.TotalRecords", {});
                         helper.getBudgetGroups(component, event, helper, page, function () { });
@@ -3340,18 +3323,18 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         "header": "Error!",
                         "message": "Can't update the Budget Line in grouping stage.",
                     });
-                } 
+                }
                 else{
                     component.set("v.isExpandGrp", false);
-    
+
             component.set("v.enableMassUpdate", component.get("v.enableMassUpdate") == true ? false : true);
             // component.set("v.isExpandGrp",false);
             if (component.get("v.enableMassUpdate") == false && component.get('v.isChangeData')) {
                 // var start = new Date().getTime();
-                // var output = "";                        
+                // var output = "";
                 // for (var i = 1; i <= 1e6; i++) {
                 //     output += i;
-                // } 
+                // }
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     action: "SHOW",
                 }).fire();
@@ -3360,8 +3343,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 var newMassQi = [];
                 var newMassQuoteItem = {};
                 var newnames = [];
-    
-    
+
+
                 // var Name = component.get("v.productName");
                 //alert(Name);
                 //var expandallicon = document.getElementsByClassName(tabId+' expandAllBtn_'+budgetIdele);
@@ -3443,7 +3426,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                     }
                                 }
                             }
-    
+
                             newMassQuoteItem.Id = subGroupRecs[k].recordId;
                             newMassQuoteItem.Name = subGroupRecs[k].recordName;
                             newMassQi.push(newMassQuoteItem);
@@ -3461,7 +3444,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 // 		var currency = ListOfEachRecord[i].recordList[j].recordValue;
                 // 		var recordValue = Number(currency.replace(/[^0-9.-]+/g, ""));
                 // 		if (recordValue != ListOfEachRecord[i].recordList[j].originalValue) {
-    
+
                 // 			if (ListOfEachRecord[i].recordList[j].fieldName == 'buildertek__Quantity__c') {
                 // 				if (ListOfEachRecord[i].recordList[j].originalValue != '') {
                 // 					newMassQuoteItem.buildertek__Quantity__c = ListOfEachRecord[i].recordList[j].originalValue;
@@ -3523,7 +3506,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 // 	newMassQi.push(newMassQuoteItem);
                 // }
                 for (var i = 0; i < newnames.length; i++) {
-    
+
                     //alert('hii'+ newMassQuoteItem.Name.length);
                     //alert('bye'+ newMassQi.Name.length);
                     //if(newMassQi[i].Name == undefine){
@@ -3555,18 +3538,18 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 }
                 if (component.get("v.isDescription") == false) {
                     //if (newMassQi.length > 0) {
-    
+
                     //alert("2");
                     var action = component.get("c.massUpdateBudgetLineItem");
                     action.setParams({
                         "budgetLineRecords": JSON.stringify(newMassQi)
                     });
-    
+
                     action.setCallback(this, function (respo) {
                         component.set("v.isChangeData", false);
                         // alert(JSON.stringify(respo.getState()));
                         if (respo.getState() === "SUCCESS") {
-    
+
                             var toastEvent = $A.get("e.force:showToast");
                             toastEvent.setParams({
                                 mode: 'sticky',
@@ -3584,7 +3567,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     $A.enqueueAction(action);
                 }
             }
-    
+
             if (component.get("v.enableMassUpdate")) {
                 // console.log(component.get("v.TotalRecords").groupHierarchy); //Getting Error popup in Team-k sandbox (Open Issue on 21th Sep 2023 By BT Team)
                 var budgetIdele = component.get("v.budgetId");
@@ -3594,11 +3577,11 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                 var expandallicon = document.getElementsByClassName(tabId + ' expandAllBtn_' + budgetIdele);
                 //var labelName =spanEle
                 var collapeallIcon = document.getElementsByClassName(tabId + ' CollapeseAllBtn_' + budgetIdele);
-    
+
                 expandallicon[0].style.display = 'none';
                 collapeallIcon[0].style.display = 'inline-block';
-    
-    
+
+
                 var groups = component.get("v.TotalRecords").groupHierarchy;
                 var budgetId = component.get("v.budgetId")
                 for (var j = 0; j < groups.length; j++) {
@@ -3608,13 +3591,13 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     var className = tabId + ' ' + budgetId + " groupRows_" + grpIndex;
                     var grpRows = document.getElementsByClassName(className);
                     component.set("v.isExpandGrp", true);
-    
+
                     expandicon[0].style.display = 'none';
                     collapeIcon[0].style.display = 'inline-block';
-    
+
                     for (var i = 0; i < grpRows.length; i++) {
                         var item = grpRows[i];
-    
+
                         if (!expandicon[0].classList.contains(tabId + 'hideExpandIcon')) {
                             expandicon[0].classList.add(tabId + 'hideExpandIcon')
                         }
@@ -3630,7 +3613,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
                 }
 
-            
+
         }
 
         else{
@@ -3918,7 +3901,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         var allGroups = component.get("v.TotalRecords").groupHierarchy;
         console.log(expandicon[0].style.display)
         console.log(collapeIcon[0].style.display)
-        // if(!expandicon[0].classList.contains('hideExpandIcon') && collapeIcon[0].classList.contains('hideCollapseIcon') )  {   
+        // if(!expandicon[0].classList.contains('hideExpandIcon') && collapeIcon[0].classList.contains('hideCollapseIcon') )  {
         if (expandicon[0].style.display == "inline-block" && collapeIcon[0].style.display == "none") {
             component.set("v.isExpandGrp", true);
             expandicon[0].style.display = 'none';
@@ -4158,7 +4141,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             } else {
                 //changes for BUIL-3336
                 // helper.getcoList(component, event, helper);
-    
+
                 // Changes for BUIL - 3434
                 component.find('notifLib').showNotice({
                     "variant": "error",
@@ -4376,7 +4359,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
                         let getValue=component.get('v.displayGrouping')
                         if (getValue) {
-                            helper.getBudgetGrouping(component, event, helper); 
+                            helper.getBudgetGrouping(component, event, helper);
                         } else {
                             var action1 = component.get("c.doInit");
                             $A.enqueueAction(action1);
@@ -4526,6 +4509,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     },
     checkPO: function (component, event, helper) {
         var tableDataList = component.get("v.recordList");
+        console.log('tableDataList ==> ', tableDataList);
         var existingPoId = [];
         var checkedAll = true;
         tableDataList.forEach(element => {
@@ -4536,6 +4520,36 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             }
         });
         component.find("selectAllPO").set("v.checked", checkedAll);
+        console.log(component.get("v.selectedRecs"), 'selectedRecs::::::::');
+
+    },
+    checkAllPOLines: function (component, event, helper) {
+        var value = event.getSource().get("v.checked");
+        var tableDataList = component.get("v.poLinerecordList");
+        let expenseIdList = [];
+        tableDataList.forEach(element => {
+            console.log({ element });
+            element.Selected = value;
+            expenseIdList.push(element.Id);
+
+        });
+        component.set("v.poLinerecordList", tableDataList);
+        console.log(component.get("v.selectedRecs"), 'selectedRecs::::::::');
+
+
+    },
+    checkPOLines: function (component, event, helper) {
+        var tableDataList = component.get("v.poLinerecordList");
+        var existingPoId = [];
+        var checkedAll = true;
+        tableDataList.forEach(element => {
+            if (!element.Selected) {
+                checkedAll = false;
+            } else {
+                existingPoId.push(element.Id);
+            }
+        });
+        component.find("selectAllPOLines").set("v.checked", checkedAll);
         component.set("v.selectedExistingPO", existingPoId);
         console.log(component.get("v.selectedRecs"), 'selectedRecs::::::::');
 
@@ -4726,6 +4740,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
     },
 
     updateBLPO: function (component, event, helper) {
+        console.log('updateBLPO');
         component.set("v.addposection", false);
         $A.get("e.c:BT_SpinnerEvent").setParams({
             "action": "SHOW"
@@ -4757,7 +4772,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         console.log('selectedPOList', { selectedPOList });
         console.log('budgetid', { budgetid });
         console.log('selectedRecords', { selectedRecords });
-        debugger;
+
         var action = component.get("c.updatePO");
         action.setParams({
             "POId": selectedPOList,
@@ -4771,6 +4786,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
             var state = response.getState();
             if (state === "SUCCESS") {
                 var toastEvent = $A.get("e.force:showToast");
+                component.set('v.selectedRecs', []);
                 toastEvent.setParams({
                     type: 'SUCCESS',
                     message: 'PO added Successfully',
@@ -4800,12 +4816,82 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     toastEvent.fire();
                 }
             }
-            // $A.get('e.force:refreshView').fire();
-            // window.location.reload();
+            helper.doCancel(component, event, helper);
         });
         $A.enqueueAction(action);
 
 
+    },
+    updateBLPOLine: function (component, event, helper) {
+        console.log('updateBLPOLine');
+        component.set("v.addposection", false);
+        $A.get("e.c:BT_SpinnerEvent").setParams({
+            "action": "SHOW"
+        }).fire();
+        var selectedRecords = component.get("v.selectedRecs");
+        var POLineList = component.get("v.poLinerecordList");
+        var selectedPOLineList = [];
+        POLineList.forEach(function (element) {
+            if (element.Selected) {
+                selectedPOLineList.push(element.Id);
+            }
+        });
+        if (selectedPOLineList.length == 0) {
+            component.set("v.addposection", true);
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                type: 'ERROR',
+                message: 'Please select PO Line',
+                duration: '3000',
+            });
+            toastEvent.fire();
+            return;
+        }
+
+        var budgetid = component.get("v.sampleNewRecord").Id
+        console.log('selectedPOLineList', { selectedPOLineList });
+        console.log('budgetid', { budgetid });
+        console.log('selectedRecords', { selectedRecords });
+        var action = component.get("c.updatePOLine");
+        action.setParams({
+            "POLineId": selectedPOLineList,
+            "BudgetLineId": selectedRecords,
+            "budgetId": budgetid
+        });
+        action.setCallback(this, function (response) {
+            $A.get("e.c:BT_SpinnerEvent").setParams({
+                "action": "HIDE"
+            }).fire();
+
+            var state = response.getState();
+            if (state === "SUCCESS") {
+                component.set('v.selectedRecs', []);
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    type: 'SUCCESS',
+                    message: 'PO Line added Successfully',
+                    duration: '5000',
+                });
+                toastEvent.fire();
+                var action1 = component.get("c.doInit");
+                $A.enqueueAction(action1);
+            } else {
+                var Error = response.getError();
+                var ErrorMessage = Error[0].pageErrors[0].message
+                var toastEvent = $A.get("e.force:showToast");
+                toastEvent.setParams({
+                    type: 'ERROR',
+                    message: ErrorMessage,
+                    duration: '5000',
+                });
+                toastEvent.fire();
+            }
+            helper.doCancel(component, event, helper);
+        });
+        $A.enqueueAction(action);
     },
 
     //  ----------- For Add Sales Invoice Button BUIL - 3525 --------------
@@ -5019,23 +5105,23 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
     addNewInvoicePO:function (component, event, helper) {
         if(component.get("v.HaveCreateAccess")){
-            
+
             var selectedRecords = component.get('v.selectedRecs');
             var invoicePoList = component.get("v.invoicePORecordList");
             let selectedInvoiceList = [];
             let selectedInvoiceIdList = [];
-    
+
             const result= invoicePoList.map(element => {
                 if (element.Selected) {
                     selectedInvoiceList.push(element);
                     selectedInvoiceIdList.push(element.Id);
                 }
             });
-    
+
             console.log({selectedInvoiceList});
             console.log({selectedInvoiceIdList});
             console.log(typeof(selectedInvoiceIdList));
-    
+
             if(selectedInvoiceList.length > 0){
                 if (selectedRecords.length > 0) {
                     $A.get("e.c:BT_SpinnerEvent").setParams({
@@ -5060,7 +5146,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                 "action": "HIDE"
                             }).fire();
                             helper.showToast(component, event, helper, 'Success', 'Invoice Price updated successfully', 'success');
-    
+
                             var action1 = component.get("c.doInit");
                             $A.enqueueAction(action1);
                         } else if (result === 'null') {
@@ -5075,10 +5161,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             }).fire();
                             helper.showToast(component, event, helper, 'Error', 'something goes wrong', 'error');
                         }
-    
+
                     });
                     $A.enqueueAction(action);
-    
+
                     var a = component.get('c.doCancel');
                     $A.enqueueAction(a);
                 }else{
@@ -5115,7 +5201,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             toastEvent.fire();
                             component.set("v.addInvoicePOSection", false); // to close popup
                             $A.get("e.force:refreshView").fire();
-                            document.location.reload(true);    
+                            document.location.reload(true);
                             }
                         }
                         else if (response.getState() == 'ERROR') {
@@ -5135,7 +5221,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                     });
                     $A.enqueueAction(action);
                 }
-        
+
             }else{
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
@@ -5202,7 +5288,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         // component.set("v.valueofField2", '');
         // component.set("v.valueofField3", '');
         // component.set("v.valueofField4", '');
-        
+
         component.set("v.displayGrouping", false);
         component.set("v.BudgetLineWrapper", null);
         component.set("v.forthGrouping", false);
@@ -5210,7 +5296,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         component.set("v.secondGrouping", false);
         component.set("v.firstGrouping", false);
         helper.applyCSSBasedOnURL(component);
-     }, 
+     },
 
      expandCollapeAllBom: function(component, event, helper){
         var BudgetLineWrapper = component.get("v.BudgetLineWrapper");
@@ -5325,7 +5411,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
         var totalRecordCount = component.get("v.TotalRecordCount");
         var collapeCount = component.get("v.CollapeCount");
-    
+
         if (iconName == 'Expand Group') {
             let spanGroupId = spanId.replace('expandGroupBtn_','');
             helper.expandRecordsHelper(component, event, helper, spanGroupId);
@@ -5371,8 +5457,8 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
 
         console.log({selectedGroupName});
         groupWrapper.forEach(function(elem){
-           
-            
+
+
             if(firstGroup== true){
                 elem.budgetLineList.forEach(function(value){
                     if(value.buildertek__Grouping__c === selectedGroupName){
@@ -5381,7 +5467,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         }else{
                             value.isSelected=false;
                         }
-                    } 
+                    }
                 });
             }else if(secondGroup== true){
                 elem.budgetLineList.forEach(function(value){
@@ -5400,10 +5486,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                             }else{
                                 value2.isSelected=false;
                             }
-                        } 
+                        }
 
                     });
-                    
+
                 });
             }else if(thirdGroup== true){
                 console.log({selectedGroupName});
@@ -5429,10 +5515,10 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                     value3.isSelected=true;
                                 }else{
                                     value3.isSelected=false;
-                                }                            } 
+                                }                            }
                         });
                     });
-                    
+
                 });
             }else if(forthGrouping== true){
                 elem.budgetLineList.forEach(function(value){
@@ -5461,18 +5547,18 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                         value4.isSelected=true;
                                     }else{
                                         value4.isSelected=false;
-                                    }                                   } 
+                                    }                                   }
                             });
 
                         });
                     });
-                    
+
                 });
 
             }
 
-            
-            
+
+
         });
         component.set('v.BudgetLineWrapper' , BudgetLineWrapper );
         console.log({BudgetLineWrapper});
@@ -5492,7 +5578,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
         let groupWrapper= BudgetLineWrapper.groupWrapper;
         groupWrapper.forEach(function(elem){
             if(firstGroup== true){
-                
+
                 elem.budgetLineList.forEach(function(value){
                     const allActive = elem.budgetLineList.every(function(obj) {
                         return obj.isSelected === true;
@@ -5503,7 +5589,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         }else{
                             elem.isSelected=false;
                         }
-                    } 
+                    }
                 });
             }else if(secondGroup== true){
                 elem.budgetLineList.forEach(function(value){
@@ -5524,12 +5610,12 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                 value.isSelected=false;
 
                             }
-                        } 
-                    });    
+                        }
+                    });
                 });
             }else if(thirdGroup== true){
                 elem.budgetLineList.forEach(function(value){
-                    
+
                     value.budgetLineList.forEach(function(value2){
                         let getGroupName;
                         if(value.groupName!= undefined && value2.groupName!= undefined){
@@ -5545,7 +5631,7 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                         const allActive = value2.budgetLineList.every(function(elem) {
                             return elem.isSelected === true;
                          });
-                            
+
                         value2.budgetLineList.forEach(function(value3){
                         if(getGroupName === selectedGroupName){
 
@@ -5555,9 +5641,9 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                 value2.isSelected=false;
 
                             }
-                        } 
+                        }
                          })
-                    });    
+                    });
                 });
             }else if(forthGrouping== true){
                 elem.budgetLineList.forEach(function(value){
@@ -5583,30 +5669,30 @@ $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
                                 return elem.isSelected === true;
                             });
                             value3.budgetLineList.forEach(function(value4){
-                               
+
                                 if(getGroupName === selectedGroupName){
-                    
+
                                     if(getCurrentValue== true && allActive == true){
                                         value3.isSelected=true;
                                     }else{
                                         value3.isSelected=false;
-        
+
                                     }
 
-                                } 
+                                }
                             });
 
-                        
+
                          })
-                    });    
+                    });
                 });
 
             }
 
-            
+
         });
-        
-        
+
+
         component.set('v.BudgetLineWrapper' , BudgetLineWrapper);
         console.log({BudgetLineWrapper});
 

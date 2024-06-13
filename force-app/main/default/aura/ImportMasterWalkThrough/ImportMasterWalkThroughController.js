@@ -2,7 +2,7 @@
 	doInit : function(component, event, helper) {
         try {
             $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
-            var rfqRecordId = component.get("v.rfqRecordId");
+            var rfqRecordId = component.get("v.recordId");
             console.log('rfqRecordId---->',rfqRecordId);
             var action = component.get("c.getMasterWalkThrough");
             action.setParams({
