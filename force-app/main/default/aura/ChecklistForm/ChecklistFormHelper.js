@@ -51,7 +51,9 @@
 			"checkName": nameDate,
 			"fileName": file.name,
 			"base64Data": encodeURIComponent(getchunk),
-			"contentType": file.type
+			"contentType": file.type,
+			"conId": component.get("v.contactId") || null,
+			"checkListType": component.get("v.checkListType") || null
 		});
 
 		action.setCallback(this, function (a) {
@@ -122,7 +124,9 @@
 		action.setParams({
 			"QuestionString": JSON.stringify(Questions),
 			"recordId": component.get("v.recordId"),
-			"checkName": nameDate
+			"checkName": nameDate,
+			"conId": component.get("v.contactId") || null,
+			"checkListType": component.get("v.checkListType") || null
 		});
 
 		action.setCallback(this, function (a) {
@@ -156,5 +160,15 @@
 			component.set("v.Spinner", false);
 			component.set("v.ischecklistNameError", true);
 		}
+	},
+
+	getParameterByName: function (name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+			results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 })

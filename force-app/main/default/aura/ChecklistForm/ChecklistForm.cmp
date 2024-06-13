@@ -76,8 +76,13 @@
                             </aura:iteration>
                         </aura:iteration>
                         <div style="margin: 1rem 0;">
-                            <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" label="Upload File" multiple="false"/>
-                            <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
+                            <lightning:fileUpload label="Attach receipt"
+                                name="fileUploader"
+                                multiple="false"
+                                accept=".pdf, .png, .jpg, .jpeg, .doc, .docx, .xls, .xlsx"
+                                recordId="{!v.recordId}"
+                                onuploadfinished="{!c.handleUploadFinished}" />
+
                             <div class="slds-align_absolute-center slds-m-top_small">
                                 <aura:if isTrue="{!v.isDisableButton}">
                                     <lightning:button variant="brand" label="Submit" title="Submit"

@@ -72,6 +72,15 @@
         }
         component.set("v.Questions", Questions);
     },
+
+    handleUploadFinished: function (cmp, event) {
+        // Get the list of uploaded files
+        var uploadedFiles = event.getParam("files");
+        alert("Files uploaded : " + uploadedFiles.length);
+        // Get the file name
+        uploadedFiles.forEach(file => console.log(file.name));
+    },
+  
     nameOnchange: function (component, event, helper) {
         if (component.get("v.DynamiccheckListName") != undefined && component.get("v.DynamiccheckListName") != null && component.get("v.DynamiccheckListName") != "") {
             component.set("v.ischecklistNameError", false);
