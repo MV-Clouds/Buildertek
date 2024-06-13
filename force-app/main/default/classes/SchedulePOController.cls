@@ -5,13 +5,13 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur;
          if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible() &&
-			
-			Schema.sObjectType.buildertek__Project__c.fields.Name.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isAccessible() &&
-			Schema.sObjectType.Account.fields.Name.isAccessible() ){
-            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name from buildertek__Purchase_Order__c where Id =: recordId];
-			}
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible() &&
+            
+            Schema.sObjectType.buildertek__Project__c.fields.Name.isAccessible() &&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isAccessible() &&
+            Schema.sObjectType.Account.fields.Name.isAccessible() ){
+            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Estimated_Start_Date__c, buildertek__Estimated_Completion_Date__c, buildertek__Anticipated_Work_Days__c from buildertek__Purchase_Order__c where Id =: recordId];
+            }
         return pur;     
     }
     
@@ -20,9 +20,9 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur;
         if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
             pur= [select Id, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: recordId]; 
-			}
+            }
         system.debug('projectId -----> '+pur.buildertek__Project__c);
         list<Schedule__c> getSchedulesList;
          if(Schema.sObjectType.Schedule__c.fields.Id.isAccessible() &&
@@ -84,10 +84,12 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur ;
         if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Schedule_Item__c.isAccessible()&&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Estimated_Completion_Date__c.isAccessible()&&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Estimated_Start_Date__c.isAccessible()&&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
-             pur = [select Id,buildertek__Schedule_Item__c, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: poId]; 
-			}
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
+             pur = [select Id,buildertek__Schedule_Item__c, buildertek__Estimated_Completion_Date__c, buildertek__Estimated_Start_Date__c, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: poId]; 
+            }
         ErrorMessageClass errMessage = new ErrorMessageClass();
         try{
             buildertek__Project_Task__c projectTask = new buildertek__Project_Task__c();
@@ -105,6 +107,7 @@ public with sharing class SchedulePOController {
                 projectTask.buildertek__Dependency__c = dependency;
                 projectTask.buildertek__Purchase_Order__c = recordId;
                 projectTask.buildertek__Phase__c = task.buildertek__Phase__c;
+                
                 if(task.buildertek__Finish__c != null){
                     projectTask.buildertek__Finish__c = task.buildertek__Finish__c;    
                 }else{

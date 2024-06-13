@@ -7,6 +7,7 @@
         action.setCallback(this, function (response) {
         	if (response.getState() === "SUCCESS") {  
         	    var result = response.getReturnValue();
+                console.log(result);
         	    if(result.buildertek__Project__c != null){
                     component.set("v.selectedProjectId", result.buildertek__Project__c);
                 }
@@ -15,6 +16,16 @@
                 }
                 if(result.buildertek__Vendor__c != null){
                     component.set("v.selectedVendorId",result.buildertek__Vendor__c);
+                }
+                //BUIL-4184: we are not counting if the start date, end date and duration are mathethically physible because the ticket says they come from different object
+                if(result.buildertek__Estimated_Start_Date__c != null){
+                    component.set("v.StartDate",result.buildertek__Estimated_Start_Date__c);
+                }
+                if(result.buildertek__Anticipated_Work_Days__c != null){
+                    component.set("v.durationNum",result.buildertek__Anticipated_Work_Days__c);
+                }
+                if(result.buildertek__Estimated_Completion_Date__c != null){
+                    component.set("v.FinishDate",result.buildertek__Estimated_Completion_Date__c);
                 }
                 helper.getSchedules(component, event, helper);
         	} 
