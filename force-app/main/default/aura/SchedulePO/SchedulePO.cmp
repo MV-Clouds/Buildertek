@@ -1,4 +1,4 @@
-<aura:component controller="SchedulePOController" implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes">
+<aura:component controller="SchedulePOController" implements="force:appHostable,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes" access="global">
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
      <aura:attribute name="Schedules" type="list" />
      <aura:attribute name="Spinner" type="boolean" default="false"/>
