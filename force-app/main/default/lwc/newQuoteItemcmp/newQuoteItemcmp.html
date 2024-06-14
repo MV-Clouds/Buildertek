@@ -1,0 +1,39 @@
+<template>
+    <template for:each={data} for:item="group">
+        <div key={group.groupName} class="slds-card slds-m-around_medium">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <span class="grpname">
+                                {group.groupName}
+                            </span>
+                                <button class="slds-button slds-button_neutral slds-m-left_auto" onclick={handleAddItem}>
+                                    <p style="margin-top: -0.6rem; font-size">+</p>
+                                </button>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="quote-table">
+            <div class="slds-card__body">
+                <lightning-datatable
+                    key-field="id"
+                    data={group.items}
+                    columns={columns}
+                    hide-checkbox-column
+                    show-row-number-column >
+                </lightning-datatable>
+            </div>
+            </div>
+            <footer class="slds-card__footer">
+                <div class="slds-p-horizontal_small">
+                    <strong>Subtotal:</strong> 
+                </div>
+            </footer>
+        </div>
+    </template>
+    <div class="slds-p-horizontal_small slds-m-around_medium">
+        <strong>Grand Total:</strong> {grandTotal} USD
+    </div>
+</template>
