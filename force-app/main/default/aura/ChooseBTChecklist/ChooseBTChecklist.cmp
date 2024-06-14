@@ -15,6 +15,7 @@
     <aura:attribute name="selectedgroup" type="string" default="" />
     <aura:attribute name="showGroup" type="boolean" default="false" />
     <aura:attribute name="message" type="boolean" default="false" />
+    <aura:attribute name="showSectionModel" type="boolean" default="false" />
 
     <aura:attribute name="deleteIndex" type="Integer" />
 
@@ -56,9 +57,6 @@
     <aura:attribute name="checklists" type="List" />
     
     <aura:html tag="style">
-        .slds-form-element__label{
-        display: none;
-        }
         .slds-modal__container {
             max-width: 52rem !important;
             width: 52% !important;
@@ -379,6 +377,8 @@
                                     <div class="slds-x-small-buttons--horizontal slds-float--right">
                                         <button class="slds-button slds-button--neutral"
                                             onclick="{!c.CancelQuestionsModel}">Cancel</button>
+                                        <button class="slds-button slds-button--neutral"
+                                        onclick="{!c.BackModal}">Back</button>
                                         <button class="slds-button slds-button--brand"
                                             onclick="{!c.SaveQuestionsModel}">Save</button>
                                     </div>
@@ -392,7 +392,9 @@
                 </aura:if>
 
 
-
+                <aura:if isTrue="{!v.showSectionModel}">
+                    <c:createChecklistSectionAndSubsectionCmp onmycustomevent="{!c.handleCustomEvent}" checkListId="{!v.configureId}" />
+                </aura:if>
 
 
                 <!-- Delete Questions -->
@@ -481,7 +483,7 @@
                                         </div>
                                     </aura:set>
                                 </aura:if>
-                    
+
                                 <div class="slds-modal__footer">
                                     <button class="slds-button slds-button_neutral" onclick="{!c.CancelDeleteModel}">Cancel</button>
                                 </div>
@@ -578,6 +580,8 @@
                                     <div class="slds-x-small-buttons--horizontal slds-float--right">
                                         <button class="slds-button slds-button--neutral"
                                             onclick="{!c.CancelQuestionsModel}">Cancel</button>
+                                        <button class="slds-button slds-button--neutral"
+                                            onclick="{!c.BackfromQuestionModal}">Back</button>
                                         <button class="slds-button slds-button--brand" aura:id="modaldialogNewQuestion"
                                             onclick="{!c.SavingQuestionsModel}">Save</button>
                                     </div>

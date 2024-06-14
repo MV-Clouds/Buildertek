@@ -9,7 +9,7 @@ public class ChooseBTChecklist {
                                                                             where Name != 'Checklist Logo' And Name != 'PreQual Logo'];
         return checklistObjects;
     }
-    
+
     @AuraEnabled
     public static list<string> getAllGroup( ){
         List<AggregateResult> lg = [SELECT COUNT(Id) recordsCount, buildertek__group_name__c FROM buildertek__Questions__c WHERE buildertek__group_name__c != null GROUP BY buildertek__group_name__c];
@@ -19,7 +19,7 @@ public class ChooseBTChecklist {
         }
         return groupNameList;
     }
-    
+
     @AuraEnabled
     public static list<buildertek__Questions__c> getQuestions(){
         list<buildertek__Questions__c> Questions = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c order by buildertek__group_name__c nulls last];
@@ -29,10 +29,10 @@ public class ChooseBTChecklist {
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
         system.debug('QuestionIds.......'+QuestionIds);
         list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c   WHERE Id IN: QuestionIds order by buildertek__group_name__c nulls last];
-          system.debug(Questionlist);                                                                  
+          system.debug(Questionlist);
         return Questionlist;
     }
-    
+
     @AuraEnabled
     public static buildertek__Questions__c createQuestions(string type,string QuestionName,string Options){
         buildertek__Questions__c Questions = new buildertek__Questions__c();
@@ -40,19 +40,19 @@ public class ChooseBTChecklist {
         Questions.buildertek__Options__c = Options;
         Questions.buildertek__Question_Type__c = type;
         insert Questions;
-        
-        buildertek__Questions__c NewQuestions = [select id, 
-                                                        buildertek__Customize__c, 
+
+        buildertek__Questions__c NewQuestions = [select id,
+                                                        buildertek__Customize__c,
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: Questions.id];
+                                                        from buildertek__Questions__c where id=: Questions.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
     }
-    
+
       @AuraEnabled
-    public static Map<String, List<String>> getPickValues(String objectName, String fieldName) {      
+    public static Map<String, List<String>> getPickValues(String objectName, String fieldName) {
         List<String> fieldNames = fieldName.split(',');
-        
+
         Map<String, List<String>> nameToValueMap = new Map<String, List<String>>();
         for(String s : fieldNames){
             Schema.sObjectType sobject_type = Schema.getGlobalDescribe().get(objectName); //grab the sobject that was passed
@@ -60,14 +60,14 @@ public class ChooseBTChecklist {
             Map<String, Schema.SObjectField> field_map = sobject_describe.fields.getMap(); //get a map of fields for the passed sobject
             List<Schema.PicklistEntry> pick_list_values = field_map.get(s).getDescribe().getPickListValues(); //grab the list of picklist values for the passed field on the sobject
             List<String> options = new List<String>(); //new list for holding all of the picklist options
-            for(Schema.PicklistEntry a : pick_list_values) { //for all values in the picklist list       
+            for(Schema.PicklistEntry a : pick_list_values) { //for all values in the picklist list
                 options.add(a.getValue()); //add the value and label to our final list
             }
             nameToValueMap.put(s, options);
         }
             return nameToValueMap; //return the List
     }
-    
+
    @AuraEnabled
     public static buildertek__Questions__c saveQuestion(string QuestionType,string QuestionText,string Options,string groupname,string selectedgroup,string recordid){
         buildertek__Questions__c qt = new buildertek__Questions__c();
@@ -83,12 +83,12 @@ public class ChooseBTChecklist {
         }
         insert qt;
         //upsert qt;
-         buildertek__Questions__c NewQuestions = [select id, 
-                                                        buildertek__Customize__c, 
+         buildertek__Questions__c NewQuestions = [select id,
+                                                        buildertek__Customize__c,
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c,
                                                         buildertek__group_name__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
@@ -107,11 +107,11 @@ public class ChooseBTChecklist {
         }
        // insert qt;
         upsert qt;
-         buildertek__Questions__c NewQuestions = [select id, 
-                                                        buildertek__Customize__c, 
+         buildertek__Questions__c NewQuestions = [select id,
+                                                        buildertek__Customize__c,
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
@@ -130,15 +130,15 @@ public class ChooseBTChecklist {
         }
        // insert qt;
         upsert qt;
-         buildertek__Questions__c NewQuestions = [select id, 
-                                                        buildertek__Customize__c, 
+         buildertek__Questions__c NewQuestions = [select id,
+                                                        buildertek__Customize__c,
                                                         buildertek__Options__c,
                                                         buildertek__Question_Type__c
-                                                       from buildertek__Questions__c where id=: qt.id];
+                                                       from buildertek__Questions__c where id=: qt.id order by buildertek__group_name__c nulls last];
         return NewQuestions;
        // system.debug('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'+qt);
     }
-    
+
      @AuraEnabled
     public static string ChecklistConfiguration(List<string> QuestionIds,string Name,string SelectedObject,string recordId){
         try{
@@ -157,10 +157,10 @@ public class ChooseBTChecklist {
             delete questionlist;
             }
             //List<buildertek__Questions__c> questionsList = [SELECT Id,];
-            
-            
-            
-            
+
+
+
+
             for(string id:QuestionIds){
                 system.debug(id);
                 buildertek__Checklist_Questions__c bcq = new buildertek__Checklist_Questions__c();
@@ -171,13 +171,13 @@ public class ChooseBTChecklist {
             if(!bcqList.isEmpty()){
                 insert bcqList;
             }
-            
-            
+
+
             return 'Success';
        }
         catch(Exception e){
             return e.getMessage();
-        }  
+        }
     }
     @future(callout=true)
     public static void createlookup(string objectname){
@@ -185,18 +185,18 @@ public class ChooseBTChecklist {
          //String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
          MetadataService.MetadataPort service1 = new MetadataService.MetadataPort();
           service1.SessionHeader = new MetadataService.SessionHeader_element();
-      service1.SessionHeader.sessionId = getSessionIdFromVFPage(Page.SessionId_VF); 
-         
+      service1.SessionHeader.sessionId = getSessionIdFromVFPage(Page.SessionId_VF);
+
        MetadataService.MetadataPort service = service1;
         MetadataService.CustomField customField = new MetadataService.CustomField();
          system.debug('objectname **** ' + objectname);
         string referenceobject = objectname;
-        
+
         if(objectname.contains('__c')){
             objectname = objectname.replace('__c','');
         }
         if(objectname.contains('__')){
-            string[] obj = objectname.split('__'); 
+            string[] obj = objectname.split('__');
             objectname = obj[1];
         }
         String fieldname=objectname;
@@ -212,8 +212,8 @@ public class ChooseBTChecklist {
             customField.relationshipLabel = objectname+' Checklist';
             customField.relationshipName = objectname+ 'Checklist';
         }
-        
-       
+
+
         customField.type_x = 'Lookup';
         system.debug('referenceobject **** ' + referenceobject);
         customField.referenceTo = referenceobject;
@@ -221,8 +221,8 @@ public class ChooseBTChecklist {
         List<MetadataService.SaveResult> results =
             service.createMetadata(
                 new MetadataService.Metadata[] { customField });
-        
-        
+
+
         MetadataService.Profile admin = new MetadataService.Profile();
         admin.fullName = 'Admin';
         admin.custom = false;
@@ -244,10 +244,10 @@ public class ChooseBTChecklist {
                  system.debug(fieldSec);
         }
         system.debug(customField);
-       
-        
+
+
         }
-    
+
 
     public static String getSessionIdFromVFPage(PageReference visualforcePage){
         if(Test.isRunningTest()) {
@@ -259,44 +259,35 @@ public class ChooseBTChecklist {
         return content.substring(s, e);
         }
     }
-    
+
      @AuraEnabled
     public static List<buildertek__Checklist_Configuration__c > getCheckListCofigRecords(){
          List<buildertek__Checklist_Configuration__c> CheckListCofigRecordsList = [select id,buildertek__Object_Name__c,Name,Createddate from buildertek__Checklist_Configuration__c order by createddate desc];
          return CheckListCofigRecordsList;
     }
-    
+
     @AuraEnabled
     public static buildertek__Checklist_Configuration__c geteditRecord(string recId){
-    
-        buildertek__Checklist_Configuration__c CheckListCofigRecord = [select id,
-    buildertek__Object_Name__c,
-Name,(select id,buildertek__Questions__r.Id,buildertek__Questions__r.buildertek__Customize__c from buildertek__Checklist_Questions__r) 
-from buildertek__Checklist_Configuration__c 
-where id=:recId];
+
+        buildertek__Checklist_Configuration__c CheckListCofigRecord = [Select id, buildertek__Object_Name__c, Name,(select id,buildertek__Questions__r.Id,buildertek__Questions__r.buildertek__Customize__c from buildertek__Checklist_Questions__r order by buildertek__Questions__r.buildertek__group_name__c nulls last) from buildertek__Checklist_Configuration__c where id=:recId];
          //update CheckListCofigRecord;
         return CheckListCofigRecord;
-       
+
     }
      @AuraEnabled
       public static buildertek__Questions__c editRecord(string recId){
        getAllGroup();
-         buildertek__Questions__c Questions = [select id,
-                                                                            buildertek__Customize__c,
-                                                                            buildertek__Options__c,
-                                                                            buildertek__Question_Type__c,
-                                                                            buildertek__group_name__c
-                                                                            from buildertek__Questions__c where id=:recId];
-    
-      
+         buildertek__Questions__c Questions = [Select id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c where id=:recId order by buildertek__group_name__c nulls last];
+
+
         return Questions;
-       
+
     }
-    
+
     @AuraEnabled
     public static void getDeleteRecord(string recId){
     List<buildertek__Checklist_Configuration__c> bcc = [select id from buildertek__Checklist_Configuration__c where id=:recId];
-    
+
     if(bcc.size()>0){
        delete bcc;
     }
@@ -318,5 +309,27 @@ where id=:recId];
           bcc.id = recId;
           delete bcc;*/
     }
-   
+
+    @AuraEnabled
+    public static string createSectionOrSubsection(String parentId, String sectionName, String checkListId, Boolean isGlobal) {
+        try {
+
+            buildertek__Checklist_Section_Junction__c checkListSectionJunction = new buildertek__Checklist_Section_Junction__c();
+            checkListSectionJunction.Name = sectionName;
+            checkListSectionJunction.buildertek__Checklist_Section_Junction__c = parentId;
+
+            if(isGlobal){
+                checkListSectionJunction.buildertek__Gloabl_Section__c = isGlobal;
+            } else {
+                checkListSectionJunction.buildertek__BT_Checklist_Configuration__c = checkListId;
+            }
+
+            insert checkListSectionJunction;
+
+            return 'success';
+        } catch (Exception ex) {
+            BT_ExceptionHandler.Store_Exception(ex);
+            return ex.getMessage();
+        }
+    }
 }

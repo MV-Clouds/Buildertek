@@ -48,7 +48,7 @@
                     // alert(selectedIds);
                     debugger;
                     if (selectedIds.length > 0) {
-                        var result = a.getReturnValue()
+                        var result = a.getReturnValue();
                         //component.set("v.Question",a.getReturnValue());
                         for (var i = 0; i < result.length; i++) {
                             var data = result[i].Id;
@@ -371,7 +371,7 @@
 
     },
     SelectedQuestions: function (component, event, helper) {
-
+        console.log(`SelectedQuestions`);
         var input, filter, ul, li, a, i;
         input = document.getElementById("selectedImp");
         filter = input.value.toUpperCase();
@@ -539,6 +539,19 @@
         component.set("v.DeleteQuestion", false);
 
     },
+
+    BackfromQuestionModal: function (component, event, helper){
+        component.set("v.isQuestionError", false);
+        component.set("v.isOptionError", false);
+        component.set("v.isMulti", false);
+        component.set("v.DeleteQuestion", true);
+        component.set("v.EditQuestion", false);
+    },
+
+    BackModal: function (component, event, helper) {
+        component.set("v.OpenQuestion", false);
+    },
+
     callEditQuestion: function (component, event, helper) {
         console.log('**************' + event.target.getAttribute('data-id'));
         component.set("v.isQuestionError", false);
@@ -714,6 +727,13 @@
     },
 
     AddGroup: function (component, event, helper) {
-        component.set("v.showGroup", true);
+        component.set("v.showGroup", false);
+        component.set("v.showSectionModel", true);
+        component.set("v.EditQuestion", false);
+    },
+
+    handleCustomEvent: function (component, event, helper) {
+        component.set("v.showSectionModel", false);
+        component.set("v.EditQuestion", true);
     }
 })
