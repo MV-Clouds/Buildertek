@@ -3,6 +3,10 @@
         //Site Url Get
         var url = window.location.href;
         var siteUrl = url.split('?');
+        var conId = helper.getParameterByName('contactId', url);
+        var checklistName = helper.getParameterByName('selectCheckListName', url);
+        component.set("v.checkListType", checklistName);
+        component.set("v.contactId", conId);
         if (siteUrl[0] != '' && siteUrl[0] != undefined) {
             component.set("v.siteUrl", siteUrl[0].replace('/buildertek__ChecklistForm', ''));
         }
@@ -96,17 +100,16 @@
 
     handleFilesChange: function(component, event, helper) {
         var fileInput = component.find("fuploader").get("v.files");
-		// get the first file using array index[0]
-		var file = fileInput[0];
-
+        var file = fileInput[0];
         var fileName = 'No File Selected..';
-        if (event.getSource().get("v.files").length > 0 && file.size > 4500000) {
+        
+        var fileSizeMB = file.size / (1024 * 1024);         
+        if (event.getSource().get("v.files").length > 0 && fileSizeMB > 3) { // Checking if file size exceeds 3 MB
             try {
-                component.set("v.fileName", 'Alert : File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
-                alert('File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
-
+                component.set("v.fileName", 'Alert : File size cannot exceed 3MB.\n Selected file size: ' + fileSizeMB.toFixed(2) + ' MB');
+                alert('File size cannot exceed 3MB\n Selected file size: ' + fileSizeMB.toFixed(2) + ' MB');
             } catch (error) {
-                console.log('error in upload ',error);
+                console.log('Error in file upload:', error);
             }
         } else {
             fileName = event.getSource().get("v.files")[0]['name'];
