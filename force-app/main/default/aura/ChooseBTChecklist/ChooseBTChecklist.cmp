@@ -56,9 +56,6 @@
     <aura:attribute name="checklists" type="List" />
     
     <aura:html tag="style">
-        .slds-form-element__label{
-        display: none;
-        }
         .slds-modal__container {
             max-width: 52rem !important;
             width: 52% !important;
@@ -578,6 +575,8 @@
                                     <div class="slds-x-small-buttons--horizontal slds-float--right">
                                         <button class="slds-button slds-button--neutral"
                                             onclick="{!c.CancelQuestionsModel}">Cancel</button>
+                                        <button class="slds-button slds-button--neutral"
+                                            onclick="{!c.BackfromQuestionModal}">Back</button>
                                         <button class="slds-button slds-button--brand" aura:id="modaldialogNewQuestion"
                                             onclick="{!c.SavingQuestionsModel}">Save</button>
                                     </div>
