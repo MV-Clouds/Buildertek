@@ -14,14 +14,15 @@ export default class NewWalkThroughLineCmp extends LightningElement {
     
     @track recordTypeName;
     @track selectedRecordType;
-    @track step1 = true;
-    @track step2 = false;
+    @track step1 = false;
+    @track step2 = true;
 
     @track recordTypeOptions = {};
+    @track recordTypeOptionsList = [];
     @track fieldsForSelectedRecordType = [];
 
     @track isProduct = false;
-    @track spinner = false;
+    @track spinner = true;
 
     // PriceBook
     selectedPriceBook
@@ -46,9 +47,19 @@ export default class NewWalkThroughLineCmp extends LightningElement {
     getRecordTypeValues(){
         getRecordType({ ObjectAPIName: this.objectApiName})
         .then(result =>{
+            this.recordTypeOptionsList = result;
             this.recordTypeOptions =result.map((item) => Object.assign({}, item, { label: item.Name, value: item.Id }));
-            this.selectedRecordType = this.recordTypeOptions[0].value;
-            this.recordTypeName = this.recordTypeOptions[0].Name;
+
+            for(var i = 0; i < result.length; i++){
+                if(result[i].Name == 'Product'){
+                    this.isProduct = true;
+                    this.selectedRecordType = result[i].Id;
+                    this.recordTypeName = result[i].Name;
+                    this.handleNext();
+                }
+            }
+            // this.selectedRecordType = this.recordTypeOptions[0].value;
+            // this.recordTypeName = this.recordTypeOptions[0].Name;
 
         })
         .catch(error => {
@@ -60,6 +71,15 @@ export default class NewWalkThroughLineCmp extends LightningElement {
         getFields({ objName:this.objectApiName, fieldSetName:'buildertek__NewfromParent'})
         .then(result => {
             this.fieldsForSelectedRecordType = JSON.parse(result);
+            //remove "buildertek__Product__c" field from the list
+
+            for(var i = 0; i < this.fieldsForSelectedRecordType.length; i++){
+                if(this.fieldsForSelectedRecordType[i].name == 'buildertek__Product__c'){
+                    this.fieldsForSelectedRecordType.splice(i,1);
+
+                }
+            }
+            console.log('Fields:', this.fieldsForSelectedRecordType);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -93,15 +113,15 @@ export default class NewWalkThroughLineCmp extends LightningElement {
             });
 
             if (this.recordTypeName === 'Product') {
-                if (this.selectedProductResult == undefined) {
+                if (fields['buildertek__Description__c'] == null || fields['buildertek__Description__c'] == '') {
                     this.spinner = false;
-                    this.showToast('Error', 'Please select a Product', 'error');
+                    this.showToast('Error', 'Please add description', 'error');
                     return;
                 } else {
                     fields['RecordTypeId'] = this.selectedRecordType;
                     fields['buildertek__Walk_Through_List__c'] = this.walkThroughId;
                     fields['buildertek__BT_Category__c'] = this.categoryId;
-                    fields['buildertek__Product__c'] = this.selectedProductResult.value ;
+                    fields['buildertek__Product__c'] = this.selectedProductResult ? this.selectedProductResult.value : '';
                     fields['buildertek__Price_Book__c'] = this.selectedPriceBook ;
                 }
             } else if (this.recordTypeName === 'No Product') {

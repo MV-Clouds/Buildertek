@@ -114,13 +114,19 @@
             }
             else if (state === "ERROR") {
                 var toastEvent = $A.get("e.force:showToast");
+                component.set("v.Spinner", false);
+                let errors = response.getError();
+                let message = 'Unknown error';
+                if (errors && Array.isArray(errors) && errors.length > 0) {
+                    message = errors[0].message;
+                }
                 toastEvent.setParams({
                     "type": "Error",
                     "title": "Error!",
-                    "message": "Something Went Wrong"
+                    "message": message
                 });
                 toastEvent.fire();
-                console.log('error', response.getError());
+                console.log('error', message);
             }
         });
         $A.enqueueAction(action);

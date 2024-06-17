@@ -108,7 +108,6 @@ public with sharing class SchedulePOController {
                 projectTask.buildertek__Dependency__c = dependency;
                 projectTask.buildertek__Purchase_Order__c = recordId;
                 projectTask.buildertek__Phase__c = task.buildertek__Phase__c;
-                                
                 if(task.buildertek__Finish__c != null){
                     projectTask.buildertek__Finish__c = task.buildertek__Finish__c;    
                 }else{

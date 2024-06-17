@@ -1,9 +1,8 @@
 public with sharing class CashDisbursementTriggerHandler {
     public static Boolean isSkipExecution = false;
-
+    
     public static void onBeforeInsert(List<buildertek__Payment__c> newcashDisbursement){
         String budgetLineGroupId ;
-        
         List<buildertek__Budget_Line_Group__c> budgetLineGroups = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c WHERE Name = 'No Grouping' LIMIT 1];
         
         if(budgetLineGroups.size() == 0){
@@ -183,8 +182,7 @@ public with sharing class CashDisbursementTriggerHandler {
             if(CD.buildertek__BT_Budget_Line__c != null){
                 budgetItemIds.add(CD.buildertek__BT_Budget_Line__c);
             }
-        }
-
+        } 
         if(budgetItemIds.size() > 0){
             recalculateBudgetItems(budgetItemIds);
         }
@@ -224,5 +222,3 @@ public with sharing class CashDisbursementTriggerHandler {
         }
 
     }
-
-}

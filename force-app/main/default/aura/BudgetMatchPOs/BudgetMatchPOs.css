@@ -1,0 +1,40 @@
+.THIS .header {
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-around;
+    font-size: medium;
+}
+
+.THIS .po-container {
+    height: 53vh !important;
+    max-height: 53vh !important;
+}
+
+.THIS .po-item {
+    padding: 0px;
+    margin: auto 15px;
+    border-bottom: 1px solid #d8d8d8;
+    display: flex;
+    align-items: center !important;
+    justify-content: space-between;
+}
+
+.THIS .icon {
+    margin-right: 10px;
+}
+
+.THIS .po-name-column {
+    width: 50%;
+}
+
+.THIS .dropdown-column {
+    width: 40%;
+    position: relative;
+    padding-top: 0px !important;
+    min-width: 0;
+    margin-top: 0px !important;
+    bottom: 8px;
+    right: 6px;
+}

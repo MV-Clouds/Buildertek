@@ -11,6 +11,8 @@
 
     <aura:attribute name="Spinner" type="boolean" />
     <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="TimeSheetProject" type="String" />
+    <aura:attribute name="TimeSheetResource" type="String" />
     <aura:attribute name="massUpdateEnable" type="Boolean" default="true" />
     <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
     <aura:attribute name="timeSheetEntries" type="List" default="[]" />

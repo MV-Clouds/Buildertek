@@ -1,0 +1,94 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global" controller="budgetMatchPOsController">
+
+    <aura:attribute name="budgetLineList" type="List" default="[]" />
+    <aura:attribute name="poList" type="List" default="[]" />
+    <aura:attribute name="selectedBudgetLine" type="String" />
+    <aura:attribute name="spinner" type="Boolean" default="false" />
+    <aura:attribute name="selectedPOItems" type="Object[]" default="[]" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+
+    <aura:if isTrue="{!not(empty(v.poList)) &amp;&amp; v.spinner == false}">
+        <div class="slds-modal__header" style="font-size: 17px;">
+            Assign Purchase Orders to Budget Lines
+        </div>
+
+        <div class="slds-modal__content">
+            <div class="slds slds-scope">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="header">
+                                <span>Purchase Order Items</span>
+                                <span>Budget Lines</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="slds-card po-container">
+                                    <div class="slds-card__body">
+                                        <div class="slds-card__body_inner">
+                                            <aura:iteration items="{!v.poList}" var="item">
+                                                <div class="slds-media po-item">
+                                                    <div class="icon">
+                                                        <lightning:icon iconName='custom:custom18'
+                                                            alternativeText='PO Item' size='small' />
+                                                    </div>
+                                                    <div class="slds-media__body po-name-column">
+                                                        {!item.Name} - {!item.buildertek__Description__c} -
+                                                        {!item.buildertek__Vendor__r.Name} -
+                                                        <lightning:formattedNumber
+                                                            value="{!item.buildertek__PO_Total__c}" style="currency" />
+                                                    </div>
+                                                    <div class="slds-form-element dropdown-column">
+                                                        <div class="slds-form-element__control" data-id="{!item.Id}">
+                                                            <lightning:select name="budgetItem-dropdown"
+                                                                value="{!item.selectedBudgetLine}"
+                                                                onchange="{!c.onSelectChange}">
+                                                                <option text="--None--" value="" />
+                                                                <aura:iteration items="{!v.budgetLineList}"
+                                                                    var="budgetLine">
+                                                                    <option value="{!budgetLine.Id}"
+                                                                        disabled="{!budgetLine.isDisabled}">
+                                                                        {!budgetLine.Name}
+                                                                    </option>
+                                                                </aura:iteration>
+                                                            </lightning:select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </aura:iteration>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slds-modal__footer">
+            <button class="slds-button slds-button--neutral" onclick="{!c.closeModel}">Cancel</button>
+            <button class="slds-button slds-button--brand" onclick="{!c.Save}">Save</button>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <lightning:notificationsLibrary aura:id="notifLib" />
+</aura:component>

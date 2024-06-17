@@ -52,28 +52,30 @@
             });
             $A.enqueueAction(action);
         }
+        helper.fetchWalkThroughs(component, event, helper);
     },
 
     handleSubmit: function (component, event, helper) {
         component.set("v.isDisabled", true);
-		component.set("v.isLoading", true);
+        component.set("v.isLoading", true);
         event.preventDefault(); // Prevent default submit
         var fields = event.getParam("fields");
         var allData = JSON.stringify(fields);
 
         var action = component.get("c.saveData");
         action.setParams({
-            allData : allData
+            allData: allData,
+            selectedMasterId: component.get("v.selectedWalkThroughId"),
         });
-        action.setCallback(this, function(response){
-            if(response.getState() == 'SUCCESS') {            
+        action.setCallback(this, function (response) {
+            if (response.getState() == 'SUCCESS') {
                 var result = response.getReturnValue();
-                console.log({result});
+                console.log({ result });
                 var saveNnew = component.get("v.isSaveNew");
-                if(saveNnew){
+                if (saveNnew) {
                     $A.get('e.force:refreshView').fire();
                     component.set("v.isSaveNew", false);
-                }else{
+                } else {
                     var navEvt = $A.get("e.force:navigateToSObject");
                     navEvt.setParams({
                         "recordId": result,
@@ -81,15 +83,13 @@
                     });
                     navEvt.fire();
                     var workspaceAPI = component.find("workspace");
-                    workspaceAPI.getFocusedTabInfo().then(function(response) {
+                    workspaceAPI.getFocusedTabInfo().then(function (response) {
                         var focusedTabId = response.tabId;
-                        workspaceAPI.closeTab({tabId: focusedTabId});
-                    }
-                    )
-                    .catch(function(error) {
+                        workspaceAPI.closeTab({ tabId: focusedTabId });
+                    })
+                    .catch(function (error) {
                         console.log(error);
-                    }
-                    );
+                    });
                     $A.get("e.force:closeQuickAction").fire();
 
                 }
@@ -102,7 +102,7 @@
                 toastEvent.fire();
                 component.set("v.isDisabled", false);
                 component.set("v.isLoading", false);
-            }else{
+            } else {
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     "title": "Error!",
@@ -138,5 +138,10 @@
             }), 1000
         );
    },
+
+    handleRadioChange: function (component, event, helper) {
+        var selectedWalkThroughId = event.getSource().get("v.text");
+        component.set("v.selectedWalkThroughId", selectedWalkThroughId);
+    }
 
 })
