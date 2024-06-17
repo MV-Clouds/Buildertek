@@ -10,7 +10,7 @@ public with sharing class SchedulePOController {
             Schema.sObjectType.buildertek__Project__c.fields.Name.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isAccessible() &&
             Schema.sObjectType.Account.fields.Name.isAccessible() ){
-            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Estimated_Start_Date__c, buildertek__Estimated_Completion_Date__c, buildertek__Anticipated_Work_Days__c from buildertek__Purchase_Order__c where Id =: recordId];
+            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Estimated_Start_Date__c, buildertek__Estimated_Completion_Date__c from buildertek__Purchase_Order__c where Id =: recordId];
             }
         return pur;     
     }
@@ -247,5 +247,22 @@ public with sharing class SchedulePOController {
         public String Message {get;set;}
         @AuraEnabled
         public Id RecordId {get;set;}
+    }
+
+    @AuraEnabled
+    public static boolean checkIncludeWeekend(){
+        try{
+            buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Hide_Internal_Resource__c, buildertek__Hide_Contractor__c, buildertek__Hide_Contractor_Resource__c, buildertek__Setting_Description__c, buildertek__Old_Gantt_Chart__c,buildertek__Include_Weekend__c
+            from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+
+            return adminInterfaceNodeConfigurations.buildertek__Include_Weekend__c;
+        }catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return false;
+        }
+        
     }
 }
