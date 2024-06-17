@@ -201,6 +201,17 @@
         }
 
     },
+
+    handleGroupChange: function (component, event, helper) {
+        var selectedGroup = event.getSource().get("v.value");
+    
+        if (selectedGroup === '--None--' || !selectedGroup) {
+            component.set("v.btnLabel", "New Section");
+        } else {
+            component.set("v.btnLabel", "New Subsection");
+        }
+    },
+
     ChageTypes: function (component, event, helper) {
         component.set("v.questionType", event.getSource().get('v.value'));
         var newQua = component.get("v.Question");

@@ -16,6 +16,7 @@
     <aura:attribute name="showGroup" type="boolean" default="false" />
     <aura:attribute name="message" type="boolean" default="false" />
     <aura:attribute name="showSectionModel" type="boolean" default="false" />
+    <aura:attribute name="btnLabel" type="String" default="New Section" />
 
     <aura:attribute name="deleteIndex" type="Integer" />
 
@@ -326,12 +327,12 @@
 
                                 </div>
                                 <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
-                                    <label for="fullname">Select Group</label>
+                                    <label for="fullname">Select Section</label>
                                     <div>
                                         <div style="display:inline-flex;width:100%">
                                             <div style="width:80%">
-                                                <ui:inputSelect aura:id="seelctgroupName" multiple="false"
-                                                    value="{!v.selectedgroup}" class="slds-select">
+                                                <ui:inputSelect aura:id="seelctgroupName" multiple="false" value="{!v.selectedgroup}" class="slds-select"
+                                                    change="{!c.handleGroupChange}">
                                                     <ui:inputSelectOption text="" label="--None--" />
                                                     <aura:iteration items="{!v.grouplist}" var="val">
                                                         <ui:inputSelectOption text="{!val}" label="{!val}" />
@@ -339,9 +340,7 @@
                                                 </ui:inputSelect>
                                             </div>
                                             <div style="padding-left:2px">
-                                                <button class="slds-button slds-button--neutral"
-                                                    onclick="{!c.AddGroup}">New
-                                                    Group</button>
+                                                <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}">{!v.btnLabel}</button>
                                             </div>
                                         </div>
                                     </div>
@@ -393,7 +392,7 @@
 
 
                 <aura:if isTrue="{!v.showSectionModel}">
-                    <c:createChecklistSectionAndSubsectionCmp onmycustomevent="{!c.handleCustomEvent}" checkListId="{!v.configureId}" />
+                    <c:createChecklistSectionAndSubsectionCmp onmycustomevent="{!c.handleCustomEvent}" checkListId="{!v.configureId}" parentSectionId="{!v.selectedgroup}"/>
                 </aura:if>
 
 
@@ -483,7 +482,7 @@
                                         </div>
                                     </aura:set>
                                 </aura:if>
-
+                    
                                 <div class="slds-modal__footer">
                                     <button class="slds-button slds-button_neutral" onclick="{!c.CancelDeleteModel}">Cancel</button>
                                 </div>
@@ -530,12 +529,12 @@
 
                                 </div>
                                 <div class="slds-modal__content" style="padding-top: 5px;padding-bottom: 5px;">
-                                    <label for="fullname">Select Group</label>
+                                    <label for="fullname">Select Section</label>
                                     <div>
                                         <div style="display:inline-flex;width:100%">
                                             <div style="width:80%">
-                                                <ui:inputSelect aura:id="seelctgroupName" multiple="false"
-                                                    value="{!v.selectedgroup}" class="slds-select">
+                                                <ui:inputSelect aura:id="seelctgroupName" multiple="false" value="{!v.selectedgroup}" class="slds-select"
+                                                    change="{!c.handleGroupChange}">
                                                     <ui:inputSelectOption text="" label="--None--" />
                                                     <aura:iteration items="{!v.grouplist}" var="val">
                                                         <ui:inputSelectOption text="{!val}" label="{!val}" />
@@ -543,9 +542,7 @@
                                                 </ui:inputSelect>
                                             </div>
                                             <div style="padding-left:2px">
-                                                <button class="slds-button slds-button--neutral"
-                                                    onclick="{!c.AddGroup}">New
-                                                    Group</button>
+                                                <button class="slds-button slds-button--neutral" onclick="{!c.AddGroup}">{!v.btnLabel}</button>
                                             </div>
                                         </div>
                                     </div>
