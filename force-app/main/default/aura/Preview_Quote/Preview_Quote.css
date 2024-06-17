@@ -12,6 +12,12 @@
    display : none;
 } */
 
+.THIS .sldsButtonGroup{
+  margin-top: 24px;
+}
+/* .THIS .slds-pill__remove {
+  display: none;
+} */
 
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {

@@ -5,13 +5,13 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur;
          if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible() &&
-			
-			Schema.sObjectType.buildertek__Project__c.fields.Name.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isAccessible() &&
-			Schema.sObjectType.Account.fields.Name.isAccessible() ){
-            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name from buildertek__Purchase_Order__c where Id =: recordId];
-			}
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible() &&
+            
+            Schema.sObjectType.buildertek__Project__c.fields.Name.isAccessible() &&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Vendor__c.isAccessible() &&
+            Schema.sObjectType.Account.fields.Name.isAccessible() ){
+            pur= [select Id, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name,buildertek__Vendor__c,buildertek__Vendor__r.Name, buildertek__Estimated_Start_Date__c, buildertek__Estimated_Completion_Date__c from buildertek__Purchase_Order__c where Id =: recordId];
+            }
         return pur;     
     }
     
@@ -20,9 +20,9 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur;
         if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
             pur= [select Id, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: recordId]; 
-			}
+            }
         system.debug('projectId -----> '+pur.buildertek__Project__c);
         list<Schedule__c> getSchedulesList;
          if(Schema.sObjectType.Schedule__c.fields.Id.isAccessible() &&
@@ -84,10 +84,12 @@ public with sharing class SchedulePOController {
         buildertek__Purchase_Order__c pur ;
         if(Schema.sObjectType.buildertek__Purchase_Order__c.fields.Id.isAccessible() &&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Schedule_Item__c.isAccessible()&&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Estimated_Completion_Date__c.isAccessible()&&
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Estimated_Start_Date__c.isAccessible()&&
             Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Description__c.isAccessible() &&
-			Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
-             pur = [select Id,buildertek__Schedule_Item__c, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: poId]; 
-			}
+            Schema.sObjectType.buildertek__Purchase_Order__c.fields.buildertek__Project__c.isAccessible()){
+             pur = [select Id,buildertek__Schedule_Item__c, buildertek__Estimated_Completion_Date__c, buildertek__Estimated_Start_Date__c, buildertek__Description__c, buildertek__Project__c from buildertek__Purchase_Order__c where Id =: poId]; 
+            }
         ErrorMessageClass errMessage = new ErrorMessageClass();
         try{
             buildertek__Project_Task__c projectTask = new buildertek__Project_Task__c();
@@ -105,6 +107,7 @@ public with sharing class SchedulePOController {
                 projectTask.buildertek__Dependency__c = dependency;
                 projectTask.buildertek__Purchase_Order__c = recordId;
                 projectTask.buildertek__Phase__c = task.buildertek__Phase__c;
+                
                 if(task.buildertek__Finish__c != null){
                     projectTask.buildertek__Finish__c = task.buildertek__Finish__c;    
                 }else{
@@ -244,5 +247,22 @@ public with sharing class SchedulePOController {
         public String Message {get;set;}
         @AuraEnabled
         public Id RecordId {get;set;}
+    }
+
+    @AuraEnabled
+    public static boolean checkIncludeWeekend(){
+        try{
+            buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Hide_Internal_Resource__c, buildertek__Hide_Contractor__c, buildertek__Hide_Contractor_Resource__c, buildertek__Setting_Description__c, buildertek__Old_Gantt_Chart__c,buildertek__Include_Weekend__c
+            from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+
+            return adminInterfaceNodeConfigurations.buildertek__Include_Weekend__c;
+        }catch(Exception e){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(e);
+            }
+            return false;
+        }
+        
     }
 }

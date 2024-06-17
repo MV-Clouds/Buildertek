@@ -3,6 +3,9 @@
         try {
             $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire();
             var action = component.get("c.getAllPO");
+              action.setParams({
+                    recordId : component.get("v.recordId")
+                });
             action.setCallback(this, function(response){
                 var result = response.getReturnValue();
                 console.log('result---> ',result);

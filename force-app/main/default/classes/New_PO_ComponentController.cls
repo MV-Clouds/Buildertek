@@ -1,4 +1,38 @@
-public with sharing class New_PO_ComponentController {
+public with sharing class New_PO_ComponentController{
+    @AuraEnabled
+    public static finalRecordTypeResult getPoRecordTypes(){
+        try{
+            finalRecordTypeResult recordTypeObj = new finalRecordTypeResult();
+            List<optionWrp> recordTypeList = new List<optionWrp>();
+
+            Schema.DescribeSObjectResult R = buildertek__Purchase_Order__c.SObjectType.getDescribe();
+            List<Schema.RecordTypeInfo> RT = R.getRecordTypeInfos();
+
+            for (Schema.RecordTypeInfo singleLine : RT){
+                optionWrp recordType = new optionWrp();
+                if (!singleLine.isDefaultRecordTypeMapping() && !singleLine.isMaster()){
+                    recordType.label = singleLine.getName();
+                    recordType.value = singleLine.getRecordTypeId() + '-' + singleLine.getName();
+                    recordTypeList.add(recordType);
+                } else if (singleLine.isDefaultRecordTypeMapping()){
+                    recordType.label = singleLine.getName();
+                    recordType.value = singleLine.getRecordTypeId() + '-' + singleLine.getName();
+                    recordTypeList.add(recordType);
+                    recordTypeObj.defaultRecordTypeId = singleLine.getRecordTypeId() + '-' + singleLine.getName();
+                }
+            }
+
+            recordTypeObj.recordTypeWrp = recordTypeList;
+            return recordTypeObj;
+        } catch (Exception ex){
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            throw new AuraHandledException(ex.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static String getFieldSet(String objectName, String fieldSetName){
         String result = '';
@@ -13,10 +47,10 @@ public with sharing class New_PO_ComponentController {
                         result += ',';
                     }
                     String jsonPart = '{';
-                    jsonPart += '"label":"' + f.getLabel()+'",';
-                    jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired())+'",';
-                    jsonPart += '"type":"' + (f.getType())+'",';
-                    jsonPart += '"name":"' + f.getFieldPath()+'"';
+                    jsonPart += '"label":"' + f.getLabel() + '",';
+                    jsonPart += '"required":"' + (f.getDBRequired() || f.getRequired()) + '",';
+                    jsonPart += '"type":"' + (f.getType()) + '",';
+                    jsonPart += '"name":"' + f.getFieldPath() + '"';
                     if (String.valueOf(f.getType()) == 'PICKLIST'){
                         pickListValuesList = getDropDown(objectName, String.valueOf(f.getFieldPath()));
                         jsonPart += ',"pickListValuesList":' + JSON.serialize(pickListValuesList);
@@ -25,9 +59,9 @@ public with sharing class New_PO_ComponentController {
                     result += jsonPart;
                 }
             }
-            
+
         } catch (Exception e){
-            result += e.getLineNumber()+' : ' + e.getMessage();
+            result += e.getLineNumber() + ' : ' + e.getMessage();
             System.debug('Error::' + e.getMessage());
             System.debug('Error At Line::' + e.getLineNumber());
         }
@@ -53,39 +87,46 @@ public with sharing class New_PO_ComponentController {
     }
 
     @AuraEnabled
-    public static string saveRecord(String data){
-        System.debug('In save method');
-        buildertek__Purchase_Order__c POInsert = (buildertek__Purchase_Order__c)JSON.deserialize(data, buildertek__Purchase_Order__c.class);
-        if(POInsert.buildertek__Type__c == null){
-            POInsert.buildertek__Type__c = 'Standard';
+    public static String saveRecord(String data) {
+        try {
+            System.debug('In save method');
+            buildertek__Purchase_Order__c POInsert = (buildertek__Purchase_Order__c)JSON.deserialize(data, buildertek__Purchase_Order__c.class);
+            if (POInsert.buildertek__Type__c == null) {
+                POInsert.buildertek__Type__c = 'Standard';
+            }
+            insert POInsert;
+            return POInsert.Id;
+        } catch (DmlException ex) {
+            throw new AuraHandledException('Error Details: ' + ex.getDmlMessage(0));
+        } catch (Exception ex) {
+            throw new AuraHandledException('Error Details: ' + ex.getMessage());
         }
-        System.debug('POInsert ==? '+POInsert);
-        insert POInsert;
-        return POInsert.ID;
     }
 
     @AuraEnabled
     public static String getobjectName(Id recordId){
-        String sObjName = recordId.getSObjectType().getDescribe().getName();  
+        String sObjName = recordId.getSObjectType().getDescribe().getName();
         return sObjName;
     }
 
     @AuraEnabled
-    public static String getCustomerId (Id recordId){
-        String sObjName = recordId.getSObjectType().getDescribe().getName();  
-        if(sObjName == 'buildertek__Project__c'){
-            buildertek__Project__c project = [SELECT buildertek__Customer__c FROM buildertek__Project__c WHERE Id = :recordId];
+    public static String getCustomerId(Id recordId){
+        String sObjName = recordId.getSObjectType().getDescribe().getName();
+        if (sObjName == 'buildertek__Project__c'){
+            buildertek__Project__c project = [SELECT buildertek__Customer__c
+                                              FROM buildertek__Project__c
+                                              WHERE Id = :recordId];
             return project.buildertek__Customer__c;
         }
         return '';
     }
 
     @AuraEnabled
-    public static String savePOLineItems (List<buildertek__Purchase_Order_Item__c> listofPOItemsToSave, Id recordId ){
-        System.debug('listofPOItemsToSave ==? '+listofPOItemsToSave);
-        System.debug('recordId ==? '+recordId);
+    public static String savePOLineItems(List<buildertek__Purchase_Order_Item__c> listofPOItemsToSave, Id recordId){
+        System.debug('listofPOItemsToSave ==? ' + listofPOItemsToSave);
+        System.debug('recordId ==? ' + recordId);
         //loop over the list and set the PO Id
-        for(buildertek__Purchase_Order_Item__c poItem : listofPOItemsToSave){
+        for (buildertek__Purchase_Order_Item__c poItem : listofPOItemsToSave){
             poItem.buildertek__Purchase_Order__c = recordId;
         }
         insert listofPOItemsToSave;
@@ -95,13 +136,25 @@ public with sharing class New_PO_ComponentController {
 
     @AuraEnabled
     public static String getadminvalues(){
-		buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Send_Vendor_Lien_Release_On_Approval__c,buildertek__Create_PO__c,
-                                                                                              buildertek__Send_PO_On_Approval__c, buildertek__Email_Subject__c,buildertek__Create_Invoice_on_Approval__c
-		                                                                                      from buildertek__Admin_Interface_Node_Configuration__c
-		                                                                                      WHERE Name = :'Purchase Order Configuration'];
-        String createPO = adminInterfaceNodeConfigurations.buildertek__Create_PO__c ;
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Send_Vendor_Lien_Release_On_Approval__c, buildertek__Create_PO__c, buildertek__Send_PO_On_Approval__c, buildertek__Email_Subject__c, buildertek__Create_Invoice_on_Approval__c
+                                                                                              from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                              WHERE Name = :'Purchase Order Configuration'];
+        String createPO = adminInterfaceNodeConfigurations.buildertek__Create_PO__c;
 
         return createPO;
-    }   
+    }
 
+    public class optionWrp{
+        @AuraEnabled
+        public String label {get; set;}
+        @AuraEnabled
+        public String value {get; set;}
+    }
+
+    public class finalRecordTypeResult{
+        @AuraEnabled
+        public List<optionWrp> recordTypeWrp {get; set;}
+        @AuraEnabled
+        public String defaultRecordTypeId {get; set;}
+    }
 }

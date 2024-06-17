@@ -330,7 +330,7 @@
                 "type":"error"
             });
             toastEvent.fire();
-        }else if(component.get("v.selectedFieldValue") != undefined && (component.get("v.selectedFieldValue") != '') && lookupfield.includes(">")){
+        } else if(component.get("v.selectedFieldValue") != undefined && (component.get("v.selectedFieldValue") != '')){
             //alert("hai");
             iserror = true;
             var toastEvent = $A.get("e.force:showToast");
@@ -371,6 +371,16 @@
                     });
                     toastEvent.fire();   
                 }
+        else if (lookupfield.includes(">")){
+            iserror = true;
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                "title": "Error!",
+                "message": "Please select a valid email field from Select Field",
+                "type":"error"
+            });
+            toastEvent.fire();
+        }
         
         if(iserror == false){
             /*alert(component.get("v.SelectedContactId"));

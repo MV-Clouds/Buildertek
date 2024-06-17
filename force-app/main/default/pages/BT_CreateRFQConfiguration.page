@@ -1,13 +1,13 @@
 <apex:page controller="BT_RFQConfiguration" sidebar="false" lightningStylesheets="true">
     <apex:slds />
-    <apex:form >
-        <apex:pageBlock >
+    <apex:form id="frmConfigure" > 
+        <apex:pageBlock id="thepageblock">
             <apex:outputText escape="false" value="{!settingDescription}">
             </apex:outputText>
         </apex:pageBlock>
-        <apex:pageBlock mode="maindetail">
+        <apex:pageBlock mode="maindetail" id="mainDetailPageBlock">
             <apex:pageMessages />
-            <apex:pageblocksection >
+            <apex:pageblocksection id="pageBlockSection">
               <!--  <apex:inputcheckbox value="{!isCreateChangeOrderonOverage}" label="Create Change Order on Overage">
                 </apex:inputcheckbox> -->
                 <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
@@ -23,11 +23,23 @@
                 </apex:inputcheckbox>
                 <!-- using product checkbox -->
                 <apex:inputcheckbox value="{!isUsingProduct}" label="Using Product">
-                </apex:inputcheckbox>
+                </apex:inputcheckbox> 
+                <label for="head"  style="margin-left: 116px;">Color Code</label>
+                <input type="color" id="head" name="ColorCode" onchange="updateColorCode(this.value)" value="{!colorcode}" style="margin-left: 23px;"/>  
+                <apex:inputHidden value="{!colorcode}" id="colorCodeInput"/>
+
+                <!-- <apex:inputField styleClass="color" value="{!adminterface.buildertek__Color_code__c}" label="Color Code"/> -->
                 <center>
                 <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onCreateChangeOrderonOverage}"></apex:commandButton>
                 </center>
             </apex:pageblocksection>
         </apex:pageBlock>
     </apex:form>
+        <script type="text/javascript"> 
+       function updateColorCode(color) {
+        console.log(color);
+        document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value = color;
+        console.log(document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value );
+    }
+    </script>
 </apex:page>

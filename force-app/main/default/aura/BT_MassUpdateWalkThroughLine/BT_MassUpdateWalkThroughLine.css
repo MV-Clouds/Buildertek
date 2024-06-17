@@ -34,3 +34,8 @@
 .THIS td {
     padding-block: 3px !important;
 }
+
+.THIS .pillSize {
+   height: 32px !important;
+   margin-top: 15px;
+}

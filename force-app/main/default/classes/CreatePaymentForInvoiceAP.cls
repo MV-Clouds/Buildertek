@@ -58,11 +58,16 @@ public class CreatePaymentForInvoiceAP {
         
         buildertek__BT_Payment__c invoiceRec = [SELECT Id,
                                                  Name,
-                                                  buildertek__Invoices_AP__c
+                                                  buildertek__Invoices_AP__c,buildertek__BT_Budget__c,buildertek__BT_Budget_Line__c
                                                  FROM buildertek__BT_Payment__c
                                                  WHERE Id =: recordId];
-        
+        buildertek__Account_Payable_Clone__c pinvoice=[SELECT Id, buildertek__Budget__c,buildertek__Budget_Line__c
+                                                 FROM buildertek__Account_Payable_Clone__c
+                                                 WHERE Id =: invoiceId];
+
         invoiceRec.buildertek__Invoices_AP__c = invoiceId;
+        invoiceRec.buildertek__BT_Budget__c= pinvoice.buildertek__Budget__c;
+        invoiceRec.buildertek__BT_Budget_Line__c= pinvoice.buildertek__Budget_Line__c;
         
         update invoiceRec;
         

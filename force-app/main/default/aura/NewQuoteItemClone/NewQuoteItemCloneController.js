@@ -265,16 +265,16 @@
         var selectedOptionValue = component.find("select").get("v.value");
         console.log('selectedOptionValue', selectedOptionValue);
         if (selectedOptionValue == 'PriceBook') {
-            
+
             console.log(event.getSource());
             // let phaseValue=event.getSource().get('v.value');
             // component.set('v.phaseName', phaseValue);
             console.log(component.get('v.phaseName'));
             component.set('v.askforFilter', false);
-            component.set('v.openProductBox', true); 
+            component.set('v.openProductBox', true);
         } else if (selectedOptionValue == 'Vendor') {
             component.set('v.askforFilter', false);
-            component.set('v.openProductBoxwithVendor', true);            
+            component.set('v.openProductBoxwithVendor', true);
         }
     },
 
@@ -336,10 +336,10 @@
                     }
                 });
             }
-        
+
     },
 
-    
+
 
     saveAndNew: function(component, event, helper) {
         if (!component.get('v.isAddProductFromGroup')) {
@@ -431,7 +431,8 @@
         component.set('v.newQuote.buildertek__Unit_Cost__c', '');
         component.set('v.newQuote.buildertek__Unit_Price__c', null);
         component.set('v.newQuote.buildertek__Markup__c', '');
-
+        component.set('v.newQuote.buildertek__Margin__c', '');
+        component.set('v.newQuote.buildertek__Notes__c', '');
     },
     changeEvent: function(component, event, helper) {
         var group = component.find('groupId');
@@ -452,6 +453,8 @@
         component.set('v.newQuote.buildertek__Unit_Price__c', null);
         component.set('v.newQuote.buildertek__Quantity__c', 1);
         component.set('v.newQuote.buildertek__Markup__c', '');
+        component.set('v.newQuote.buildertek__Margin__c', '');
+        component.set('v.newQuote.buildertek__Notes__c', '');
         var pribooknames = component.get("v.pricebookName");
         console.log("PriceBook Name : ======= : ", pribooknames);
         console.log({ product });
@@ -481,14 +484,14 @@
                 // if(component.get("v.listofproductfamily").length ===1 && component.get("v.listofproductfamily")[0].productfamilyvalues=='None'){
                 //     component.set("v.productfamily", 'None');
                 //     document.getElementById('noneValue').style.display='None';
-                // }else 
+                // }else
                 console.log(component.get("v.listofproductfamily").length , 'lengthlengthlength===');
 
                 if (component.get("v.listofproductfamily").length > 0) {
                     component.set("v.productfamily", '--None--');
                     // component.set("v.productfamily", component.get("v.listofproductfamily")[0].productfamilyvalues);
 
-                    
+
                 } else {
                     component.set("v.productfamily", 'None');
                 }
@@ -515,10 +518,10 @@
                 var page = component.get("v.page") || 1
                 let getValue=component.get('v.displayGrouping')
                 if (getValue) {
-                    helper.getQuoteGrouping(component, event, helper); 
+                    helper.getQuoteGrouping(component, event, helper);
                 } else{
                     helper.getGroups(component, event, helper, page);
-                }           
+                }
             }
         }
     },
@@ -651,30 +654,34 @@
             var quoteObject = component.get("v.newQuote");
             quoteObject.buildertek__Product_Family__c = component.get("v.productfamily");
             var getDescription=component.get('v.newQuote.Name');
-    
-    
+
+
             var jsonString =JSON.stringify(quoteObject);
-    
-    
+
+
             console.log('*************************');
-    
+
             console.log(jsonString);
             console.log(component.get("v.productfamily"));
-    
+
             console.log(component.get("v.newQuote"));
             console.log(' Quote Data ==> ' + JSON.stringify(quoteObject));
             debugger;
-    
+
             var recordId = component.get("v.recordId");
             component.set("v.newQuote.buildertek__Quote__c", recordId);
+            let hideGlobalMargin = component.get('v.hideGlobalMargin');
+            if (hideGlobalMargin) {
+                quoteObject.buildertek__Margin__c = null;
+            }
             var markup = quoteObject.buildertek__Markup__c;
             var margin = quoteObject.buildertek__Margin__c;
             console.log({margin} , '====margin=====');
             // markup = markup * 100;
             component.set("v.newQuote.buildertek__Margin__c", margin);
             component.set("v.newQuote.buildertek__Markup__c", markup);
-    
-    
+
+
             if(getDescription != undefined && getDescription != '' && getDescription.length <= 255){
                 var action = component.get("c.saveQuoteLineItem");
                 action.setParams({
@@ -717,7 +724,7 @@
                                 toastEvent.fire();
                             }), 3000
                         );
-        
+
                         var page = component.get("v.page") || 1
                         helper.getGroups(component, event, helper, page);
                         helper.fetchpricebooks(component, event, helper);
@@ -729,7 +736,7 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-    
+
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
                     mode: 'sticky',
@@ -806,7 +813,7 @@
         });
         editRecordEvent.fire();
 
-        
+
     },
     editUnitPrice: function(component, event, helper) {
         var recordId = event.currentTarget.dataset.id;
@@ -817,7 +824,7 @@
 
         var HaveEditAceess = component.get("v.HaveUpdateAccess");
         // >>>>>>>>>>>>>>>>>>> CHB - 80 <<<<<<<<<<<<<<<<<<<<<<<,
-        // Check If User Have Edit Access Or Not 
+        // Check If User Have Edit Access Or Not
         if(HaveEditAceess){
             component.set("v.NetUnit", null);
             //alert('NetUnit'+component.get("v.NetUnit"));
@@ -845,7 +852,7 @@
                     component.set("v.editUnitPrice", true);
                 }
             });
-    
+
             $A.enqueueAction(action);
         }
         else{
@@ -950,7 +957,7 @@
                     getAllId = component.find("checkGroupQuoteItem1");
                 }else{
                     getAllId = component.find("checkQuoteItem");
-    
+
                 }
                 console.log('getAllId--->>',{getAllId});
                 if (!Array.isArray(getAllId)) {
@@ -974,7 +981,7 @@
                     component.set("v.QuotelinePopupDescription", "Are you sure you want to delete Quote Lines?");
                     component.set("v.isQuotelinedelete", true);
                 } else {
-                    
+
                        var toastEvent = $A.get("e.force:showToast");
                        toastEvent.setParams({
                            title: 'Error',
@@ -1009,7 +1016,7 @@
             });
         }
 
-        
+
     },
 
     newRFQ: function(component, event, helper) {
@@ -1083,7 +1090,7 @@
         component.set("v.isBOMmodalOpen", false);
 
 
-        
+
     },
 
     closeQuotelineModel: function(component, event, helper) {
@@ -1144,17 +1151,17 @@
                 //     console.log(wrap);
                 //     component.set('v.QuoteLineWrapper' , wrap);
                 // }
-               
+
                 var page = component.get("v.page") || 1
-                
+
                 let getValue=component.get('v.displayGrouping')
                 if (getValue) {
-                    helper.getQuoteGrouping(component, event, helper); 
+                    helper.getQuoteGrouping(component, event, helper);
                 } else{
                     helper.getGroups(component, event, helper, page);
                 }
 
-                
+
             }
         });
         $A.enqueueAction(action);
@@ -1209,7 +1216,7 @@
         }else{
             getAllId = component.find("checkQuoteItem");
 
-        }       
+        }
         if (!Array.isArray(getAllId)) {
             if (getAllId.get("v.value") == true) {
                 QuoteIds.push(getAllId.get("v.text"));
@@ -1252,10 +1259,10 @@
                     var page = component.get("v.page") || 1
                     let getValue=component.get('v.displayGrouping')
                     if (getValue) {
-                        helper.getQuoteGrouping(component, event, helper); 
+                        helper.getQuoteGrouping(component, event, helper);
                     } else{
                         helper.getGroups(component, event, helper, page);
-                    }         
+                    }
                 }
             });
             $A.enqueueAction(action);
@@ -1476,7 +1483,7 @@
                     $A.get("e.c:BT_SpinnerEvent").setParams({
                         "action": "SHOW"
                     }).fire();
-        
+
                     //$A.enqueueAction(action1);
                     var TotalRecords = component.get("v.TotalRecords");
                     console.log('TotalRecords--->>',{TotalRecords});
@@ -1484,9 +1491,9 @@
                     console.log('ListOfEachRecord--->>',{ListOfEachRecord});
                     var ListOfEachRecordLength = ListOfEachRecord.length;
                     console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
-        
+
                     var newMassQi = [];
-        
+
                     //console.log('@@ originalValue length :: ', ListOfEachRecordLength ,'   @@ originalValue :: ',JSON.stringify(ListOfEachRecord));
                     for (var i = 0; i < ListOfEachRecordLength; i++) {
                         var newMassQuoteItem = {};
@@ -1564,7 +1571,7 @@
                     }
                 }
                 if (component.get("v.enableMassUpdate")) {
-        
+
                         console.log(component.get("v.TotalRecords").groups);
                         var quoteId = component.get("v.quoteId");
                         // var spanEle = event.currentTarget.dataset.iconname;
@@ -1572,11 +1579,11 @@
                         var expandallicon = document.getElementsByClassName('expandAllBtn_' + quoteId);
                         var collapeallIcon = document.getElementsByClassName('CollapeseAllBtn_' + quoteId);
                         //var labelName =spanEle
-            
+
                         expandallicon[0].style.display = 'none';
                         collapeallIcon[0].style.display = 'inline-block';
-            
-            
+
+
                         var groups = component.get("v.TotalRecords").groups;
                         var quoteId = component.get("v.quoteId")
                         for (var j = 0; j < groups.length; j++) {
@@ -1600,16 +1607,16 @@
                                     item.style.display = 'table-row';
                                 }
                             }
-            
+
                         }
-            
+
                         var TotalRecords = component.get("v.TotalRecords");
                         console.log('TotalRecords--->>',{TotalRecords});
                         var ListOfEachRecord = TotalRecords.tarTable.ListOfEachRecord;
                         console.log('ListOfEachRecord--->>',{ListOfEachRecord});
                         var ListOfEachRecordLength = ListOfEachRecord.length;
                         console.log('ListOfEachRecordLength--->>',{ListOfEachRecordLength});
-            
+
                         for (var i = 0; i < ListOfEachRecordLength; i++){
                             var newMassQuoteItem = {};
                             newMassQuoteItem.sobjectType = 'buildertek__Quote_Item__c';
@@ -1630,7 +1637,7 @@
                             }
                         }
                         component.set("v.TotalRecords", TotalRecords);
-                    
+
                 }
             }
             else{
@@ -1733,8 +1740,8 @@
 
         console.log({selectedGroupName});
         groupWrapper.forEach(function(elem){
-           
-            
+
+
             if(firstGroup== true){
                 elem.quoteLineList.forEach(function(value){
                     if(value.buildertek__Grouping__c === selectedGroupName){
@@ -1743,7 +1750,7 @@
                         }else{
                             value.isSelected=false;
                         }
-                    } 
+                    }
                 });
             }else if(secondGroup== true){
                 elem.quoteLineList.forEach(function(value){
@@ -1762,10 +1769,10 @@
                             }else{
                                 value2.isSelected=false;
                             }
-                        } 
+                        }
 
                     });
-                    
+
                 });
             }else if(thirdGroup== true){
                 console.log({selectedGroupName});
@@ -1791,10 +1798,10 @@
                                     value3.isSelected=true;
                                 }else{
                                     value3.isSelected=false;
-                                }                            } 
+                                }                            }
                         });
                     });
-                    
+
                 });
             }else if(forthGrouping== true){
                 elem.quoteLineList.forEach(function(value){
@@ -1823,18 +1830,18 @@
                                         value4.isSelected=true;
                                     }else{
                                         value4.isSelected=false;
-                                    }                                   } 
+                                    }                                   }
                             });
 
                         });
                     });
-                    
+
                 });
 
             }
 
-            
-            
+
+
         });
         component.set('v.QuoteLineWrapper' , QuoteLineWrapper );
         console.log({QuoteLineWrapper});
@@ -1854,7 +1861,7 @@
         let groupWrapper= QuoteLineWrapper.groupWrapper;
         groupWrapper.forEach(function(elem){
             if(firstGroup== true){
-                
+
                 elem.quoteLineList.forEach(function(value){
                     const allActive = elem.quoteLineList.every(function(obj) {
                         return obj.isSelected === true;
@@ -1865,7 +1872,7 @@
                         }else{
                             elem.isSelected=false;
                         }
-                    } 
+                    }
                 });
             }else if(secondGroup== true){
                 elem.quoteLineList.forEach(function(value){
@@ -1886,12 +1893,12 @@
                                 value.isSelected=false;
 
                             }
-                        } 
-                    });    
+                        }
+                    });
                 });
             }else if(thirdGroup== true){
                 elem.quoteLineList.forEach(function(value){
-                    
+
                     value.quoteLineList.forEach(function(value2){
                         let getGroupName;
                         if(value.groupName!= undefined && value2.groupName!= undefined){
@@ -1907,7 +1914,7 @@
                         const allActive = value2.quoteLineList.every(function(elem) {
                             return elem.isSelected === true;
                          });
-                            
+
                         value2.quoteLineList.forEach(function(value3){
                         if(getGroupName === selectedGroupName){
 
@@ -1917,9 +1924,9 @@
                                 value2.isSelected=false;
 
                             }
-                        } 
+                        }
                          })
-                    });    
+                    });
                 });
             }else if(forthGrouping== true){
                 elem.quoteLineList.forEach(function(value){
@@ -1945,30 +1952,30 @@
                                 return elem.isSelected === true;
                             });
                             value3.quoteLineList.forEach(function(value4){
-                               
+
                                 if(getGroupName === selectedGroupName){
-                    
+
                                     if(getCurrentValue== true && allActive == true){
                                         value3.isSelected=true;
                                     }else{
                                         value3.isSelected=false;
-        
+
                                     }
 
-                                } 
+                                }
                             });
 
-                        
+
                          })
-                    });    
+                    });
                 });
 
             }
 
-            
+
         });
-        
-        
+
+
         component.set('v.QuoteLineWrapper' , QuoteLineWrapper);
         console.log({QuoteLineWrapper});
 
@@ -2256,7 +2263,7 @@
                     // helper.getGroups(component, event, helper, page);
                     let getValue=component.get('v.displayGrouping')
                     if (getValue) {
-                        helper.getQuoteGrouping(component, event, helper); 
+                        helper.getQuoteGrouping(component, event, helper);
                     } else{
                         helper.getGroups(component, event, helper, page);
                     }
@@ -2287,7 +2294,7 @@
             component.set("v.PopupDescription", "Are you sure you want to Update Margin?");
             component.set("v.isQuoteRecChange", true);
         }else{
-            
+
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
                 title: 'Error',
@@ -2298,13 +2305,13 @@
                 mode: 'pester'
             });
             toastEvent.fire();
-            
+
     }
     },
     onMarkupChange: function(component, event, helper) {
         var markup = component.get("v.QuoteRec").buildertek__Markup__c;
         console.log({markup})
-        
+
             // >>>>>>>>>>> Changes For CHB - 80 <<<<<<<<<<<<<<<<<<
             // Check user have Edit Access for BT_Quote_item__c
             var HaveEditAccess = component.get("v.HaveUpdateAccess");
@@ -2355,7 +2362,7 @@
             // let labelval = '';
             // if(margin) {
             //     labelval = 'Margin';
-            // } 
+            // }
             // if(markup) {
             //     labelval = 'Markup';
             // }
@@ -2387,7 +2394,7 @@
         //     component.set("v.PopupHeader", "Update Margin");
         //     component.set("v.PopupDescription", "Are you sure you want to Update Margin?");
         //     component.set("v.isQuoteRecChange", true);
-        // } 
+        // }
 
 
         // 	var a = component.get("v.QuoteRec").Id;
@@ -2809,7 +2816,7 @@ console.log(document.getElementsByClassName(className)[0]);
                     //         console.log("Quote Line Groups : ", result);
                     //     }
                     // });
-                    // $A.enqueueAction(action);                    
+                    // $A.enqueueAction(action);
                     for (var i = 0; i < listProduct.length; i++) {
 
                         /*   xyz.push({
@@ -3036,10 +3043,10 @@ console.log(document.getElementsByClassName(className)[0]);
         // for (var i = 0; i < data.length; i++) {
         //     console.log(data[i].isSelected);
         //     console.log(data[i]);
-     
+
 
         // }
-    
+
 
 
         var allRecords = component.get("v.filteredData");
@@ -3179,10 +3186,10 @@ console.log(document.getElementsByClassName(className)[0]);
         component.set("v.GroupingOptions", opts);
     },
 
-    // closeModel: function(component, event, helper) { 
+    // closeModel: function(component, event, helper) {
     //     component.set("v.isBOMmodalOpen", false);
     //  },
-    
+
      submitDetails: function(component, event, helper) {
         helper.submitDetails(component, event, helper);
 
@@ -3193,14 +3200,14 @@ console.log(document.getElementsByClassName(className)[0]);
         //component.set("v.valueofField2", '');
         //component.set("v.valueofField3", '');
         //component.set("v.valueofField4", '');
-        
+
         component.set("v.displayGrouping", false);
         component.set("v.QuoteLineWrapper", null);
         component.set("v.forthGrouping", false);
         component.set("v.thirdGrouping", false);
         component.set("v.secondGrouping", false);
         component.set("v.firstGrouping", false);
-     }, 
+     },
 
     expandCollapeAllBom: function(component, event, helper){
         var QuoteLineWrapper = component.get("v.QuoteLineWrapper");
@@ -3316,7 +3323,7 @@ console.log(document.getElementsByClassName(className)[0]);
 
         var totalRecordCount = component.get("v.TotalRecordCount");
         var collapeCount = component.get("v.CollapeCount");
-    
+
         if (iconName == 'Expand Group') {
             let spanGroupId = spanId.replace('expandGroupBtn_','');
             helper.expandRecordsHelper(component, event, helper, spanGroupId);
@@ -3345,22 +3352,22 @@ console.log(document.getElementsByClassName(className)[0]);
     },
     handleSelectAllProduct: function(component, event, helper) {
         var getID = component.get("v.data1");
-        var checkvalue = component.find("selectAll").get("v.value");        
-        var checkProduct = component.find("checkProduct"); 
+        var checkvalue = component.find("selectAll").get("v.value");
+        var checkProduct = component.find("checkProduct");
         if(checkvalue == true){
             for(var i=0; i<checkProduct.length; i++){
                 checkProduct[i].set("v.value",true);
             }
         }
-        else{ 
+        else{
             for(var i=0; i<checkProduct.length; i++){
                 checkProduct[i].set("v.value",false);
             }
         }
     },
 
-    
-   
+
+
 
 
 

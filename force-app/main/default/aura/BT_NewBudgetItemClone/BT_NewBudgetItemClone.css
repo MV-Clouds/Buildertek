@@ -11,7 +11,7 @@
     /* top: 50%;
     left: 50%;
     /* transform: translate(-50%, -25%); */
-    /* height: 90vh; */ 
+    /* height: 90vh; */
 }
 
 .THIS .newbudgetgroupingclass {
@@ -27,6 +27,13 @@
 .THIS .table {
     border-collapse:none !important;
 }*/
+
+.THIS .truncate{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 12rem;
+}
 
 .THIS .slds-table thead th {
     background-color: var(--lwc-tableColorBackgroundHeader, rgb(250, 250, 249));
@@ -232,7 +239,7 @@
 @media only screen and (max-width: 1980px) and (min-width: 1780px){
 .THIS .divcont {
     max-height: 43vh;
-    } 
+    }
 }
 
 @media only screen and (max-width: 1980px) and (min-width: 1780px){
@@ -328,7 +335,7 @@
     margin-right:0 !important;
 }
 .THIS .textAreaCss{
-    white-space: normal; 
+    white-space: normal;
     word-wrap: break-word;
 }
 .THIS .textAreaDiv{
@@ -350,7 +357,7 @@
     max-height : 47vh;
 }
 .THIS .rkbudclass{
-    height: fit-content !important; 
+    height: fit-content !important;
     max-height: 70vh !important;
 }
 .THIS .hidelabel .slds-form-element__label{

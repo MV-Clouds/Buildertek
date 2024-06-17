@@ -1,0 +1,97 @@
+<aura:component controller="BT_ImportMasterWalkThroughController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    access="global">
+
+    <aura:attribute name="masterWTList" type="List" />
+    <aura:attribute name="selectedWalkThroughId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
+
+    <aura:html tag="style">
+        .slds-modal__container {
+        max-width: 72rem !important;
+        width: 72% !important;
+        }
+        .slds-modal__content {
+        max-height: calc(80vh - 300px);
+        overflow-y: auto;
+        height: unset !important;
+        }
+        .scrollable-table {
+        max-height: calc(80vh - 400px);
+        overflow-y: auto;
+        }
+        .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        }
+    </aura:html>
+
+    <div class="slds-modal__header" style="font-size:17px;">
+        Import Master Walk Through
+    </div>
+    <div class="slds-modal__content slds-p-around--large">
+        <div class="slds slds-scope scrollable-table">
+            <table class="slds-table slds-table_bordered slds-table_fixed-layout" role="grid">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                        <th scope="col"
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white; vertical-align: middle;line-height: 2; width:50px;">
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Walk Through Name #
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Name
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Project
+                        </th>
+                        <th
+                            style="background-color:rgba(27, 82, 151, 1.0); color:white;vertical-align: top;line-height: 2;">
+                            Total Price
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.masterWTList}" var="rec">
+                        <tr class="slds-hint-parent">
+                            <td style="width:50px;">
+                                <ui:inputRadio name="walkthroughRadio" text="{!rec.Id}" change="{!c.handleRadioChange}" />
+                            </td>
+                            <td role="gridcell">
+                                <ui:outputText value="{!rec.Name}" />
+                            </td>
+                            <td role="gridcell">
+                                <div class="truncate-text">
+                                    <ui:outputText value="{!rec.buildertek__Description__c}" />
+                                </div>
+                            </td>
+                            <td role="gridcell">
+                                <div class="truncate-text">
+                                    <ui:outputText value="{!rec.buildertek__Project__r.Name}" />
+                                </div>
+                            </td>
+                            <td role="gridcell">
+                                <lightning:formattedNumber value="{!rec.buildertek__Total_Price__c}" style="currency" />
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+            <br />
+        </div>
+    </div>
+    <div class="slds-modal__footer">
+        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}">Cancel</button>
+        <button class="slds-button slds-button--brand" onclick="{!c.importWalkThrough}">Import Walk Through</button>
+    </div>
+
+    <c:BT_Spinner />
+</aura:component>

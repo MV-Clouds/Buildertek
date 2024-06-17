@@ -21,6 +21,7 @@ trigger ChangeOrderTrigger on Change_Order__c (after delete, after insert, after
             //handler.ManageBudgetLineOnInsert(Trigger.new);
             
             handler.AfterInsertRollup(Trigger.new, Trigger.newMap);
+            handler.afterInsertRollupOnPO(Trigger.new);
         }
         
         else if(Trigger.isUpdate && Trigger.isBefore){
@@ -30,7 +31,8 @@ trigger ChangeOrderTrigger on Change_Order__c (after delete, after insert, after
             handler.checkPOBeforeUpdate(Trigger.new);
             handler.checkParentPOBeforeUpdate(Trigger.new);
             handler.UpdateDateApproved(Trigger.new, trigger.oldMap);
-            //handler.BudgetLineUpdate(Trigger.new, trigger.oldMap);            
+            //handler.BudgetLineUpdate(Trigger.new, trigger.oldMap);       
+            handler.updatePicklist(Trigger.new, trigger.oldMap);
         }
         
         else if(Trigger.isUpdate && Trigger.isAfter){
@@ -41,7 +43,7 @@ trigger ChangeOrderTrigger on Change_Order__c (after delete, after insert, after
             //handler.ManageBudgetLineOnInsert(Trigger.new);     
             // handler.updateBudgetLineData(Trigger.old, Trigger.new, Trigger.newMap, trigger.oldMap);
 
-
+            handler.afterUpdateRollupOnPO(Trigger.new, Trigger.oldMap);
             handler.AfterUpdateRollup(Trigger.old, Trigger.new, Trigger.newMap, Trigger.oldMap);
         }
         
@@ -53,6 +55,7 @@ trigger ChangeOrderTrigger on Change_Order__c (after delete, after insert, after
           //  handler.OnAfterDelete(Trigger.old);
 
           handler.AfterDeleteRollup(Trigger.old);
+          handler.afterDeleteRollupOnPO(Trigger.old);
         }
     }
 }

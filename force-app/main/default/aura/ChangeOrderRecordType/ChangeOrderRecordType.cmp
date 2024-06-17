@@ -3,11 +3,11 @@
     access="global" controller="NewChangeOrderController">
 
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
-    <aura:attribute name="projectId" type="String" />
     <aura:attribute name="isLoading" type="Boolean" />
     <aura:attribute name="recordTypes" type="List" />
     <aura:attribute name="RecordTypeId" type="String" default="" />
-
+    <aura:attribute name="generalId" type="String" default="" />
+    <aura:attribute name="ParentRecordTypeName" type="String" default="" />
     <lightning:workspaceAPI aura:id="workspace" />
     <ltng:require styles="{!$Resource.MOdalPreviewWidth72}" />
 

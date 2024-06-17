@@ -6,7 +6,8 @@
             recordId:component.get("v.quoteId")
         })
         action.setCallback(this, function(response){
-            var result = response.getReturnValue();
+            var result = response.getReturnValue(); 
+            component.set('v.showmargin' , result[0].showmargin);
             // console.log(component.get('v.getPhase') , 'getPhase::::::;');
             let projectHavePricebook=result[0].defaultValue;
             console.log(Object.keys(projectHavePricebook).length);
@@ -420,11 +421,13 @@
                     'buildertek__Quantity__c': '1',
                     'buildertek__Additional_Discount__c': element.Discount ? element.Discount : 0,
                     'buildertek__Unit_Cost__c': element.UnitCost ? element.UnitCost : element.UnitPrice,
+                    'buildertek__Margin__c':element.Margin ? element.Margin : 0,
                     'buildertek__Markup__c': element.MarkUp ? element.MarkUp : 0,
                     'buildertek__Product__c': element.Id,
                     'buildertek__Size__c': element.Size,
                     'buildertek__Description__c': element.Description ? element.Description : element.Name,
                     'buildertek__Product_Family__c': element.Family ? element.Family : 'No Grouping',
+                    'buildertek__Notes__c' : element.Notes,
                     'buildertek__UOM__c': element.QuantityUnitOfMeasure     //----
 
                 })

@@ -83,7 +83,7 @@ public class BillLineItemTriggerHandler {
         for(Id budgetLineId : budgetLineToInvoiceLineMap.keySet()){
             Decimal totalAmount = 0;
             for(buildertek__Account_Payable_Item__c invoiceLine : budgetLineToInvoiceLineMap.get(budgetLineId)){
-                totalAmount += invoiceLine.buildertek__Total_Amount_With_Tax__c;
+                totalAmount += (invoiceLine.buildertek__Total_Amount_With_Tax__c == null) ? 0 : invoiceLine.buildertek__Total_Amount_With_Tax__c;
             }
             buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c(Id = budgetLineId, buildertek__Invoice_PO__c = totalAmount);
             budgetItemsToUpdate.add(budgetItem);

@@ -18,32 +18,30 @@ public with sharing class RFQItemTriggerHandler {
     }
     
     public void OnBeforeInsert(RFQ_Item__c[] newRFQItems){
-
-        Set<Id> rfqId = new Set<Id>();
+        Set<Id> rfqIds = new Set<Id>();
 
         for(RFQ_Item__c rfqLine : newRFQItems){
-            System.debug('rfqLine.buildertek__RFQ_Package__c--->>>'+rfqLine.buildertek__RFQ_Package__c);
-            rfqId.add(rfqLine.buildertek__RFQ_Package__c);
+            rfqIds.add(rfqLine.buildertek__RFQ_Package__c);
         }
-        List<buildertek__RFQ__c> rfqList = [select id,name,buildertek__Status__c from buildertek__RFQ__c where id IN : rfqId ];
-        System.debug('rfqList--->>>'+rfqList);
-        for(buildertek__RFQ__c rfq : rfqList){
-            System.debug('In If');
-            System.debug('rfq.buildertek__Status__c--->>>'+rfq.buildertek__Status__c);
-            if(rfq.buildertek__Status__c != 'New') {
-                System.debug('rfq.buildertek__Status__c--->>>'+rfq.buildertek__Status__c);
-                rfq.addError('The RFQ has already been ' +rfq.buildertek__Status__c+ ' You can not add more lines');
+
+        Map<Id, buildertek__RFQ__c> rfqMap = new Map<Id, buildertek__RFQ__c>();
+        for(buildertek__RFQ__c rfq : [SELECT Id, buildertek__Status__c, (SELECT Id FROM RFQ_Items__r) FROM buildertek__RFQ__c WHERE Id IN :rfqIds]){
+            rfqMap.put(rfq.Id, rfq);
+        }
+
+        for(RFQ_Item__c rfqItem : newRFQItems){
+            buildertek__RFQ__c relatedRFQ = rfqMap.get(rfqItem.buildertek__RFQ_Package__c);
+            if(relatedRFQ != null && relatedRFQ.buildertek__Status__c != 'New') {
+                rfqItem.addError('The RFQ has already been ' + relatedRFQ.buildertek__Status__c + '. You cannot add more lines.');
             }
         }
 
-        System.debug('rf--->>'+rfqList);
-        
         RFQDAO.copyBudgetItemDetails(newRFQItems);     
-            
         RFQDAO.copyQuoteItemDetails(newRFQItems);
-        for(RFQ_Item__c items : newRFQItems){
-            if(items.Name == null || String.isBlank(items.Name)){
-                items.Name = items.buildertek__Description__c;
+
+        for(RFQ_Item__c item : newRFQItems){
+            if(String.isBlank(item.Name)){
+                item.Name = item.buildertek__Description__c;
             }
         }       
     }

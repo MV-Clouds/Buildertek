@@ -281,7 +281,10 @@ public class QuoteDAOTest {
       insert proj;
       Quote__c qt = [Select Id from Quote__c LIMIT 1];
 
-
+        buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = new buildertek__Admin_Interface_Node_Configuration__c();
+        adminInterfaceNodeConfigurations.Name = 'Quote Configuration';
+        adminInterfaceNodeConfigurations.buildertek__ShowMargin__c = true;
+        insert adminInterfaceNodeConfigurations;
 
       List<buildertek__Quote_Item__c> quoteListRef = new List<buildertek__Quote_Item__c>();
 

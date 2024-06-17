@@ -1417,7 +1417,7 @@ $A.enqueueAction(action);*/
                     if(ele.Name.length > 35){
                         ele.Name = ele.Name.slice(0,35)+'...';
                     }
-                    
+
                 });
             }
             });

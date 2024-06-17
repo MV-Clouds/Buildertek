@@ -20,6 +20,7 @@
     <aura:attribute name="productName" type="string"/>
     <aura:attribute name="groupFilter" type="string"/> 
     <aura:attribute name="costCode" type="string" />
+    <aura:attribute name="groupName" type="string" />
     <aura:attribute name="costCodeFilter" type="string" />
     <aura:attribute name="Spinner" type="boolean" default="false"/>
     <aura:attribute name="InnerList" type="Object" />
@@ -106,43 +107,42 @@
                     
                     <!-- inline Quote Editing -->
                     <div aura:id="inlineEditQuote" style="margin-top:15px; padding:10px;">
-                        <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border:1px solid grey;border-radius: 5px;">
-                            <thead >
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer" style="border: 1px solid grey; border-radius: 3px; width: 100%;">
+                            <thead>
                                 <tr class="slds-text-title_caps">
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; border-top-left-radius:5px;">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; border-top-left-radius: 3px; width: 13vw;">
                                         <div class="slds-truncate" title="PriceBook">PriceBook</div>
                                     </th>
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 13vw;">
                                         <div class="slds-truncate" title="Product Family">Product Family</div>
                                     </th>
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white; ">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 17vw;">
                                         <div class="slds-truncate" title="Product">Product</div>
                                     </th>
-                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                    <th style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 19vw;">
                                         <div class="slds-truncate" title="Quote Line">Contract Line</div>
                                     </th>
-                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                    <th style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 11vw;">
                                         <div class="slds-truncate" title="Cost Code">Cost Code</div>
                                     </th>
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 15vw;">
                                         <div class="slds-truncate" title="Grouping">Contract Group</div>
                                     </th>
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 5vw;">
                                         <div class="slds-truncate" title="Quantity">Quantity</div>
                                     </th>
-                                    <th style="background-color:rgba(27, 82, 151, 1.0); color:white;">
+                                    <th style="background-color: rgba(27, 82, 151, 1.0); color: white; width: 7vw;">
                                         <div class="slds-truncate" title="Unit Price">Sales Price</div>
                                     </th>
-                                    
-                                    <th scope="col" style="background-color:rgba(27, 82, 151, 1.0); color:white;  border-top-right-radius:5px;">
+                                    <th scope="col" style="background-color: rgba(27, 82, 151, 1.0); color: white; border-top-right-radius: 3px;">
                                         <div class="slds-truncate" title="Action">Action</div>
-                                    </th>     
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 
                                 <tr  class='tableRow'>
-                                    <td>
+                                    <td style="width: 13vw;">
                                         <ui:inputSelect value="{! v.pricebookName }" change="{!c.changeEvent}" class="pricebook-class">
                                             <aura:iteration var="option" items="{! v.pricebookoptions }">
                                                 <option value="{! option.value }" selected="{!option.value == v.pricebookName}">{! option.key }</option>
@@ -150,7 +150,7 @@
                                         </ui:inputSelect>  
                                     </td>
                                     
-                                      <td>
+                                      <td style="width: 13vw;">
                                             <ui:inputSelect value="{!v.productfamily}" change="{!c.changefamily}" class="pricebook-class">
                                                 <aura:iteration var="option" items="{!v.listofproductfamily}">
                                                     <option value="{!option.productfamilyvalues}" selected="{!option.productfamilyvalues == v.productfamily}">{!option.productfamilyvalues}</option>
@@ -158,26 +158,25 @@
                                             </ui:inputSelect>
                                             
                                         </td>
-                                    <td style="width:20%; ">
+                                    <td style="max-width: 17vw !important; min-width: 17vw !important;">
                                         <aura:html tag="style">
                                                     .mainDiv{
                                                         padding-top:1.3% !important;
-                                                        max-width:27vw;
-
                                                     }
                                                     .pillSize{
-
                                                         padding-top: 1.3% !important;
                                                         padding-bottom: 1.3% !important;
+                                                        height: 2.2rem !important;
+                                                        <!-- margin-top: 0.35rem !important; -->
                                                     }
                                                 </aura:html>
-                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" />
+                                        <c:BT_LightningLookup objectAPIName="Product2" IconName="standard:product" selectedRecord="{!v.selectedLookUpRecord}" parentId="{!v.pricebookName}" prodctfamly ="{!v.productfamily}" childValue="{!v.newContractLine.Name}" costcodeValue="{!v.costCode}" unitcostValue="{!v.newContractLine.buildertek__Unit_Price__c}" clearCostCode="{!v.newContractLine.buildertek__Cost_Code__c}" cleargroup="{!v.newContractLine.buildertek__Contract_Item_Group__c}" clearGroupName="{!v.groupName}"/>
                                     </td>
-                                    <td>
+                                    <td style="width: 19vw;">
                                         <!-- <force:inputField value="{!v.newContractLine.Name}"/>-->
                                         <ui:inputText value="{!v.newContractLine.Name}" aura:id="contractLineID"/>
                                     </td>
-                                    <td>
+                                    <td style="width: 11vw;">
                                         <c:BT_LookUp aura:id="costCodeId" _field="buildertek__Cost_Code__c" 
                                                      _sobject="buildertek__Contract_Item__c" 
                                                      _value="{!v.newContractLine.buildertek__Cost_Code__c}"
@@ -186,19 +185,20 @@
                                                      _filter=""
                                                      />
                                     </td>
-                                    <td>
+                                    <td style="width: 15vw;">
                                         <c:BT_LookUp aura:id="groupId" _field="buildertek__Contract_Item_Group__c" 
                                                      _sobject="buildertek__Contract_Item__c" 
                                                      _value="{!v.newContractLine.buildertek__Contract_Item_Group__c}"
+                                                     _text_value="{!v.groupName}"
                                                      _label=""
                                                      _filter=""
                                                      />
                                     </td>
-                                    <td>
+                                    <td style="width: 5vw;">
                                         <!--<force:inputField value="{!v.newContractLine.buildertek__Quantity__c}"/>-->
                                         <ui:inputNumber value="{!v.newContractLine.buildertek__Quantity__c}" />
                                     </td>
-                                    <td>
+                                    <td style="width: 7vw;">
                                         <!-- <force:inputField value="{!v.newContractLine.buildertek__Unit_Price__c}" />-->
                                         <ui:inputCurrency value="{!v.newContractLine.buildertek__Unit_Price__c}" aura:id="unitPriceId"/> 
                                     </td>
@@ -221,9 +221,8 @@
                  </div>
              </div>
              <aura:set attribute="else">-->
-                <br/>
                 <aura:if isTrue="{!v.isOpen}">
-                    <div class="slds-m-around_xx-large"> 
+                    <div> 
                         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                             <div class="slds-modal__container">
                                 <header class="slds-modal__header">
@@ -253,7 +252,7 @@
                     </div>
                 </aura:if>
                 <aura:if isTrue="{!v.isDuplicate}">
-                        <div class="slds-m-around_xx-large"> 
+                        <div> 
                             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
                                 <div class="slds-modal__container">
                                     <header class="slds-modal__header">
@@ -377,7 +376,7 @@
                                                         <ui:inputCheckbox value="{!group.isSelected}"
                                                             name="{!group.Name}" change="{!c.handleSelectAll}"
                                                             aura:id="selectAll" class="" />
-                                                        <span class="slds-checkbox--faux" style="top:-2px;"></span>
+                                                        <span class="slds-checkbox--faux" ></span>
                                                         <span class="slds-form-element__label text"></span>
                                                     </label>
                                                 </div>
@@ -413,7 +412,7 @@
                                         <th></th>
                                     </tr>
                                     <aura:iteration items="{!v.TotalRecords.tarTable.ListOfEachRecord}" var="tar" indexVar="quoteIndex">
-                                        <tr style="line-height: 2.5;display:table-row;" class="{!v.quoteId+' slds-hint-parent groupRows_'+groupIndex}">
+                                        <tr style="display:table-row;" class="{!v.quoteId+' slds-hint-parent groupRows_'+groupIndex}">
                                             <!-- quoteId -->
 
                                             <aura:if isTrue="{!group.Id == tar.groupId}">
@@ -429,7 +428,7 @@
                                                                     value="{!tar.isSelected}"
                                                                     change="{!c.unCheckAll}" />
                                                                 <span class="slds-checkbox--faux"
-                                                                    style="top:-2px;"></span>
+                                                                    ></span>
                                                                 <span class="slds-form-element__label text"></span>
                                                             </label>
                                                         </div>
@@ -453,7 +452,7 @@
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td scope="row" class="slds-cell-edit" data-label="Name">
+                                                <td scope="row" class="slds-cell-edit" data-label="Name" >
                                                     <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == 'Name'), v.quoteItemId == tar.recordId),and(v.enableMassUpdate))}">
                                                         <ui:inputText aura:id="inputId" value="{!tar.recordName}" change="{!c.updateQuoteData}" blur="{!c.onblur}" />
                                                         <aura:set attribute="else">
@@ -477,7 +476,7 @@
                                                     </aura:if>
                                                 </td>
                                                 <aura:iteration items="{!tar.recordList}" var="value">
-                                                    <td class="ShowIconClass" data-myvalue="{!value}">
+                                                    <td class="ShowIconClass" data-myvalue="{!value}" >
                                                         <aura:if isTrue="{!or(and(and(v.isEditMode, v.fieldName == value.fieldName),v.quoteItemId == tar.recordId),and(v.enableMassUpdate,
                                                             or(or(or(or(or(or(or(value.fieldName=='buildertek__Quantity__c',
                                                             or(or(value.fieldName == 'buildertek__Unit_Price__c',value.fieldName == 'buildertek__Priority__c'),value.fieldName == 'buildertek__Vendor__c')
@@ -631,7 +630,7 @@
                                             <!-- </aura:if> -->
                                         </aura:iteration>
                                     </tr>
-                                    <br />
+
 
                                     <!--<br />
                                 <br />-->

@@ -430,6 +430,7 @@ public class createAllPOfromBOM_controller {
                                             // ScheduleItems.remove(index);
                                         }
 
+
                                     }
                                 }
         
@@ -695,6 +696,7 @@ public class createAllPOfromBOM_controller {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
                                             matchedSchItems.add(SchItem.Id);
+
                                         }
                                     }
                                 }

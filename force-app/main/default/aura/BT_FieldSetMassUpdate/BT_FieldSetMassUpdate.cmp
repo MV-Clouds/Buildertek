@@ -11,7 +11,7 @@
     <aura:attribute name="callingCmpName" type="String" />
     <aura:attribute name="index" type="Integer" />
     <aura:attribute name="phaseIndex" type="Integer" />
-   	<aura:attribute name="scheduleId" type="String" /> 
+   	<aura:attribute name="scheduleId" type="String" />
     <aura:attribute name="fieldName" type="String" />
     <aura:attribute name="percentageValue" type="integer" />
     <aura:attribute name="isEditable" type="boolean" default="true" />
@@ -34,16 +34,16 @@
 
     <aura:attribute name="PurchaseOrderId" type="String" />
     <aura:attribute name="QuantityValue" type="Integer" />
- 
+
     <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.getLookUpValues}" />
      <aura:handler name="SelectedRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.getLookUpValues}" />
     <aura:handler name="change" value="{!v.contractor}" action="{!c.handleContractorChange}"/>
-    
+
      <aura:registerEvent name="dataTableRow" type="c:BT_BudgetAddLineEvent"/>
      <aura:attribute name="fromcustomDataTable" type="Boolean" ></aura:attribute>
 
     <aura:attribute name="rerender" type="boolean" />
-     
+
      <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
     <!--Editable Fields-->
@@ -53,14 +53,14 @@
             <ui:outputText value="{!v.cellValue}" />
         </aura:if>
         <aura:if isTrue="{!v.isTextField}">
-          
+
           <!--<span style="margin-bottom:1.8rem;"></span>
    <div class="slds-m-top_small" width="500%">-->
             <aura:if isTrue="{!!v.readOnly}">
                 <lightning:input value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}" data-fieldapi="{!v.fieldName}"
                     onchange="{!c.onInputChange}" width="500%" />
             </aura:if>
-            
+
         </aura:if>
 
         <aura:if isTrue="{!v.isTextAreaField}">
@@ -69,7 +69,7 @@
 
             <lightning:textarea value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
                 onchange="{!c.onInputChange}" oncommit="{!c.onInputChange}"/>
-            
+
         </aura:if>
         <aura:if isTrue="{!v.isDateField}">
             <lightning:input type="date" value="{!v.cellValue}" name="{!v.index+'-'+v.fieldName}"
@@ -92,10 +92,10 @@
         </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.isPercentField}">
-            
+
             <!-- <lightning:input type="number" min="0" max="100" value="{!v.percentageValue}"
                 name="{!v.index+'-'+v.fieldName}" onchange="{!c.onPercentageChange}" />  formatter="percent"-->
-              
+
             <div class="slds-form-element" >
                 <div class="slds-form-element__control" style="">
                     <aura:if isTrue="{!(v.ObjectName == 'buildertek__Select_Sheet__c')}">
@@ -110,30 +110,30 @@
                                    name="{!v.index+'-'+v.fieldName}" data-fieldapi="{!v.fieldName}" onkeyup="{!c.onPercentageChange}"  step="0.01" class="percentCompletion slds-input" style="margin-top:1rem;"/>
                             </div>
                         </aura:set>
-                    </aura:if>		
-                    
+                    </aura:if>
+
                 </div>
             </div>
         </aura:if>
         <aura:if isTrue="{!v.isDropDownField}">
-            
+
             <lightning:select aura:id="select" class="field label-hidden" name="{!v.index+'-'+v.fieldName}"
                 variant="label-hidden" onchange="{!c.onInputChange}">
                 <option value="None">None</option>
                 <aura:iteration items="{!v.dropDown}" var="item" indexVar="i">
                     <option value="{!item}" selected="{!v.cellValue == item}">
                         {!item}</option>
-                </aura:iteration> 
+                </aura:iteration>
             </lightning:select>
         </aura:if>
-             
+
         <aura:if isTrue="{!v.isCheckBoxField}">
-            
+
             <lightning:input type="checkbox" name="{!v.fieldName}" value="{!v.checkBoxValue}" data-fieldapi="{!v.fieldName}"
                 checked="{!v.checkBoxValue}" onchange="{!c.onCheckBoxChange}" />
         </aura:if>
         <aura:if isTrue="{!v.isDateTimeField}">
-            
+
             <lightning:input type="datetime" name="{!v.index+'-'+v.fieldName}" value="{!v.cellValue}"
                 onchange="{!c.onInputChange}" data-fieldapi="{!v.fieldName}"/>
         </aura:if>
@@ -143,7 +143,7 @@
             </div>
         </aura:if>
         <aura:if isTrue="{!v.isReferenceField}">
-            
+
             <aura:if isTrue="{!v.fieldName == 'buildertek__Dependency__c'}">
                <!--  <a href="{!'/lightning/r/buildertek__Project_Task__c/'++'/view'}">-->
                 <c:BT_LightningScheduleLookup aura:id="dependencyID" objectAPIName="{!v.fieldName}"
@@ -152,11 +152,11 @@
                <!-- </a>-->
                 <aura:set attribute="else">
                     <aura:if isTrue = "{!v.fieldName == 'buildertek__Contractor_Resource__c'}">
-                        
+
                         <c:BT_LightningScheduleLookup aura:id="resourceID" objectAPIName="{!v.fieldName}"
                                                       IconName="standard:account" selectedRecord="{!v.cellValue}"
                                                       parentId="{!v.record.buildertek__Contractor__c}" />
-                        
+
                         <aura:set attribute="else">
 
 
@@ -172,9 +172,9 @@
                             <aura:set attribute="else">
                                 <!-- <lightning:recordEditForm objectApiName="{!v.childObjectName}">
                                     <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
-                                        <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.record.buildertek__Takeoff_Line__c}" 
-                                         class="slds-size-1-of-1"/>  
-                                    </div> 
+                                        <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.record.buildertek__Takeoff_Line__c}"
+                                         class="slds-size-1-of-1"/>
+                                    </div>
                                 </lightning:recordEditForm> -->
                                 <div data-fieldapi="{!v.fieldName}">
                                 <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}" phaseIndex="{!v.phaseIndex}" index="{!v.index}"
@@ -187,9 +187,9 @@
                                 <aura:if isTrue="{!v.fieldName == 'buildertek__Purchase_Order__c'}">
                                     <lightning:recordEditForm onload="{!c.setSelectedRecordId}" objectApiName="{!v.childObjectName}">
                                         <div style = "padding-top: 7px !important; padding-bottom: 0px !important;">
-                                            <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.PurchaseOrderId}" 
-                                            onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" disabled="true"/>  
-                                        </div> 
+                                            <lightning:inputField aura:id="lookupField" fieldName="{!v.fieldName}" value="{!v.PurchaseOrderId}"
+                                            onchange="{!c.fireOnSelectEvt}" class="slds-size--1-of-1" disabled="true"/>
+                                        </div>
                                     </lightning:recordEditForm>
 
                                 <aura:set attribute="else">
@@ -201,33 +201,33 @@
                             </aura:set>
                         </aura:if>
                         <!---->
-                            
+
                         </aura:set>
                     </aura:if>
                 </aura:set>
             </aura:if>
-            
-                        
+
+
             <!-- <c:BT_LookupFields selectedRecordId="{!v.cellValue}" childObjectName="{!v.childObjectName}"
                                fieldName="{!v.fieldName}" record="{!v.record}" /> -->
-            
+
         </aura:if>
-        
+
     </aura:if>
 
     <!--Text Fields-->
     <aura:if isTrue="{!!v.isMassUpdateEnable}">
         <aura:if isTrue="{!v.isTextField}">
-        
+
            <!-- <div style="padding-bottom:0.3rem; padding-top:0.3rem; ">-->
-             
-           
+
+
             <ui:outputText value="{!v.cellValue ? v.cellValue : '-'}" />
-           
+
            <!-- </div>-->
         </aura:if>
         <aura:if isTrue="{!v.isTextAreaField}">
-        
+
             <aura:unescapedHtml value="{!v.cellValue ? v.cellValue : '-'}" />
             <!-- <ui:outputText value="{!v.cellValue}" /> -->
         </aura:if>
@@ -268,8 +268,7 @@
             <ui:outputCheckbox value="{!v.checkBoxValue}" />
         </aura:if>
         <aura:if isTrue="{!v.isReferenceField}">
-
-          <aura:if isTrue="{!v.cellValue}">
+            <aura:if isTrue="{!v.cellValue}">
               <ui:outputURL value="{!'/one/one.app?#/sObject/'+ v.cellValue + '/view'}"
                             label="{!v.cellLabel}" target="_blank"/>
             <aura:set attribute="else">

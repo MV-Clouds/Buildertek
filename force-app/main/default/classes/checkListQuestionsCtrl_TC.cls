@@ -96,7 +96,7 @@ public class checkListQuestionsCtrl_TC {
         checkListQuestionsCtrl.getAllObjectFields('buildertek__Checklist_Configuration__c');
         checkListQuestionsCtrl.GetSecLevelFieldDetailscontroller('buildertek__Checklist_Questions__c' , 'buildertek__Checklist_Configuration__c', 'buildertek__Questions__c');
         //checkListQuestionsCtrl.createchecklistquestion(JSON.serialize(checkListQuestionsCtrl.getQuestions(btcheckconfig.id)), btquestion.Id);
-        checkListQuestionsCtrl.createchecklistquestion(qstring , con.Id, 'Test');
+        checkListQuestionsCtrl.createchecklistquestion(qstring , con.Id, 'Test',con.Id,'Test');
         checkListQuestionsCtrl.GetFieldDetails('buildertek__Checklist_Configuration__c' , 'buildertek__Questions__c');
         checkListQuestionsCtrl.getEmailFieldsList(con.id);
         
