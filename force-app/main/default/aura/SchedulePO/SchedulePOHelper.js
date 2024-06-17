@@ -17,6 +17,31 @@
                 if(result.buildertek__Vendor__c != null){
                     component.set("v.selectedVendorId",result.buildertek__Vendor__c);
                 }
+                if( result.buildertek__BT_Build_Phase__c != null  && (result.buildertek__BT_Build_Phase__r.Name != null || result.buildertek__BT_Build_Phase__r.Name != '' || result.buildertek__BT_Build_Phase__r.Name != undefined)){
+                    //if result.buildertek__BT_Build_Phase__r.Name isn't in phaseoption
+                    var phaseOptions = component.get("v.phaseOptions");
+                    if(phaseOptions.indexOf(result.buildertek__BT_Build_Phase__r.Name) == -1){
+                        var selectedPhase = '';
+                        for(var i=0;i<phaseOptions.length;i++){
+                            if(phaseOptions[i] == 'No Phase'){
+                                selectedPhase = phaseOptions[i];
+                            }
+                        }
+                        component.set("v.selectedPhase",selectedPhase);
+                    }else{
+                        component.set("v.selectedPhase",result.buildertek__BT_Build_Phase__r.Name);
+                    }
+                }else{
+                    //find if we have 'No Phase' in the picklist
+                    var phaseOptions = component.get("v.phaseOptions");
+                    var selectedPhase = '';
+                    for(var i=0;i<phaseOptions.length;i++){
+                        if(phaseOptions[i] == 'No Phase'){
+                            selectedPhase = phaseOptions[i];
+                        }
+                    }
+                    component.set("v.selectedPhase",selectedPhase);
+                }
                 //BUIL-4184: we are not counting if the start date, end date and duration are mathethically physible because the ticket says they come from different object
                 if(result.buildertek__Estimated_Start_Date__c != null){
                     component.set("v.StartDate",result.buildertek__Estimated_Start_Date__c);
@@ -148,6 +173,11 @@
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
                 var listOfFields = JSON.parse(response.getReturnValue());
                 console.log({listOfFields});
+                var phaseField = listOfFields.find(field => field.name === 'buildertek__Phase__c');
+                if(phaseField != null && phaseField != undefined){
+                    // console.log('phaseField.pickListValuesList--->', phaseField.pickListValuesList);
+                    component.set("v.phaseOptions", phaseField.pickListValuesList);
+                }
                 component.set("v.listOfFields", listOfFields);
             }
         });

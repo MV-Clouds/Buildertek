@@ -22,6 +22,8 @@
      <aura:attribute name="durationNum" type="Integer"/>
      <aura:attribute name="disablefields" type="Boolean" default="true"/>
      <aura:attribute name="includeWeekends" type="Boolean"/>
+     <aura:attribute name="selectedPhase" type="String"/>
+     <aura:attribute name="phaseOptions" type="List" default="[]"/>
 
 
      
@@ -36,15 +38,25 @@
                     <lightning:layout multipleRows="true">
                         <aura:iteration items="{!v.listOfFields}" var="field">
                             <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
-                                <aura:if isTrue="{!and(and(and(and(and(and(and(field.name !='buildertek__Project__c',field.name !='Name')
+                                <aura:if isTrue="{!and(and(and(and(and(and(and(and(field.name !='buildertek__Project__c',field.name !='Name')
                                 ,field.name != 'buildertek__Schedule__c'),field.name != 'buildertek__Dependency__c'),
-                                field.name != 'buildertek__Contractor__c'),field.name != 'buildertek__Start__c'),field.name != 'buildertek__Finish__c'),field.name != 'buildertek__Duration__c')}">
+                                field.name != 'buildertek__Contractor__c'),field.name != 'buildertek__Start__c'),field.name != 'buildertek__Finish__c'),field.name != 'buildertek__Duration__c'),field.name!= 'buildertek__Phase__c')}">
                                     <lightning:inputField fieldName="{!field.name}" required="{!field.Required}" aura:id="inputFields" />
                                     <aura:set attribute="else">
                                         <aura:if isTrue="{!field.name == 'buildertek__Start__c'}">
                                             <div class="preInput">
                                                 <lightning:input type="date" label="Start Date" aura:id="startDate" name="Start Date" value="{!v.StartDate}" required="true" onchange="{!c.enbleFinishAndDuration}"/>
                                             </div>    
+                                        </aura:if>
+                                         <aura:if isTrue="{!field.name == 'buildertek__Phase__c'}">
+                                            <div class="preInput">
+                                                <lightning:select name="colorId" label="Phase" aura:id="colorId" value="{!v.selectedPhase}" >
+                                                    <aura:iteration items="{!v.phaseOptions}" var="ph">
+                                                        <option text="{!ph}" value="{!ph}" />
+                                                    </aura:iteration>
+                                                </lightning:select>
+                                            </div>
+                                             
                                         </aura:if>
                                         <aura:if isTrue="{!field.name == 'buildertek__Finish__c'}">
                                             <div class="preInput">
