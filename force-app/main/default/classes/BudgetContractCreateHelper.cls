@@ -153,7 +153,8 @@ public without sharing class BudgetContractCreateHelper {
                 intIndex,
                 new buildertek__Budget__c(   
                     Name = curQuote.Name,
-                    buildertek__Project__c = curQuote.buildertek__Project__c
+                    buildertek__Project__c = curQuote.buildertek__Project__c,
+                    buildertek__BT_Quote__c = curQuote.Id
                 )
             );
             quoteIdsList.add(curQuote.Id);
