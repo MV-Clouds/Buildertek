@@ -168,15 +168,19 @@ public class createAllPOfromBOM_controller {
                                         // schedule item cost code == PO cost code (first BOM cost code)
                                         // schedule item category == PO categorty (first BOM category)
                                         // get first schedule items that match above conditions....
+                                        List<Id> matchedSchItems = new List<Id>();
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c //SchItem.buildertek__Contractor__c == PO.buildertek__Vendor__c
                                             // && schItemPhaseName == poPhaseName 
                                             //&& SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
+
                                         }
                                     }
                                 }
@@ -404,6 +408,7 @@ public class createAllPOfromBOM_controller {
 
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
+                        List<Id> matchedSchItems = new List<Id>();
 
                         if(ScheduleItems.size() > 0){
                                 for(buildertek__Purchase_Order__c PO : CreatedPOs){
@@ -413,14 +418,19 @@ public class createAllPOfromBOM_controller {
                                         String key = PO.buildertek__Cost_Code__c + '_' + PO.buildertek__Vendor__c;
                                         String Category = PO.buildertek__Category__c;
 
-
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
+                                            // Integer index =  ScheduleItems.indexOf(SchItem);
+                                            // ScheduleItems.remove(index);
                                         }
+
+
                                     }
                                 }
         
@@ -472,6 +482,7 @@ public class createAllPOfromBOM_controller {
             else{
                 returnValue.state = 'error';
                 returnValue.returnMessage = 'You must create at least one PO line in order to create a PO.';
+
             }
             return returnValue;
         }
@@ -666,6 +677,7 @@ public class createAllPOfromBOM_controller {
 
                         Map<Id, buildertek__Project_Task__c> PO_to_matchedSchItems = new Map<Id, buildertek__Project_Task__c>();
                         List<buildertek__Purchase_Order__c> poToUpdate = new List<buildertek__Purchase_Order__c>();
+                        List<Id> matchedSchItems = new List<Id>();
 
                         if(ScheduleItems.size() > 0){
                                 for(buildertek__Purchase_Order__c PO : CreatedPOs){
@@ -678,10 +690,13 @@ public class createAllPOfromBOM_controller {
 
                                         if( SchItem.buildertek__Cost_Code__c == PO.buildertek__Cost_Code__c 
                                             && SchItem.buildertek__BT_Category__c == Category 
-                                            && !PO_to_matchedSchItems.containsKey(PO.Id))
+                                            && !PO_to_matchedSchItems.containsKey(PO.Id)
+                                            && !matchedSchItems.contains(SchItem.Id))
                                         {
                                             PO_to_matchedSchItems.put(PO.Id, SchItem);
                                             poToUpdate.add(PO);
+                                            matchedSchItems.add(SchItem.Id);
+
                                         }
                                     }
                                 }
