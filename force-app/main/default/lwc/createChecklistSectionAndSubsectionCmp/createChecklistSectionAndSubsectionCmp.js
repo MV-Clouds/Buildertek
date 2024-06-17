@@ -1,7 +1,6 @@
 import { LightningElement, api, track } from "lwc";
-import createSectionOrSubsection from '@salesforce/apex/ChooseBTChecklist.createSectionOrSubsection';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
+import createSectionOrSubsection from "@salesforce/apex/ChooseBTChecklist.createSectionOrSubsection";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
 
 export default class CreateChecklistSectionAndSubsectionCmp extends LightningElement {
   //With this flag we can hide and show the Modal in html file
@@ -9,8 +8,11 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
   @api parentSectionId;
   @api checkListId;
   @track formData = {};
-  sectionName;
-  globalSection;
+  @track disableLookup = false;
+  @track disableButton = true;
+  @track defaultCheckListLookupValue;
+  sectionName = "";
+  globalSection = false;
 
   connectedCallback() {
     console.log(`checkListId : ${this.checkListId}`);
@@ -19,8 +21,8 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
 
   hideModal() {
     this.isOpen = false;
-    const selectEvent = new CustomEvent('mycustomevent', {
-      detail: false
+    const selectEvent = new CustomEvent("mycustomevent", {
+      detail: false,
     });
     this.dispatchEvent(selectEvent);
   }
@@ -30,48 +32,109 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
       let sectionName = this.sectionName;
       let globalSection = this.globalSection;
       let selectedCheckListId = this.selectedCheckListId;
+      console.log("sectionName ", sectionName);
+      console.log("globalSEction ", globalSection);
+      console.log("selectedCheckListId ", selectedCheckListId);
+
+      if (this.disableButton) {
+        const evt = new ShowToastEvent({
+          title: "Warning",
+          message:
+            "Along with Name please fill checkList field or Global Checkbox.",
+          variant: "Warning",
+          mode: "dismissible",
+          duration: 3000,
+        });
+        this.dispatchEvent(evt);
+        return;
+      }
 
       createSectionOrSubsection({
         sectionName: sectionName,
-        globalSection: globalSection,
-        selectedCheckListId: selectedCheckListId
+        isGlobal: globalSection,
+        checkListId: selectedCheckListId,
+        parentId: this.parentSectionId,
       })
-        .then(result => {
-          console.log('result ', result);
-          this.isOpen = false;
-          const evt = new ShowToastEvent({
-            title: 'Success',
-            message: 'Section Created Successfully',
-            variant: 'Success',
-          });
-          this.dispatchEvent(evt);
+        .then((result) => {
+          console.log("result ", result);
+          if (result == "success") {
+            this.isOpen = false;
+            const evt = new ShowToastEvent({
+              title: "Success",
+              message: "Section Created Successfully",
+              variant: "Success",
+            });
+            this.dispatchEvent(evt);
+          } else {
+            const evt = new ShowToastEvent({
+              title: "Error",
+              message: result,
+              variant: "Error",
+            });
+            this.dispatchEvent(evt);
+          }
         })
-        .catch(error => {
-          console.log('error ', error)
+        .catch((error) => {
+          console.log("error ", error);
         });
-      console.log('sectionName , globalSection, selectedCheckListId ', sectionName, globalSection, selectedCheckListId);
+      console.log(
+        "sectionName , globalSection, selectedCheckListId ",
+        sectionName,
+        globalSection,
+        selectedCheckListId
+      );
     } catch (error) {
-      console.log('error ', error);
+      console.log("error ", error);
     }
-
   }
 
   handleFilesChange(event) {
-    const field = event.target.dataset.id;
-    const value = event.target.value;
+    try {
+      const field = event.target.dataset.id;
+      const value = event.target.value;
+      let selectedCheckListId = this.selectedCheckListId;
+      let defaultCheckListLookupValue = this.defaultCheckListLookupValue;
 
-    // Update the state based on the input field
-    if (field === 'sectionName') {
-      this.sectionName = value;
-    } else if (field === 'globleSection') {
-      this.globalSection = event.target.checked;
+      console.log("selectedChechKistId ", selectedCheckListId);
+      console.log("defaultCheckListLookupValue ", defaultCheckListLookupValue);
+      console.log("disableLookup ", this.disableLookup);
+      // Update the state based on the input field
+      if (field === "sectionName") {
+        this.sectionName = value;
+      } else if (field === "globleSection") {
+        this.globalSection = event.target.checked;
+        if (this.globalSection) {
+          this.disableLookup = true;
+        } else {
+          this.disableLookup = false;
+        }
+        this.template.querySelector("c-lookup").handleClearSelection();
+      }
+
+      //  NOTE: Below lines will be disable save button based on the condition
+      this.disableButton =
+        this.sectionName.length > 0 &&
+        (this.globalSection || this.selectedCheckListId)
+          ? false
+          : true;
+      console.log("field ", field);
+      console.log("value ", value);
+    } catch (error) {
+      console.log("error ", error);
     }
-    console.log('field ', field);
-    console.log('value ', value);
   }
 
   handleSelected(event) {
-    this.selectedCheckListId = event.detail.length > 0 ? event.detail[0].id : null;
-    console.log('OUTPUT : ', JSON.parse(JSON.stringify(event.detail)));
+    this.selectedCheckListId =
+      event.detail.length > 0 ? event.detail[0].id : null;
+
+    //  NOTE: Below lines will be disable save button based on the condition
+    this.disableButton =
+      this.sectionName.length > 0 &&
+      (this.globalSection || this.selectedCheckListId)
+        ? false
+        : true;
+
+    console.log("OUTPUT : ", JSON.parse(JSON.stringify(event.detail)));
   }
 }
