@@ -106,6 +106,10 @@
         if (finishDate != null && finishDate != '' && finishDate != undefined) {
             fields["buildertek__Finish__c"] = finishDate;
         }
+        var phase = component.get("v.selectedPhase");
+        if (phase != null && phase != '' && phase != undefined) {
+            fields["buildertek__Phase__c"] = phase;
+        }
         var allData = JSON.stringify(fields);
 
         var action = component.get("c.saveData");
