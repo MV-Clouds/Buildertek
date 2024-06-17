@@ -36,7 +36,7 @@ public with sharing class CreatePOFromRFQ{
                 RFQ = [Select Id, Name,buildertek__Rfq__c,buildertek__Rfq__r.Name ,buildertek__Vendor__c, 
                         buildertek__Rfq__r.buildertek__Project__c,buildertek__Rfq__r.buildertek__Budget__c,
                         buildertek__Anticipated_Start_Date__c,buildertek__Anticipated_Finish_Date__c, buildertek__Estimated_Work_Rollup__c,
-                        buildertek__Rfq__r.buildertek__Quote__c,
+                        buildertek__Rfq__r.buildertek__Quote__c, buildertek__Rfq__r.Trade_Type__c,
                         buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c, (SELECT Id, Name, buildertek__Cost_Code__c, 
                                                                                         buildertek__Quantity__c, buildertek__Unit_Price__c, 
                                                                                         buildertek__Total_Price__c, buildertek__Item_Name__c, 
@@ -65,6 +65,7 @@ public with sharing class CreatePOFromRFQ{
                     PO.buildertek__Project__c = rfqItems.buildertek__Rfq__r.buildertek__Project__c;
                     PO.buildertek__Status__c = 'Approved';
                     PO.buildertek__Type__c = 'Sales';
+                    PO.buildertek__Trade_Type__c = rfqItems.buildertek__Rfq__r.buildertek__Trade_Type__c;
                     PO.buildertek__Vendor__c = rfqItems.buildertek__Vendor__c;
                     PO.buildertek__Budget__c = rfqItems.buildertek__Rfq__r.buildertek__Budget__c;
                     PO.buildertek__Quote__c = rfqItems.buildertek__Rfq__r.buildertek__Quote__c;
@@ -72,7 +73,6 @@ public with sharing class CreatePOFromRFQ{
                     PO.buildertek__Description__c = rfqItems.buildertek__Rfq__r.Name;
                     PO.buildertek__Estimated_Start_Date__c = rfqItems.buildertek__Anticipated_Start_Date__c;
                     PO.buildertek__Estimated_Completion_Date__c = rfqItems.buildertek__Anticipated_Finish_Date__c;                                         
-
                     PO.buildertek__Description__c = rfqItems.buildertek__Rfq__r.Name;                                        
                     PO.RecordTypeId = standardRecordId;
                     purchaseOrder.put(rfqItems.buildertek__Vendor__c, PO);
