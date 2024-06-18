@@ -58,7 +58,7 @@
                         }
                         for (var j = 0; j < selectedIds.length; j++) {
                             var data = selectedIds[j];
-                            if (document.getElementById("Selected") != null && document.getElementById(data) != null){
+                            if (document.getElementById("Selected") != null && document.getElementById(data) != null) {
                                 document.getElementById("Selected").appendChild(document.getElementById(data));
                             }
                         }
@@ -120,6 +120,9 @@
         component.set("v.OpenQuestion", true);
 
         var action = component.get("c.getAllGroup");
+        action.setParams({
+            "checkListId": component.get("v.configureId")
+        });
         action.setCallback(this, function (a) {
             if (a.getState() === "SUCCESS") {
                 component.set('v.grouplist', a.getReturnValue());
@@ -201,6 +204,17 @@
         }
 
     },
+
+    handleGroupChange: function (component, event, helper) {
+        var selectedGroup = event.getSource().get("v.value");
+
+        if (selectedGroup === '--None--' || !selectedGroup) {
+            component.set("v.btnLabel", "New Section");
+        } else {
+            component.set("v.btnLabel", "New Subsection");
+        }
+    },
+
     ChageTypes: function (component, event, helper) {
         component.set("v.questionType", event.getSource().get('v.value'));
         var newQua = component.get("v.Question");
@@ -540,14 +554,19 @@
 
     },
 
+
     BackfromQuestionModal: function (component, event, helper){
-        console.log('Jaimin is here');
         component.set("v.isQuestionError", false);
         component.set("v.isOptionError", false);
         component.set("v.isMulti", false);
         component.set("v.DeleteQuestion", true);
         component.set("v.EditQuestion", false);
     },
+
+    BackModal: function (component, event, helper) {
+        component.set("v.OpenQuestion", false);
+    },
+
 
     callEditQuestion: function (component, event, helper) {
         console.log('**************' + event.target.getAttribute('data-id'));
@@ -603,6 +622,9 @@
                 }
                 }*/
                 var action = component.get("c.getAllGroup");
+                action.setParams({
+                    "checkListId": component.get("v.configureId")
+                });
                 action.setCallback(this, function (a) {
 
 
@@ -612,7 +634,7 @@
                         var result1 = JSON.parse(JSON.stringify(a.getReturnValue()));
                         // alert(result1);
                         component.set("v.grouplist", result1);
-                        component.set("v.selectedgroup", result.buildertek__group_name__c);
+                        component.set("v.selectedgroup", result.buildertek__Section__r.Name);
 
                         //component.set("v.grouplist",result.buildertek__group_name__c);
                     }
@@ -724,6 +746,14 @@
     },
 
     AddGroup: function (component, event, helper) {
-        component.set("v.showGroup", true);
+        component.set("v.showGroup", false);
+        component.set("v.showSectionModel", true);
+        component.set("v.EditQuestion", false);
+    },
+
+    handleCustomEvent: function (component, event, helper) {
+        component.set("v.showSectionModel", false);
+        // component.set("v.EditQuestion", true);
+        component.set("v.DeleteQuestion", false);
     }
 })
