@@ -554,8 +554,8 @@
 
     },
 
-    BackfromQuestionModal: function (component, event, helper) {
-        console.log(`BackFromQuestionModal`);
+
+    BackfromQuestionModal: function (component, event, helper){
         component.set("v.isQuestionError", false);
         component.set("v.isOptionError", false);
         component.set("v.isMulti", false);
@@ -564,9 +564,9 @@
     },
 
     BackModal: function (component, event, helper) {
-        console.log(`BackModal`);
         component.set("v.OpenQuestion", false);
     },
+
 
     callEditQuestion: function (component, event, helper) {
         console.log('**************' + event.target.getAttribute('data-id'));

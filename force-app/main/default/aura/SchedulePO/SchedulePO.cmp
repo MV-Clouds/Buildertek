@@ -21,6 +21,7 @@
      <aura:attribute name="FinishDate" type="Date"/>
      <aura:attribute name="durationNum" type="Integer"/>
      <aura:attribute name="disablefields" type="Boolean" default="true"/>
+     <aura:attribute name="includeWeekends" type="Boolean"/>
 
 
      
