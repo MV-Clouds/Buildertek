@@ -10,6 +10,7 @@
 build.properties
 config
 .vscode
+.prettierrc
 
 # Apex Log as optional
 apex-scripts/log
