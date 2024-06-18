@@ -24,11 +24,15 @@
             <lightning-input type="text" label="Section Name" data-id="sectionName" onchange={handleFilesChange}
               required></lightning-input>
           </div>
+          <template lwc:if={parentSectionId}>
+            <div class="slds-p-around_medium lgc-bg">
+              <lightning-input type="text" label="Parent Section" value={defaultSectionName} disabled></lightning-input>
+            </div>
+          </template>
           <div class="slds-p-around_medium lgc-bg">
-            <c-lookup label="Select Checklist" object-label="Checklist" field placeholder="Search..."
-              value={defaultCheckListLookupValue} object-api-name="buildertek__Checklist_Configuration__c"
-              field-api-name="Name" disabled={disableLookup} icon-name="standard:lead_list"
-              onselect={handleSelected}></c-lookup>
+            <c-lookup label="Select Checklist" object-label="Checklist" placeholder="Search..."
+              object-api-name="buildertek__Checklist_Configuration__c" field-api-name="Name" disabled={disableLookup}
+              icon-name="standard:lead_list" onselect={handleSelected}></c-lookup>
           </div>
           <div class="slds-p-around_medium lgc-bg">
             <lightning-input type="checkbox" label="Global" name="Global" onchange={handleFilesChange}
@@ -42,7 +46,7 @@
           <button class="slds-button slds-button_neutral" onclick={hideModal} title="Cancel">
             Cancel
           </button>
-          <button class="slds-button slds-button_brand" onclick={save} title="Save">
+          <button class="slds-button slds-button_brand" onclick={save} title="Save" disabled={isSaveClicked}>
             Save
           </button>
         </footer>

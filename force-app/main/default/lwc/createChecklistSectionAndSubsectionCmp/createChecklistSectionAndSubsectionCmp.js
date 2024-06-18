@@ -6,17 +6,28 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
   //With this flag we can hide and show the Modal in html file
   @track isOpen = true;
   @api parentSectionId;
+  @api parentSectionList;
+  @track defaultSectionName;
   @api checkListId;
-  @track formData = {};
   @track disableLookup = false;
   @track disableButton = true;
-  @track defaultCheckListLookupValue;
+  @track isSaveClicked = false;
   sectionName = "";
   globalSection = false;
 
   connectedCallback() {
     console.log(`checkListId : ${this.checkListId}`);
     console.log(`parentSectionId : ${this.parentSectionId}`);
+    let da = this.parentSectionList;
+    console.log('parentSectionList ', JSON.parse(JSON.stringify(da)));
+    if(this.parentSectionId){
+      for(let i=0; i<da.length; i++){
+        if(da[i].Id == this.parentSectionId){
+          this.defaultSectionName = da[i].Name;
+          break;
+        }
+      }
+    }
   }
 
   hideModal() {
@@ -29,6 +40,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
 
   save() {
     try {
+      this.isSaveClicked = true;
       let sectionName = this.sectionName;
       let globalSection = this.globalSection;
       let selectedCheckListId = this.selectedCheckListId;
@@ -40,7 +52,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
         const evt = new ShowToastEvent({
           title: "Warning",
           message:
-            "Along with Name please fill checkList field or Global Checkbox.",
+          "Along with Name please fill checkList field or Global Checkbox.",
           variant: "Warning",
           mode: "dismissible",
           duration: 3000,
@@ -56,6 +68,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
         parentId: this.parentSectionId,
       })
         .then((result) => {
+          this.isSaveClicked = false;
           console.log("result ", result);
           if (result == "success") {
             this.isOpen = false;
@@ -93,10 +106,8 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
       const field = event.target.dataset.id;
       const value = event.target.value;
       let selectedCheckListId = this.selectedCheckListId;
-      let defaultCheckListLookupValue = this.defaultCheckListLookupValue;
 
       console.log("selectedChechKistId ", selectedCheckListId);
-      console.log("defaultCheckListLookupValue ", defaultCheckListLookupValue);
       console.log("disableLookup ", this.disableLookup);
       // Update the state based on the input field
       if (field === "sectionName") {
@@ -115,8 +126,8 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
       this.disableButton =
         this.sectionName.length > 0 &&
         (this.globalSection || this.selectedCheckListId)
-          ? false
-          : true;
+        ? false
+        : true;
       console.log("field ", field);
       console.log("value ", value);
     } catch (error) {
@@ -132,8 +143,8 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
     this.disableButton =
       this.sectionName.length > 0 &&
       (this.globalSection || this.selectedCheckListId)
-        ? false
-        : true;
+      ? false
+      : true;
 
     console.log("OUTPUT : ", JSON.parse(JSON.stringify(event.detail)));
   }

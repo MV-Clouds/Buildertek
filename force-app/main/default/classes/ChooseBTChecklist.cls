@@ -11,7 +11,7 @@ public class ChooseBTChecklist {
     }
 
   @AuraEnabled
-    public static list<buildertek__Checklist_Section_Junction__c> getAllGroup(String checkListId){        
+    public static list<buildertek__Checklist_Section_Junction__c> getAllGroup(String checkListId){   
       List<buildertek__Checklist_Section_Junction__c> sections = [SELECT Id, Name, buildertek__BT_Checklist_Configuration__c FROM buildertek__Checklist_Section_Junction__c Where buildertek__Global_Section__c = true or buildertek__BT_Checklist_Configuration__c =: checkListId];
       return sections;
     }
@@ -24,7 +24,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
       system.debug('QuestionIds.......'+QuestionIds);
-      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__group_name__c from buildertek__Questions__c   WHERE Id IN: QuestionIds order by buildertek__group_name__c nulls last];
+      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name from buildertek__Questions__c   WHERE Id IN: QuestionIds ORDER BY buildertek__Section__c];
       system.debug(Questionlist);
       return Questionlist;
     }
@@ -311,13 +311,13 @@ public class ChooseBTChecklist {
         
         system.debug('parentId '+parentId);
         system.debug('sectionName '+sectionName);
-        system.debug('checkListeId '+checkListId);
+        system.debug('checkListeId ,'+checkListId);
         system.debug('isGlobal '+isGlobal); 
- 
+
         buildertek__Checklist_Section_Junction__c checkListSectionJunction = new buildertek__Checklist_Section_Junction__c();
         checkListSectionJunction.Name = sectionName;
         checkListSectionJunction.buildertek__Checklist_Section_Junction__c = String.isBlank(parentId) ? null : parentId;
-
+        
 
         if(isGlobal){
           checkListSectionJunction.buildertek__Global_Section__c = isGlobal;

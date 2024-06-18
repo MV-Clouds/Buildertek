@@ -215,7 +215,7 @@
                                         <aura:iteration items="{!v.Questions}" var="item">
                                             <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"
                                                 draggable="true">
-                                                {!item.buildertek__Customize__c}-[{!item.buildertek__group_name__c}]
+                                                {!item.buildertek__Customize__c}-[{!item.buildertek__Section__r.Name}]
                                             </li>
                                             <!-- <li class="Menu" onclick="{!c.MoveToQuestion}" id="{!item.Id}"  draggable="true">{!item.selectedgroup}</li>-->
                                         </aura:iteration>
@@ -335,7 +335,7 @@
                                                     change="{!c.handleGroupChange}">
                                                     <ui:inputSelectOption text="" label="--None--" />
                                                     <aura:iteration items="{!v.grouplist}" var="val">
-                                                        <ui:inputSelectOption text="{!val}" label="{!val}" />
+                                                        <ui:inputSelectOption text="{!val.Id}" label="{!val.Name}" />
                                                     </aura:iteration>
                                                 </ui:inputSelect>
                                             </div>
@@ -450,7 +450,7 @@
                                                             </th>
                                                             <td data-label="Group">
                                                                 <div class="slds-truncate">
-                                                                    {!view.buildertek__group_name__c}
+                                                                    {!view.buildertek__Section__r.Name}
                                                                 </div>
                                                             </td>
                                                             <td data-label="Question Type">
@@ -537,7 +537,7 @@
                                                     change="{!c.handleGroupChange}">
                                                     <ui:inputSelectOption text="" label="--None--" />
                                                     <aura:iteration items="{!v.grouplist}" var="val">
-                                                        <ui:inputSelectOption text="{!val}" label="{!val}" />
+                                                        <ui:inputSelectOption text="{!val.Id}" label="{!val.Name}" />
                                                     </aura:iteration>
                                                 </ui:inputSelect>
                                             </div>
