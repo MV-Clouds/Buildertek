@@ -3,6 +3,10 @@
         //Site Url Get
         var url = window.location.href;
         var siteUrl = url.split('?');
+        var conId = helper.getParameterByName('contactId', url);
+        var checklistName = helper.getParameterByName('selectCheckListName', url);
+        component.set("v.checkListType", checklistName);
+        component.set("v.contactId", conId);
         if (siteUrl[0] != '' && siteUrl[0] != undefined) {
             component.set("v.siteUrl", siteUrl[0].replace('/buildertek__ChecklistForm', ''));
         }
@@ -32,6 +36,7 @@
             if (a.getState() === 'SUCCESS') {
                 component.set("v.showchecklist", true);
                 var result = a.getReturnValue();
+                console.log('result', result);
                 component.set("v.Questions", result);
             }
         });
@@ -72,6 +77,15 @@
         }
         component.set("v.Questions", Questions);
     },
+
+    handleUploadFinished: function (cmp, event) {
+        // Get the list of uploaded files
+        var uploadedFiles = event.getParam("files");
+        alert("Files uploaded : " + uploadedFiles.length);
+        // Get the file name
+        uploadedFiles.forEach(file => console.log(file.name));
+    },
+  
     nameOnchange: function (component, event, helper) {
         if (component.get("v.DynamiccheckListName") != undefined && component.get("v.DynamiccheckListName") != null && component.get("v.DynamiccheckListName") != "") {
             component.set("v.ischecklistNameError", false);
@@ -87,17 +101,16 @@
 
     handleFilesChange: function(component, event, helper) {
         var fileInput = component.find("fuploader").get("v.files");
-		// get the first file using array index[0]
-		var file = fileInput[0];
-
+        var file = fileInput[0];
         var fileName = 'No File Selected..';
-        if (event.getSource().get("v.files").length > 0 && file.size > 4500000) {
+        
+        var fileSizeMB = file.size / (1024 * 1024);         
+        if (event.getSource().get("v.files").length > 0 && fileSizeMB > 3) { // Checking if file size exceeds 3 MB
             try {
-                component.set("v.fileName", 'Alert : File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
-                alert('File size cannot exceed ' + '4500000' + ' bytes.\n' + ' Selected file size: ' + file.size);
-
+                component.set("v.fileName", 'Alert : File size cannot exceed 3MB.\n Selected file size: ' + fileSizeMB.toFixed(2) + ' MB');
+                alert('File size cannot exceed 3MB\n Selected file size: ' + fileSizeMB.toFixed(2) + ' MB');
             } catch (error) {
-                console.log('error in upload ',error);
+                console.log('Error in file upload:', error);
             }
         } else {
             fileName = event.getSource().get("v.files")[0]['name'];

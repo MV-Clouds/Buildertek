@@ -174,24 +174,42 @@ public without sharing class checkListQuestionsCtrl{
     public static List<groupinnerclass> getQuestions(string CheckQuestionId){
         system.debug('CheckQuestionId' + CheckQuestionId);
         List<string> questionIds = new List<string>();
-        List<buildertek__Checklist_Questions__c> questionList = [select id, buildertek__Questions__c, buildertek__Questions__r.buildertek__Options__c, buildertek__Questions__r.buildertek__group_name__c, buildertek__Questions__r.buildertek__Customize__c, buildertek__Questions__r.buildertek__Question_Type__c
+        List<buildertek__Checklist_Questions__c> questionList = [select id, buildertek__Questions__c, buildertek__Questions__r.buildertek__Options__c, buildertek__Questions__r.buildertek__group_name__c, buildertek__Questions__r.buildertek__Customize__c, buildertek__Questions__r.buildertek__Question_Type__c, buildertek__Questions__r.buildertek__Section__r.Name,  buildertek__Questions__r.buildertek__Sub_Section__r.Name
                                                                  from buildertek__Checklist_Questions__c
-                                                                 where buildertek__Checklist_Configuration__c = :CheckQuestionId
-                                                                 ORDER BY buildertek__Questions__r.buildertek__group_name__c ASC
-                                                                 NULLS LAST];
+                                                                 where buildertek__Checklist_Configuration__c = :CheckQuestionId AND buildertek__Questions__r.buildertek__Section__c != null
+                                                                 ORDER BY buildertek__Questions__r.buildertek__Section__r.Name ASC
+                                                                 NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS Last];
 
         Map<String, List<buildertek__Checklist_Questions__c>> qustMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
+        Map<String, List<buildertek__Checklist_Questions__c>> subSectionMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
+
         for (buildertek__Checklist_Questions__c Ques : questionList){
-            if (qustMap.get(ques.buildertek__Questions__r.buildertek__group_name__c) == null){
-                qustMap.put(ques.buildertek__Questions__r.buildertek__group_name__c, new list<buildertek__Checklist_Questions__c>());
+            if (qustMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name) == null){
+                qustMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, new list<buildertek__Checklist_Questions__c>());
+                subSectionMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, new list<buildertek__Checklist_Questions__c>());
             }
-            qustMap.get(ques.buildertek__Questions__r.buildertek__group_name__c).add(Ques);
+            qustMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name).add(Ques);
+            subSectionMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name).add(Ques);
         }
+        System.debug('old sections map ==> ' + qustMap);
+        
         list<groupinnerclass> groupinnerclasslist = new list<groupinnerclass>();
         for (string groupname : qustMap.keyset()){
+            // subsection list
+            Map<String, List<buildertek__Checklist_Questions__c>> subSectionList = new Map<String, List<buildertek__Checklist_Questions__c>>();
+            for(buildertek__Checklist_Questions__c ques : qustMap.get(groupname)){
+                String s = String.isBlank(ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name) ? 'No Subsection' : ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name ;
+                if(!qustMap.containsKey(s)){
+                    subSectionList.put(s, new list<buildertek__Checklist_Questions__c>());
+                }
+                subSectionList.get(s).add(ques);
+            }
+            System.debug('new subsection list ==> ' + subSectionList);
+
             groupinnerclass groupinnerclassrec = new groupinnerclass();
             groupinnerclassrec.GroupName = groupname;
             list<QuestionsInnerclass> QuestionsInnerclasslist = new list<QuestionsInnerclass>();
+            list<groupinnerclass2> groupinnerclass2List = new list<groupinnerclass2>();
             for (buildertek__Checklist_Questions__c Ques : qustMap.get(groupname)){
                 QuestionsInnerclass QuestionsInnerclassrec = new QuestionsInnerclass();
                 QuestionsInnerclassrec.QuestionId = Ques.buildertek__Questions__c;
@@ -213,6 +231,38 @@ public without sharing class checkListQuestionsCtrl{
                 QuestionsInnerclasslist.add(QuestionsInnerclassrec);
             }
             groupinnerclassrec.QuestionsInnerclasslist = QuestionsInnerclasslist;
+
+
+            for(String subSectionName : subSectionList.keyset()){
+                groupinnerclass2 groupinnerclassrec2 = new groupinnerclass2();
+                groupinnerclassrec2.GroupName = subSectionName;
+                list<QuestionsInnerclass> QuestionsInnerclasslistInner = new list<QuestionsInnerclass>();
+                for (buildertek__Checklist_Questions__c Ques : subSectionList.get(subSectionName)){
+                    QuestionsInnerclass QuestionsInnerclassrec = new QuestionsInnerclass();
+                    QuestionsInnerclassrec.QuestionId = Ques.buildertek__Questions__c;
+                    QuestionsInnerclassrec.QuestionName = Ques.buildertek__Questions__r.buildertek__Customize__c;
+                    QuestionsInnerclassrec.QuestionType = Ques.buildertek__Questions__r.buildertek__Question_Type__c;
+                    if (Ques.buildertek__Questions__r.buildertek__Options__c != null && Ques.buildertek__Questions__r.buildertek__Options__c != ''){
+                        Ques.buildertek__Questions__r.buildertek__Options__c = Ques.buildertek__Questions__r.buildertek__Options__c.replace('#$#', '##st##');
+                        string[] questionseperatelist = Ques.buildertek__Questions__r.buildertek__Options__c.split('##st##');
+                        list<QuestionOption> QuestionOptionlist = new list<QuestionOption>();
+                        for (string str : questionseperatelist){
+                            QuestionOption QuestionOptionrec = new QuestionOption();
+                            QuestionOptionrec.label = str;
+                            QuestionOptionrec.value = str;
+                            QuestionOptionlist.add(QuestionOptionrec);
+                        }
+                        QuestionsInnerclassrec.QuestionOptions = QuestionOptionlist;
+                    }
+    
+                    QuestionsInnerclasslistInner.add(QuestionsInnerclassrec);
+                }
+                groupinnerclassrec2.QuestionsInnerclasslist = QuestionsInnerclasslistInner;
+                groupinnerclass2List.add(groupinnerclassrec2);
+            }
+            groupinnerclassrec.subsectionWrapperList=groupinnerclass2List;
+            
+            
             groupinnerclasslist.add(groupinnerclassrec);
         }
 
@@ -220,8 +270,9 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string createchecklistquestion(string QuestionString, string recordId, string checkName){
+    public static string createchecklistquestion(string QuestionString, string recordId, string checkName, string conId, string checkListType){
         try{
+            System.debug('conId: ' + conId);
             String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
             system.debug(objectname);
             system.debug(QuestionString);
@@ -236,6 +287,8 @@ public without sharing class checkListQuestionsCtrl{
             buildertek__Checklist_Response__c checklistresponse = new buildertek__Checklist_Response__c();
             checklistresponse.buildertek__Submitted_Date__c = System.Now();
             checklistresponse.buildertek__Checklist_Name__c = checkName;
+            checklistresponse.buildertek__ContactChecklist__c = conId;
+            checklistresponse.buildertek__Checklist_Typte__c = checkListType;
             String fieldname = objectname;
             if (!Test.isRunningTest()){
                 checklistresponse.put(objectname + 'Checklist__c', recordId);
@@ -319,7 +372,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string createChecklistWithFilesAndQuestion(string QuestionString, string recordId, string checkName, String fileName, String base64Data, String contentType ){
+    public static string createChecklistWithFilesAndQuestion(string QuestionString, string recordId, string checkName, String fileName, String base64Data, String contentType, String conId, String checkListType){
         try{
             String objectname = Id.valueof(recordId).getSObjectType().getDescribe().getName();
             system.debug(objectname);
@@ -335,6 +388,8 @@ public without sharing class checkListQuestionsCtrl{
             buildertek__Checklist_Response__c checklistresponse = new buildertek__Checklist_Response__c();
             checklistresponse.buildertek__Submitted_Date__c = System.Now();
             checklistresponse.buildertek__Checklist_Name__c = checkName;
+            checklistresponse.buildertek__ContactChecklist__c = conId;
+            checklistresponse.buildertek__Checklist_Typte__c = checkListType;
             String fieldname = objectname;
             if (!Test.isRunningTest()){
                 checklistresponse.put(objectname + 'Checklist__c', recordId);
@@ -399,7 +454,7 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @AuraEnabled
-    public static string sendchecklist(string checklistId, Id recordId, string Email, string FieldName, Boolean isparent, string parentObj, string recipient, string text, string subject, string contactEmail, string selectCheckListName){
+    public static string sendchecklist(string checklistId, Id recordId, string Email, string FieldName, Boolean isparent, string parentObj, string recipient, string text, string subject, string contactEmail, string selectCheckListName, string contactId){
         system.debug('Email' + Email);
         system.debug('FieldName' + FieldName);
         system.debug('isparent' + isparent);
@@ -461,7 +516,7 @@ public without sharing class checkListQuestionsCtrl{
                 emaillist.add(contactEmail);
             }
             system.debug('emaillist' + emaillist);
-            text = text.replace('{URL}', '<a href="' + sitesUrl.buildertek__Site_URL__c + '/buildertek__ChecklistForm?id=' + recordId + '&checklistId=' + checklistId + '&selectCheckListName=' + selectCheckListName + '">Checklist Form</a>');
+            text = text.replace('{URL}', '<a href="' + sitesUrl.buildertek__Site_URL__c + '/buildertek__ChecklistForm?id=' + recordId + '&checklistId=' + checklistId + '&selectCheckListName=' + selectCheckListName + '&contactId=' + contactId + '">Checklist Form</a>');
 
             Messaging.SingleEmailMessage sendMessage = new Messaging.SingleEmailMessage();
             sendMessage.toAddresses = emaillist;
@@ -481,13 +536,70 @@ public without sharing class checkListQuestionsCtrl{
         }
     }
 
+    @AuraEnabled
+    public static String sendChecklistViaEmail(String checklistId, Id recordId, String text, String subject, String selectCheckListName, String contactData){
+        try {
+            buildertek__Check_List_Settings__c sitesUrl = [SELECT Id, buildertek__Site_URL__c FROM buildertek__Check_List_Settings__c LIMIT 1];
+            System.debug('checklistId: ' + checklistId);
+            System.debug('recordId: ' + recordId);
+            System.debug('text: ' + text);
+            System.debug('subject: ' + subject);
+            System.debug('selectCheckListName: ' + selectCheckListName);
+            System.debug('contactData: ' + contactData);
+            
+            List<ContactWrapper> contacts = (List<ContactWrapper>) JSON.deserialize(contactData, List<ContactWrapper>.class);
+
+            List<Messaging.SingleEmailMessage> emailMessages = new List<Messaging.SingleEmailMessage>();
+
+            for (ContactWrapper contact : contacts) {
+                String personalizedText = text.replace('{URL}', '<a href="' + sitesUrl.buildertek__Site_URL__c + 
+                                                            '/buildertek__ChecklistForm?id=' + recordId + 
+                                                            '&checklistId=' + checklistId + 
+                                                            '&selectCheckListName=' + selectCheckListName + 
+                                                            '&contactId=' + contact.Id + '">Checklist Form</a>');
+
+                Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+                email.setToAddresses(new String[] { contact.Email });
+                email.setSubject(subject);
+                email.setHtmlBody(personalizedText);
+                emailMessages.add(email);
+            }
+
+            Messaging.SendEmailResult[] results = Messaging.sendEmail(emailMessages);
+
+            for (Messaging.SendEmailResult result : results) {
+                if (!result.isSuccess()) {
+                    throw new EmailException('Error sending email: ' + result.getErrors()[0].getMessage());
+                }
+            }
+
+            return 'Success';
+        } catch (Exception e) {
+            BT_ExceptionHandler.Store_Exception(e);
+            return e.getMessage();
+        }
+    }
+
     public class groupinnerclass{
         @AuraEnabled
-        public string GroupName{ get; set; }
+        public String GroupName { get; set; }
 
         @AuraEnabled
-        public list<QuestionsInnerclass> QuestionsInnerclasslist{ get; set; }
+        public List<QuestionsInnerclass> QuestionsInnerclasslist { get; set; }
+
+        @AuraEnabled
+        public List<groupinnerclass2> subsectionWrapperList { get; set; }
     }
+
+    public class groupinnerclass2{
+        @AuraEnabled
+        public String GroupName { get; set; }
+
+        @AuraEnabled
+        public List<QuestionsInnerclass> QuestionsInnerclasslist { get; set; }
+    }
+
+
 
     public class QuestionsInnerclass{
         @AuraEnabled
@@ -771,5 +883,11 @@ public without sharing class checkListQuestionsCtrl{
             System.debug('The email failed to send: ' + results[0].errors[0].message);
             return 'Error';
         }
+    }
+
+    public class ContactWrapper {
+        public String Id { get; set; }
+        public String Name { get; set; }
+        public String Email { get; set; }
     }
 }
