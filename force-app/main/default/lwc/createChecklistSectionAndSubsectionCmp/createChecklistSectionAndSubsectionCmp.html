@@ -31,8 +31,8 @@
           </template>
           <div class="slds-p-around_medium lgc-bg">
             <c-lookup label="Select Checklist" object-label="Checklist" placeholder="Search..."
-              object-api-name="buildertek__Checklist_Configuration__c" field-api-name="Name" disabled={disableLookup}
-              icon-name="standard:lead_list" onselect={handleSelected}></c-lookup>
+              value={defaultCheckListId} object-api-name="buildertek__Checklist_Configuration__c" field-api-name="Name"
+              disabled={disableLookup} icon-name="standard:lead_list" onselect={handleSelected}></c-lookup>
           </div>
           <div class="slds-p-around_medium lgc-bg">
             <lightning-input type="checkbox" label="Global" name="Global" onchange={handleFilesChange}
