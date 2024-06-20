@@ -38,3 +38,11 @@
 .slds-m-around_medium {
     margin: 1rem;
 }
+
+
+.dropIcon{
+    display: flex !important;
+    align-items: center !important;
+    padding-left: 10px !important;
+}
+

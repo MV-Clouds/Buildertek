@@ -5,11 +5,27 @@
                 <header class="slds-media slds-media_center slds-has-flexi-truncate">
                     <div class="slds-media__body">
                         <h2 class="slds-card__header-title">
+                            <template if:true={group.isVisible}>
+                                <lightning-icon class="dropIcon" icon-name="utility:chevronup"
+                                alternative-text="close"
+                                variant="inverse"
+                                onclick={dropdownHandler}
+                                data-id={group.groupId}
+                                size="small" ></lightning-icon>
+                            </template>
+                            <template if:false={group.isVisible}>
+                                <lightning-icon class="dropIcon" icon-name="utility:chevrondown"
+                                alternative-text="open"
+                                variant="inverse"
+                                onclick={dropdownHandler}
+                                data-id={group.groupId}
+                                size="small" ></lightning-icon>
+                            </template>
                             <span class="grpname">
                                 {group.groupName}
                             </span>
                                 <button class="slds-button slds-button_neutral slds-m-left_auto" onclick={handleAddItem}>
-                                    <p style="margin-top: -0.6rem; font-size">+</p>
+                                    <p data-id={group.groupId} style="margin-top: -0.6rem; font-size">+</p>
                                 </button>
                         </h2>
                     </div>
@@ -17,23 +33,100 @@
             </div>
             <div class="quote-table">
             <div class="slds-card__body">
-                <lightning-datatable
-                    key-field="id"
-                    data={group.items}
-                    columns={columns}
-                    hide-checkbox-column
-                    show-row-number-column >
-                </lightning-datatable>
+                <template if:true={group.isVisible}>
+                    <div class="lastRowCSS">
+                        <lightning-datatable
+                            key-field="id"
+                            data={group.items}
+                            columns={columns}
+                            hide-checkbox-column >
+                        </lightning-datatable>
+                    </div>
+                </template>
+                <template if:false= {group.isVisible}>
+                    <div class="lastRowCSS">
+                        <lightning-datatable
+                            key-field="id"
+                            data={group.subtotal}
+                            columns={columns}
+                            hide-checkbox-column >
+                        </lightning-datatable>
+                    </div>
+                </template>
+
             </div>
             </div>
-            <footer class="slds-card__footer">
-                <div class="slds-p-horizontal_small">
-                    <strong>Subtotal:</strong> 
+            <footer>
+                <div>
+                    <!-- <strong>Subtotal:</strong>  -->
                 </div>
             </footer>
         </div>
     </template>
-    <div class="slds-p-horizontal_small slds-m-around_medium">
-        <strong>Grand Total:</strong> {grandTotal} USD
+    <div class="slds-m-around_medium">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                    <span class="grpname">
+                        Grand Total
+                    </span>
+                </h2>
+            </div>
+        </header>
+        <div class="quote-table">
+            <div class="lastRowCSS">
+                <lightning-datatable
+                    key-field="buildertek__Quantity__c"
+                    data={grandTotalList}
+                    columns={columns}
+                    hide-checkbox-column >
+                </lightning-datatable>
+            </div>
+        </div>
     </div>
-</template>
+
+    <template if:true={filterModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+             <!-- modal header start -->
+               <header class="slds-modal__header">
+                  <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+                     <lightning-icon icon-name="utility:close"
+                        alternative-text="close"
+                        variant="inverse"
+                        size="small" ></lightning-icon>
+                     <span class="slds-assistive-text">Close</span>
+                  </button>
+                  <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Filter</h2>
+               </header>
+           
+               <!-- modal body start -->
+               <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <lightning-select
+                    name="filter"
+                    value={filterValue}
+                    options={filterOption} 
+                    onchange={filterChange}></lightning-select>
+               </div>
+     
+               <!-- modal footer start-->
+               <footer class="slds-modal__footer">
+                  <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+                   <button class="slds-button slds-button_brand" onclick={applyFilter}>Next</button>
+               </footer>
+            
+            </div>
+         </section>
+         <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template if:true={showPricebookModal}>
+        <!-- call aura component named Add_QuoteLine_In_Quote -->
+         <!-- <c-Add_QuoteLine_In_Quote
+            getPhase = {filterGroupId}
+            quoteId = {recordId}
+            openProductBox = {showPricebookModal}>
+         </c-Add_QuoteLine_In_Quote> -->
+    </template>
+    </template>
+<!-- </template> -->
