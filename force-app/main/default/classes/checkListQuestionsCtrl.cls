@@ -36,10 +36,10 @@ public without sharing class checkListQuestionsCtrl{
                                 from Contact
                                 where id = :Ids];
             if (checkobj.Account.Name != null && checkobj.Account.Name != ''){
-                String proAccName = checkobj.Name + '-' + checkobj.Account.Name;
+                String proAccName = checkobj.Name + '-' + checkobj.Account.Name + '-' + conName;
                 return proAccName;
             } else{
-                String proAccName = checkobj.Name;
+                String proAccName = checkobj.Name + '-' + conName;
                 return proAccName;
             }
 
@@ -53,20 +53,20 @@ public without sharing class checkListQuestionsCtrl{
                                                     from buildertek__Project__c
                                                     where id = :checkobj.buildertek__Project__r.Id];
                 if (checkobj2.buildertek__Account__r.Name != null && checkobj2.buildertek__Account__r.Name != ''){
-                    String proAccName = checkobj.Name + '-' + checkobj2.buildertek__Account__r.Name;
+                    String proAccName = checkobj.Name + '-' + checkobj2.buildertek__Account__r.Name + '-' + conName;
                     return proAccName;
                 } else{
-                    String proAccName = checkobj.Name;
+                    String proAccName = checkobj.Name + '-' + conName;
                     return proAccName;
                 }
             } else{
-                return checkobj.Name;
+                return checkobj.Name + '-' + conName;
             }
         } else if (Id.valueof(Ids).getSObjectType().getDescribe().getName() == 'Account'){
             Account acc = [select Name
                            from Account
                            where id = :Ids];
-            String proAccName = acc.Name;
+            String proAccName = acc.Name + '-' + conName;
             return proAccName;
         } else{
             return 'error';
