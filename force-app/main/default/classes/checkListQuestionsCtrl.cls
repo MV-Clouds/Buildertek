@@ -11,16 +11,23 @@ public without sharing class checkListQuestionsCtrl{
     }
 
     @auraEnabled
-    public static string getProjectName(String Ids){
+    public static string getProjectName(String Ids, String contactId){
+        String conName = '';
+        if(!String.isBlank(contactId)){
+          conName = [select id, Name  from Contact where id = :contactId].Name;
+        }
+        
         if (Id.valueof(Ids).getSObjectType().getDescribe().getName() == 'buildertek__Project__c'){
             buildertek__Project__c checkobj = [select id, Name, buildertek__Account__r.Name
                                                from buildertek__Project__c
                                                where id = :Ids];
+
+
             if (checkobj.buildertek__Account__r.Name != null && checkobj.buildertek__Account__r.Name != ''){
-                String proAccName = checkobj.Name + '-' + checkobj.buildertek__Account__r.Name;
+                String proAccName = checkobj.Name + '-' + conName;
                 return proAccName;
             } else{
-                String proAccName = checkobj.Name;
+                String proAccName = checkobj.Name + '-' + conName;
                 return proAccName;
             }
         } else if (Id.valueof(Ids).getSObjectType().getDescribe().getName() == 'Contact'){

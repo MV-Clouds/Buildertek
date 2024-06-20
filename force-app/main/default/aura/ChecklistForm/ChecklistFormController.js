@@ -45,12 +45,14 @@
 
         var action3 = component.get("c.getProjectName");
         action3.setParams({
-            "Ids": component.get("v.recordId")
+            "Ids": component.get("v.recordId"),
+            "contactId": component.get("v.contactId")
         });
         action3.setCallback(this, function (c) {
             if (c.getState() === 'SUCCESS') {
 
                 var result = c.getReturnValue();
+                console.log('result', result);
                 debugger;
                 //  alert(result)
                 if (result != 'error') {
