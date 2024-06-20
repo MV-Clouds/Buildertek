@@ -181,30 +181,30 @@ public without sharing class checkListQuestionsCtrl{
                                                                  NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS Last];
 
         Map<String, List<buildertek__Checklist_Questions__c>> qustMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
-        Map<String, List<buildertek__Checklist_Questions__c>> subSectionMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
 
         for (buildertek__Checklist_Questions__c Ques : questionList){
             if (qustMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name) == null){
                 qustMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, new list<buildertek__Checklist_Questions__c>());
-                subSectionMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, new list<buildertek__Checklist_Questions__c>());
             }
             qustMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name).add(Ques);
-            subSectionMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name).add(Ques);
         }
         System.debug('old sections map ==> ' + qustMap);
         
         list<groupinnerclass> groupinnerclasslist = new list<groupinnerclass>();
         for (string groupname : qustMap.keyset()){
             // subsection list
-            Map<String, List<buildertek__Checklist_Questions__c>> subSectionList = new Map<String, List<buildertek__Checklist_Questions__c>>();
+            Map<String, List<buildertek__Checklist_Questions__c>> subSectionMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
             for(buildertek__Checklist_Questions__c ques : qustMap.get(groupname)){
+                system.debug('ques for subsection ==> ' + ques);
                 String s = String.isBlank(ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name) ? 'No Subsection' : ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name ;
-                if(!qustMap.containsKey(s)){
-                    subSectionList.put(s, new list<buildertek__Checklist_Questions__c>());
+                system.debug('check map string s ==> ' + s);                
+                if (subSectionMap.containsKey(s)) {
+                    subSectionMap.get(s).add(ques);
+                } else {
+                    subSectionMap.put(s, new List<buildertek__Checklist_Questions__c>{ ques });
                 }
-                subSectionList.get(s).add(ques);
             }
-            System.debug('new subsection list ==> ' + subSectionList);
+            System.debug('new subsection list ==> ' + subSectionMap);
 
             groupinnerclass groupinnerclassrec = new groupinnerclass();
             groupinnerclassrec.GroupName = groupname;
@@ -233,11 +233,11 @@ public without sharing class checkListQuestionsCtrl{
             groupinnerclassrec.QuestionsInnerclasslist = QuestionsInnerclasslist;
 
 
-            for(String subSectionName : subSectionList.keyset()){
+            for(String subSectionName : subSectionMap.keyset()){
                 groupinnerclass2 groupinnerclassrec2 = new groupinnerclass2();
                 groupinnerclassrec2.GroupName = subSectionName;
                 list<QuestionsInnerclass> QuestionsInnerclasslistInner = new list<QuestionsInnerclass>();
-                for (buildertek__Checklist_Questions__c Ques : subSectionList.get(subSectionName)){
+                for (buildertek__Checklist_Questions__c Ques : subSectionMap.get(subSectionName)){
                     QuestionsInnerclass QuestionsInnerclassrec = new QuestionsInnerclass();
                     QuestionsInnerclassrec.QuestionId = Ques.buildertek__Questions__c;
                     QuestionsInnerclassrec.QuestionName = Ques.buildertek__Questions__r.buildertek__Customize__c;
