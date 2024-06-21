@@ -8,6 +8,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
   @api parentSectionId;
   @api parentSectionList;
   @track defaultSectionName;
+  @api defaultCheckListId;
   @api checkListId;
   @track disableLookup = false;
   @track disableButton = true;
@@ -16,22 +17,35 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
   globalSection = false;
 
   connectedCallback() {
-    console.log(`checkListId : ${this.checkListId}`);
-    console.log(`parentSectionId : ${this.parentSectionId}`);
-    let da = this.parentSectionList;
-    console.log('parentSectionList ', JSON.parse(JSON.stringify(da)));
-    if(this.parentSectionId){
-      for(let i=0; i<da.length; i++){
-        if(da[i].Id == this.parentSectionId){
-          this.defaultSectionName = da[i].Name;
-          break;
-        }
+    try{
+      console.log('in connectedCallback defaultCheckListId : ');
+      let t = this.defaultCheckListId;
+      // BUG: checkThis line in the morning First
+      console.log('in connectedCallback defaultCheckListId : ', JSON.stringify(t));
+      console.log(`checkListId : ${this.checkListId}`);
+      console.log(`parentSectionId : ${this.parentSectionId}`);
+      let da = this.parentSectionList;
+      console.log('parentSectionList ', JSON.parse(JSON.stringify(da)));
+      if(this.parentSectionId){
+        da?.sectionList?.forEach(section => {
+          if(section.Id == this.parentSectionId){
+            this.defaultSectionName = section.Name;
+            return;
+          }
+        });
       }
+    } catch (error) {
+      console.log("error ", error);
     }
   }
 
   hideModal() {
     this.isOpen = false;
+    this.defaultCheckListId = {};
+    this.checkListId = null;
+    this.parentSectionId = null;
+    this.defaultSectionName = "";
+
     const selectEvent = new CustomEvent("mycustomevent", {
       detail: false,
     });
@@ -58,13 +72,14 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
           duration: 3000,
         });
         this.dispatchEvent(evt);
+        this.isSaveClicked = false;
         return;
       }
-
+ 
       createSectionOrSubsection({
         sectionName: sectionName,
         isGlobal: globalSection,
-        checkListId: selectedCheckListId,
+        checkListId: selectedCheckListId || this.defaultCheckListId[0]?.id,
         parentId: this.parentSectionId,
       })
         .then((result) => {
@@ -72,12 +87,21 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
           console.log("result ", result);
           if (result == "success") {
             this.isOpen = false;
+            this.defaultCheckListId = {};
+            this.checkListId = null;
+            this.parentSectionId = null;
+            this.defaultSectionName = "";
             const evt = new ShowToastEvent({
               title: "Success",
               message: "Section Created Successfully",
               variant: "Success",
             });
             this.dispatchEvent(evt);
+            const selectEvent = new CustomEvent("mycustomevent", {
+              detail: false,
+            });
+            this.dispatchEvent(selectEvent);
+
           } else {
             const evt = new ShowToastEvent({
               title: "Error",
@@ -103,6 +127,9 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
 
   handleFilesChange(event) {
     try {
+
+      console.log("handleFileChanges called");
+      console.log("defaultCheckListId ", this.defaultCheckListId);
       const field = event.target.dataset.id;
       const value = event.target.value;
       let selectedCheckListId = this.selectedCheckListId;
@@ -125,7 +152,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
       //  NOTE: Below lines will be disable save button based on the condition
       this.disableButton =
         this.sectionName.length > 0 &&
-        (this.globalSection || this.selectedCheckListId)
+        (this.globalSection || this.selectedCheckListId || this.defaultCheckListId)
         ? false
         : true;
       console.log("field ", field);
@@ -142,7 +169,7 @@ export default class CreateChecklistSectionAndSubsectionCmp extends LightningEle
     //  NOTE: Below lines will be disable save button based on the condition
     this.disableButton =
       this.sectionName.length > 0 &&
-      (this.globalSection || this.selectedCheckListId)
+      (this.globalSection || this.selectedCheckListId || this.defaultCheckListId?.id)
       ? false
       : true;
 
