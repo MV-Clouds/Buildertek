@@ -1,4 +1,36 @@
 <template>
+
+    <template if:true={isLoading}>
+        <lightning-spinner class="spinner__1" alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+
+    <div class="quoteData">
+        <div class="leftSection">
+            <div class="projectName">
+                <h3>{projectName}</h3>
+            </div>
+            <div class="quoteName">
+                <h1>{quoteName}</h1>
+            </div>
+        </div>
+        <div class="rightSection">
+            <div class="quoteDetails">
+                <template for:each={quoteData} for:item="item">
+                    <div key={item.label} class="row">
+                        <div  class="label">
+                            {item.label}
+                        </div>
+
+                        <div class="value">
+                            {item.value}
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+
     <template for:each={data} for:item="group">
         <div key={group.groupName} class="slds-card slds-m-around_medium">
             <div class="slds-card__header slds-grid">

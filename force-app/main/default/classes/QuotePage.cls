@@ -9,6 +9,24 @@ public without sharing class QuotePage {
         try{
 
             allData ad = new allData();
+
+            List<BT_Lightning_Utils.dataTableFields> Quotecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote__c', 'buildertek__QuotePage');
+            ad.Quotecolumns = Quotecolumn;
+
+            String quoteFields = '';
+            for(BT_Lightning_Utils.dataTableFields dt : Quotecolumn){
+                if(dt.fieldName != 'Id' && dt.fieldName != 'Name' && dt.fieldName != 'buildertek__Project__r.Name'){
+                    quoteFields += dt.fieldName + ',';
+                }
+            }
+            quoteFields = quoteFields.removeEnd(',');
+
+            String quoteQuery = 'SELECT Id, Name, buildertek__Project__r.Name, ' + quoteFields;
+            quoteQuery += ' FROM buildertek__Quote__c WHERE Id =\'' + quoteId + '\'';
+            System.debug('quoteQuery: ' + quoteQuery);
+
+            buildertek__Quote__c  quote = Database.query(quoteQuery);
+            ad.quote = quote;
     
             String apiString = '';
     
@@ -43,13 +61,19 @@ public without sharing class QuotePage {
                 BT_ExceptionHandler.Store_Exception(ex);
             }
             allData ad = new allData();
-            ad.Status = 'Error';
+            ad.Status = 'Error' + ex.getMessage() + ex.getStackTraceString();
             return ad;
         }
 
     }
 
     public class allData{
+
+        @AuraEnabled
+        public List<BT_Lightning_Utils.dataTableFields> Quotecolumns;
+
+        @AuraEnabled
+        public buildertek__Quote__c Quote;
 
         @AuraEnabled
         public List<buildertek__Quote_Item__c> quoteLineList;

@@ -5,6 +5,12 @@ import getallData from '@salesforce/apex/QuotePage.getallData';
 export default class NewQuoteItemcmp extends LightningElement {
     isInitalRender = true;
     @api recordId;
+    @track isLoading = true;
+    @track quoteName;
+    @track projectName;
+    @track quoteData;
+    @track quote;
+    @track quoteFields;
     @track totalColumns;
     @track columns;
     @track quoteLines;
@@ -54,6 +60,26 @@ export default class NewQuoteItemcmp extends LightningElement {
         getallData({ quoteId: QuoteId })
             .then(result => {
                 console.log({result});
+                this.quote = result.Quote;
+                this.quoteFields = result.Quotecolumns;
+
+                this.quoteName = result.Quote.Name;
+                if(result.Quote.buildertek__Project__c != null){
+                    this.projectName = result.Quote.buildertek__Project__r.Name;
+                }else{
+                    this.projectName = '';
+                }
+
+                var quoteData = [];
+                for(var i = 0; i < result.Quotecolumns.length; i++){
+                    var quoteDataToDisplay = {};
+                    quoteDataToDisplay.label = result.Quotecolumns[i].label;
+                    quoteDataToDisplay.value = result.Quote[result.Quotecolumns[i].fieldName];
+                    quoteDataToDisplay.fieldName = result.Quotecolumns[i].fieldName;
+                    quoteDataToDisplay.type = result.Quotecolumns[i].type;
+                    quoteData.push(quoteDataToDisplay);
+                }
+                this.quoteData = quoteData;
 
                 //loop on the colums cooming from FieldSet 
                 for(var i = 0; i < result.columns.length; i++){
@@ -111,6 +137,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                     this.quoteLines[i].Number = i+1;
                 }
                 console.log({data: this.data});
+                this.isLoading = false;
                 this.calculateTotal(this.data);
             })
             .catch(error => {
