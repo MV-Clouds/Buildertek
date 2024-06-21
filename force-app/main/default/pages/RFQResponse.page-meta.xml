@@ -6,7 +6,7 @@
     <label>RFQResponse</label>
     <packageVersions>
         <majorNumber>1</majorNumber>
-        <minorNumber>20</minorNumber>
+        <minorNumber>21</minorNumber>
         <namespace>sf_chttr_apps</namespace>
     </packageVersions>
     <packageVersions>
