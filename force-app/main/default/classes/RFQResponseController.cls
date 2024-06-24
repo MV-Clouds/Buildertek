@@ -419,6 +419,9 @@ public Boolean displayPopup1 {get;set;}
         buildertek__RFQ_Vendor_Item__c newItemRecord = new buildertek__RFQ_Vendor_Item__c();
         newRecord.record = newItemRecord;
         newRecord.index = wrapList.size();
+        //rfqlinetofolder add one more 
+        rfqlinetofolder.put(rfqlinetofolder.size(), 'n');
+        System.debug('rfqlinetofolder'+rfqlinetofolder);
         wrapList.add(newRecord);
         system.debug('wrapList -----------> ' + wrapList);
     }
