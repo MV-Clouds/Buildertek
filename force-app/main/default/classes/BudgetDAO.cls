@@ -3535,4 +3535,14 @@ public with sharing class BudgetDAO{
             return 'Error';
         }
     }
+
+    @AuraEnabled
+    public static string HideBtnFromAdminSetting(){
+        try {
+            List<buildertek__Admin_Interface_Node_Configuration__c> adminConfig = [Select Id, buildertek__Hide_These_budget_Buttons__c from buildertek__Admin_Interface_Node_Configuration__c WHERE Name='Budget Configuration'];
+            return adminConfig[0].buildertek__Hide_These_budget_Buttons__c;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }

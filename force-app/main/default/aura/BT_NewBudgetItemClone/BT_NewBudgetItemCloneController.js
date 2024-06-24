@@ -9,8 +9,9 @@
             var additionalUrl = '?ws=%2Flightning%2Fr%2Fbuildertek__Budget__c%2F' + component.get("v.recordId") + '%2Fview';
             component.set("v.additionalUrl", additionalUrl);
         }
-
-
+        
+        
+        helper.checkisButtonVisible(component, event, helper);
         helper.Check_Create_User_Access(component, event, helper);
         helper.Check_Update_User_Access(component, event, helper);
         helper.Check_Delete_User_Access(component, event, helper);
