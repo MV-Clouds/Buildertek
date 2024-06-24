@@ -1,6 +1,10 @@
 ({
 
     initialize : function(component, event, helper){
+
+        var tradeType = component.get("v.tradeType");
+        console.log('tradeType '+tradeType);
+
         $A.get('e.force:refreshView').fire();
 
         $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "SHOW" }).fire(); 
@@ -25,6 +29,13 @@
         var vendorValue = component.get("v.searchVendorNameFilter");
         var ratingValue = component.get("v.searchRatingFilter");
         var tradeTypeValue = component.get("v.searchTradeTypeFilter");
+
+        //BUIL: 4188 - it should have by default filter of Rfq.TradeType 
+        if((tradeTypeValue == null || tradeTypeValue == '') && tradeType != null){
+            tradeTypeValue = tradeType;
+            console.log('tradeTypeValue' + tradeTypeValue);
+            component.set("v.searchTradeTypeFilter",tradeType);
+        }
         
         actionRfqToVendorList = component.get("c.getAllVendors");
         actionRfqToVendorList.setParams({
@@ -42,14 +53,14 @@
             	var rows = rfqToVendorList;
                  var filteredRows = []
                 for (var i = 0; i < rows.length; i++) {
-                    // if(rows[i].Contacts){
+                    if(rows[i].Contacts || row[i].buildertek__Primary_Contact__c){
                         var row = rows[i];
                         if (row.buildertek__Trade_Type_Lookup__c){
                             row.Tradetype = row.buildertek__Trade_Type_Lookup__r.Name; 
                             //  row.Insurance=row.buildertek__Insurance__c;
                         }
                         filteredRows.push(rows[i])
-                    // }
+                    }
                    
                 }
                

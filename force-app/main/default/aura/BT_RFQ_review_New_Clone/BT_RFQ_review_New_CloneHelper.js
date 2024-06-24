@@ -734,8 +734,19 @@
             });
             action.setCallback(this, function (response) {
                 if(response.getState() === "SUCCESS") {
-                    var Status = response.getReturnValue();
-                    component.set('v.rfqStatus',Status);
+					var returnString = response.getReturnValue();
+					console.log('returnString--->', returnString);
+					var status = '';
+					var TradeTypeName = '';
+					if(returnString.indexOf('#') > -1) {
+                        status = returnString.split('#')[0];
+                        TradeTypeName = returnString.split('#')[1];
+                    }else{
+                        status = returnString;
+                        TradeTypeName = '';
+					}
+                    component.set('v.rfqStatus',status);
+					component.set('v.TradeTypeName',TradeTypeName);
                 }
             });
             $A.enqueueAction(action);
