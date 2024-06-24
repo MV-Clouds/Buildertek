@@ -53,14 +53,14 @@
             	var rows = rfqToVendorList;
                  var filteredRows = []
                 for (var i = 0; i < rows.length; i++) {
-                    // if(rows[i].Contacts){
+                    if(rows[i].Contacts || row[i].buildertek__Primary_Contact__c){
                         var row = rows[i];
                         if (row.buildertek__Trade_Type_Lookup__c){
                             row.Tradetype = row.buildertek__Trade_Type_Lookup__r.Name; 
                             //  row.Insurance=row.buildertek__Insurance__c;
                         }
                         filteredRows.push(rows[i])
-                    // }
+                    }
                    
                 }
                
