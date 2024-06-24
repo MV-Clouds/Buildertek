@@ -81,6 +81,7 @@
     <aura:attribute name="ReasonforCancelling" type="String"/>
     <aura:attribute name="openModal" type="Boolean" default="false" />
     <aura:attribute name="rfqStatus" type="String" />
+    <aura:attribute name="TradeTypeName" type="String" />
     <aura:attribute name="recordId" type="String" />
     <aura:handler event="force:navigateToSObject" action="{!c.navigateToRecord}" />
     <aura:attribute name="fileName" type="string" default="" />

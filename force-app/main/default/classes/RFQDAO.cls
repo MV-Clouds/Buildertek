@@ -212,12 +212,13 @@ Throws [Exceptions]: NA
             accIds.add(acc.Id);
         }
 
-        buildertek__RFQ__c rfq = [SELECT Id, Name FROM buildertek__RFQ__c WHERE Id =: rfqId];
+        buildertek__RFQ__c rfq = [SELECT Id, Name, buildertek__Trade_Type__c FROM buildertek__RFQ__c WHERE Id =: rfqId];
         for (string vendorId : vendorIds){
             RFQ_To_Vendor__c rfqVendor = new RFQ_To_Vendor__c();
             rfqVendor.Name = rfq.Name;
             rfqVendor.Vendor__c = vendorId;
             rfqVendor.RFQ__c = rfqId;
+            rfqVendor.buildertek__BT_Trade_Type__c = rfq.buildertek__Trade_Type__c;
             rfqVendors.add(rfqVendor);
         }
 
@@ -992,10 +993,15 @@ return ex.getMessage();
     }
     @AuraEnabled
     public static string getrfqstatus(string recId){
-        buildertek__RFQ__c RFQRecord = [SELECT Id, Name,buildertek__Status__c
+        buildertek__RFQ__c RFQRecord = [SELECT Id, Name,buildertek__Status__c, buildertek__Trade_Type__r.Name, buildertek__Trade_Type__c
                                         FROM buildertek__RFQ__c
                                         WHERE Id =: recId];
-        return RFQRecord.buildertek__Status__c ;
+
+        String returnString = RFQRecord.buildertek__Status__c;
+        if(RFQRecord.buildertek__Trade_Type__c != null){
+            returnString += '#' + RFQRecord.buildertek__Trade_Type__r.Name;
+        }
+        return returnString;
 
     }
     @AuraEnabled

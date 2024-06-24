@@ -839,7 +839,8 @@
                             }
                             helper.createVendorLink(component, event, helper, selectedvendors);
                         },
-                        "parentId": component.get("v.recordId")
+                        "parentId": component.get("v.recordId"),
+                        "tradeType" : component.get("v.TradeTypeName")
                     }],
 
                 ],
