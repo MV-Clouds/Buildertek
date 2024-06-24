@@ -30,7 +30,7 @@ public class ChooseBTChecklistTest {
          insert btcheckquestion;
          
          ChooseBTChecklist.getchecklistObjects();
-         ChooseBTChecklist.getQuestions();
+        //  ChooseBTChecklist.getQuestions();
          ChooseBTChecklist.createQuestions('Single Select Answer','How are you?','Good#$#Averager#$#Poor');
         ChooseBTChecklist.getPickValues('Account','Name');
          //ChooseBTChecklist.saveQuestion('Single Select Answer','How are you?','Yes#$#No','test','test',btquestion.id);

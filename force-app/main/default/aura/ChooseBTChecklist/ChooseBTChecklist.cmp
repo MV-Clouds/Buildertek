@@ -439,6 +439,9 @@
                               <div class="slds-truncate">Section</div>
                             </th>
                             <th class="slds-is-resizable slds-is-sortable" scope="col" style="width: 20%;">
+                              <div class="slds-truncate">Sub Section</div>
+                            </th>
+                            <th class="slds-is-resizable slds-is-sortable" scope="col" style="width: 20%;">
                               <div class="slds-truncate">Question Type</div>
                             </th>
                             <th class="slds-is-resizable" scope="col" style="width: 10%;">
@@ -457,6 +460,11 @@
                               <td data-label="Group">
                                 <div class="slds-truncate">
                                   {!view.buildertek__Section__r.Name}
+                                </div>
+                              </td>
+                              <td data-label="SubGroup">
+                                <div class="slds-truncate">
+                                  {!view.buildertek__Sub_Section__r.Name}
                                 </div>
                               </td>
                               <td data-label="Question Type">
