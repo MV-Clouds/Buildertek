@@ -63,6 +63,19 @@ export default class NewQuoteItemcmp extends LightningElement {
                 this.quote = result.Quote;
                 this.quoteFields = result.Quotecolumns;
 
+                setTimeout(() => {
+                    var statusCSS = this.template.querySelector('.statusCSS');
+                    if (statusCSS) {
+                        if(result.Quote.buildertek__Status__c === 'Customer Accepted'){
+                            statusCSS.style.background = '#2BCD8080';
+                            statusCSS.style.color = 'white';
+                        } else if (result.Quote.buildertek__Status__c === 'Rejected'){
+                            statusCSS.style.background = '#af1617';
+                            statusCSS.style.color = 'white';
+                        }
+                    }
+                }, 0);
+                    
                 this.quoteName = result.Quote.Name;
                 if(result.Quote.buildertek__Project__c != null){
                     this.projectName = result.Quote.buildertek__Project__r.Name;
@@ -74,9 +87,14 @@ export default class NewQuoteItemcmp extends LightningElement {
                 for(var i = 0; i < result.Quotecolumns.length; i++){
                     var quoteDataToDisplay = {};
                     quoteDataToDisplay.label = result.Quotecolumns[i].label;
-                    quoteDataToDisplay.value = result.Quote[result.Quotecolumns[i].fieldName];
                     quoteDataToDisplay.fieldName = result.Quotecolumns[i].fieldName;
                     quoteDataToDisplay.type = result.Quotecolumns[i].type;
+                    if(result.Quotecolumns[i].label === 'Status'){
+                        quoteDataToDisplay.isStatus = true;
+                    }else{
+                        quoteDataToDisplay.isStatus = false;
+                    }
+                    quoteDataToDisplay.value = result.Quote[result.Quotecolumns[i].fieldName];
                     quoteData.push(quoteDataToDisplay);
                 }
                 this.quoteData = quoteData;
@@ -190,6 +208,11 @@ export default class NewQuoteItemcmp extends LightningElement {
             this.dispatchEvent(evt);
         }
 
+    }
+
+    handleAddProduct(event){
+        console.log('Add Product button clicked');
+        this.filterModal = true;
     }
 
     applyFilter(){

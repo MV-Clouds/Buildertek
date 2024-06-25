@@ -14,23 +14,23 @@
     border-radius: 0.3rem;
 }
 .slds-card__header-title {
+    height: 100%;
     font-weight: bold;
 }
 .grpname {
-    margin-top: 9px;
     color: white;
-    margin-left: 2rem;
+    margin: auto 15px;
+}
+.button-div {
+    margin: auto 1rem auto auto;
 }
 .slds-m-left_auto {
-    margin-left: auto;
-    width: 1%;
-    fill: blue;
-    border: white;
     font-size: 2rem;
-    margin-top: .3rem;
-    margin-right: 1rem;
-    height: 1.9rem;
-    font-size: 34px;
+    height: 2rem;
+    margin: auto;
+}
+.slds-m-left_auto p {
+    margin-top: -0.3rem;
 }
 .custom-datatable .slds-th {
     background-color: #16325c; 
@@ -94,16 +94,17 @@
     justify-content: center;
     font-size: 1rem;
     box-shadow: 0px 0px 5px 0px #00000040;
+    min-width: max-content;
 }
 
 .label {
-    display: flex;
-    justify-content: center;
-    padding-bottom: 5px;
     font-size: 0.9rem;
+    margin-bottom: 3px;
+    font-weight: 500;
 }
 
-.rightSection .quoteDetails .row:first-child .value {
-    color: white;
-    background-color: #2BCD8080;
+.buttonSection{
+    justify-content: flex-end;
+    gap: 1%;
+    width: 100%;
 }
