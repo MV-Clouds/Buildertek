@@ -825,6 +825,9 @@
                         "aura:id": "vendorAdder",
                         "onCancel": function() {
                             overlayLib.close();
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
                         },
                         "savecallback": function(items) {
                             $A.get('e.force:refreshView').fire();
