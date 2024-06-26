@@ -16,6 +16,7 @@
   <aura:attribute name="selectedgroup" type="string" default="" />
   <aura:attribute name="showGroup" type="boolean" default="false" />
   <aura:attribute name="message" type="boolean" default="false" />
+  <aura:attribute name="isNewChecklist" type="boolean" default="false" />
   <aura:attribute name="showSectionModel" type="boolean" default="false" />
   <aura:attribute name="btnLabel" type="String" default="New Section" />
   <aura:attribute name="deleteIndex" type="Integer" />
@@ -199,7 +200,7 @@
                   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
                   <div class="slds-form-element">
                     <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left">
-                      <lightning:icon iconName="utility:filterList" size="xx-small"
+                      <lightning:icon iconName="utility:search" size="x-small"
                         class="slds-input__icon slds-icon-text-default innerIcon" />
                       <input onkeyup="{!c.AvalQuestions}" id="AvailImp" type="text" class="slds-input"
                         placeholder="Filter Available Questions" />
@@ -228,8 +229,9 @@
                   class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--1-of-1 slds-large-size--1-of-1">
                   <div class="slds-form-element">
                     <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon--left">
-                      <lightning:icon iconName="utility:filterList" size="xx-small"
+                      <lightning:icon iconName="utility:search" size="x-small"
                         class="slds-input__icon slds-icon-text-default innerIcon" />
+
                       <input onkeyup="{!c.SelectedQuestions}" id="selectedImp" type="text" class="slds-input"
                         placeholder="Filter Selected  Questions" />
                     </div>
@@ -243,34 +245,36 @@
                 </div>
               </div>
             </div>
-            <div class="slds-grid slds-wrap">
+            <div class=" slds-grid slds-wrap">
               <div style="padding: 1.1%;" class="text-align: left;width: auto;">
-                <div onclick="{!c.addQuestionsModel}"
-                  style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
-                  class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
-                  <span class="slds-text-not-selected">
-                    <lightning:icon iconName="utility:add" size="xx-small"
-                      class="slds-input__icon slds-icon-text-default texticon " />
-                    Add Questions
-                  </span>
-                </div>
-                <div onclick="{!c.AddGroup}"
-                  style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
-                  class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
-                  <span class="slds-text-not-selected">
-                    <lightning:icon iconName="utility:add" size="xx-small"
-                      class="slds-input__icon slds-icon-text-default texticon " />
-                    Add Section
-                  </span>
-                </div>
-                <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer; border-color: #0176d3; "
-                  class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
-                  <span class="slds-text-not-selected">Manage Question</span>
-                </div>
-                &nbsp;&nbsp;
+                <aura:if isTrue="{!v.isNewChecklist}">
+                  <div onclick="{!c.addQuestionsModel}"
+                    style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
+                    class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                    <span class="slds-text-not-selected">
+                      <lightning:icon iconName="utility:add" size="xx-small"
+                        class="slds-input__icon slds-icon-text-default texticon " />
+                      Add Questions jon
+                    </span>
+                  </div>
+                  <div onclick="{!c.AddGroup}"
+                    style="border-color:#0176d3;background-color: #0176d3;cursor: pointer;color: white"
+                    class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                    <span class="slds-text-not-selected">
+                      <lightning:icon iconName="utility:add" size="xx-small"
+                        class="slds-input__icon slds-icon-text-default texticon " />
+                      Add Section
+                    </span>
+                  </div>
+                  <div onclick="{!c.deleteQuestionsModel}" style="cursor: pointer; border-color: #0176d3; "
+                    class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                    <span class="slds-text-not-selected">Manage Question</span>
+                  </div>
+                  &nbsp;&nbsp;
+                </aura:if>
               </div>
             </div>
-            <div style="text-align: center;width: auto;"
+            <div style="text-align: center;width: auto;margin-top: 1rem"
               class="slds-p-horizontal--small slds-size--1-of-1 slds-medium-size--3-of-4 slds-large-size--3-of-4">
               <div onclick="{!c.saveConfigureBack}" style="cursor: pointer;width: 6rem;height: 2.2rem;"
                 class=" slds-button slds-button--brand slds-not-selected" aria-live="assertive">
