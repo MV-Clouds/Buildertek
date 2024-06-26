@@ -4,7 +4,7 @@
     <c:BT_JsAndCssIncludeComponent importJquery="true" importAppurinUtil="true" importJQueryLayout="true" importFancyTree="false"
         importJqGrid="false" importEasyTooltip="true" importAppurinCss="true" importCkEditor="false" importGnattChart="false"
         importLightningDesign="true" />
-        
+
     <style>
         .bPageBlock {
             border-top: unset;
@@ -47,7 +47,7 @@
             overflow: auto; /* Enable scroll if needed */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
         }
-        
+
         .modal-content {
             /* background-color: #fefefe; */
             margin: 15% auto; /* 15% from the top and centered */
@@ -106,23 +106,22 @@
             var filelength = input.files.length;
             var agreeFunction;
             var confirmPromptOptions;
-            if (filelength > 0) {
-                if (submitBoolean == false) {
-                    return;
-                }
-                agreeFunction = new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); multiFiles(); return false;");
-                confirmPromptOptions = {
-                    'modalPopupId': 'lightningInfoPopup',
-                    'title': 'Confirm',
-                    'message': 'Are you sure you want to submit the Invoice?',
-                    'agreeButtonLabel': 'Yes',
 
-                    'discardButtonLabel': '{!JSENCODE($Label.buildertek__Cancel)}',
-                    'agreeFunction': agreeFunction
-                }
-            } else {
-                document.getElementById('myModal1').style.display = 'block';
+            if (submitBoolean == false) {
+                return;
             }
+
+            agreeFunction = filelength > 0 ? new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); multiFiles(); return false;") : new Function("Appurin.lightning.hideModalPopup({'modalPopupId' : 'lightningInfoPopup'}); callContractorInvoice(); return false;");
+            confirmPromptOptions = {
+                'modalPopupId': 'lightningInfoPopup',
+                'title': 'Confirm',
+                'message': 'Are you sure you want to submit the Invoice?',
+                'agreeButtonLabel': 'Yes',
+
+                'discardButtonLabel': '{!JSENCODE($Label.buildertek__Cancel)}',
+                'agreeFunction': agreeFunction
+            }
+
             Appurin.lightning.showConfirmPrompt(confirmPromptOptions);
         }
 
@@ -153,46 +152,44 @@
                 document.getElementById('fileNameFieldId').style.display = 'block';
 
             }
-            
+
             document.getElementById('fileToUpload').value = '';
         }
 
         function fileSelected() {
-    var temp = event.target;
-    console.log('Event Data == >', {
-        temp
-    });
-    var size = document.getElementById('fileToUpload');
-    if (size.files.length > 0) {
-        // Check file size
-        var fileSize = size.files[0].size;
-        var maxSize = 5 * 1024 * 1024; // 5MB in bytes
-        if (fileSize > maxSize) {
-            // Show error message if file size exceeds 5MB
-            document.getElementById('fileError').innerHTML = 'File size exceeds 5MB. Please select a smaller file.';
-            document.getElementById('fileError').style.display = 'block';
-            document.getElementById('fileToUpload').value = '';
-            document.getElementById('fileNameFieldId').style.display = 'none';
-            return;
-        }
+            var temp = event.target;
+            console.log('Event Data == >', {temp});
+            var size = document.getElementById('fileToUpload');
+            if (size.files.length > 0) {
+                // Check file size
+                var fileSize = size.files[0].size;
+                var maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                if (fileSize > maxSize) {
+                    // Show error message if file size exceeds 5MB
+                    document.getElementById('fileError').innerHTML = 'File size exceeds 5MB. Please select a smaller file.';
+                    document.getElementById('fileError').style.display = 'block';
+                    document.getElementById('fileToUpload').value = '';
+                    document.getElementById('fileNameFieldId').style.display = 'none';
+                    return;
+                }
 
-        // Reset error message
-        document.getElementById('fileError').style.display = 'none';
+                // Reset error message
+                document.getElementById('fileError').style.display = 'none';
 
-        // Proceed with displaying selected files
-        uploadFileData = size.files;
-        document.getElementById('fileNameFieldId').innerHTML = '';
-        document.getElementById('fileNameFieldId').style.display = 'block';
+                // Proceed with displaying selected files
+                uploadFileData = size.files;
+                document.getElementById('fileNameFieldId').innerHTML = '';
+                document.getElementById('fileNameFieldId').style.display = 'block';
 
-        // Display selected files
-        for (let index = 0; index < size.files.length; index++) {
-            var file = document.getElementById('fileToUpload').files[index];
-            if (file) {
-                document.getElementById('fileNameFieldId').innerHTML += `<img class="slds-button__icon slds-button__icon--left" src="{!$Resource.Close_Icon}" alt="remove" onclick="removeFiles(${index})"/> ${file.name} <br/>`;
+                // Display selected files
+                for (let index = 0; index < size.files.length; index++) {
+                    var file = document.getElementById('fileToUpload').files[index];
+                    if (file) {
+                        document.getElementById('fileNameFieldId').innerHTML += `<img class="slds-button__icon slds-button__icon--left" src="{!$Resource.Close_Icon}" alt="remove" onclick="removeFiles(${index})"/> ${file.name} <br/>`;
+                    }
+                }
             }
         }
-    }
-}
 
 
         function multiFiles() {
@@ -274,6 +271,10 @@
         <apex:actionFunction name="uploadFileToPurchaseorder" action="{!uploadFileToPurchaseorder}" status="splashStatus" rerender="form,iserrorMessage">
             <apex:param name="firstParam" value="" assignTo="{!latestFileName}"/>
             <apex:param name="secondParam" value="" assignTo="{!fileContents}"/>
+        </apex:actionFunction>
+
+        <apex:actionFunction name="callContractorInvoice" action="{!createContractorInvoice}" status="splashStatus" rerender="form,iserrorMessage">
+
         </apex:actionFunction>
 
         <div class="slds slds-scope">
