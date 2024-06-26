@@ -15,7 +15,7 @@ public class ChooseBTChecklist {
       try {
         SectionInfo sectionData = new SectionInfo();
         sectionData.sectionList = [SELECT Id, Name FROM buildertek__Checklist_Section_Junction__c WHERE (buildertek__Global_Section__c = true OR buildertek__BT_Checklist_Configuration__c =: checkListId) AND 
-        buildertek__Checklist_Section_Junction__c = NULL];
+          buildertek__Checklist_Section_Junction__c = NULL];
 
         sectionData.subSectionList = [SELECT Id, Name, buildertek__Checklist_Section_Junction__c, buildertek__Checklist_Section_Junction__r.Name FROM buildertek__Checklist_Section_Junction__c WHERE (buildertek__Global_Section__c = true OR buildertek__BT_Checklist_Configuration__c =: checkListId) AND buildertek__Checklist_Section_Junction__c != NULL];
 
@@ -329,7 +329,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static string createSectionOrSubsection(String parentId, String sectionName, String checkListId, Boolean isGlobal) {
       try {
-        
+
         system.debug('parentId '+parentId);
         system.debug('sectionName '+sectionName);
         system.debug('checkListeId ,'+checkListId);
@@ -338,7 +338,7 @@ public class ChooseBTChecklist {
         buildertek__Checklist_Section_Junction__c checkListSectionJunction = new buildertek__Checklist_Section_Junction__c();
         checkListSectionJunction.Name = sectionName;
         checkListSectionJunction.buildertek__Checklist_Section_Junction__c = String.isBlank(parentId) ? null : parentId;
-        
+
 
         if(isGlobal){
           checkListSectionJunction.buildertek__Global_Section__c = isGlobal;
@@ -355,11 +355,11 @@ public class ChooseBTChecklist {
       }
     }
 
-    public class SectionInfo {
-      @AuraEnabled
+  public class SectionInfo {
+    @AuraEnabled
       public List<buildertek__Checklist_Section_Junction__c> sectionList;
-      @AuraEnabled
+    @AuraEnabled
       public List<buildertek__Checklist_Section_Junction__c> subSectionList;
-    }
+  }
 
 }
