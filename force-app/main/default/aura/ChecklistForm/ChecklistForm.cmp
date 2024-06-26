@@ -103,6 +103,7 @@
                 label="Upload File" multiple="false" accept=".pdf, .png, .jpg, .jpeg, .doc, .docx, .xls, .xlsx" />
               <div class="slds-text-body_small slds-text-color_error">{!v.fileName} </div>
               <div class="slds-align_absolute-center slds-m-top_small">
+                <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{!c.closePage}" />
                 <aura:if isTrue="{!v.isDisableButton}">
                   <lightning:button variant="brand" label="Submit" title="Submit" onclick="{! c.handleClick }" />
                 </aura:if>
