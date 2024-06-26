@@ -32,8 +32,13 @@
 
         .apexp .bPageBlock.apexDefaultPageBlock .pbBody .pbSubheader {
         border-top: 0;
-        color: white;
-        background-color: rgba(27, 82, 151, 1.0) !important;
+        color: rgb(0, 0, 0);
+        padding: 4px 16px;
+        background-color: rgba(200, 200, 200, 1.0) !important;
+        }
+
+        .apexp .bPageBlock.apexDefaultPageBlock .pbBody{
+            margin: unset !important;
         }
 
         .modal {
@@ -300,22 +305,16 @@
             </apex:outputPanel>
         </apex:outputPanel>
 
-        <div class="slds-scope" style="width:80%;margin: 0 auto;padding: 10px 50px;">
+        <div class="slds-scope" style="width:80%;margin: 3rem auto;">
             <div class="slds-box">
                 <apex:outputPanel >
-                    <div>
-                        <span>
+                    <div style="display:flex;margin-bottom:1rem;">
+                        <div>
                             <c:DisplayImageInTemplate />
-                        </span>
-                        <span>
-                            <center>
-                                <b>
-                                    <ul>
-                                        <h2 style="font-size: 1.3rem;text-transform: uppercase;text-decoration: underline;margin-top: -25px;">SUBMIT YOUR INVOICE TO {!purchaseOrderRecord[0].Name}</h2>
-                                    </ul>
-                                </b>
-                            </center>
-                        </span>
+                        </div>
+                        <div style="align-content:end; width: 100%;">
+                            <h2 style="font-size: 1.8rem;text-transform: uppercase;margin-top: -25px;color:#009beb;font-weight:600;text-align: center;margin: 3em 1em 0 0;">PO: {!purchaseOrderRecord[0].buildertek__Description__c}</h2>
+                        </div>
                     </div>
                 </apex:outputPanel>
 
