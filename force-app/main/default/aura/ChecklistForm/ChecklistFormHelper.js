@@ -1,11 +1,10 @@
 ({
-	MAX_FILE_SIZE: 4500000, //Max file size 4.5 MB
+	MAX_FILE_SIZE: 3000000, //Max file size 4.5 MB
 	CHUNK_SIZE: 750000,      //Chunk Max size 750Kb
 
 	uploadHelper: function (component, event) {
 		// get the selected files using aura:id [return array of files]
 		var fileInput = component.find("fuploader").get("v.files");
-
 		// get the first file using array index[0]
 		var file = fileInput[0];
 		var self = this;
@@ -29,6 +28,14 @@
 	uploadInChunk: function (component, file, fileContents) {
 		// call the apex method 'SaveFile'
 		var Questions = component.get("v.Questions");
+    var finaleArray = [];
+    Questions.forEach( innerRow => {
+        innerRow.subsectionWrapperList.forEach( row => {
+          finaleArray = finaleArray.concat(row.QuestionsInnerclasslist);
+        })
+      innerRow.QuestionsInnerclasslist = finaleArray;
+      finaleArray = [];
+    });
 		var today = new Date();
 		var dd = String(today.getDate()).padStart(2, '0');
 		var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
@@ -99,13 +106,25 @@
 		let files = component.find("fuploader").get("v.files");
 		if (files && files.length > 0 && files[0].size < this.MAX_FILE_SIZE) {
 			helper.uploadHelper(component, event);
+      // helper.doSubmitHeloper(component, event, helper);
 		} else {
+			if (files && files.length > 0){
+			var fileSizeMB = files[0].size/ (1024 * 1024);
+			alert('File size exceeds the limit, so the file will not be included with this record.');}
 			helper.doSubmitHeloper(component, event, helper);
 		}
 	},
 
 	doSubmitHeloper: function (component, event, helper) {
-		var Questions = component.get("v.Questions");
+    var Questions = component.get("v.Questions");
+    let finaleArray = [];
+    Questions.forEach( innerRow => {
+        innerRow.subsectionWrapperList.forEach( row => {
+          finaleArray = finaleArray.concat(row.QuestionsInnerclasslist);
+        })
+      innerRow.QuestionsInnerclasslist = finaleArray;
+      finaleArray = [];
+    });
 		var today = new Date();
 		var dd = String(today.getDate()).padStart(2, '0');
 		var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!

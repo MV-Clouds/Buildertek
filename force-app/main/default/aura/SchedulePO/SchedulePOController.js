@@ -1,5 +1,6 @@
 ({
 	doInit : function(component, event, helper) {
+        helper.checkWeekend(component, event, helper);
         helper.getFieldsetValue(component, event, helper);
 	},
 	
@@ -105,6 +106,10 @@
         if (finishDate != null && finishDate != '' && finishDate != undefined) {
             fields["buildertek__Finish__c"] = finishDate;
         }
+        var phase = component.get("v.selectedPhase");
+        if (phase != null && phase != '' && phase != undefined) {
+            fields["buildertek__Phase__c"] = phase;
+        }
         var allData = JSON.stringify(fields);
 
         var action = component.get("c.saveData");
@@ -199,87 +204,126 @@
     },
 
     changeFinishDate: function(component, event, helper) {
+        var includeWeekends = component.get('v.includeWeekends');
         var startDate = component.get('v.StartDate');
         var duration = parseInt(event.getSource().get('v.value'));
+
+        if(includeWeekends){
+            if (!isNaN(duration) && duration > 0){
+                var durationFinal = duration - 1;
+                var finishDate = new Date(startDate);
+                finishDate.setDate(finishDate.getDate() + durationFinal);
+                let t = new Date(finishDate.toUTCString());
+                let yyyyMMdd = t.toISOString().slice(0, 10);
+                component.set('v.FinishDate', yyyyMMdd);
     
-        if (!isNaN(duration) && duration > 0) {
-            var finishDate = new Date(startDate);
-            var daysToAdd = duration - 1;
-    
-            // Loop through each day to calculate finish date
-            while (daysToAdd > 0) {
-                // Move to the next day
-                finishDate.setDate(finishDate.getDate() + 1);
-    
-                // Check if the day is not a weekend (Saturday or Sunday)
-                if (finishDate.getDay() !== 0 && finishDate.getDay() !== 6) {
-                    daysToAdd--;
-                }
+                // Reset any custom validity
+                var inputField = component.find('finishDate');
+                inputField.setCustomValidity('');
+                inputField.reportValidity();
+            }else {
+                component.set('v.FinishDate', null);
             }
-    
-            var formattedFinishDate = finishDate.getFullYear() + '-' +
-                ('0' + (finishDate.getMonth() + 1)).slice(-2) + '-' +
-                ('0' + finishDate.getDate()).slice(-2);
-    
-            component.set('v.FinishDate', formattedFinishDate);
-    
-            // Reset any custom validity
-            var inputField = component.find('finishDate');
-            inputField.setCustomValidity('');
-            inputField.reportValidity();
-        } else {
-            component.set('v.FinishDate', null);
+
+        }else{
+        
+            if (!isNaN(duration) && duration > 0) {
+                var finishDate = new Date(startDate);
+                var daysToAdd = duration - 1;
+        
+                // Loop through each day to calculate finish date
+                while (daysToAdd > 0) {
+                    // Move to the next day
+                    finishDate.setDate(finishDate.getDate() + 1);
+        
+                    // Check if the day is not a weekend (Saturday or Sunday)
+                    if (finishDate.getDay() !== 0 && finishDate.getDay() !== 6) {
+                        daysToAdd--;
+                    }
+                }
+        
+                let t = new Date(finishDate.toUTCString());
+                let yyyyMMdd = t.toISOString().slice(0, 10);
+                component.set('v.FinishDate', yyyyMMdd);
+        
+                // Reset any custom validity
+                var inputField = component.find('finishDate');
+                inputField.setCustomValidity('');
+                inputField.reportValidity();
+            } else {
+                component.set('v.FinishDate', null);
+            }
         }
     },
     
 
     changeDuration: function(component, event, helper) {
-        try {
-            var startDate = component.get('v.StartDate');
+        var includeWeekends = component.get('v.includeWeekends');
+        if(includeWeekends){
             var finishDate = event.getSource().get('v.value');
-            console.log('finishDate--->',finishDate);
-            if (finishDate != null) {
-                var inputField = component.find('finishDate');
-                if (finishDate < startDate) {
-                    inputField.setCustomValidity('Finish Date must be after Start Date');
-                    inputField.reportValidity();
-                } else {
-                    inputField.setCustomValidity('');
-                    inputField.reportValidity();
-                    var escapeWeekendDays = helper.modifyDate(finishDate);
-                    var formattedFinishDate = escapeWeekendDays.getFullYear() + '-' + 
-                                            ('0' + (escapeWeekendDays.getMonth() + 1)).slice(-2) + '-' + 
-                                            ('0' + escapeWeekendDays.getDate()).slice(-2);
-                    console.log('finishDate-->',formattedFinishDate);
-                    component.set('v.FinishDate', formattedFinishDate);
-                    var start = new Date(startDate);
-                    var finish = new Date(formattedFinishDate);
-                    var workingDays = 0;
-                    
-                    // Loop through each day between start and finish dates
-                    while (start <= finish) {
-                        // Check if the day is not a weekend (Saturday or Sunday)
-                        if (start.getDay() !== 0 && start.getDay() !== 6) {
-                            workingDays++;
-                        }
-                        // Move to the next day
-                        start.setDate(start.getDate() + 1);
-                    }
-                    
-                    console.log('workingDays--->',workingDays);
-                    // let date1 = new Date(startDate);
-                    // let date2 = new Date(finishDate);
-                    // let Difference_In_Time = date2.getTime() - date1.getTime();
-                    // let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
-                    // console.log("Total number of days between dates: " , Difference_In_Days);
-                    component.set('v.durationNum', workingDays);
-                }
-            } else {
+            if (finishDate != null){
+                var startDate = component.get('v.StartDate');
+                var start = new Date(startDate);
+                var finish = new Date(finishDate);
+                console.log('start--->',start);
+                console.log('finish--->',finish);  
+                var diffMs = finish - start;
+                var diffDays = diffMs / (1000 * 60 * 60 * 24);
+                diffDays = diffDays+1;
+                console.log('diffDays--->',diffDays);
+                component.set('v.durationNum', diffDays);
+            }else{
                 component.set('v.durationNum', '');
             }
-        } catch (error) {
-            console.log('error--->',error);
+        }else{
+            try {
+                var startDate = component.get('v.StartDate');
+                var finishDate = event.getSource().get('v.value');
+                console.log('finishDate--->',finishDate);
+                if (finishDate != null) {
+                    var inputField = component.find('finishDate');
+                    if (finishDate < startDate) {
+                        inputField.setCustomValidity('Finish Date must be after Start Date');
+                        inputField.reportValidity();
+                    } else {
+                        inputField.setCustomValidity('');
+                        inputField.reportValidity();
+                        var escapeWeekendDays = helper.modifyDate(finishDate);
+                        var formattedFinishDate = escapeWeekendDays.getFullYear() + '-' + 
+                                                ('0' + (escapeWeekendDays.getMonth() + 1)).slice(-2) + '-' + 
+                                                ('0' + escapeWeekendDays.getDate()).slice(-2);
+                        console.log('finishDate-->',formattedFinishDate);
+                        component.set('v.FinishDate', formattedFinishDate);
+                        var start = new Date(startDate);
+                        var finish = new Date(formattedFinishDate);
+                        var workingDays = 0;
+                        
+                        // Loop through each day between start and finish dates
+                        while (start <= finish) {
+                            // Check if the day is not a weekend (Saturday or Sunday)
+                            if (start.getDay() !== 0 && start.getDay() !== 6) {
+                                workingDays++;
+                            }
+                            // Move to the next day
+                            start.setDate(start.getDate() + 1);
+                        }
+                        
+                        console.log('workingDays--->',workingDays);
+                        // let date1 = new Date(startDate);
+                        // let date2 = new Date(finishDate);
+                        // let Difference_In_Time = date2.getTime() - date1.getTime();
+                        // let Difference_In_Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+                        // console.log("Total number of days between dates: " , Difference_In_Days);
+                        component.set('v.durationNum', workingDays);
+                    }
+                } else {
+                    component.set('v.durationNum', '');
+                }
+            } catch (error) {
+                console.log('error--->',error);
+            }
         }
+
     },
 
     enbleFinishAndDuration: function(component, event, helper) {

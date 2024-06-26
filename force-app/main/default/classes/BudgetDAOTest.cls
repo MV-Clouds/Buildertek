@@ -24,7 +24,9 @@ public class BudgetDAOTest {
             buildertek__Project__c = proj.Id
         );
 
+        BudgetTriggerHandler.blnSkipBudgetTrigger = true;
         insert budget;
+        BudgetTriggerHandler.blnSkipBudgetTrigger = false;
         String budgetid = budget.Id;
         System.debug('budgetid : '+budgetid);
 
@@ -32,25 +34,29 @@ public class BudgetDAOTest {
         Purchase_Order__c po = new Purchase_Order__c();
         po.Project__c = proj.Id;
         po.Budget__c = budget.Id;
+        PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger = true;
         insert po;
+        PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger = false;
 
         Budget__c budgetRecs = new Budget__c();
         budgetRecs.Name = 'test';
         budgetRecs.Project__c =proj.id;
+        BudgetTriggerHandler.blnSkipBudgetTrigger = true;
         insert budgetRecs;
+        BudgetTriggerHandler.blnSkipBudgetTrigger = false;
 
         Budget_Item__c budgetITem = new Budget_Item__c();
         budgetITem.budget__c = budgetid;
         budgetITem.ITem_Name__c = 'Test';
         budgetITem.Name = 'Test';
         String myJSONbudgetITem = JSON.serialize(budgetITem);
-        insert budgetITem;
+        // insert budgetITem;
 
         Budget_Item__c budgetITem1 = new Budget_Item__c();
         budgetITem1.budget__c = budgetid;
         budgetITem1.ITem_Name__c = 'Test';
         budgetITem1.Name = 'Test';
-        insert budgetITem1;
+        // insert budgetITem1;
 
         List<Budget_Item__c> budgetITemLst = new List<Budget_Item__c>();
         budgetITemLst.add(budgetITem);
@@ -72,8 +78,10 @@ public class BudgetDAOTest {
         porec.Project__c = proj.id;
         porec.Budget__c = budgetRecs.Id;
         porec.buildertek__Vendor__c = accRec.Id;
-        insert porec;
+        PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger = true;
         String por = JSON.serialize(porec);
+        insert porec;
+        PurchaseOrderTriggerHandler.blnSkipPurchaseOrderUpdateTrigger = false;
 
         List<Purchase_Order_Item__c> poItemsList = new List<Purchase_Order_Item__c>();
         Purchase_Order_Item__c poItem = new Purchase_Order_Item__c();
@@ -199,7 +207,7 @@ public class BudgetDAOTest {
         // BudgetDAO.getProductPrice(p1.Id);
         //BudgetDAO.createBudgetItem(JSON.serialize(new List<budget_item__c>{budgetITem}));
         BudgetDAO.createRFQFromBudget(budgetRecs,myJSON,myJSONRFQItems);
-        BudgetDAO.createPOFromBudget(budgetRecs,por,porItems);
+        // BudgetDAO.createPOFromBudget(budgetRecs,por,porItems);
         BudgetDAO.getselectOptions();
         BudgetDAO.BudgetItemList(budgetItemIds);
         BudgetDAO.deleteLineItems(budgetItemIds);

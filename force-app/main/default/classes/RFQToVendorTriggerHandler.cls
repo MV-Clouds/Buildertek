@@ -25,7 +25,7 @@ public without sharing class RFQToVendorTriggerHandler {
             accountIds.add(refqToVendor.vendor__c);
         }
         
-        Map<Id, Account> rfqAccounts = new Map<Id, Account>([Select Id,Name,(Select Id from Contacts Where Primary_Contact__c = true) from Account where Id IN:accountIds]);
+        Map<Id, Account> rfqAccounts = new Map<Id, Account>([Select Id,Name, buildertek__primary_Contact__c, (Select Id from Contacts Where Primary_Contact__c = true) from Account where Id IN:accountIds]);
         
         for(RFQ_To_Vendor__c refqToVendor: newRFQToVendors) {
             if(String.isBlank(refqToVendor.Name) && refqToVendor.vendor__c != null) {
@@ -33,6 +33,8 @@ public without sharing class RFQToVendorTriggerHandler {
             }
             if(refqToVendor.contact__c == null && rfqAccounts.get(refqToVendor.vendor__c).contacts != null && rfqAccounts.get(refqToVendor.vendor__c).contacts.size() > 0){
                 refqToVendor.Contact__c = rfqAccounts.get(refqToVendor.Vendor__c).contacts[0].Id;
+            }else if(refqToVendor.contact__c == null && rfqAccounts.get(refqToVendor.vendor__c).buildertek__primary_Contact__c != null){
+                refqToVendor.Contact__c = rfqAccounts.get(refqToVendor.Vendor__c).buildertek__primary_Contact__c;
             }
         }
     }

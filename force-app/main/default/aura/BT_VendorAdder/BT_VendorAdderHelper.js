@@ -31,11 +31,15 @@
         actionRfqToVendorList.setCallback(this, function (response) {
             if (component.isValid() && response.getState() === "SUCCESS") {
                 var rfqToVendorList = response.getReturnValue();
+                console.log('rfqToVendorList'+JSON.stringify(rfqToVendorList));
                 //component.set("v.vendorList",rfqToVendorList);
                var rows = rfqToVendorList;
                  var filteredRows = []
                 for (var i = 0; i < rows.length; i++) {
-                    if(rows[i].Contacts){
+                    var contacts = rows[i].Contacts;
+                    var primaryContact = rows[i].buildertek__Primary_Contact__c;
+                    if(contacts != null || primaryContact != null){
+
                         var row = rows[i];
                         if (row.buildertek__Trade_Type_Lookup__c){
                             row.Tradetype = row.buildertek__Trade_Type_Lookup__r.Name; 

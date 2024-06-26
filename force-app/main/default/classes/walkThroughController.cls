@@ -1,8 +1,24 @@
 public with sharing class walkThroughController {
 
     @AuraEnabled
-    public static List<buildertek__Category__c> getCategoryRecords() {
-        return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+    public static List<buildertek__Category__c> getCategoryRecords(String recordId) {
+
+        //BUIL-4153
+        buildertek__Walk_Through_List__c walkThroughList = [SELECT Id, Name, buildertek__Sections__c FROM buildertek__Walk_Through_List__c WHERE Id = :recordId LIMIT 1];
+        List<String> sectionNames = new List<String>();
+        for (String section : walkThroughList.buildertek__Sections__c.split(';')) {
+            sectionNames.add(section);
+        }
+        System.debug('sectionNames: ' + sectionNames);
+        List<buildertek__Category__c> cats = [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :sectionNames AND buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+
+        if (cats.size() > 0) {
+            return cats;
+        } else {
+            return null;
+        }
+
+        // return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
     }
 
     public class FieldWrapper {

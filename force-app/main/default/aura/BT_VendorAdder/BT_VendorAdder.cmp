@@ -10,6 +10,7 @@
     <aura:attribute name="onCancel" type="Object"/>
     <aura:attribute name="_filter" type="Object"/>
     <aura:attribute name="parentId" type="String"/>
+    <aura:attribute name="tradeType" type="String"/>
     
     <aura:attribute name="showFilterBar" type="Boolean" default="false"/>
     <aura:attribute name="orderBy" type="String"/>

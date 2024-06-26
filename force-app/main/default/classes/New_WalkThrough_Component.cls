@@ -54,9 +54,15 @@ public class New_WalkThrough_Component {
     }
 
     @AuraEnabled
-    public static Id saveData(string allData){
+    public static Id saveData(string allData, String selectedMasterId){
         buildertek__Walk_Through_List__c walkThroughList = (buildertek__Walk_Through_List__c) JSON.deserialize(allData, buildertek__Walk_Through_List__c.class);
         insert walkThroughList;
+        if (selectedMasterId != null && selectedMasterId != ''){
+            String masterImportReturnValue = BT_ImportMasterWalkThroughController.importWalkThroughFromMaster(selectedMasterId, walkThroughList.Id);
+            if (masterImportReturnValue != 'Success'){
+                throw new AuraHandledException(masterImportReturnValue);
+            }
+        }
         return walkThroughList.Id;
     }
 
@@ -64,5 +70,21 @@ public class New_WalkThrough_Component {
     public static String getobjectName(Id recordId){
         String sObjName = recordId.getSObjectType().getDescribe().getName();  
         return sObjName;
+    }
+
+    @AuraEnabled
+    public static List<buildertek__Walk_Through_List__c> getMasterWalkThroughDetails() {
+        try {
+            List<buildertek__Walk_Through_List__c> walkthroughList = [SELECT Id, Name, buildertek__Description__c, buildertek__Project__c, buildertek__Project__r.Name, buildertek__Total_Price__c FROM buildertek__Walk_Through_List__c WHERE buildertek__Type__c = 'Master' ORDER BY buildertek__Description__c];
+
+            return walkthroughList;
+        } catch (Exception ex) {
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+        }
+        return null;
     }
 }

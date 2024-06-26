@@ -825,6 +825,9 @@
                         "aura:id": "vendorAdder",
                         "onCancel": function() {
                             overlayLib.close();
+                            $A.get("e.c:BT_SpinnerEvent").setParams({
+                                "action": "HIDE"
+                            }).fire();
                         },
                         "savecallback": function(items) {
                             $A.get('e.force:refreshView').fire();
@@ -839,7 +842,8 @@
                             }
                             helper.createVendorLink(component, event, helper, selectedvendors);
                         },
-                        "parentId": component.get("v.recordId")
+                        "parentId": component.get("v.recordId"),
+                        "tradeType" : component.get("v.TradeTypeName")
                     }],
 
                 ],

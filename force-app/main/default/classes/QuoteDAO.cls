@@ -258,7 +258,9 @@ public with sharing class QuoteDAO{
             for (buildertek__RFQ__c rfq : rfqList){
                 rfq.buildertek__Added_to_Quote__c = QuoteId;
             }
+            RFQTriggerHandler.blnSkipRFQUpdateTrigger=true;
             update rfqList;
+            RFQTriggerHandler.blnSkipRFQUpdateTrigger=false;
 
 
             List<buildertek__Purchase_Order__c> purchaseOrderRecs;
@@ -344,7 +346,6 @@ public with sharing class QuoteDAO{
             }
             System.debug('quoteItemsToInsert' + quoteItemsToInsert);
             insert quoteItemsToInsert;
-
             List<buildertek__RFQ_Item__c> rfqLinesList =[Select Id ,buildertek__RFQ_Package__c  , buildertek__Quote_Item__c ,Name From buildertek__RFQ_Item__c where buildertek__RFQ_Package__c=:rfqIds];
 
             for (buildertek__Quote_Item__c qItem : quoteItemsToInsert){
@@ -750,6 +751,9 @@ public with sharing class QuoteDAO{
             QuoteLineToInsert.Name = QuoteRec.Name;
         }
 
+        System.debug('QuoteRec.buildertek__Margin__c line 753 '+QuoteRec.buildertek__Margin__c);
+        System.debug('QuoteRec.buildertek__Markup__c '+QuoteRec.buildertek__Markup__c);
+
         QuoteLineToInsert.buildertek__Quote__c = QuoteRec.buildertek__Quote__c;
         QuoteLineToInsert.buildertek__Grouping__c = QuoteRec.buildertek__Grouping__c;
         QuoteLineToInsert.buildertek__UOM__c = QuoteRec.buildertek__UOM__c;
@@ -758,9 +762,7 @@ public with sharing class QuoteDAO{
         QuoteLineToInsert.buildertek__Quantity__c = QuoteRec.buildertek__Quantity__c;
         QuoteLineToInsert.buildertek__Notes__c = QuoteRec.buildertek__Notes__c;
         QuoteLineToInsert.buildertek__Cost_Code__c = QuoteRec.buildertek__Cost_Code__c;
-        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c){
-            QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
-        }
+        QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
         QuoteLineToInsert.buildertek__Markup__c = QuoteRec.buildertek__Markup__c;
         QuoteLineToInsert.buildertek__Additional_Discount__c = QuoteRec.buildertek__Additional_Discount__c;
 
@@ -772,7 +774,7 @@ public with sharing class QuoteDAO{
 
         insert QuoteLineToInsert;
 
-        if(adminInterfaceNodeConfigurations.buildertek__ShowMargin__c && QuoteLineToInsert.buildertek__Markup__c !=0.0000){
+        if(QuoteLineToInsert.buildertek__Markup__c !=0.0000){
             QuoteLineToInsert.buildertek__Margin__c = QuoteRec.buildertek__Margin__c;
         }
         update QuoteLineToInsert;
