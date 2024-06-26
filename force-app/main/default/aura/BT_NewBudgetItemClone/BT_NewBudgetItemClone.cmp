@@ -572,16 +572,16 @@
                                                 <!-- commented on 26thmay DFL <lightning:button iconName="utility:add" iconPosition="left" onclick="{!c.newGroup}" label="Add Group" class="sldsButtonGroup"/>-->
                                                 <!--<aura:if isTrue="{!v.groupListSize > 0}">-->
 
-                                        <lightning:button label="Add PO" onclick="{!c.addPO}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add CO" onclick="{!c.addCO}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Expense" onclick="{!c.addExpense}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Contractor Invoice" onclick="{!c.addInvoicePO}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Payable Invoice" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Sales Invoice" onclick="{!c.addSalesInvoice}" class="sldsButtonGroup" />
-                                        <lightning:button label="Add Labor" onclick="{!c.addTimeCard}" class="sldsButtonGroup" />
-                                        <lightning:button label="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />
-                                        <lightning:button iconPosition="left" onclick="{!c.onClickAddlines}" label="Mass Add Budget Lines" class="sldsButtonGroup" />
-                                        <lightning:button iconName="utility:edit" iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup" />
+                                        <lightning:button label="Add PO" aura:id="Add PO" onclick="{!c.addPO}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add CO" aura:id="Add CO" onclick="{!c.addCO}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Expense" aura:id="Add Expense" onclick="{!c.addExpense}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Contractor Invoice" aura:id="Add Contractor Invoice" onclick="{!c.addInvoicePO}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Payable Invoice" aura:id="Add Payable Invoice" onclick="{!c.addInvoice}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Sales Invoice" aura:id="Add Sales Invoice" onclick="{!c.addSalesInvoice}" class="sldsButtonGroup" />
+                                        <lightning:button label="Add Labor" aura:id="Add Labor" onclick="{!c.addTimeCard}" class="sldsButtonGroup" />
+                                        <lightning:button label="Import PO" aura:id="Import PO" onclick="{!c.importPO}" class="sldsButtonGroup" />
+                                        <lightning:button iconPosition="left" aura:id="Mass Add Budget Lines" onclick="{!c.onClickAddlines}" label="Mass Add Budget Lines" class="sldsButtonGroup" />
+                                        <lightning:button iconName="utility:edit" aura:id="Mass Update" iconPosition="left" onclick="{!c.onClickMassUpdate}" label="Mass Update" class="sldsButtonGroup" />
                                         <!-- <lightning:button label="Add Product" onclick="{!c.addProduct}" class="sldsButtonGroup" />-->
                                         <!--  <lightning:button label="Create Scheduled Items" onclick="{!c.checkSchedules}" class="sldsButtonGroup"/>-->
                                         <!--createScheduleItem-->
@@ -596,12 +596,12 @@
                                         <!-- <lightning:button label="Import CSV" onclick="{!c.importCSV}"/> -->
                                         <!--  <lightning:button label="Save" onclick="{!c.saveQuoteItems}"/> -->
                                         <aura:if isTrue="{!!v.displayGrouping}">
-                                            <lightning:button iconPosition="left" onclick="{!c.onclickBOMGrouping}" label="Group" class="sldsButtonGroup" />
+                                            <lightning:button iconPosition="left" aura:id="Group" onclick="{!c.onclickBOMGrouping}" label="Group" class="sldsButtonGroup" />
                                             <aura:set attribute="else">
                                                 <lightning:button iconPosition="left" onclick="{!c.returnToNormalVIew}" label="Return" class="sldsButtonGroup" />
                                             </aura:set>
                                         </aura:if>
-                                        <lightning:button label="Delete Lines" onclick="{!c.deleteSelectedBudgetItem}" class="sldsButtonGroup" />
+                                        <lightning:button label="Delete Lines" aura:id="Delete Lines" onclick="{!c.deleteSelectedBudgetItem}" class="sldsButtonGroup" />
                                         <aura:if isTrue="{!v.isbudget}">
                                             <!-- <a href="{!v.fromWhereBudgetIsOpen}" onclick="{!c.closetab}" class="sldsButtonGroup"> -->
                                             <lightning:button label="Cancel" onclick="{!c.closetabs}" class="sldsButtonGroup" />
