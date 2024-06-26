@@ -28,9 +28,9 @@
                     <apex:selectOptions value="{!GroupingOptions}" />
                 </apex:selectList>
                 
-
-
-
+                <apex:selectCheckboxes layout="pageDirection" value="{!MSItems}" label="Hide Buttons">
+                    <apex:selectOptions value="{!getMSPicklist}" />
+                </apex:selectCheckboxes>
                 <center>
                 <apex:commandButton value="Save" id="onCreateChangeOrderonOverage" styleClass="slds-button slds-button_brand" action="{!onQuoteAccepted}"></apex:commandButton>
                 </center>

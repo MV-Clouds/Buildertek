@@ -106,7 +106,7 @@
 		let files = component.find("fuploader").get("v.files");
 		if (files && files.length > 0 && files[0].size < this.MAX_FILE_SIZE) {
 			helper.uploadHelper(component, event);
-			// helper.doSubmitHeloper(component, event, helper);
+      // helper.doSubmitHeloper(component, event, helper);
 		} else {
 			if (files && files.length > 0){
 			var fileSizeMB = files[0].size/ (1024 * 1024);
