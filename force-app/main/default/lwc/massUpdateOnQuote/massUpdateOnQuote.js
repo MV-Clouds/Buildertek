@@ -1,6 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getallData from '@salesforce/apex/QuotePage.getallData';
+import getallData from '@salesforce/apex/QuotePage.massUpdateQuote';
 import update from '@salesforce/apex/QuotePage.massUpdateQuoteItem';
 
 export default class MassUpdateOnQuote extends LightningElement {
@@ -11,10 +11,10 @@ export default class MassUpdateOnQuote extends LightningElement {
     showSpinner = false;
     connectedCallback() {
         this.showSpinner = true;
-        getallData({ quoteId: this.quoteId })
+        getallData({ Quote: this.quoteId })
             .then(result => {
                 console.log('Quote Information: ', result);
-                this.quoteItem = result.quoteLineList;
+                this.quoteItem = result;
                 this.groupQuoteItems();
             })
             .catch(error => {
@@ -106,7 +106,7 @@ export default class MassUpdateOnQuote extends LightningElement {
                 UnitCost: item.buildertek__Unit_Cost__c,
                 Markup: item.buildertek__Markup__c,
                 Tax: item.buildertek__Tax__c,
-                AdditionalFee: item.buildertek__Additional_Costs__c
+                Notes: item.buildertek__Notes__c
             };
         });
     }

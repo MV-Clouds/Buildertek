@@ -19,6 +19,9 @@
                                 <th scope="col" class="slds-wider-column">
                                     <div class="slds-truncate" title="Name">Product Name (Short)</div>
                                 </th>
+                                <th scope="col" class="slds-wider-column">
+                                    <div class="slds-truncate" title="Additional Costs">Notes</div>
+                                </th>
                                 <th scope="col">
                                     <div class="slds-truncate" title="Quantity">Quantity</div>
                                 </th>
@@ -31,9 +34,6 @@
                                 <th scope="col">
                                     <div class="slds-truncate" title="Tax">Tax (%)</div>
                                 </th>
-                                <th scope="col">
-                                    <div class="slds-truncate" title="Additional Costs">Additional Fees</div>
-                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,6 +45,12 @@
                                     <td data-label="Name" class="slds-wider-column">
                                         <lightning-input class="slds-truncate" value={item.Name}
                                             onchange={handleInputChange} data-id={item.Id} data-field="Name" required>
+                                        </lightning-input>
+                                    </td>
+                                    <td data-label="Additional Costs" class="slds-wider-column">
+                                        <lightning-input class="slds-truncate"
+                                            value={item.buildertek__Notes__c} onchange={handleInputChange}
+                                            data-id={item.Id} data-field="buildertek__Notes__c">
                                         </lightning-input>
                                     </td>
                                     <td data-label="Quantity">
@@ -69,12 +75,6 @@
                                         <lightning-input class="slds-truncate" value={item.buildertek__Tax__c}
                                             onchange={handleInputChange} data-id={item.Id}
                                             data-field="buildertek__Tax__c">
-                                        </lightning-input>
-                                    </td>
-                                    <td data-label="Additional Costs">
-                                        <lightning-input class="slds-truncate"
-                                            value={item.buildertek__Additional_Costs__c} onchange={handleInputChange}
-                                            data-id={item.Id} data-field="buildertek__Additional_Costs__c">
                                         </lightning-input>
                                     </td>
                                 </tr>
