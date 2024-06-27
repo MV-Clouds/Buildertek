@@ -1,8 +1,8 @@
 import { LightningElement, track, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getallData from '@salesforce/apex/QuotePage.getallData';
-
-export default class NewQuoteItemcmp extends LightningElement {
+import { NavigationMixin } from 'lightning/navigation';
+export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
     @track isLoading = true;
@@ -16,6 +16,7 @@ export default class NewQuoteItemcmp extends LightningElement {
     @track quoteLines;
     @track data = [];
     @track totalColumns;
+    @track isImportRfqTrue = false;
     @track rotationClass = '';
     @track grandTotalList = [];
     @track filterModal = false;
@@ -67,7 +68,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                     var statusCSS = this.template.querySelector('.statusCSS');
                     if (statusCSS) {
                         if(result.Quote.buildertek__Status__c === 'Customer Accepted'){
-                            statusCSS.style.background = '#2BCD8080';
+                            statusCSS.style.background = '#18764ad9';
                             statusCSS.style.color = 'white';
                         } else if (result.Quote.buildertek__Status__c === 'Rejected'){
                             statusCSS.style.background = '#af1617';
@@ -75,7 +76,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                         }
                     }
                 }, 0);
-                    
+
                 this.quoteName = result.Quote.Name;
                 if(result.Quote.buildertek__Project__c != null){
                     this.projectName = result.Quote.buildertek__Project__r.Name;
@@ -99,7 +100,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                 }
                 this.quoteData = quoteData;
 
-                //loop on the colums cooming from FieldSet 
+                //loop on the colums cooming from FieldSet
                 for(var i = 0; i < result.columns.length; i++){
                     if(result.columns[i].label === 'Cost Code'){
                         result.columns[i].fieldName = 'CostCode';
@@ -107,7 +108,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                     }
 
                     result.columns[i].editable = false;
-                    result.columns[i].hideDefaultActions = true; 
+                    result.columns[i].hideDefaultActions = true;
                     result.columns[i].cellAttributes = { alignment: 'left' };
 
                     if(result.columns[i].fieldName == 'buildertek__Notes__c'){
@@ -115,7 +116,7 @@ export default class NewQuoteItemcmp extends LightningElement {
                     }else{
                         result.columns[i].wrapText = true;
                     }
-                    
+
                     if(result.columns[i].label == 'Notes'){
                         result.columns[i].initialWidth = 200;
                     }
@@ -124,8 +125,8 @@ export default class NewQuoteItemcmp extends LightningElement {
                     }
 
 
-                } 
-               
+                }
+
                 result.columns.unshift({
                     // label: 'No.',
                     fieldName: 'Number',
@@ -212,7 +213,8 @@ export default class NewQuoteItemcmp extends LightningElement {
 
     handleAddProduct(event){
         console.log('Add Product button clicked');
-        this.filterModal = true;
+        // this.filterModal = true;
+        this.isImportRfqTrue = true;
     }
 
     applyFilter(){
@@ -247,4 +249,15 @@ export default class NewQuoteItemcmp extends LightningElement {
         }
     }
 
+    handleMassUpdate() {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__component',
+            attributes: {
+                componentName: 'c__quoteMassUpdateHelper'
+            },
+            state: {
+                c__quoteId: this.recordId,
+            }
+        });
+    }
 }
