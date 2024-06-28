@@ -64,9 +64,10 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     }
 
     getCategoryData(){
-        getCategoryRecords()
+        getCategoryRecords({recordId: this.recordId})
             .then((result) => {
                 this.categories = result;
+                console.log('this.categories-->', this.categories);
                 if (result.length > 0) {
                     this.selectedCategory = result[0].Id;
                     this.selectedCategoryLabel = result[0].Name;
@@ -77,6 +78,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
             })
             .catch((error) => {
                 console.error(error);
+                this.showToast('Error', 'No Category found, please select the category on walkthrough.', 'error');
                 this.isLoading = false;
             });
     }
@@ -308,6 +310,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     }
 
     getRelatedRecords() {
+        this.data = undefined;
         this.isLoading = true;
         fetchDataAndFieldSetValues({
             wtRecordId: this.recordId,
@@ -461,6 +464,11 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
 
     handleClose() {
         this.showNewModel = false;
+    }
+
+    handleCloseAndRefresh() {
+        this.showNewModel = false;
+        this.refreshTheDataTable();
     }
 
     refreshTheDataTable() {

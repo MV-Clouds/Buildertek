@@ -162,7 +162,7 @@
     </template>
   </lightning-card>
   <template if:true={showNewModel}>
-    <c-new-walk-through-line-cmp walk-through-id={recordId} category-id={selectedCategory} onclose={handleClose}></c-new-walk-through-line-cmp>
+    <c-new-walk-through-line-cmp walk-through-id={recordId} category-id={selectedCategory} onclose={handleClose} oncloseandrefresh={handleCloseAndRefresh}></c-new-walk-through-line-cmp>
   </template>
   <template if:true={showFileUploadModel}>
     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
