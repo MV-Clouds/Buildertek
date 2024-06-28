@@ -1,11 +1,11 @@
 <template>
     <lightning-card title="Mass Update" icon-name="custom:custom14">
-
+        <p class="heading">{quoteName}</p>
         <div class="button-group">
             <lightning-button label="Save" variant="brand" onclick={handleSave}></lightning-button>
             <lightning-button label="Cancel" variant="neutral" onclick={handleCancel}></lightning-button>
         </div>
-
+        
         <div class="table-wrapper">
             <template for:each={data} for:item="group" for:index="index">
                 <div key={group.groupId} class="group-container">

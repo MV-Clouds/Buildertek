@@ -163,7 +163,7 @@
     </template>
 
     <template if:true={isImportRfqTrue}>
-        <c-import-rfq-lwc-cmp quote-id={recordId}></c-import-rfq-lwc-cmp>
+        <c-import-rfq-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId}></c-import-rfq-lwc-cmp>
     </template>
     <template if:true={isMassUpdateEnabled}>
         <c-mass-update-on-quote quote-id={recordId} quote-item={quoteLines}></c-mass-update-on-quote>

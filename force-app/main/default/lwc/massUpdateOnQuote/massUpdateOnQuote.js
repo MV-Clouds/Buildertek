@@ -7,7 +7,7 @@ export default class MassUpdateOnQuote extends LightningElement {
     @api quoteId;
     @track quoteItem;
     @track data = [];
-
+    @track quoteName;
     showSpinner = false;
     connectedCallback() {
         this.showSpinner = true;
@@ -15,6 +15,7 @@ export default class MassUpdateOnQuote extends LightningElement {
             .then(result => {
                 console.log('Quote Information: ', result);
                 this.quoteItem = result;
+                this.quoteName = this.quoteItem[0].buildertek__Quote__r.Name;
                 this.groupQuoteItems();
             })
             .catch(error => {
