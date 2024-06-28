@@ -72,7 +72,7 @@ public with sharing class PurchaseOrderItemTriggerHandler {
  	}
      
  	public void OnAfterInsert(Purchase_Order_Item__c[] newPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> newPurchaseOrderItemsMap){ 
-     	
+		rfqExistOnPO(newPurchaseOrderItems);
      	// Create PO Item to Budget Item link
 		if (PurchaseOrderItemTriggerHandler.firstRun){
 			PurchaseOrderItemTriggerHandler.firstRun = false;
@@ -93,6 +93,7 @@ public with sharing class PurchaseOrderItemTriggerHandler {
      
  	public void OnAfterUpdate(Purchase_Order_Item__c[] oldPurchaseOrderItems, Purchase_Order_Item__c[] updatedPurchaseOrderItems, Map<ID, Purchase_Order_Item__c> PurchaseOrderItemMap, Map<Id, Purchase_Order_Item__c> oldPurchaseOrderItemsMap){
 		try {
+			rfqExistOnPO(updatedPurchaseOrderItems);
 			if(PurchaseOrderItemTriggerHandler.firstRun) {
 				PurchaseOrderItemTriggerHandler.firstRun = false;
 				Set<Id> poItemIds = new Set<Id>();
@@ -202,4 +203,58 @@ public with sharing class PurchaseOrderItemTriggerHandler {
 			}
 		}
 	 }
+	
+	 //*  Method to populate poline on walkthrough line if po is created from the walkthrough flow  
+	public void rfqExistOnPO(List<buildertek__Purchase_Order_Item__c> POLineList) {
+
+		Set<Id> rfqItemIds = new Set<Id>();
+		for (buildertek__Purchase_Order_Item__c pol : POLineList) {
+			if (pol.buildertek__RFQ_Item__c != null) {
+				rfqItemIds.add(pol.buildertek__RFQ_Item__c);
+			}
+		}
+		
+		Map<Id, Id> rfqItemToWTLMap = new Map<Id, Id>();
+		if (!rfqItemIds.isEmpty()) {
+			List<buildertek__RFQ_Item__c> rfqItems = [
+				SELECT Id, buildertek__BT_Walk_Through_Line_Item__c 
+				FROM buildertek__RFQ_Item__c 
+				WHERE Id IN :rfqItemIds
+			];
+			
+			for (buildertek__RFQ_Item__c rfqItem : rfqItems) {
+				if (rfqItem.buildertek__BT_Walk_Through_Line_Item__c != null) {
+					rfqItemToWTLMap.put(rfqItem.Id, rfqItem.buildertek__BT_Walk_Through_Line_Item__c);
+				}
+			}
+		}
+		
+		Map<Id, Id> poLineToWTLMap = new Map<Id, Id>();
+		for (buildertek__Purchase_Order_Item__c pol : POLineList) {
+			if (pol.buildertek__RFQ_Item__c != null && rfqItemToWTLMap.containsKey(pol.buildertek__RFQ_Item__c)) {
+				poLineToWTLMap.put(pol.Id, rfqItemToWTLMap.get(pol.buildertek__RFQ_Item__c));
+			}
+		}
+		
+		if (!poLineToWTLMap.isEmpty()) {
+			List<buildertek__Walk_Through_Line_Items__c> WTLineList = [
+				SELECT Id, buildertek__Walk_Through_List__c, buildertek__Purchase_Order_Line__c 
+				FROM buildertek__Walk_Through_Line_Items__c 
+				WHERE Id IN :poLineToWTLMap.values()
+			];
+			
+			for (buildertek__Walk_Through_Line_Items__c wtLine : WTLineList) {
+				for (Id poLineId : poLineToWTLMap.keySet()) {
+					if (poLineToWTLMap.get(poLineId) == wtLine.Id) {
+						wtLine.buildertek__Purchase_Order_Line__c = poLineId;
+						break;
+					}
+				}
+			}
+			
+			if (!WTLineList.isEmpty()) {
+				update WTLineList;
+			}
+		}
+	}	
 }
