@@ -254,7 +254,7 @@
                     <span class="slds-text-not-selected">
                       <lightning:icon iconName="utility:add" size="xx-small"
                         class="slds-input__icon slds-icon-text-default texticon " />
-                      Add Questions jon
+                      Add Questions
                     </span>
                   </div>
                   <div onclick="{!c.AddGroup}"
