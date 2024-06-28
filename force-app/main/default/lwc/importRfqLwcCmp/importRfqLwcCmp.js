@@ -17,16 +17,6 @@ const columns = [
 	{ label: 'Status', fieldName: 'buildertek__Status__c', type: 'text', hideDefaultActions: true }
 ];
 
-const nextScreenColumns = [
-	{ label: 'QUOTE LINE', fieldName: 'Name', type: 'text', sortable: false, editable: true },
-	{ label: 'DESCRIPTION', fieldName: 'buildertek__Description__c', type: 'text', editable: true },
-	{label: 'GROUPING', fieldName: 'buildertek__Grouping__c', type: 'Lookup', editable:true},
-	{ label: 'QUANTITY', fieldName: 'buildertek__Quantity__c', type: 'number', editable: true },
-	{ label: 'UNIT PRICE', fieldName: 'buildertek__Unit_Price__c', type: 'currency', cellAttributes: { alignment: 'left' }, editable: true },
-	{ label: 'MARKUP', fieldName: 'buildertek__Markup__c', type: 'Percent', editable: true }
-];
-
-
 export default class ImportRfqLwcCmp extends LightningElement {
 	@track isNextScreen = false;
 	showSpinner = false;
@@ -36,7 +26,6 @@ export default class ImportRfqLwcCmp extends LightningElement {
 	@track selectedQuoteLineRecords = [];
 	columns = columns;
 	@track btnName = 'Next';
-	nextScreenColumns = nextScreenColumns;
 
 	connectedCallback() {
 		loadStyle(this, myResource);
