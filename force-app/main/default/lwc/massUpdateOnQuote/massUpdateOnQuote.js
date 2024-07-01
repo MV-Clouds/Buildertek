@@ -66,6 +66,18 @@ export default class MassUpdateOnQuote extends LightningElement {
 
     handleSave() {
         this.showSpinner = true;
+        const hasEmptyName = this.quoteItem.some(item => !item.Name);
+        if (hasEmptyName) {
+            const event = new ShowToastEvent({
+                title: 'Error',
+                message: 'Name field cannot be empty',
+                variant: 'error',
+                mode: 'dismissable'
+            });
+            this.dispatchEvent(event);
+            this.showSpinner = false;
+            return;
+        }
         let dataToSave = JSON.stringify(this.prepareDataForSave());
         update({ QuoteItems: dataToSave })
             .then(result => {
