@@ -3127,6 +3127,27 @@
             }
         });
         $A.enqueueAction(action);
-    }
+    },
+
+    checkisButtonVisible: function (component, event, helper) {
+        let action = component.get("c.HideBtnFromAdminSetting");
+        action.setCallback(this, function (response) {
+            if (response.getState() == 'SUCCESS') {
+                let result = response.getReturnValue();
+                console.log('isButtonVisible ==>', result);
+                let hiddenBtnArray = result.split(';');
+                hiddenBtnArray.forEach(btnLabel => {
+                    let buttonElement = component.find(btnLabel);
+                    if (buttonElement) {
+                        $A.util.addClass(buttonElement, 'slds-hide');
+                    }
+                });
+                console.log(component.get("v.isButtonVisible"));
+            } else if (response.getState() == 'ERROR') {
+                console.log('Error:', response.getError());
+            }
+        });
+        $A.enqueueAction(action);
+    }    
 
 })

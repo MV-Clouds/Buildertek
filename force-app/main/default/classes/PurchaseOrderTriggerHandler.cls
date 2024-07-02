@@ -90,7 +90,7 @@ public with sharing class PurchaseOrderTriggerHandler{
                 else if(PO.buildertek__Paid__c == 0){
                     //BUIL - 3960 PO could be at Open, Approved, Ordered, Vendor Accepted, Vendor Rejected and Liend Release Accepted status when the paid amount is 0
                     //add Canceled	in if condition for this ticket BUIL-4167 PO's - Void PO button needs some additional logic.
-                    if (PO.buildertek__Status__c != 'Open' && PO.buildertek__Status__c != 'Approved' && PO.buildertek__Status__c != 'Ordered' && PO.buildertek__Status__c != 'Vendor Accepted' && PO.buildertek__Status__c != 'Vendor Rejected' && PO.buildertek__Status__c != 'Lien Release Accepted'&& PO.buildertek__Status__c != 'Canceled'){
+                    if (PO.buildertek__Status__c != 'Open' && PO.buildertek__Status__c != 'Approved' && PO.buildertek__Status__c != 'Ordered' && PO.buildertek__Status__c != 'Vendor Accepted' && PO.buildertek__Status__c != 'Vendor Rejected' && PO.buildertek__Status__c != 'Lien Release Accepted'&& PO.buildertek__Status__c != 'Canceled'&& PO.buildertek__Status__c != 'Ready for Approval' ){
                         PO.buildertek__Status__c = 'Open';
                     }
                 }

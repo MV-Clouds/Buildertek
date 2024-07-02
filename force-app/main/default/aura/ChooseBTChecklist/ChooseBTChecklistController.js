@@ -213,7 +213,7 @@
 
   },
   handleGroupChange: function (component, event, helper) {
-    console.log('handleGroupChange');
+    // console.log('handleGroupChange');
     var selectedGroup = event.getSource().get("v.value");
     if (selectedGroup === '--None--' || !selectedGroup) {
       component.set("v.btnLabel", "New Section");
@@ -355,10 +355,10 @@
 
     if (errormsg == false) {
       console.log(component.get("v.groupName"));
-      // if (component.get("v.groupName") != null && component.get("v.groupName") != '' && component.get("v.groupName") != undefined) {
-      //   component.set("v.selectedgroup", '');
-      //   component.set("v.selectedSubsection", '');
-      // }
+      if (component.get("v.groupName") != null && component.get("v.groupName") != '' && component.get("v.groupName") != undefined) {
+        // component.set("v.selectedgroup", '');
+        // component.set("v.selectedSubsection", '');
+      }
       // console.log(`selectedgroup: ${component.get("v.selectedgroup")} && selectedSubsection: ${component.get("v.selectedSubsection")}`);
       var selectedSubsection = component.get("v.selectedSubsection");
       var action = component.get("c.savingQuestion");
@@ -523,6 +523,7 @@
   callUpdateRecord: function (component, event, helper) {
     component.set("v.isshow", true);
     component.set("v.isEditrecord", false);
+    component.set("v.isNewChecklist", true);
     component.set("v.Spinner", true);
 
     var checklistId = event.target.getAttribute('data-id');
@@ -591,6 +592,7 @@
     component.set('v.showConfirmDialog', true);
 
 
+
   },
 
   callDeleteQuestion: function (component, event, helper) {
@@ -614,6 +616,8 @@
     component.set("v.isMulti", false);
     component.set("v.DeleteQuestion", true);
     component.set("v.EditQuestion", false);
+    component.set("v.selectedgroup", '');
+    component.set("v.selectedSubsection", '');
   },
 
   BackModal: function (component, event, helper) {
@@ -641,12 +645,15 @@
     action.setCallback(this, function (response) {
       if (response.getState() === "SUCCESS") {
         var result = response.getReturnValue();
-        console.log(`EDIT RECORD RESULT: ${JSON.stringify(result)}`);
+        // console.log(`EDIT RECORD RESULT: ${JSON.stringify(result)}`);
 
         component.set("v.selectedgroup", result.buildertek__Section__c);
         var selectedGroupId = result.buildertek__Section__c;
+        // if (selectedGroupId) {
+        //   component.set("v.btnLabel", "New Subsection");
+        // }
         var groupList = component.get("v.grouplist");
-        console.log(`grouplist: ${JSON.stringify(groupList)}`);
+        // console.log(`grouplist: ${JSON.stringify(groupList)}`);
         var subSectionOptions = [];
 
         if (selectedGroupId && groupList && groupList.subSectionList) {
@@ -783,6 +790,7 @@
     component.set("v.showGroup", false);
     component.set("v.showSectionModel", true);
     component.set("v.EditQuestion", false);
+    component.set("v.OpenQuestion",false);
   },
 
   handleCustomEvent: function (component, event, helper) {

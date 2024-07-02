@@ -36,7 +36,7 @@ public with sharing class CreatePOFromRFQ{
                 RFQ = [Select Id, Name,buildertek__Rfq__c,buildertek__Rfq__r.Name ,buildertek__Vendor__c, 
                         buildertek__Rfq__r.buildertek__Project__c,buildertek__Rfq__r.buildertek__Budget__c,
                         buildertek__Anticipated_Start_Date__c,buildertek__Anticipated_Finish_Date__c, buildertek__Estimated_Work_Rollup__c,
-                        buildertek__Rfq__r.buildertek__Quote__c, buildertek__Rfq__r.Trade_Type__c,
+                        buildertek__Rfq__r.buildertek__Quote__c, buildertek__Rfq__r.buildertek__Trade_Type__c,
                         buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c, (SELECT Id, Name, buildertek__Cost_Code__c, 
                                                                                         buildertek__Quantity__c, buildertek__Unit_Price__c, 
                                                                                         buildertek__Total_Price__c, buildertek__Item_Name__c, 
@@ -48,7 +48,7 @@ public with sharing class CreatePOFromRFQ{
                        WHERE buildertek__RFQ__c = :RFQId AND (buildertek__Status__c =: 'Awarded' OR buildertek__Status__c =: 'Accepted')];
             }
             
-            if(RFQ[0].buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c!=null){
+            if(RFQ.size() > 0 && RFQ[0].buildertek__Rfq__r.buildertek__Associated_Purchase_Order__c!=null){
                 response.strMessage = 'PO already Created';
                 
                 return response;

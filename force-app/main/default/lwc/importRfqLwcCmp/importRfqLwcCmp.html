@@ -1,0 +1,145 @@
+<template>
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+
+            <!-- modal header start -->
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={hideModalBox}>
+                    <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                        size="small"></lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select RFQ's</h2>
+            </header>
+
+            <!-- modal body start -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <template if:false={isNextScreen}>
+                    <div>
+                        <div class="search-box">
+                            <div class="search-box-child" onchange={handleKeyUp}>
+                                <lightning-input name="enter-name" type="search"
+                                    placeholder="Search For Name"></lightning-input>
+                            </div>
+                            <div class="search-box-child" onchange={handleKeyUp}>
+                                <lightning-input name="enter-project" type="search"
+                                    placeholder="Search For Project"></lightning-input>
+                            </div>
+                            <div class="search-box-child" onchange={handleKeyUp}>
+                                <lightning-input name="enter-vendor" type="search"
+                                    placeholder="Search For Vendor"></lightning-input>
+                            </div>
+                        </div>
+
+                        <div>
+                            <lightning-datatable key-field="id" data={filteredData} columns={columns}
+                                show-row-number-column resize-column-disabled>
+                            </lightning-datatable>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isNextScreen}>
+
+                    <div class="table-wrapper">
+                        <div class="group-container">
+                            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col" class="slds-wider-column">
+                                            <div class="slds-truncate">QUOTE LINE</div>
+                                        </th>
+                                        <th scope="col" class="slds-wider-column">
+                                            <div class="slds-truncate">DESCRIPTION</div>
+                                        </th>
+                                        <th scope="col" class="slds-wider-column">
+                                            <div class="slds-truncate">GROUPING</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">QUANTITY</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">UNIT PRICE</div>
+                                        </th>
+                                        <th scope="col">
+                                            <div class="slds-truncate">MARKUP</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={selectedQuoteLineRecords} for:item="quote">
+                                        <tr key={quote.buildertek__RFQ__c}>
+                                            <td>
+                                                <lightning-input type="text" label="" value={quote.Name}
+                                                    onchange={handleInputChange} data-id={quote.buildertek__RFQ__c}
+                                                    data-field="Name"></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input type="text" label=""
+                                                    value={quote.buildertek__Description__c}
+                                                    onchange={handleInputChange} data-id={quote.buildertek__RFQ__c}
+                                                    data-field="buildertek__Description__c"></lightning-input>
+                                            </td>
+                                            <td>
+                                                <c-lookup label="" object-label="Grouping" placeholder="Search..."
+                                                    object-api-name="buildertek__Quote_Line_Group__c"
+                                                    field-api-name="Name" icon-name="standard:lead_list"
+                                                    data-id={quote.buildertek__RFQ__c}
+                                                    onselect={handleSelected}></c-lookup>
+                                            </td>
+                                            <td>
+                                                <lightning-input type="number" label=""
+                                                    value={quote.buildertek__Quantity__c} onchange={handleInputChange}
+                                                    data-id={quote.buildertek__RFQ__c}
+                                                    data-field="buildertek__Quantity__c"></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input type="number" label=""
+                                                    value={quote.buildertek__Unit_Price__c} formatter="currency"
+                                                    onchange={handleInputChange} data-id={quote.buildertek__RFQ__c}
+                                                    data-field="buildertek__Unit_Price__c"></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input type="number" label=""
+                                                    value={quote.buildertek__Markup__c} formatter="percent-fixed"
+                                                    step="0.01" onchange={handleInputChange}
+                                                    data-id={quote.buildertek__RFQ__c}
+                                                    data-field="buildertek__Markup__c"></lightning-input>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <!-- modal footer start-->
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+                <button class="slds-button slds-button_brand" onclick={goToNextScreen}>{btnName}</button>
+            </footer>
+
+        </div>
+    </section>
+
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+    <template if:true={showSpinner}>
+        <div class="slds-spinner_container" style="position:fixed;z-index:10000;">
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+                <div
+                    style="transform: rotate(-90deg); position: absolute; top: -1.1rem; white-space: nowrap; font-size: 20px;">
+                    <b>Processing, Please Wait</b>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</template>

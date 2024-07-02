@@ -28,7 +28,7 @@ trigger PurchaseOrderTrigger on Purchase_Order__c(after delete, after insert, af
             // PurchaseOrder_handler.handledelete(Trigger.old);
             handler.removePOFromBudgetLine(Trigger.old, Trigger.oldMap);
         } else if (Trigger.isDelete && Trigger.isAfter){
-            handler.OnAfterDelete(Trigger.old, Trigger.oldMap);
+            // handler.OnAfterDelete(Trigger.old, Trigger.oldMap);
             handler.updateprojectonpodelete(Trigger.old);
         }
     } else {
