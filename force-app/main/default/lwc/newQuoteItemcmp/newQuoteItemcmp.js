@@ -233,6 +233,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isAddProductTrue = false;
     }
 
+    closePopUp(event) {
+        this.isImportRfqTrue = false;
+        this.isAddProductTrue = false;
+    }
+
+
     handleAddProduct(event) {
         console.log('Add Product button clicked');
         // this.filterModal = true;
