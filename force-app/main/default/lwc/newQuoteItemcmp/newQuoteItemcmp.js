@@ -17,6 +17,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track data = [];
     @track totalColumns;
     @track isImportRfqTrue = false;
+    @track isAddProductTrue = false;
     @track rotationClass = '';
     @track grandTotalList = [];
     @track filterModal = false;
@@ -57,7 +58,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     getData(){
         var QuoteId = this.recordId;
-        console.log('Recrod Id for the current quote is: ' + QuoteId);
+        console.log('Quote ID: ' + QuoteId);
         getallData({ quoteId: QuoteId })
             .then(result => {
                 console.log({result});
@@ -156,12 +157,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     this.quoteLines[i].Number = i+1;
                 }
                 console.log({data: this.data});
-                this.isLoading = false;
                 this.calculateTotal(this.data);
             })
             .catch(error => {
                 console.log(error);
-            });
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });;
     }
 
     calculateTotal(data) {
@@ -213,10 +222,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
 
     closePopUp(event){
-        this.isImportRfqTrue = !this.isImportRfqTrue;
+        this.isImportRfqTrue = false;
+        this.isAddProductTrue = false;
     }
 
     handleAddProduct(event){
+        console.log('Add Product button clicked');
+        // this.filterModal = true;
+        this.isAddProductTrue = true;
+    }
+
+    handleImportRfq(event){
         console.log('Add Product button clicked');
         // this.filterModal = true;
         this.isImportRfqTrue = true;
