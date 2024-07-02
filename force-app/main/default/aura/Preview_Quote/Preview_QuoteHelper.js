@@ -24,7 +24,7 @@
             "recordId": component.get("v.recordId")
         });
         action.setCallback(this, function(response) {
-            var state = response.getState();
+            var state = response.getState();``
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 //alert('result ---------> '+result);

@@ -1,0 +1,10 @@
+<aura:component implements="flexipage:availableForAllPageTypes,lightning:isUrlAddressable" access="global">
+    <aura:attribute type="String" name="quoteId"/>
+    <aura:attribute type="Object" name="QuoteItemList"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>    
+    <lightning:workspaceAPI aura:id="workspace" />
+
+    <div class="slds-card">
+        <c:massUpdateOnQuote quoteId="{!v.quoteId}" oncancel="{!c.handleCancelEvent}"/>
+    </div>
+</aura:component>
