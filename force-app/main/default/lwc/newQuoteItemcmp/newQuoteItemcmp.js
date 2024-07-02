@@ -228,11 +228,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
+    closePopUp(event) {
+        this.isImportRfqTrue = false;
+        this.isAddProductTrue = false;
+    }
 
     closePopUp(event) {
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
     }
+
 
     handleAddProduct(event) {
         console.log('Add Product button clicked');
@@ -243,6 +248,13 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     handleImportRfq(event) {
         console.log('Add Product button clicked');
         // this.filterModal = true;
+        this.isAddProductTrue = true;
+    }
+
+    handleImportRfq(event){
+        console.log('Add Product button clicked');
+        // this.filterModal = true;
+
         this.isImportRfqTrue = true;
     }
 
