@@ -1,24 +1,8 @@
 public with sharing class walkThroughController {
 
     @AuraEnabled
-    public static List<buildertek__Category__c> getCategoryRecords(String recordId) {
-
-        //BUIL-4153
-        buildertek__Walk_Through_List__c walkThroughList = [SELECT Id, Name, buildertek__Sections__c FROM buildertek__Walk_Through_List__c WHERE Id = :recordId LIMIT 1];
-        List<String> sectionNames = new List<String>();
-        for (String section : walkThroughList.buildertek__Sections__c.split(';')) {
-            sectionNames.add(section);
-        }
-        System.debug('sectionNames: ' + sectionNames);
-        List<buildertek__Category__c> cats = [SELECT Id, Name FROM buildertek__Category__c WHERE Name IN :sectionNames AND buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
-
-        if (cats.size() > 0) {
-            return cats;
-        } else {
-            return null;
-        }
-
-        // return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
+    public static List<buildertek__Category__c> getCategoryRecords() {
+        return [SELECT Id, Name FROM buildertek__Category__c WHERE buildertek__Use_for_Walk_Through__c = true ORDER BY buildertek__Order_Id__c ASC NULLS LAST, Name ASC];
     }
 
     public class FieldWrapper {
@@ -108,7 +92,7 @@ public with sharing class walkThroughController {
 
             List<buildertek__Walk_Through_Line_Items__c> walkThroughLines = new List<buildertek__Walk_Through_Line_Items__c>();
 
-            String wtQueryString = 'SELECT ' + String.join(queryFields, ', ') + ' FROM buildertek__Walk_Through_Line_Items__c WHERE buildertek__Walk_Through_List__c =: wtRecordId AND buildertek__BT_Category__c =: categoryId ORDER BY buildertek__Description__c';
+            String wtQueryString = 'SELECT ' + String.join(queryFields, ', ') + ' FROM buildertek__Walk_Through_Line_Items__c WHERE buildertek__Walk_Through_List__c =: wtRecordId AND buildertek__BT_Category__c =: categoryId ORDER BY CreatedDate DESC, buildertek__Description__c';
             walkThroughLines = Database.query(wtQueryString);
 
             result.put('WalkthroughLineItems', walkThroughLines);
@@ -387,7 +371,7 @@ public with sharing class walkThroughController {
             List<AggregateResult> productfamlylst = [SELECT toLabel(Family) familyLabel
                                                     FROM Product2
                                                     WHERE (Id IN :ProdIds AND family != null)
-                                                    group by family order by family];
+                                                    group by family];
             list<productfamilyClass> pfwrapperlst = new list<productfamilyClass>();
 
             if (productfamlylst.size() > 0){
