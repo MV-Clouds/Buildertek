@@ -26,9 +26,18 @@
                             </div>
                         </template>
                         <template if:false={item.isStatus}>
-                            <div class="value">
-                                {item.value}
-                            </div>
+                            <template if:true={item.isCurrency}>
+                                <div class="value">
+                                    {item.currencyCode} 
+                                    &nbsp;
+                                    <lightning-formatted-number value={item.value} style="currency" currency-code={item.currencyCode}></lightning-formatted-number>
+                                </div>
+                            </template>
+                            <template if:false={item.isCurrency}>
+                                <div class="value">
+                                    {item.value}
+                                </div>
+                            </template>
                         </template>
                     </div>
                 </template>
