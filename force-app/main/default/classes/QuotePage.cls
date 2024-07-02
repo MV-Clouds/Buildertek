@@ -43,7 +43,7 @@ public without sharing class QuotePage {
     
             String query = 'SELECT Id, ' + apiString;
             query += 'buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =\'' + quoteId + '\'';
-            query += ' ORDER BY buildertek__Grouping__c';
+            query += ' ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST';
     
             System.debug('query: ' + query);
     
@@ -67,6 +67,50 @@ public without sharing class QuotePage {
 
     }
 
+    @AuraEnabled
+    public static List<buildertek__Quote_Item__c> massUpdateQuote(String Quote) {
+        try {
+            System.debug('Quote: ' + Quote);
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Quantity__c, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Notes__c, buildertek__Quote__r.Name, buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :Quote ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST];
+            
+            return quoteItemList;
+        } catch(Exception e) {
+            System.debug(e.getMessage());
+            BT_ExceptionHandler.Store_Exception(e);
+            return new List<buildertek__Quote_Item__c>();
+        }
+    }
+
+    @AuraEnabled
+    public static String massUpdateQuoteItem(String QuoteItems) {
+        try {
+            List<QuoteItemWrapper> quoteItemsList = (List<QuoteItemWrapper>) JSON.deserialize(QuoteItems, List<QuoteItemWrapper>.class);
+            List<buildertek__Quote_Item__c> quoteItemList = new List<buildertek__Quote_Item__c>();
+
+            for (QuoteItemWrapper quoteItemWrapper : quoteItemsList) {
+                buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c();
+                quoteItem.Id = quoteItemWrapper.QuoteItemId;
+                quoteItem.Name = quoteItemWrapper.Name;
+                quoteItem.buildertek__Quantity__c = quoteItemWrapper.Quantity;
+                quoteItem.buildertek__Unit_Cost__c = quoteItemWrapper.UnitCost;
+                quoteItem.buildertek__Markup__c = quoteItemWrapper.Markup;
+                quoteItem.buildertek__Tax__c = quoteItemWrapper.Tax;
+                quoteItem.buildertek__Notes__c = quoteItemWrapper.notes;
+
+                quoteItemList.add(quoteItem);
+            }
+            
+            update quoteItemList;
+            System.debug('quoteItemsList: ' + quoteItemsList);
+            return 'Success';
+
+        } catch(Exception e) {
+            System.debug('Error: ' + e.getMessage());
+            BT_ExceptionHandler.Store_Exception(e);
+            return 'Error: ' + e.getMessage();
+        }
+    }
+
     public class allData{
 
         @AuraEnabled
@@ -83,5 +127,15 @@ public without sharing class QuotePage {
 
         @AuraEnabled
         public string status;
+    }
+
+    public class QuoteItemWrapper {
+        @AuraEnabled public String QuoteItemId;
+        @AuraEnabled public String Name;
+        @AuraEnabled public Decimal Quantity;
+        @AuraEnabled public Decimal UnitCost;
+        @AuraEnabled public Decimal Markup;
+        @AuraEnabled public Decimal Tax;
+        @AuraEnabled public String Notes;
     }
 }

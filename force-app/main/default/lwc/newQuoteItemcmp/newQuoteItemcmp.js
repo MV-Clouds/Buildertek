@@ -17,6 +17,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track data = [];
     @track totalColumns;
     @track isImportRfqTrue = false;
+    @track isAddProductTrue = false;
     @track rotationClass = '';
     @track grandTotalList = [];
     @track filterModal = false;
@@ -55,6 +56,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
+    @api
     getData(){
         var QuoteId = this.recordId;
         console.log('Recrod Id for the current quote is: ' + QuoteId);
@@ -213,12 +215,22 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
 
     closePopUp(event){
-        this.isImportRfqTrue = !this.isImportRfqTrue;
+
+        this.isImportRfqTrue = false;
+        this.isAddProductTrue = false;
+
     }
 
     handleAddProduct(event){
         console.log('Add Product button clicked');
         // this.filterModal = true;
+        this.isAddProductTrue = true;
+    }
+
+    handleImportRfq(event){
+        console.log('Add Product button clicked');
+        // this.filterModal = true;
+
         this.isImportRfqTrue = true;
     }
 
