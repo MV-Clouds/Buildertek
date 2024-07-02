@@ -7,6 +7,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @api recordId;
     @track isLoading = true;
     @track quoteName;
+    @track currencyCode;
     @track projectName;
     @track quoteData;
     @track quote;
@@ -21,15 +22,15 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track rotationClass = '';
     @track grandTotalList = [];
     @track filterModal = false;
-    @track filterValue ='PriceBook' ;
-    @track filterOption =[
-        {label: 'PriceBook', value: 'PriceBook'},
-        {label: 'Vendor', value: 'Vendor'},
+    @track filterValue = 'PriceBook';
+    @track filterOption = [
+        { label: 'PriceBook', value: 'PriceBook' },
+        { label: 'Vendor', value: 'Vendor' },
     ];
     @track filterGroupId;
     @track showPricebookModal = false;
 
-    connectedCallback(){
+    connectedCallback() {
         this.getData();
     }
 
@@ -56,23 +57,23 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
-    @api
-    getData(){
+    getData() {
         var QuoteId = this.recordId;
-        console.log('Recrod Id for the current quote is: ' + QuoteId);
+        console.log('Quote ID: ' + QuoteId);
         getallData({ quoteId: QuoteId })
             .then(result => {
-                console.log({result});
+                console.log({ result });
                 this.quote = result.Quote;
                 this.quoteFields = result.Quotecolumns;
+                this.currencyCode = result.OrgCurrency;
 
                 setTimeout(() => {
                     var statusCSS = this.template.querySelector('.statusCSS');
                     if (statusCSS) {
-                        if(result.Quote.buildertek__Status__c === 'Customer Accepted'){
+                        if (result.Quote.buildertek__Status__c === 'Customer Accepted') {
                             statusCSS.style.background = '#18764ad9';
                             statusCSS.style.color = 'white';
-                        } else if (result.Quote.buildertek__Status__c === 'Rejected'){
+                        } else if (result.Quote.buildertek__Status__c === 'Rejected') {
                             statusCSS.style.background = '#af1617';
                             statusCSS.style.color = 'white';
                         }
@@ -80,22 +81,28 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 }, 0);
 
                 this.quoteName = result.Quote.Name;
-                if(result.Quote.buildertek__Project__c != null){
+                if (result.Quote.buildertek__Project__c != null) {
                     this.projectName = result.Quote.buildertek__Project__r.Name;
-                }else{
+                } else {
                     this.projectName = '';
                 }
 
                 var quoteData = [];
-                for(var i = 0; i < result.Quotecolumns.length; i++){
+                for (var i = 0; i < result.Quotecolumns.length; i++) {
                     var quoteDataToDisplay = {};
                     quoteDataToDisplay.label = result.Quotecolumns[i].label;
                     quoteDataToDisplay.fieldName = result.Quotecolumns[i].fieldName;
                     quoteDataToDisplay.type = result.Quotecolumns[i].type;
-                    if(result.Quotecolumns[i].label === 'Status'){
+                    if (result.Quotecolumns[i].label === 'Status') {
                         quoteDataToDisplay.isStatus = true;
-                    }else{
+                    } else {
                         quoteDataToDisplay.isStatus = false;
+                    }
+                    if (result.Quotecolumns[i].type === 'currency') {
+                        quoteDataToDisplay.isCurrency = true;
+                        quoteDataToDisplay.currencyCode = this.currencyCode;
+                    } else {
+                        quoteDataToDisplay.isCurrency = false;
                     }
                     quoteDataToDisplay.value = result.Quote[result.Quotecolumns[i].fieldName];
                     quoteData.push(quoteDataToDisplay);
@@ -103,8 +110,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.quoteData = quoteData;
 
                 //loop on the colums cooming from FieldSet
-                for(var i = 0; i < result.columns.length; i++){
-                    if(result.columns[i].label === 'Cost Code'){
+                for (var i = 0; i < result.columns.length; i++) {
+                    if (result.columns[i].label === 'Cost Code') {
                         result.columns[i].fieldName = 'CostCode';
                         result.columns[i].type = 'string';
                     }
@@ -113,16 +120,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     result.columns[i].hideDefaultActions = true;
                     result.columns[i].cellAttributes = { alignment: 'left' };
 
-                    if(result.columns[i].fieldName == 'buildertek__Notes__c'){
+                    if (result.columns[i].fieldName == 'buildertek__Notes__c') {
                         result.columns[i].wrapText = false;
-                    }else{
+                    } else {
                         result.columns[i].wrapText = true;
                     }
 
-                    if(result.columns[i].label == 'Notes'){
+                    if (result.columns[i].label == 'Notes') {
                         result.columns[i].initialWidth = 200;
                     }
-                    else{
+                    else {
                         result.columns[i].initialWidth = result.columns[i].label.length * 15;
                     }
 
@@ -143,27 +150,35 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.quoteLines = result.quoteLineList;
 
                 //loop on the quote lines and group them by Grouping
-                for(var i = 0; i < this.quoteLines.length; i++){
+                for (var i = 0; i < this.quoteLines.length; i++) {
                     var groupName = this.quoteLines[i].buildertek__Grouping__r.Name;
                     var groupId = this.quoteLines[i].buildertek__Grouping__c;
-                    if(this.quoteLines[i].buildertek__Cost_Code__c != null){
+                    if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
                         this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
                     }
 
-                    if(this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
+                    if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
                         this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].items.push(this.quoteLines[i]);
                     } else {
-                        this.data.push({groupName: groupName, groupId: groupId, items: [this.quoteLines[i]]});
+                        this.data.push({ groupName: groupName, groupId: groupId, items: [this.quoteLines[i]] });
                     }
-                    this.quoteLines[i].Number = i+1;
+                    this.quoteLines[i].Number = i + 1;
                 }
-                console.log({data: this.data});
-                this.isLoading = false;
+                console.log({ data: this.data });
                 this.calculateTotal(this.data);
             })
             .catch(error => {
                 console.log(error);
-            });
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });;
     }
 
     calculateTotal(data) {
@@ -199,10 +214,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     handleAddItem(event) {
         var groupId = event.target.dataset.id;
         console.log('Add Item button clicked for Group Id: ' + groupId);
-        if(groupId){
+        if (groupId) {
             this.filterModal = true;
             this.filterGroupId = groupId;
-        }else{
+        } else {
             const evt = new ShowToastEvent({
                 title: 'Error',
                 message: 'Please select a group to add item',
@@ -213,15 +228,18 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
-
-    closePopUp(event){
-
+    closePopUp(event) {
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
-
     }
 
-    handleAddProduct(event){
+    handleAddProduct(event) {
+        console.log('Add Product button clicked');
+        // this.filterModal = true;
+        this.isAddProductTrue = true;
+    }
+
+    handleImportRfq(event) {
         console.log('Add Product button clicked');
         // this.filterModal = true;
         this.isAddProductTrue = true;
@@ -234,33 +252,33 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isImportRfqTrue = true;
     }
 
-    applyFilter(){
+    applyFilter() {
         var filterValue = this.filterValue;
         console.log("User choose filter value: " + filterValue);
-        if(filterValue === 'PriceBook'){
+        if (filterValue === 'PriceBook') {
             this.filterModal = false;
             var groupId = this.filterGroupId;
             console.log('Group Id: ' + groupId);
             this.showPricebookModal = true
-        }else if(filterValue === 'Vendor'){
+        } else if (filterValue === 'Vendor') {
             this.filterModal = false;
             this.showVendorModal = true;
         }
     }
 
-    filterChange(event){
+    filterChange(event) {
         this.filterValue = event.detail.value;
     }
 
-    hideModalBox(){
+    hideModalBox() {
         this.filterModal = false;
     }
 
-    dropdownHandler(event){
+    dropdownHandler(event) {
         var groupId = event.target.dataset.id;
         var data = this.data;
-        for(var i = 0; i < data.length; i++){
-            if(data[i].groupId === groupId){
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].groupId === groupId) {
                 data[i].isVisible = !data[i].isVisible;
             }
         }

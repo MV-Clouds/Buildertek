@@ -10,6 +10,8 @@ public without sharing class QuotePage {
 
             allData ad = new allData();
 
+            ad.OrgCurrency = UserInfo.getDefaultCurrency();
+
             List<BT_Lightning_Utils.dataTableFields> Quotecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote__c', 'buildertek__QuotePage');
             ad.Quotecolumns = Quotecolumn;
 
@@ -43,8 +45,7 @@ public without sharing class QuotePage {
     
             String query = 'SELECT Id, ' + apiString;
             query += 'buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =\'' + quoteId + '\'';
-            query += ' ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST';
-    
+            query += ' ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS Last, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last , Name ASC';
             System.debug('query: ' + query);
     
             List<buildertek__Quote_Item__c> quoteLineList = Database.query(query);
@@ -71,7 +72,7 @@ public without sharing class QuotePage {
     public static List<buildertek__Quote_Item__c> massUpdateQuote(String Quote) {
         try {
             System.debug('Quote: ' + Quote);
-            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Quantity__c, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Notes__c, buildertek__Quote__r.Name, buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :Quote ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST];
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Quantity__c, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Notes__c, buildertek__Quote__r.Name, buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :Quote ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST , Name ASC];
             
             return quoteItemList;
         } catch(Exception e) {
@@ -101,7 +102,7 @@ public without sharing class QuotePage {
             }
             
             update quoteItemList;
-            System.debug('quoteItemsList: ' + quoteItemsList);
+
             return 'Success';
 
         } catch(Exception e) {
@@ -112,6 +113,9 @@ public without sharing class QuotePage {
     }
 
     public class allData{
+
+        @AuraEnabled
+        public string OrgCurrency;
 
         @AuraEnabled
         public List<BT_Lightning_Utils.dataTableFields> Quotecolumns;

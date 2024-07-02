@@ -26,9 +26,18 @@
                             </div>
                         </template>
                         <template if:false={item.isStatus}>
-                            <div class="value">
-                                {item.value}
-                            </div>
+                            <template if:true={item.isCurrency}>
+                                <div class="value">
+                                    {item.currencyCode} 
+                                    &nbsp;
+                                    <lightning-formatted-number value={item.value} style="currency" currency-code={item.currencyCode}></lightning-formatted-number>
+                                </div>
+                            </template>
+                            <template if:false={item.isCurrency}>
+                                <div class="value">
+                                    {item.value}
+                                </div>
+                            </template>
                         </template>
                     </div>
                 </template>
@@ -42,9 +51,7 @@
         <lightning-button variant="brand" label="Mass Update" title="Mass Update"
             onclick={handleMassUpdate}></lightning-button>
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
-
             onclick={handleImportRfq}></lightning-button>
-
 
     </div>
 
@@ -163,7 +170,6 @@
             openProductBox = {showPricebookModal}>
          </c-Add_QuoteLine_In_Quote> -->
     </template>
-
 
     <template if:true={isAddProductTrue}>
         <c-add-product-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId}></c-add-product-lwc-cmp>
