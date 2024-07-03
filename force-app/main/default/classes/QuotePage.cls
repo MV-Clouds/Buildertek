@@ -4,6 +4,27 @@ public without sharing class QuotePage {
     }
 
     @AuraEnabled
+    public static string deleteQuoteLine(Id quoteItemId) {
+
+        try{
+            buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c();
+            quoteItem.Id = quoteItemId;
+            delete quoteItem;
+        
+            return 'Sucess';
+
+        } catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return ex.getMessage();
+        }
+    }
+
+
+    @AuraEnabled
     public static allData getallData(Id quoteId) {
 
         try{

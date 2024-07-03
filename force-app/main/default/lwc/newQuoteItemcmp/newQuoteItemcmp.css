@@ -108,3 +108,7 @@
     gap: 1%;
     width: 100%;
 }
+
+.rightSection{
+    padding-inline: 1rem;
+}

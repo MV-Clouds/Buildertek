@@ -1,11 +1,14 @@
-import { LightningElement, track, api } from 'lwc';
+import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getallData from '@salesforce/apex/QuotePage.getallData';
+import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
     @track isLoading = true;
+    @track showdeleteModal = false;
+    @track deleteRecordId;
     @track quoteName;
     @track currencyCode;
     @track projectName;
@@ -48,6 +51,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .lastRowCSS table tr:last-child {
                     font-weight: 700;
                 }
+
+                .lastRowCSS table tr:last-child td:nth-child(2) span,
+                .lastRowCSS table tr:last-child td:nth-child(3) span,
+                .lastRowCSS table tr:last-child td:nth-child(4) span{
+                    display: none;
+                }
             `;
 
             body.appendChild(style);
@@ -55,6 +64,11 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             this.isInitalRender = false;
         }
 
+    }
+
+    refreshData() {
+        this.data = [];
+        this.getData();
     }
 
     getData() {
@@ -116,6 +130,11 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         result.columns[i].type = 'string';
                     }
 
+                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Profit_Margin__c' ){
+                        result.columns[i].type = 'percent';
+                        result.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+                    }
+
                     result.columns[i].editable = false;
                     result.columns[i].hideDefaultActions = true;
                     result.columns[i].cellAttributes = { alignment: 'left' };
@@ -136,6 +155,51 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                 }
 
+                let cols = [
+                    {
+                        label: '',
+                        fieldName: 'viewButton',
+                        type: 'button-icon',
+                        fixedWidth: 25,
+                        typeAttributes: {
+                            iconName: 'utility:edit',
+                            name: 'edit_called',
+                            title: 'Edit Icon',
+                            variant: 'bare',
+                            alternativeText: 'Edit Icon'
+                        },
+                        hideDefaultActions: true
+                    },
+                    {
+                        label: '',
+                        fieldName: 'deleteButton',
+                        type: 'button-icon',
+                        fixedWidth: 25,
+                        typeAttributes: {
+                            iconName: 'utility:delete',
+                            name: 'delete_called',
+                            title: 'Delete Icon',
+                            variant: 'bare',
+                            alternativeText: 'Delete Icon'
+                        },
+                        hideDefaultActions: true
+                    },
+                    {
+                        label: '',
+                        fieldName: 'navigateButton',
+                        type: 'button-icon',
+                        fixedWidth: 25,
+                        typeAttributes: {
+                            iconName: 'utility:open',
+                            name: 'navigate_called',
+                            title: 'Navigate Icon',
+                            variant: 'bare',
+                            alternativeText: 'Navigate Icon'
+                        },
+                        hideDefaultActions: true
+                    },
+                ];
+                result.columns = cols.concat(result.columns);
                 result.columns.unshift({
                     // label: 'No.',
                     fieldName: 'Number',
@@ -145,9 +209,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     hideDefaultActions: true,
                     cellAttributes: { alignment: 'center' },
                 });
+                let totalCol = result.colums;  
+
+                this.totalColumns = totalCol;
                 this.columns = result.columns;
-                this.totalColumns = result.columns;
                 this.quoteLines = result.quoteLineList;
+
 
                 //loop on the quote lines and group them by Grouping
                 for (var i = 0; i < this.quoteLines.length; i++) {
@@ -155,6 +222,18 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     var groupId = this.quoteLines[i].buildertek__Grouping__c;
                     if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
                         this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
+                    }
+
+                    if (this.quoteLines[i].buildertek__Markup__c != null) {
+                        this.quoteLines[i].buildertek__Markup__c = this.quoteLines[i].buildertek__Markup__c / 100;
+                    }
+
+                    if (this.quoteLines[i].buildertek__Tax__c != null) {
+                        this.quoteLines[i].buildertek__Tax__c = this.quoteLines[i].buildertek__Tax__c / 100;
+                    }
+
+                    if (this.quoteLines[i].buildertek__Profit_Margin__c != null) {
+                        this.quoteLines[i].buildertek__Profit_Margin__c = this.quoteLines[i].buildertek__Profit_Margin__c / 100;
                     }
 
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
@@ -211,6 +290,111 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         console.log({ data });
     }
 
+    handleRowAction(event){
+        const actionName = event.detail.action.name;
+        const row = event.detail.row;
+        const recordId = row.Id;
+
+        switch(actionName){
+            case 'edit_called':
+                this.handleEdit(recordId);
+                break;
+            case 'delete_called':
+                this.handleDelete(recordId);
+                break;
+            case 'navigate_called':
+                this.handleNavigate(recordId);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    handleEdit(recordId) {
+        console.log('Edit button clicked for Record Id: ' + recordId);
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: recordId,
+                actionName: 'edit',
+            },
+        });
+    }
+
+    handleDelete(recordId) {
+        console.log('Delete button clicked for Record Id: ' + recordId);
+        this.showdeleteModal = true;
+        this.deleteRecordId = recordId;
+    }
+
+    cancelDelete(){
+        this.showdeleteModal = false;
+        this.deleteRecordId = null;
+    }
+
+    deleteQuoteLine(){
+        var recordId = this.deleteRecordId;
+        if(recordId){
+            this.isLoading = true;
+            this.cancelDelete();
+            deleteQuoteLine({
+                quoteItemId: recordId
+            }).then(result => {
+                console.log({result});
+                if(result == "Sucess"){
+                    console.log('Record deleted successfully');
+                    //show toast message 
+                    var message = 'Record deleted successfully';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: message,
+                        variant: 'success'
+                    }));
+                    this.refreshData();
+                }else{
+                    var message = 'Error deleting record';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: message,
+                        variant: 'error'
+                    }));
+                    this.isLoading = false;
+                }
+            });
+        }else{
+            var message = 'Please select a record to delete';
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error'
+            }));
+        }
+    }
+
+    handleNavigate(recordId) {
+        console.log('Navigate button clicked for Record Id: ' + recordId);
+
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: recordId,
+                objectApiName: 'buildertek__Quote_Item__c',
+                actionName: 'view'
+            }
+         });
+    }
+
+    handleMassUpdate(event) {
+        console.log('Mass Update button clicked');
+        this.isMassUpdateEnabled = true;
+    }
+
+    handleAdd(event) {
+        console.log('Add button clicked');
+        this.isAddProductTrue = true;
+    }
+
     handleAddItem(event) {
         var groupId = event.target.dataset.id;
         console.log('Add Item button clicked for Group Id: ' + groupId);
@@ -228,16 +412,11 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
-    closePopUp(event) {
-        this.isImportRfqTrue = false;
-        this.isAddProductTrue = false;
-    }
 
     closePopUp(event) {
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
     }
-
 
     handleAddProduct(event) {
         console.log('Add Product button clicked');
@@ -248,13 +427,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     handleImportRfq(event) {
         console.log('Add Product button clicked');
         // this.filterModal = true;
-        this.isAddProductTrue = true;
-    }
-
-    handleImportRfq(event){
-        console.log('Add Product button clicked');
-        // this.filterModal = true;
-
         this.isImportRfqTrue = true;
     }
 
