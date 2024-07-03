@@ -118,11 +118,17 @@ export default class NewWalkThroughLineCmp extends LightningElement {
                     this.showToast('Error', 'Please add description', 'error');
                     return;
                 } else {
-                    fields['RecordTypeId'] = this.selectedRecordType;
-                    fields['buildertek__Walk_Through_List__c'] = this.walkThroughId;
-                    fields['buildertek__BT_Category__c'] = this.categoryId;
-                    fields['buildertek__Product__c'] = this.selectedProductResult ? this.selectedProductResult.value : '';
-                    fields['buildertek__Price_Book__c'] = this.selectedPriceBook ;
+                    if (fields['buildertek__Description__c'].length > 255) {
+                        this.spinner = false;
+                        this.showToast('Error', 'String length must be less than 255 characters.', 'error');
+                        return;
+                    } else {
+                        fields['RecordTypeId'] = this.selectedRecordType;
+                        fields['buildertek__Walk_Through_List__c'] = this.walkThroughId;
+                        fields['buildertek__BT_Category__c'] = this.categoryId;
+                        fields['buildertek__Product__c'] = this.selectedProductResult ? this.selectedProductResult.value : '';
+                        fields['buildertek__Price_Book__c'] = this.selectedPriceBook ;
+                    }
                 }
             } else if (this.recordTypeName === 'No Product') {
                 if (fields['buildertek__Description__c'] == null || fields['buildertek__Description__c'] == '') {
@@ -142,7 +148,7 @@ export default class NewWalkThroughLineCmp extends LightningElement {
             .then(result =>{
                 this.spinner = false;
                 console.log('result', result);
-                this.dispatchEvent(new CustomEvent("close"));
+                this.dispatchEvent(new CustomEvent("closeandrefresh"));
                 this.showToast('Success', 'Record Created Successfully', 'success');
             }).catch(error => {
                 this.spinner = false;
