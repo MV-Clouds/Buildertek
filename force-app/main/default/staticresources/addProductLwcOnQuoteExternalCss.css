@@ -1,0 +1,9 @@
+.slds-modal__container{
+    width: 50%;
+    max-width: none;
+    min-width: none;
+}
+
+.slds-th__action_form, .slds-th__action--form{
+    display: none !important;
+}
