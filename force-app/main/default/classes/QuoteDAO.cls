@@ -344,6 +344,7 @@ public with sharing class QuoteDAO{
                     }
                 }
             }
+            System.debug(quoteItemsToInsert.size());
             System.debug('quoteItemsToInsert' + quoteItemsToInsert);
             insert quoteItemsToInsert;
             List<buildertek__RFQ_Item__c> rfqLinesList =[Select Id ,buildertek__RFQ_Package__c  , buildertek__Quote_Item__c ,Name From buildertek__RFQ_Item__c where buildertek__RFQ_Package__c=:rfqIds];
@@ -2175,6 +2176,7 @@ public with sharing class QuoteDAO{
             newQline.buildertek__Markup__c = qql.buildertek__Markup__c;
             newQline.buildertek__Additional_Discount__c = qql.buildertek__Additional_Discount__c;
             newQline.buildertek__Grouping__c = qql.buildertek__Grouping__c;
+            newQline.buildertek__Description__c = qql.buildertek__Description__c;
             newQline.buildertek__Quantity__c = qql.buildertek__Quantity__c;
             newQline.buildertek__Notes__c = newQline.buildertek__Notes__c;
             newQline.buildertek__Status__c = 'Accept';
@@ -2496,6 +2498,7 @@ public with sharing class QuoteDAO{
         for (PriceBookEntry pEntry: pEntries) {
             productWrapper aProduct = new productWrapper();
             aProduct.Id = pEntry.Product2Id;
+            aProduct.rowId = pEntry.Id;
             aProduct.Vendor = pEntry.Product2.buildertek__Vendor__r.Name;
             aProduct.CostCode = pEntry.Product2.buildertek__Cost_Code__r.Name;
             aProduct.Name = pEntry.Product2.Name;
@@ -2579,7 +2582,7 @@ public with sharing class QuoteDAO{
         return products;
     }
 
-    @AuraEnabled
+    @AuraEnabled(cacheable=true)
     public static List<buildertek__Quote_Line_Group__c> getQuoteLineGroups(){
         List<buildertek__Quote_Line_Group__c> quoteLineGrouping = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name ASC];
         return quoteLineGrouping;
@@ -2591,6 +2594,9 @@ public with sharing class QuoteDAO{
     public class productWrapper{
         @AuraEnabled
         public Id Id;
+
+        @AuraEnabled
+        public String rowId;
 
         @AuraEnabled
         public String Name;
@@ -2945,6 +2951,7 @@ public with sharing class QuoteDAO{
             productWrapper aProduct = new productWrapper();
             aProduct.PriceBookEntryId = pEntry.Id;
             aProduct.Id = pEntry.Product2Id;
+            aProduct.rowId= pEntry.Id;
             aProduct.Vendor = pEntry.Product2.buildertek__Vendor__r.Name;
             aProduct.CostCode = pEntry.Product2.buildertek__Cost_Code__r.Name;
             aProduct.Name = pEntry.Product2.Name;
