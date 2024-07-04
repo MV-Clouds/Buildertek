@@ -1,6 +1,7 @@
 .slds-table {
     width: 100%;
     margin: 0 auto;
+    border: 1px solid #ccc;
 }
 
 .table-wrapper {
@@ -85,7 +86,7 @@
     max-width: 100%;
 }
 
-.heading{
+.heading {
     font-size: large;
     font-weight: bold;
     color: #0070d2;
