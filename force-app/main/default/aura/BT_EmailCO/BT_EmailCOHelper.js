@@ -20,6 +20,8 @@
         }
         else if(component.get("v.sObjectName") == 'buildertek__Quote__c'){
             folname = 'BT Quote';
+        } else if (component.get("v.sObjectName") == 'buildertek__Purchase_Order__c') {
+            folname = 'BT PO';
         }
         else{
             folname = component.get("v.templatefolderName");
@@ -231,7 +233,7 @@
                 if(response.getReturnValue() == 'Success'){
                     console.log('1stt');
                     $A.get("e.c:BT_SpinnerEvent").setParams({"action" : "HIDE" }).fire();
-                    if (component.get("v.sObjectName") == 'buildertek__Change_Order__c' || component.get("v.sObjectName") == 'buildertek__Project__c' || component.get("v.sObjectName") == 'buildertek__Permit__c' || component.get("v.sObjectName") == 'buildertek__RFI__c' || component.get("v.sObjectName") == 'buildertek__Submittal__c' || component.get("v.sObjectName") == 'buildertek__Quote__c') {
+                    if (component.get("v.sObjectName") == 'buildertek__Change_Order__c' || component.get("v.sObjectName") == 'buildertek__Project__c' || component.get("v.sObjectName") == 'buildertek__Permit__c' || component.get("v.sObjectName") == 'buildertek__RFI__c' || component.get("v.sObjectName") == 'buildertek__Submittal__c' || component.get("v.sObjectName") == 'buildertek__Quote__c' || component.get("v.sObjectName") == 'buildertek__Purchase_Order__c') {
                         $A.get("e.force:closeQuickAction").fire();
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({

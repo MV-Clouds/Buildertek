@@ -538,6 +538,8 @@ public with sharing class BT_SendEmailController{
             }
 
             if (body != null && String.isNotBlank(body) && body != ''){
+                body = body.replaceAll('<p>', '<p style="margin-top: 0em; margin-bottom: 0em; ">');                
+                System.debug(body);
                 mail.setHtmlBody(body);
             }else{
                 mail.setHtmlBody('<p></p>');
@@ -618,7 +620,6 @@ public with sharing class BT_SendEmailController{
             List<ContentVersion> docList;
             list<Id> contentVersionIds = new list<Id>();
             docList = [Select Id, ContentDocumentId, Title, VersionData from ContentVersion where ContentDocumentId IN :files];
-            System.debug('doclist---->'+docList);
             if (docList.size() > 0){
                 for (ContentVersion docs : docList){
                     Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
