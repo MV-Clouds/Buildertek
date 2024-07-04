@@ -4,6 +4,54 @@ public without sharing class QuotePage {
     }
 
     @AuraEnabled
+    public static string deleteQuoteLine(Id quoteItemId) {
+
+        try{
+            buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c();
+            quoteItem.Id = quoteItemId;
+            delete quoteItem;
+        
+            return 'Sucess';
+
+        } catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return ex.getMessage();
+        }
+    }
+
+    @AuraEnabled
+    public static string addGlobalMarkup(Id quoteId, Decimal markup) {
+
+        try{
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Markup__c  FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
+            System.debug('quoteItemList: ' + quoteItemList);
+
+            for(buildertek__Quote_Item__c quoteItem : quoteItemList){
+                if(quoteItem.buildertek__Markup__c == null || quoteItem.buildertek__Markup__c == 0 ){
+                    quoteItem.buildertek__Markup__c = markup;
+                }
+            }
+
+            update quoteItemList;
+
+            return 'Success';
+
+        } catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return ex.getMessage();
+        }
+    }
+
+
+    @AuraEnabled
     public static allData getallData(Id quoteId) {
 
         try{

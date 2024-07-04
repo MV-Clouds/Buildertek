@@ -22,6 +22,7 @@ public with sharing class QuoteItemTriggerHandler {
     
     public void OnBeforeInsert(Quote_Item__c[] newQuoteItems){
         List<Quote_Item__c> qItems = new List<Quote_Item__c>();
+        List<Quote_Item__c> NoNameQItems = new List<Quote_Item__c>();
         for(Quote_Item__c qItem: newQuoteItems) {
             System.debug('qItem.Grouping__c ----> '+qItem.Grouping__c);
             if(qItem.buildertek__Quantity__c == null ){
@@ -30,10 +31,15 @@ public with sharing class QuoteItemTriggerHandler {
             if(qItem.Grouping__c == null) {
                 qItems.add(qItem);
             }
+            if(qItem.Name == null){
+                NoNameQItems.add(qItem);
+            }
+
         }
         
         if(!qItems.isEmpty()) QuoteDAO.setDefaultGrouping(qItems);
-        QuoteDAO.setProductNameToItemName(newQuoteItems);
+        if(!NoNameQItems.isEmpty()) QuoteDAO.setProductNameToItemName(NoNameQItems);
+        
     }
      
     public void OnBeforeUpdate(Quote_Item__c[] oldQuoteItems, Quote_Item__c[] updatedQuoteItems, Map<ID, Quote_Item__c> QuoteItemMap){
