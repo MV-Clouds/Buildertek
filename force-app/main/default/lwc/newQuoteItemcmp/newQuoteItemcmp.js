@@ -4,9 +4,15 @@ import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
+import saveQL from '@salesforce/apex/QuotePage.saveQL';
+
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track isSingleLineenabled ;
+    @track isMarkup ;
+    @track isMargin ;
+    @track groupingOption = [];
     @track globalMarkup = null;
     @track isLoading = true;
     @track showdeleteModal = false;
@@ -25,6 +31,15 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isImportRfqTrue = false;
     @track isAddProductTrue = false;
     @track rotationClass = '';
+    @track fields = {
+        buildertek__Description__c: '',
+        buildertek__Grouping__c: '',
+        buildertek__Notes__c: '',
+        buildertek__Quantity__c: 1,
+        buildertek__Unit_Cost__c: null,
+        buildertek__Margin__c: null,
+        buildertek__Markup__c: null
+    };
     @track grandTotalList = [];
     @track filterModal = false;
     @track filterValue = 'PriceBook';
@@ -73,6 +88,96 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.getData();
     }
 
+    handleSingleLineSave(){
+        this.isLoading = true;
+        //check description and quantity should not be null
+        if (!this.fields.buildertek__Description__c) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Description is required',
+                    variant: 'error'
+                })
+            );
+            this.isLoading = false;
+            return;
+        } else if (!this.fields.buildertek__Quantity__c) {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Quantity is required',
+                    variant: 'error'
+                })
+            );
+            this.isLoading = false;
+            return;
+        }
+
+        if(!this.isMarkup){
+            delete this.fields.buildertek__Markup__c;
+        }
+        if(!this.isMargin){
+            delete this.fields.buildertek__Margin__c;
+        }
+        this.fields.buildertek__Quote__c = this.recordId;
+        this.fields.Name = this.fields.buildertek__Description__c;
+        console.log('Field values:', this.fields);
+        
+        saveQL({ QL: this.fields })
+            .then(result => {
+                console.log({ result });
+                if (result == 'Success') {
+                    console.log('Record saved successfully');
+                    //show toast message 
+                    var message = 'Record created successfully';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: message,
+                        variant: 'success'
+                    }));
+                    this.refreshData();
+                    this.fields = {
+                        buildertek__Description__c: '',
+                        buildertek__Grouping__c: '',
+                        buildertek__Notes__c: '',
+                        buildertek__Quantity__c: null,
+                        buildertek__Unit_Cost__c: null,
+                        buildertek__Margin__c: null,
+                        buildertek__Markup__c: null
+                    };
+                } else {
+                    var message = 'Error saving record';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: message,
+                        variant: 'error'
+                    }));
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+
+    }
+
+    handleInputChange(event) {
+        const fieldName = event.target.name;
+        this.fields[fieldName] = event.target.value;
+    }
+
+    handlePicklistChange(event) {
+        this.fields.buildertek__Grouping__c = event.target.value;
+    }
+
     getData() {
         var QuoteId = this.recordId;
         console.log('Quote ID: ' + QuoteId);
@@ -82,6 +187,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.quote = result.Quote;
                 this.quoteFields = result.Quotecolumns;
                 this.currencyCode = result.OrgCurrency;
+                this.isSingleLineenabled = !result.checkSingleQLine;
+                this.isMarkup = !result.checkButtonMarkup;
+                this.isMargin = !result.checkButtonMargin;
+                let groupingOption = [];
+                for (var i = 0; i < result.QuoteItemGroupList.length; i++) {
+                    label: result.QuoteItemGroupList[i].Name;
+                    value: result.QuoteItemGroupList[i].Id;
+                    groupingOption.push({ label: result.QuoteItemGroupList[i].Name, value: result.QuoteItemGroupList[i].Id });
+                }
+                this.groupingOption = groupingOption;
 
                 setTimeout(() => {
                     var statusCSS = this.template.querySelector('.statusCSS');
@@ -261,6 +376,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.isLoading = false;
             });;
     }
+
 
     calculateTotal(data) {
         let columns = this.columns;
