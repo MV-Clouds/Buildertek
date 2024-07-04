@@ -3,6 +3,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
+import { RefreshEvent } from 'lightning/refresh';
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
@@ -416,6 +417,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event) {
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
+        this.refreshData();
     }
 
     handleAddProduct(event) {
