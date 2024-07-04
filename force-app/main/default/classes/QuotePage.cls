@@ -72,7 +72,7 @@ public without sharing class QuotePage {
 
 
 
-            List<buildertek__Quote_Line_Group__c> QuoteItemGroupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c];
+            List<buildertek__Quote_Line_Group__c> QuoteItemGroupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name];
             ad.QuoteItemGroupList = QuoteItemGroupList;
 
             ad.OrgCurrency = UserInfo.getDefaultCurrency();

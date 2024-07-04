@@ -90,24 +90,24 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     handleSingleLineSave(){
         this.isLoading = true;
-        //check description and quantity should not be null
+        this.fields.buildertek__Quantity__c = parseInt(this.fields.buildertek__Quantity__c);
         if (!this.fields.buildertek__Description__c) {
             this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Error',
-                    message: 'Description is required',
-                    variant: 'error'
-                })
+            new ShowToastEvent({
+                title: 'Error',
+                message: 'Description is required',
+                variant: 'error'
+            })
             );
             this.isLoading = false;
             return;
-        } else if (!this.fields.buildertek__Quantity__c) {
+        } else if (!this.fields.buildertek__Quantity__c || this.fields.buildertek__Quantity__c <= 0) {
             this.dispatchEvent(
-                new ShowToastEvent({
-                    title: 'Error',
-                    message: 'Quantity is required',
-                    variant: 'error'
-                })
+            new ShowToastEvent({
+                title: 'Error',
+                message: 'Quantity should be greater than 0',
+                variant: 'error'
+            })
             );
             this.isLoading = false;
             return;
@@ -121,7 +121,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
         this.fields.buildertek__Quote__c = this.recordId;
         this.fields.Name = this.fields.buildertek__Description__c;
-        console.log('Field values:', this.fields);
+        console.log({ fields: this.fields });
         
         saveQL({ QL: this.fields })
             .then(result => {
@@ -152,6 +152,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         message: message,
                         variant: 'error'
                     }));
+                    this.isLoading = false;
                 }
             })
             .catch(error => {
@@ -162,10 +163,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     variant: 'error'
                 });
                 this.dispatchEvent(evt);
-            })
-            .finally(() => {
                 this.isLoading = false;
-            });
+            })
 
     }
 
