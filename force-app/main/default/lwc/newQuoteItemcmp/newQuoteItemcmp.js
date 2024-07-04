@@ -607,6 +607,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isLoading = true;
         var globalMarkup = this.globalMarkup;
         console.log('Global Markup: ' + globalMarkup);
+        //if globalMarkup is null then show error message
+        if(globalMarkup == null || globalMarkup == ''){
+            var message = 'Please enter Global Markup';
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error'
+            }));
+            this.isLoading = false;
+            return;
+        }
         //call addGlobalMarkup and pass recordId and globalMarkup
         addGlobalMarkup({
             quoteId: this.recordId,
