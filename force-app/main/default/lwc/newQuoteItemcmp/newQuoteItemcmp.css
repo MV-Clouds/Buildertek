@@ -112,3 +112,12 @@
 .rightSection{
     padding-inline: 1rem;
 }
+
+.quote-table{
+    width: 100%;
+}
+
+.globalMarkup{
+    display: flex;
+    align-items: center;
+}

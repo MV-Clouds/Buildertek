@@ -3,10 +3,11 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
-import { RefreshEvent } from 'lightning/refresh';
+import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track globalMarkup = null;
     @track isLoading = true;
     @track showdeleteModal = false;
     @track deleteRecordId;
@@ -474,5 +475,43 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 c__quoteId: this.recordId,
             }
         });
+    }
+
+    handleMarkupChnage(event){
+        this.globalMarkup = event.target.value;
+    }
+
+    handleMarkup(){
+        this.isLoading = true;
+        var globalMarkup = this.globalMarkup;
+        console.log('Global Markup: ' + globalMarkup);
+        //call addGlobalMarkup and pass recordId and globalMarkup
+        addGlobalMarkup({
+            quoteId: this.recordId,
+            markup: globalMarkup
+        }).then(result => {
+            console.log({result});
+            if(result == 'Success'){
+                console.log('Global Markup updated successfully');
+                //show toast message 
+                var message = 'Global Markup updated successfully';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Success',
+                    message: message,
+                    variant: 'success'
+                }));
+                this.refreshData();
+                this.globalMarkup = null;
+            }else{
+                this.isLoading = false;
+                var message = 'Error updating Global Markup';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: message,
+                    variant: 'error'
+                }));
+            }
+        });
+
     }
 }

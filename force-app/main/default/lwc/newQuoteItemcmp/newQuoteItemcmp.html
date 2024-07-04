@@ -46,13 +46,21 @@
     </div>
 
     <div class="buttonSection rightSection">
+        <div class="globalMarkup">
+            <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                Global Markup
+            </div>
+            <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" style="padding-bottom: 0.9rem;"></lightning-input>
+            <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                onclick={handleMarkup}></lightning-button-icon>
+        </div>
+
         <lightning-button variant="brand" label="Add Product" title="Add Product"
             onclick={handleAddProduct}></lightning-button>
         <lightning-button variant="brand" label="Mass Update" title="Mass Update"
             onclick={handleMassUpdate}></lightning-button>
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
             onclick={handleImportRfq}></lightning-button>
-
     </div>
 
     <template for:each={data} for:item="group">
@@ -158,8 +166,7 @@
           </div>
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
-      </template>
-
+    </template>
     <template if:true={filterModal}>
         <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
             aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
