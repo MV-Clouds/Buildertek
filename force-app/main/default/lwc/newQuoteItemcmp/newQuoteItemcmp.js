@@ -415,7 +415,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
 
-    closePopUp(event) {
+    closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
         this.refreshData();
@@ -428,6 +428,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleImportRfq(event) {
+        console.log('Add Product button clicked');
+        // this.filterModal = true;
+        this.isAddProductTrue = true;
+    }
+
+    handleImportRfq(event){
         console.log('Add Product button clicked');
         // this.filterModal = true;
         this.isImportRfqTrue = true;
