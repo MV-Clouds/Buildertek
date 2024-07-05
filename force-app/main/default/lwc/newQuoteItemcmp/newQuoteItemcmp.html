@@ -148,9 +148,9 @@
                                 {group.groupName}
                             </span>
                             <div class="button-div">
-                                <button class="slds-button slds-button_neutral slds-m-left_auto" data-id={group.groupId}
+                                <button class="slds-button slds-button_neutral slds-m-left_auto" data-id={group.groupName}
                                     onclick={handleAddItem}>
-                                    <p data-id={group.groupId}>+</p>
+                                    <p data-id={group.groupName}>+</p>
                                 </button>
                             </div>
                         </h2>
@@ -272,7 +272,7 @@
          </c-Add_QuoteLine_In_Quote> -->
     </template>
     <template if:true={isAddProductTrue}>
-        <c-add-product-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId}></c-add-product-lwc-cmp>
+        <c-add-product-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId} product-family-value={selectedGroupForAddProduct}></c-add-product-lwc-cmp>
     </template>
     <template if:true={isImportRfqTrue}>
         <c-import-rfq-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId}></c-import-rfq-lwc-cmp>
@@ -294,8 +294,8 @@
                     <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">Edit Record</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium editForm" id="modal-content-id-3">
-                <lightning-record-edit-form object-api-name="buildertek__Quote_Item__c" record-id={EditrecordId} onsuccess={handleSuccess}>
-                        <div class="slds-grid slds-wrap">
+                <lightning-record-edit-form object-api-name="buildertek__Quote_Item__c" record-id={EditrecordId} onsubmit={handleSubmit} onsuccess={handleSucess} onerror={handleError}>
+                        <div class="fixHeight slds-grid slds-wrap">
                             <template for:each={quoteLineEditFields} for:item="field">
                                 <div key={field.fieldName} class="slds-size_1-of-2" style="padding: 3px 10px;">
                                     <lightning-input-field field-name={field.fieldName}></lightning-input-field>
@@ -304,14 +304,13 @@
                         </div>
                         <div class="slds-m-top_medium">
                         </div>
+                        <lightning-button type="submit" class="hidden" label="Save" variant="brand"></lightning-button>
                     </lightning-record-edit-form>
                     
                 </div>
                 <footer class="slds-modal__footer">
-                    <!-- <lightning-button type="submit" label="Save" variant="brand"></lightning-button> -->
-                    
                     <button class="slds-button slds-button_neutral" onclick={closeEditModal} title="Cancel">Cancel</button>
-                    <button class="slds-button slds-button_brand" onclick={submitDetails} title="Update">Update</button>
+                    <button class="slds-button slds-button_brand" onclick={submitDetails2} title="Update">Update</button>
                 </footer>
             </div>
         </section>

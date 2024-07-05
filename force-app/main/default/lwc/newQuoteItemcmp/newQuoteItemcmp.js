@@ -52,7 +52,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     ];
     @track filterGroupId;
     @track showPricebookModal = false;
-
+    @track selectedGroupForAddProduct;
     connectedCallback() {
         this.getData();
     }
@@ -95,6 +95,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                 .editForm .slds-input {
                     padding-left: 10px;
+                }
+
+                .editForm .fixHeight{
+
                 }
                 
             `;
@@ -196,54 +200,39 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.fields[fieldName] = event.target.value;
     }
 
-    submitDetails(){
-        const inputFields = this.template.querySelectorAll('.editForm lightning-input-field');
-        const fieldValues = {};
-        inputFields.forEach(field => {
-            const fieldName = field.fieldName;
-            const fieldValue = field.value;
-            fieldValues[fieldName] = fieldValue;
-        });
-        fieldValues.Id = this.EditrecordId;
-        console.log('All field values:', fieldValues);
+    handleSubmit(event){
         this.isLoading = true;
+        event.preventDefault();
+        const fields = event.detail.fields;
+        fields.Id = this.EditrecordId;
+        this.isEditModal = false;
+        this.template.querySelector('lightning-record-edit-form').submit(fields);
+    }
 
-        saveQL({ QL: fieldValues })
-            .then(result => {
-                console.log({ result });
-                if (result == 'Success') {
-                    console.log('Record saved successfully');
-                    //show toast message 
-                    var message = 'Record updated successfully';
-                    this.dispatchEvent(new ShowToastEvent({
-                        title: 'Success',
-                        message: message,
-                        variant: 'success'
-                    }));
-                    this.refreshData();
-                    this.isEditModal = false;
-                    this.EditrecordId = null;
-                } else {
-                    var message = 'Error saving record';
-                    this.dispatchEvent(new ShowToastEvent({
-                        title: 'Error',
-                        message: message,
-                        variant: 'error'
-                    }));
-                    this.isLoading = false;
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                const evt = new ShowToastEvent({
-                    title: 'Error',
-                    message: error.body.message,
-                    variant: 'error'
-                });
-                this.dispatchEvent(evt);
-                this.isLoading = false;
-            })
-        
+    handleSucess(){
+        this.refreshData();
+        var message = 'Record updated successfully';
+        this.dispatchEvent(new ShowToastEvent({
+            title: 'Success',
+            message: message,
+            variant: 'success'
+        }));
+    }
+
+    handleError(){
+        var message = 'Error updating record';
+        this.dispatchEvent(new ShowToastEvent({
+            title: 'Error',
+            message: message,
+            variant: 'error'
+        }));
+    }
+
+    submitDetails2(){
+        const btn = this.template.querySelector( ".hidden" );
+        if( btn ){ 
+            btn.click();
+        }
     }
 
     handlePicklistChange(event) {
@@ -594,19 +583,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleAddItem(event) {
-        var groupId = event.target.dataset.id;
-        console.log('Add Item button clicked for Group Id: ' + groupId);
-        if (groupId) {
-            this.filterModal = true;
-            this.filterGroupId = groupId;
-        } else {
-            const evt = new ShowToastEvent({
-                title: 'Error',
-                message: 'Please select a group to add item',
-                variant: 'error'
-            });
-            this.dispatchEvent(evt);
-        }
+        this.selectedGroupForAddProduct = event.target.dataset.id;
+        console.log('Group: ' + this.selectedGroupForAddProduct);
+        this.handleAddProduct();
 
     }
 
