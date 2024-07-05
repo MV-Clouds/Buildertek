@@ -387,7 +387,7 @@ public without sharing class OpportunityTriggerHandler{
                             prj.buildertek__State__c = opp.Account.Billingstate;
                             prj.buildertek__Address__c = opp.Account.Billingstreet;
                             prj.buildertek__Zip__c = opp.Account.Billingpostalcode;
-                            prj.Name = opp.Account.Name;
+                            prj.Name = opp.Name;
                             prj.buildertek__Opportunity__c = opp.Id;
                             prj.OwnerId = opp.OwnerId;
                             if (opp.buildertek__Estimator__c != null) {
