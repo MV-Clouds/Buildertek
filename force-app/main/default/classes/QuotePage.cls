@@ -71,14 +71,17 @@ public without sharing class QuotePage {
             ad.checkButtonMarkup = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c;
 
 
-
             List<buildertek__Quote_Line_Group__c> QuoteItemGroupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name];
-            ad.QuoteItemGroupList = QuoteItemGroupList;
+            ad.QuoteItemGroupList = QuoteItemGroupList; 
 
             ad.OrgCurrency = UserInfo.getDefaultCurrency();
 
             List<BT_Lightning_Utils.dataTableFields> Quotecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote__c', 'buildertek__QuotePage');
             ad.Quotecolumns = Quotecolumn;
+
+            List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__BT_Detail_Page_Fields');
+            // List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__Mass_add_Quote_Item');
+            ad.QuoteLineFields = QuoteLinecolumn;
 
             String quoteFields = '';
             for(BT_Lightning_Utils.dataTableFields dt : Quotecolumn){
@@ -194,6 +197,9 @@ public without sharing class QuotePage {
     }
 
     public class allData{
+
+        @AuraEnabled
+        public List<BT_Lightning_Utils.dataTableFields> QuoteLineFields;
 
         @AuraEnabled
         public boolean checkSingleQLine;

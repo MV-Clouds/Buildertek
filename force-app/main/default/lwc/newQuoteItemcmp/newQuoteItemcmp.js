@@ -5,10 +5,13 @@ import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
 import saveQL from '@salesforce/apex/QuotePage.saveQL';
+import { RefreshEvent } from 'lightning/refresh';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track quoteLineEditFields;
+    @track isEditModal = false;
     @track isSingleLineenabled ;
     @track isMarkup ;
     @track isMargin ;
@@ -29,14 +32,14 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track data = [];
     @track totalColumns;
     @track isImportRfqTrue = false;
+    @track EditrecordId;
     @track isAddProductTrue = false;
-    @track rotationClass = '';
     @track fields = {
         buildertek__Description__c: '',
         buildertek__Grouping__c: '',
         buildertek__Notes__c: '',
         buildertek__Quantity__c: 1,
-        buildertek__Unit_Cost__c: null,
+        buildertek__Unit_Cost__c: 0.00,
         buildertek__Margin__c: null,
         buildertek__Markup__c: null
     };
@@ -74,6 +77,26 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .lastRowCSS table tr:last-child td:nth-child(4) span{
                     display: none;
                 }
+                .editForm {
+                    position: relative;
+                    height: unset !important;
+                    max-height: unset !important;
+                }
+                .editForm .slds-modal__container {
+                    max-width: 42rem !important;
+                    width: 70% !important;
+                }
+                .editForm .cuf-content {
+                    padding:  0rem !important;
+                }
+                .editForm .slds-p-around--medium {
+                    padding: 0rem !important;
+                }
+
+                .editForm .slds-input {
+                    padding-left: 10px;
+                }
+                
             `;
 
             body.appendChild(style);
@@ -140,8 +163,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         buildertek__Description__c: '',
                         buildertek__Grouping__c: '',
                         buildertek__Notes__c: '',
-                        buildertek__Quantity__c: null,
-                        buildertek__Unit_Cost__c: null,
+                        buildertek__Quantity__c: 1,
+                        buildertek__Unit_Cost__c: 0.00,
                         buildertek__Margin__c: null,
                         buildertek__Markup__c: null
                     };
@@ -173,6 +196,56 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.fields[fieldName] = event.target.value;
     }
 
+    submitDetails(){
+        const inputFields = this.template.querySelectorAll('.editForm lightning-input-field');
+        const fieldValues = {};
+        inputFields.forEach(field => {
+            const fieldName = field.fieldName;
+            const fieldValue = field.value;
+            fieldValues[fieldName] = fieldValue;
+        });
+        fieldValues.Id = this.EditrecordId;
+        console.log('All field values:', fieldValues);
+        this.isLoading = true;
+
+        saveQL({ QL: fieldValues })
+            .then(result => {
+                console.log({ result });
+                if (result == 'Success') {
+                    console.log('Record saved successfully');
+                    //show toast message 
+                    var message = 'Record updated successfully';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: message,
+                        variant: 'success'
+                    }));
+                    this.refreshData();
+                    this.isEditModal = false;
+                    this.EditrecordId = null;
+                } else {
+                    var message = 'Error saving record';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: message,
+                        variant: 'error'
+                    }));
+                    this.isLoading = false;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+                this.isLoading = false;
+            })
+        
+    }
+
     handlePicklistChange(event) {
         this.fields.buildertek__Grouping__c = event.target.value;
     }
@@ -184,6 +257,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             .then(result => {
                 console.log({ result });
                 this.quote = result.Quote;
+                this.quoteLineEditFields = result.QuoteLineFields;
                 this.quoteFields = result.Quotecolumns;
                 this.currencyCode = result.OrgCurrency;
                 this.isSingleLineenabled = !result.checkSingleQLine;
@@ -430,13 +504,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     handleEdit(recordId) {
         console.log('Edit button clicked for Record Id: ' + recordId);
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: recordId,
-                actionName: 'edit',
-            },
-        });
+        this.EditrecordId = recordId;
+        // this[NavigationMixin.Navigate]({
+        //     type: 'standard__recordPage',
+        //     attributes: {
+        //         recordId: recordId,
+        //         actionName: 'edit',
+        //     },
+        // });
+        this.isEditModal = true;
+    }
+
+    closeEditModal(){
+        this.isEditModal = false;
+        this.EditrecordId = null;
     }
 
     handleDelete(recordId) {
