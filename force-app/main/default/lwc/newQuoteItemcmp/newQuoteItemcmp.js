@@ -96,10 +96,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .editForm .slds-input {
                     padding-left: 10px;
                 }
-
-                .editForm .fixHeight{
-
-                }
                 
             `;
 
@@ -369,7 +365,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         type: 'button-icon',
                         fixedWidth: 25,
                         typeAttributes: {
-                            iconName: 'utility:open',
+                            iconName: 'utility:new_window',
                             name: 'navigate_called',
                             title: 'Navigate Icon',
                             variant: 'bare',
