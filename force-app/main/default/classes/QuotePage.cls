@@ -58,10 +58,30 @@ public without sharing class QuotePage {
 
             allData ad = new allData();
 
+            buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Remove_Single_Quote_Line_Option__c, buildertek__Hide_Global_Margin__c, buildertek__Hide_Global_Markup__c
+                                                                                              from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                              WHERE Name = :'Quote Configuration'];
+
+            // Boolean checkSingleQLine = adminInterfaceNodeConfigurations.buildertek__Remove_Single_Quote_Line_Option__c ;
+            // Boolean checkButtonMargin = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Margin__c;
+            // Boolean checkButtonMarkup = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c;
+
+            ad.checkSingleQLine = adminInterfaceNodeConfigurations.buildertek__Remove_Single_Quote_Line_Option__c;
+            ad.checkButtonMargin = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Margin__c;
+            ad.checkButtonMarkup = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c;
+
+
+            List<buildertek__Quote_Line_Group__c> QuoteItemGroupList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name];
+            ad.QuoteItemGroupList = QuoteItemGroupList; 
+
             ad.OrgCurrency = UserInfo.getDefaultCurrency();
 
             List<BT_Lightning_Utils.dataTableFields> Quotecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote__c', 'buildertek__QuotePage');
             ad.Quotecolumns = Quotecolumn;
+
+            List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__BT_Detail_Page_Fields');
+            // List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__Mass_add_Quote_Item');
+            ad.QuoteLineFields = QuoteLinecolumn;
 
             String quoteFields = '';
             for(BT_Lightning_Utils.dataTableFields dt : Quotecolumn){
@@ -117,6 +137,22 @@ public without sharing class QuotePage {
     }
 
     @AuraEnabled
+    public static string saveQL(buildertek__Quote_Item__c QL ){
+        try{
+            upsert QL;
+            return 'Success';
+        }catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return ex.getMessage();
+        }
+
+    }
+
+    @AuraEnabled
     public static List<buildertek__Quote_Item__c> massUpdateQuote(String Quote) {
         try {
             System.debug('Quote: ' + Quote);
@@ -161,6 +197,21 @@ public without sharing class QuotePage {
     }
 
     public class allData{
+
+        @AuraEnabled
+        public List<BT_Lightning_Utils.dataTableFields> QuoteLineFields;
+
+        @AuraEnabled
+        public boolean checkSingleQLine;
+
+        @AuraEnabled
+        public boolean checkButtonMargin;
+
+        @AuraEnabled
+        public boolean checkButtonMarkup;
+
+        @AuraEnabled
+        public List<buildertek__Quote_Line_Group__c> QuoteItemGroupList;
 
         @AuraEnabled
         public string OrgCurrency;
