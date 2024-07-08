@@ -658,7 +658,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
-                componentName: 'c__quoteMassUpdateHelper'
+                componentName: 'buildertek__quoteMassUpdateHelper'
             },
             state: {
                 c__quoteId: this.recordId,
