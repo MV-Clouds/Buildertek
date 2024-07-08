@@ -9,8 +9,7 @@
                 <apex:inputcheckbox value="{!isCreatesendcustomerquoteaftersignature}" label="Send Owner Email after Quote acceptance">
                 </apex:inputcheckbox>
                 <apex:inputtext value="{!emailsubject}" label="Email Subject"/>
-                <apex:inputcheckbox value="{!isCreateProjectfromOpp}" label="Create Project on Opportunity Closed Won">
-                </apex:inputcheckbox>
+                
                 <apex:inputcheckbox value="{!isUpdatetheOppAmount}" label="Update the Opp Amount">
                 </apex:inputcheckbox>
                 <apex:inputField value="{!admininterface.Default_Project_Owner__c}" styleClass="slds-input" style="width:320px;"/>
@@ -40,7 +39,7 @@
                 </apex:selectList>
                 <apex:inputcheckbox value="{!reject_Quote_on_Rejected_Lines}" label="Reject all or Acccept all">
                 </apex:inputcheckbox>
-                <apex:inputcheckbox value="{!showmargin}" label="Show Margin">
+                <apex:inputcheckbox value="{!showmargin}" label="Show Margin (for Add product/Quote Line) ">
                 </apex:inputcheckbox>
 
 
