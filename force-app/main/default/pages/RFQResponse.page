@@ -586,7 +586,7 @@
 
                     <div>
                         <div style="padding:1rem;">
-                            <apex:outputText escape="false" rendered="{!rfqToVendor.Status__c == 'Waiting for Answer'}" style="color:red !important; font-weight: bold; font-size: smaller;" value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Resend_Message__c}"/>
+                            <apex:outputText escape="false" rendered="{!rfqToVendor.Status__c == 'Waiting for Answer'}" style="color:red !important; font-weight: bold; font-size: medium;" value="{!rfqToVendor.buildertek__RFQ__r.Resend_Message__c}"/>
                         </div>
                         <apex:pageBlockSection title="RFQ Details" columns="2">
                             <apex:outputField value="{!rfqToVendor.buildertek__RFQ__r.buildertek__Project__r.Name}" />

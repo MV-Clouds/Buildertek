@@ -4,9 +4,18 @@ import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
+import saveQL from '@salesforce/apex/QuotePage.saveQL';
+import { RefreshEvent } from 'lightning/refresh';
+
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track quoteLineEditFields;
+    @track isEditModal = false;
+    @track isSingleLineenabled ;
+    @track isMarkup ;
+    @track isMargin ;
+    @track groupingOption = [];
     @track globalMarkup = null;
     @track isLoading = true;
     @track showdeleteModal = false;
@@ -23,8 +32,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track data = [];
     @track totalColumns;
     @track isImportRfqTrue = false;
+    @track EditrecordId;
     @track isAddProductTrue = false;
-    @track rotationClass = '';
+    @track fields = {
+        buildertek__Description__c: '',
+        buildertek__Grouping__c: '',
+        buildertek__Notes__c: '',
+        buildertek__Quantity__c: 1,
+        buildertek__Unit_Cost__c: 0.00,
+        buildertek__Margin__c: null,
+        buildertek__Markup__c: null
+    };
     @track grandTotalList = [];
     @track filterModal = false;
     @track filterValue = 'PriceBook';
@@ -34,9 +52,15 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     ];
     @track filterGroupId;
     @track showPricebookModal = false;
-
+    @track selectedGroupForAddProduct;
     connectedCallback() {
         this.getData();
+        this.handleMassUpdate = this.handleMassUpdate.bind(this);
+        window.addEventListener('message', this.handleMessage.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('message', this.handleMessage.bind(this));
     }
 
     renderedCallback() {
@@ -59,6 +83,26 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .lastRowCSS table tr:last-child td:nth-child(4) span{
                     display: none;
                 }
+                .editForm {
+                    position: relative;
+                    height: unset !important;
+                    max-height: unset !important;
+                }
+                .editForm .slds-modal__container {
+                    max-width: 42rem !important;
+                    width: 70% !important;
+                }
+                .editForm .cuf-content {
+                    padding:  0rem !important;
+                }
+                .editForm .slds-p-around--medium {
+                    padding: 0rem !important;
+                }
+
+                .editForm .slds-input {
+                    padding-left: 10px;
+                }
+                
             `;
 
             body.appendChild(style);
@@ -71,6 +115,131 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     refreshData() {
         this.data = [];
         this.getData();
+        this.selectedGroupForAddProduct = null;
+    }
+
+    handleSingleLineSave(){
+        this.isLoading = true;
+        this.fields.buildertek__Quantity__c = parseInt(this.fields.buildertek__Quantity__c);
+        if (!this.fields.buildertek__Description__c) {
+            this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Error',
+                message: 'Description is required',
+                variant: 'error'
+            })
+            );
+            this.isLoading = false;
+            return;
+        } else if (!this.fields.buildertek__Quantity__c || this.fields.buildertek__Quantity__c <= 0) {
+            this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Error',
+                message: 'Quantity should be greater than 0',
+                variant: 'error'
+            })
+            );
+            this.isLoading = false;
+            return;
+        }
+
+        if(!this.isMarkup){
+            delete this.fields.buildertek__Markup__c;
+        }
+        if(!this.isMargin){
+            delete this.fields.buildertek__Margin__c;
+        }
+        this.fields.buildertek__Quote__c = this.recordId;
+        this.fields.Name = this.fields.buildertek__Description__c;
+        console.log({ fields: this.fields });
+        
+        saveQL({ QL: this.fields })
+            .then(result => {
+                console.log({ result });
+                if (result == 'Success') {
+                    console.log('Record saved successfully');
+                    //show toast message 
+                    var message = 'Record created successfully';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: message,
+                        variant: 'success'
+                    }));
+                    this.refreshData();
+                    this.fields = {
+                        buildertek__Description__c: '',
+                        buildertek__Grouping__c: '',
+                        buildertek__Notes__c: '',
+                        buildertek__Quantity__c: 1,
+                        buildertek__Unit_Cost__c: 0.00,
+                        buildertek__Margin__c: null,
+                        buildertek__Markup__c: null
+                    };
+                } else {
+                    var message = 'Error saving record';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: message,
+                        variant: 'error'
+                    }));
+                    this.isLoading = false;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+                this.isLoading = false;
+            })
+
+    }
+
+    handleInputChange(event) {
+        const fieldName = event.target.name;
+        this.fields[fieldName] = event.target.value;
+    }
+
+    handleSubmit(event){
+        this.isLoading = true;
+        event.preventDefault();
+        const fields = event.detail.fields;
+        fields.Id = this.EditrecordId;
+        this.isEditModal = false;
+        this.template.querySelector('lightning-record-edit-form').submit(fields);
+    }
+
+    handleSucess(){
+        this.refreshData();
+        var message = 'Record updated successfully';
+        this.dispatchEvent(new ShowToastEvent({
+            title: 'Success',
+            message: message,
+            variant: 'success'
+        }));
+    }
+
+    handleError(){
+        var message = 'Error updating record';
+        this.dispatchEvent(new ShowToastEvent({
+            title: 'Error',
+            message: message,
+            variant: 'error'
+        }));
+    }
+
+    submitDetails2(){
+        const btn = this.template.querySelector( ".hidden" );
+        if( btn ){ 
+            btn.click();
+        }
+    }
+
+    handlePicklistChange(event) {
+        this.fields.buildertek__Grouping__c = event.target.value;
     }
 
     getData() {
@@ -80,8 +249,19 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             .then(result => {
                 console.log({ result });
                 this.quote = result.Quote;
+                this.quoteLineEditFields = result.QuoteLineFields;
                 this.quoteFields = result.Quotecolumns;
                 this.currencyCode = result.OrgCurrency;
+                this.isSingleLineenabled = !result.checkSingleQLine;
+                this.isMarkup = !result.checkButtonMarkup;
+                this.isMargin = !result.checkButtonMargin;
+                let groupingOption = [];
+                for (var i = 0; i < result.QuoteItemGroupList.length; i++) {
+                    label: result.QuoteItemGroupList[i].Name;
+                    value: result.QuoteItemGroupList[i].Id;
+                    groupingOption.push({ label: result.QuoteItemGroupList[i].Name, value: result.QuoteItemGroupList[i].Id });
+                }
+                this.groupingOption = groupingOption;
 
                 setTimeout(() => {
                     var statusCSS = this.template.querySelector('.statusCSS');
@@ -192,7 +372,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         type: 'button-icon',
                         fixedWidth: 25,
                         typeAttributes: {
-                            iconName: 'utility:open',
+                            iconName: 'utility:new_window',
                             name: 'navigate_called',
                             title: 'Navigate Icon',
                             variant: 'bare',
@@ -262,6 +442,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             });;
     }
 
+
     calculateTotal(data) {
         let columns = this.columns;
         let totalColumns = columns.filter(col => col.type === 'number' || col.type === 'currency');
@@ -315,13 +496,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     handleEdit(recordId) {
         console.log('Edit button clicked for Record Id: ' + recordId);
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: {
-                recordId: recordId,
-                actionName: 'edit',
-            },
-        });
+        this.EditrecordId = recordId;
+        // this[NavigationMixin.Navigate]({
+        //     type: 'standard__recordPage',
+        //     attributes: {
+        //         recordId: recordId,
+        //         actionName: 'edit',
+        //     },
+        // });
+        this.isEditModal = true;
+    }
+
+    closeEditModal(){
+        this.isEditModal = false;
+        this.EditrecordId = null;
     }
 
     handleDelete(recordId) {
@@ -387,10 +575,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
          });
     }
 
-    handleMassUpdate(event) {
-        console.log('Mass Update button clicked');
-        this.isMassUpdateEnabled = true;
-    }
 
     handleAdd(event) {
         console.log('Add button clicked');
@@ -398,19 +582,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleAddItem(event) {
-        var groupId = event.target.dataset.id;
-        console.log('Add Item button clicked for Group Id: ' + groupId);
-        if (groupId) {
-            this.filterModal = true;
-            this.filterGroupId = groupId;
-        } else {
-            const evt = new ShowToastEvent({
-                title: 'Error',
-                message: 'Please select a group to add item',
-                variant: 'error'
-            });
-            this.dispatchEvent(evt);
-        }
+        this.selectedGroupForAddProduct = event.target.dataset.id;
+        console.log('Group: ' + this.selectedGroupForAddProduct);
+        this.handleAddProduct();
 
     }
 
@@ -471,6 +645,15 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
     }
 
+    handleMessage(event) {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+        if (event.data.action === 'closeSubtab') {
+            this.refreshData();
+        }
+    }
+
     handleMassUpdate() {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
@@ -491,6 +674,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isLoading = true;
         var globalMarkup = this.globalMarkup;
         console.log('Global Markup: ' + globalMarkup);
+        //if globalMarkup is null then show error message
+        if(globalMarkup == null || globalMarkup == ''){
+            var message = 'Please enter Global Markup';
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error'
+            }));
+            this.isLoading = false;
+            return;
+        }
         //call addGlobalMarkup and pass recordId and globalMarkup
         addGlobalMarkup({
             quoteId: this.recordId,

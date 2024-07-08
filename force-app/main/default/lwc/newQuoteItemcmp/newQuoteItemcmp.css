@@ -121,3 +121,12 @@
     display: flex;
     align-items: center;
 }
+
+.singleLineEntry{
+    width: 100%;
+    padding-inline: 1rem;
+}
+
+.hidden{
+    display: none;
+}

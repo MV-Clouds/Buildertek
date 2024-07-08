@@ -69,7 +69,7 @@ export default class AddProductLwcCmp extends LightningElement {
     columnsForVendorList = columnsForVendorList;
     columnsForVendorsDataTable = columnsForVendorsDataTable;
     priceBookValue = '';
-    productFamilyValue = '-- All Product Family --';
+    @api productFamilyValue;
     pickerValue = 'pricebook';
     filteredData = [];
     filteredData2 = [];
@@ -114,6 +114,7 @@ export default class AddProductLwcCmp extends LightningElement {
 
     connectedCallback() {
 		loadStyle(this, myResource);
+        this.productFamilyValue = this.productFamilyValue || '-- All Product Family --';
 	}
 
     handleChangeInPicker(event) {
@@ -125,7 +126,7 @@ export default class AddProductLwcCmp extends LightningElement {
         this.priceBookValue = event.detail.value;
         this.productFamilyValue = '-- All Product Family --';
         this.filteredData3 = [];
-        let searchKey = event.target.value
+        let searchKey = event.target.value;
 		searchKey = searchKey.toLowerCase();
         if (searchKey == '-- all pricebook --' || searchKey == '' || searchKey == undefined) {
 			this.filteredData = this.data;
@@ -230,6 +231,7 @@ export default class AddProductLwcCmp extends LightningElement {
                 await this.callApexForPricebookList();
                 await this.callApexForProdcutFamilyList();
                 this.heading_title = 'Products';
+                this.filterProducts();
                 this.isPriceBookSelected = true;
             } else if(this.pickerValue === 'vendor') {
                 await this.callApexForVendorsList();
@@ -255,8 +257,30 @@ export default class AddProductLwcCmp extends LightningElement {
         }
     }
 
+    filterProducts() {
+        let searchKey = this.productFamilyValue;
+        searchKey = searchKey.toLowerCase();
+    
+        let isExist = this.productFamilyOptions.find(ele => ele.value.toLowerCase() === searchKey);
+    
+        if (!isExist) {
+            searchKey = '-- all product family --';
+            this.productFamilyValue = '-- All Product Family --';
+        }
+    
+        if (searchKey === '-- all product family --' || searchKey === '' || searchKey === undefined) {
+            this.filteredData = this.data;
+            return;
+        }
+    
+        this.filteredData = this.data.filter(ele => {
+            return ele.Family?.toLowerCase().includes(searchKey);
+        });
+        this.filteredData2 = this.filteredData;
+    }
+
     async goToNextScreenVendorFlow(){
-        console.log('calling goToNextScreenForVendorFlow');
+        console.log('calling goToNextScreenForVendorFlow',this.productFamilyValue);
         this.showSpinner = true;
         if (this.btnValueVendorFlow === 'Next') {
             if (this.vendorId == undefined || this.vendorId == '') {
@@ -284,7 +308,36 @@ export default class AddProductLwcCmp extends LightningElement {
             await this.saveQuoteLineItems();
             this.showSpinner = false;
         }
+        this.filterProductFamilyForVendor();
     }
+
+    filterProductFamilyForVendor() {
+        let searchKey = this.productFamilyValue.toLowerCase();
+
+        let isExist = this.data.some(ele => ele.Family?.toLowerCase() === searchKey);
+
+        if (!isExist) {
+            searchKey = '-- all product family --';
+            this.productFamilyValue = '-- All Product Family --';
+        }
+
+        if (!this.priceBookValue || this.priceBookValue.toLowerCase() === '-- all pricebook --') {
+            if (searchKey === '-- all product family --') {
+                this.filteredData = this.data;
+            } else {
+                this.filteredData = this.data.filter(ele => ele.Family?.toLowerCase().includes(searchKey));
+            }
+            this.filteredData3 = this.filteredData;
+            return;
+        }
+
+        if (searchKey === '-- all product family --') {
+            this.filteredData = this.filteredData2;
+        } else {
+            this.filteredData = this.filteredData2.filter(ele => ele.Family?.toLowerCase().includes(searchKey));
+        }
+        this.filteredData3 = this.filteredData;
+    }    
 
     doEditOperationForPriceBook() {
         let selectedRecords = this.template.querySelector("lightning-datatable").getSelectedRows();
@@ -448,6 +501,7 @@ export default class AddProductLwcCmp extends LightningElement {
             this.btnNameVendorFlow = 'Next';
             this.btnValueVendorFlow = 'Edit';
         }
+        this.callApexForVendorsList();
     }
 
     handleSelected(event) {
@@ -551,6 +605,11 @@ export default class AddProductLwcCmp extends LightningElement {
 
 		if (searchKey == ''){
             this.vendorList = this.data;
+            const dataTable = this.template.querySelector('lightning-datatable');
+            if (dataTable) {
+                dataTable.selectedRows = [];
+            }
+            this.vendorId = null;
             return;
         }
 
@@ -640,7 +699,7 @@ export default class AddProductLwcCmp extends LightningElement {
 
             this.productFamilyOptions = productFamilySet.size > 0 ? Array.from(productFamilySet).map(item => ({ label: item, value: item })) : [];
             this.productFamilyOptions.unshift({ label: '-- All Product Family --', value: '-- All Product Family --' });
-            this.productFamilyValue = '-- All Product Family --';
+            this.productFamilyValue = this.productFamilyValue || '-- All Product Family --';
 
             this.filteredData = result;
             this.data = result;

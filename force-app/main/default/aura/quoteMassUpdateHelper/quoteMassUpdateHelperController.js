@@ -23,6 +23,9 @@
     handleCancelEvent: function(component, event, helper) {
         var workspaceAPI = component.find("workspace");
         workspaceAPI.getEnclosingTabId().then(function(tabId) {
+            if (event.getParam('refresh')) {
+                window.postMessage({ action: 'closeSubtab' }, window.location.origin);
+            }
             workspaceAPI.closeTab({tabId: tabId});
         });
     }
