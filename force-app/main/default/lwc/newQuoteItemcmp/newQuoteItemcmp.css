@@ -130,3 +130,50 @@
 .hidden{
     display: none;
 }
+
+.table-container {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.table-header {
+    background-color: #0176D1;
+}
+
+.table-header th {
+    padding: 8px;
+    color: white;
+    font-weight: bold;
+}
+
+.table-header th:nth-child(1),
+.table-header th:nth-child(3) {
+    width: 27%;
+}
+
+.table-header th:nth-child(2) {
+    width: 23%;
+}
+
+.table-header th:nth-child(4),
+.table-header th:nth-child(5),
+.table-header th:nth-child(6) {
+    width: 7%;
+}
+
+.table-header th:nth-child(7) {
+    width: 3%;
+}
+
+.table-row {
+    background-color: whitesmoke;
+}
+
+.table-cell {
+    padding: 8px;
+}
+
+.input-field {
+    height: 35px;
+}

@@ -58,7 +58,7 @@ export default class ImportRfqLwcCmp extends LightningElement {
 	}
 
 	hideModalBox() {
-		this.closeChildScreen();
+		this.closeChildScreen(false);
 	}
 
 	handleKeyUp(evt) {
@@ -138,7 +138,7 @@ export default class ImportRfqLwcCmp extends LightningElement {
 			.then(result => {
 				if (result == 'Success') {
 					this.showToastMsg('Success', 'Quote Line Created Successfully.', 'success');
-					this.closeChildScreen();
+					this.closeChildScreen(true);
 				} else{
 					this.showToastMsg('Error', result, 'error');
 				}
@@ -173,9 +173,13 @@ export default class ImportRfqLwcCmp extends LightningElement {
 		}
     }
 
-	closeChildScreen() {
+	closeChildScreen(isRefresh) {
 		this.resetValues();
-		this.dispatchEvent(new CustomEvent('closechildscreen'));
+		if (isRefresh) {
+			this.dispatchEvent(new CustomEvent('closechildscreen', { detail: { refresh: true } }));
+			return;
+		}
+		this.dispatchEvent(new CustomEvent('closechildscreen', { detail: { refresh: false } }));
 	}
 
 	showToastMsg(title, message, variant) {

@@ -69,7 +69,8 @@ export default class AddProductLwcCmp extends LightningElement {
     columnsForVendorList = columnsForVendorList;
     columnsForVendorsDataTable = columnsForVendorsDataTable;
     priceBookValue = '';
-    @api productFamilyValue;
+    productFamilyValue;
+    @api productFamilyFromParent;
     pickerValue = 'pricebook';
     filteredData = [];
     filteredData2 = [];
@@ -114,7 +115,7 @@ export default class AddProductLwcCmp extends LightningElement {
 
     connectedCallback() {
 		loadStyle(this, myResource);
-        this.productFamilyValue = this.productFamilyValue || '-- All Product Family --';
+        this.productFamilyValue = this.productFamilyFromParent || '-- All Product Family --';
 	}
 
     handleChangeInPicker(event) {
@@ -458,12 +459,8 @@ export default class AddProductLwcCmp extends LightningElement {
         }
     }
 
-    closeChildScreen() {
-		this.dispatchEvent(new CustomEvent('closechildscreen'));
-	}
-
     hideModalBox() {
-        this.closeChildScreen();
+        this.dispatchEvent(new CustomEvent('closechildscreen', { detail: { refresh: false } }));
     }
 
     goBackToPriceBookDatatable(){
@@ -502,6 +499,7 @@ export default class AddProductLwcCmp extends LightningElement {
             this.btnValueVendorFlow = 'Edit';
         }
         this.callApexForVendorsList();
+        this.productFamilyValue = this.productFamilyFromParent || '-- All Product Family --';
     }
 
     handleSelected(event) {
@@ -717,7 +715,7 @@ export default class AddProductLwcCmp extends LightningElement {
             let result = await performDMLForQuoteLine({ Quotelines: quoteLineItems, QuoteId: quoteId });
             console.log('result', JSON.parse(JSON.stringify(result)));
             this.showToastMsg('Success', 'Quote Line Items saved successfully.', 'success');
-            this.closeChildScreen();
+            this.dispatchEvent(new CustomEvent('closechildscreen', { detail: { refresh: true } }));
         } catch (error) {
             console.log('error in saveQuoteLineItems ', {error});
             this.showToastMsg('Error', error.message, 'error');

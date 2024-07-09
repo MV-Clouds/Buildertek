@@ -243,6 +243,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     getData() {
+        this.isLoading = true;
         var QuoteId = this.recordId;
         console.log('Quote ID: ' + QuoteId);
         getallData({ quoteId: QuoteId })
@@ -439,7 +440,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             })
             .finally(() => {
                 this.isLoading = false;
-            });;
+            });
     }
 
 
@@ -592,7 +593,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
-        this.refreshData();
+        if (event.detail.refresh) {
+            this.refreshData();
+        }
     }
 
     handleAddProduct(event) {
