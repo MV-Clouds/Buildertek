@@ -175,11 +175,13 @@ global  without sharing class QuotelineswithGroupingNameController {
           count++;
         }
 
-        if(index != -1){
+        if(index != -1 && Quotelinegroup.size() > 1){
+          system.debug('in side if for index '+index);
           Quotelinegroup.remove(index);
         }
 
-        if(noGroup != null){
+        if(noGroup != null && Quotelinegroup.size() > 1){
+          system.debug('inside another if for noGroup '+noGroup);
           Quotelinegroup.add(0, noGroup);
         }
 
