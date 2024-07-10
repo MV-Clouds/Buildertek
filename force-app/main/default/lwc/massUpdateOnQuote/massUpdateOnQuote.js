@@ -66,14 +66,18 @@ export default class MassUpdateOnQuote extends LightningElement {
 
     handleSave() {
         this.showSpinner = true;
-        const hasEmptyName = this.quoteItem.some(item => !item.Name);
-        if (hasEmptyName) {
+        const invalidItem = this.quoteItem.find(item => !item.Name || item.buildertek__Quantity__c <= 0);
+
+        if (invalidItem) {
+            const errorMessage = !invalidItem.Name ? 'Name field cannot be empty' : 'Quantity must be greater than or equal to 1';
+
             const event = new ShowToastEvent({
                 title: 'Error',
-                message: 'Name field cannot be empty',
+                message: errorMessage,
                 variant: 'error',
                 mode: 'dismissable'
             });
+
             this.dispatchEvent(event);
             this.showSpinner = false;
             return;

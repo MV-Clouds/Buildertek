@@ -379,6 +379,22 @@ public with sharing class BT_SendEmailController{
               // body = '';
             }
 
+            if(Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__Purchase_Order__c') {
+                mail.setTemplateId(templateId);
+                list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Quote_Configuration__c, buildertek__Email_Subject__c, Name
+                                                                                                            from buildertek__Admin_Interface_Node_Configuration__c
+                                                                                                            WHERE Name = :'Purchase Order Configuration' and buildertek__Email_Subject__c != null
+                                                                                                            limit 1];
+                if (adminInterfaceNodeConfigurations.size() > 0) {
+                    emailsubject = adminInterfaceNodeConfigurations[0].buildertek__Email_Subject__c;
+                    subject = subject + ' - '+ emailsubject + ' - [ref:' + recordId + ']';
+                    System.debug('subject '+subject);
+                } else {
+                    subject = subject + ' Purchase Order - [ref:' + recordId + ']';
+                }
+                body = body;
+            }
+
             if (Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__RFQ__c'){
                 mail.setTemplateId(templateId);
                 list<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [Select Id, buildertek__Quote_Configuration__c, buildertek__Email_Subject__c, Name
@@ -538,6 +554,8 @@ public with sharing class BT_SendEmailController{
             }
 
             if (body != null && String.isNotBlank(body) && body != ''){
+                body = body.replaceAll('<p>', '<p style="margin-top: 0em; margin-bottom: 0em; ">');                
+                System.debug(body);
                 mail.setHtmlBody(body);
             }else{
                 mail.setHtmlBody('<p></p>');
@@ -618,7 +636,6 @@ public with sharing class BT_SendEmailController{
             List<ContentVersion> docList;
             list<Id> contentVersionIds = new list<Id>();
             docList = [Select Id, ContentDocumentId, Title, VersionData from ContentVersion where ContentDocumentId IN :files];
-            System.debug('doclist---->'+docList);
             if (docList.size() > 0){
                 for (ContentVersion docs : docList){
                     Messaging.Emailfileattachment efa1 = new Messaging.Emailfileattachment();
@@ -674,6 +691,9 @@ public with sharing class BT_SendEmailController{
             }
              if(Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__Quote__c'){
             mail.setFileAttachments(fileAttachments);
+            }
+            if(Id.valueOf(recordId).getSObjectType().getDescribe().getName() == 'buildertek__Purchase_Order__c'){
+                mail.setFileAttachments(fileAttachments);
             }
 
             System.debug('mail ==> '+mail);
