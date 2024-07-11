@@ -8,14 +8,21 @@ export default class MassUpdateOnQuote extends LightningElement {
     @track quoteItem;
     @track data = [];
     @track quoteName;
+    @track availableGroupingOption = [];
     showSpinner = false;
+    
     connectedCallback() {
         this.showSpinner = true;
         getallData({ Quote: this.quoteId })
             .then(result => {
                 console.log('Quote Information: ', result);
-                this.quoteItem = result;
+                this.quoteItem = result.QuoteItemList;
                 this.quoteName = this.quoteItem[0].buildertek__Quote__r.Name;
+                let groupingOption = [];
+                for (var i = 0; i < result.QuoteItemGroupList.length; i++) {
+                    groupingOption.push({ label: result.QuoteItemGroupList[i].Name, value: result.QuoteItemGroupList[i].Id });
+                }
+                this.availableGroupingOption = groupingOption;
                 this.groupQuoteItems();
             })
             .catch(error => {
@@ -77,7 +84,6 @@ export default class MassUpdateOnQuote extends LightningElement {
                 variant: 'error',
                 mode: 'dismissable'
             });
-
             this.dispatchEvent(event);
             this.showSpinner = false;
             return;
@@ -110,7 +116,7 @@ export default class MassUpdateOnQuote extends LightningElement {
             })
             .finally(() => {
                 this.showSpinner = false;
-                this.dispatchEvent(new CustomEvent('cancel'));
+                this.dispatchEvent(new CustomEvent('cancel', { detail: { refresh: true } }));
             });
     }
 
@@ -123,12 +129,13 @@ export default class MassUpdateOnQuote extends LightningElement {
                 UnitCost: item.buildertek__Unit_Cost__c,
                 Markup: item.buildertek__Markup__c,
                 Tax: item.buildertek__Tax__c,
-                Notes: item.buildertek__Notes__c
+                Notes: item.buildertek__Notes__c,
+                Grouping: item.buildertek__Grouping__c
             };
         });
     }
 
     handleCancel() {
-        this.dispatchEvent(new CustomEvent('cancel'));
+        this.dispatchEvent(new CustomEvent('cancel', { detail: { refresh: false } }));
     }
 }

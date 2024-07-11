@@ -55,6 +55,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track selectedGroupForAddProduct;
     connectedCallback() {
         this.getData();
+        this.handleMassUpdate = this.handleMassUpdate.bind(this);
+        window.addEventListener('message', this.handleMessage.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('message', this.handleMessage.bind(this));
     }
 
     renderedCallback() {
@@ -96,10 +102,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .editForm .slds-input {
                     padding-left: 10px;
                 }
-
-                .editForm .fixHeight{
-
-                }
                 
             `;
 
@@ -113,6 +115,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     refreshData() {
         this.data = [];
         this.getData();
+        this.selectedGroupForAddProduct = null;
     }
 
     handleSingleLineSave(){
@@ -240,6 +243,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     getData() {
+        this.isLoading = true;
         var QuoteId = this.recordId;
         console.log('Quote ID: ' + QuoteId);
         getallData({ quoteId: QuoteId })
@@ -369,7 +373,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         type: 'button-icon',
                         fixedWidth: 25,
                         typeAttributes: {
-                            iconName: 'utility:open',
+                            iconName: 'utility:new_window',
                             name: 'navigate_called',
                             title: 'Navigate Icon',
                             variant: 'bare',
@@ -436,7 +440,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             })
             .finally(() => {
                 this.isLoading = false;
-            });;
+            });
     }
 
 
@@ -572,10 +576,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
          });
     }
 
-    handleMassUpdate(event) {
-        console.log('Mass Update button clicked');
-        this.isMassUpdateEnabled = true;
-    }
 
     handleAdd(event) {
         console.log('Add button clicked');
@@ -593,7 +593,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
-        this.refreshData();
+        if (event.detail.refresh) {
+            this.refreshData();
+        }
     }
 
     handleAddProduct(event) {
@@ -646,11 +648,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
     }
 
+    handleMessage(event) {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+        if (event.data.action === 'closeSubtab') {
+            this.refreshData();
+        }
+    }
+
     handleMassUpdate() {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
-                componentName: 'c__quoteMassUpdateHelper'
+                componentName: 'buildertek__quoteMassUpdateHelper'
             },
             state: {
                 c__quoteId: this.recordId,
