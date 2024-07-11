@@ -649,9 +649,9 @@
 
         component.set("v.selectedgroup", result.buildertek__Section__c);
         var selectedGroupId = result.buildertek__Section__c;
-        // if (selectedGroupId) {
-        //   component.set("v.btnLabel", "New Subsection");
-        // }
+        if (selectedGroupId) {
+          component.set("v.btnLabel", "New Subsection");
+        }
         var groupList = component.get("v.grouplist");
         // console.log(`grouplist: ${JSON.stringify(groupList)}`);
         var subSectionOptions = [];
