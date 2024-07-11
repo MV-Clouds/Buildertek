@@ -4,6 +4,7 @@ import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
+import addGlobalMargin from '@salesforce/apex/QuotePage.addGlobalMargin';
 import saveQL from '@salesforce/apex/QuotePage.saveQL';
 import { RefreshEvent } from 'lightning/refresh';
 
@@ -17,6 +18,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isMargin ;
     @track groupingOption = [];
     @track globalMarkup = null;
+    @track globalMargin = null;
     @track isLoading = true;
     @track showdeleteModal = false;
     @track deleteRecordId;
@@ -55,6 +57,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track selectedGroupForAddProduct;
     connectedCallback() {
         this.getData();
+        this.handleMassUpdate = this.handleMassUpdate.bind(this);
+        window.addEventListener('message', this.handleMessage.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('message', this.handleMessage.bind(this));
     }
 
     renderedCallback() {
@@ -96,10 +104,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 .editForm .slds-input {
                     padding-left: 10px;
                 }
-
-                .editForm .fixHeight{
-
-                }
                 
             `;
 
@@ -113,6 +117,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     refreshData() {
         this.data = [];
         this.getData();
+        this.selectedGroupForAddProduct = null;
     }
 
     handleSingleLineSave(){
@@ -240,6 +245,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     getData() {
+        this.isLoading = true;
         var QuoteId = this.recordId;
         console.log('Quote ID: ' + QuoteId);
         getallData({ quoteId: QuoteId })
@@ -369,7 +375,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         type: 'button-icon',
                         fixedWidth: 25,
                         typeAttributes: {
-                            iconName: 'utility:open',
+                            iconName: 'utility:new_window',
                             name: 'navigate_called',
                             title: 'Navigate Icon',
                             variant: 'bare',
@@ -436,7 +442,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             })
             .finally(() => {
                 this.isLoading = false;
-            });;
+            });
     }
 
 
@@ -572,10 +578,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
          });
     }
 
-    handleMassUpdate(event) {
-        console.log('Mass Update button clicked');
-        this.isMassUpdateEnabled = true;
-    }
 
     handleAdd(event) {
         console.log('Add button clicked');
@@ -593,7 +595,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
-        this.refreshData();
+        if (event.detail.refresh) {
+            this.refreshData();
+        }
     }
 
     handleAddProduct(event) {
@@ -646,11 +650,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
     }
 
+    handleMessage(event) {
+        if (event.origin !== window.location.origin) {
+            return;
+        }
+        if (event.data.action === 'closeSubtab') {
+            this.refreshData();
+        }
+    }
+
     handleMassUpdate() {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
-                componentName: 'c__quoteMassUpdateHelper'
+                componentName: 'buildertek__quoteMassUpdateHelper'
             },
             state: {
                 c__quoteId: this.recordId,
@@ -660,6 +673,55 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     handleMarkupChnage(event){
         this.globalMarkup = event.target.value;
+    }
+
+    handleMarginChnage(event){
+        this.globalMargin = event.target.value;
+    }
+
+    handleMargin(){
+        this.isLoading = true;
+        var globalMargin = this.globalMargin;
+        console.log('Global Markup: ' + globalMargin);
+        //if globalMargin is null then show error message
+        if(globalMargin == null || globalMargin == ''){
+            var message = 'Please enter Global Margin';
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error'
+            }));
+            this.isLoading = false;
+            return;
+        }
+        //call addGlobalMarkup and pass recordId and globalMargin
+        addGlobalMargin({
+            quoteId: this.recordId,
+            margin: globalMargin
+        }).then(result => {
+            console.log({result});
+            if(result == 'Success'){
+                console.log('Global Margin updated successfully');
+                //show toast message 
+                var message = 'Global Margin updated successfully';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Success',
+                    message: message,
+                    variant: 'success'
+                }));
+                this.refreshData();
+                this.globalMargin = null;
+            }else{
+                this.isLoading = false;
+                var message = 'Error updating Global Markup';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: message,
+                    variant: 'error'
+                }));
+            }
+        });
+
     }
 
     handleMarkup(){

@@ -24,6 +24,34 @@ public without sharing class QuotePage {
     }
 
     @AuraEnabled
+    public static string addGlobalMargin(Id quoteId, Decimal margin) {
+
+        try{
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Margin__c  FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
+            System.debug('quoteItemList: ' + quoteItemList);
+
+            for(buildertek__Quote_Item__c quoteItem : quoteItemList){
+                if(quoteItem.buildertek__Margin__c == null || quoteItem.buildertek__Margin__c == 0 ){
+                    quoteItem.buildertek__Margin__c = margin;
+                }
+            }
+
+            update quoteItemList;
+
+            return 'Success';
+
+        } catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
+            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
+                BT_ExceptionHandler.Store_Exception(ex);
+            }
+            return ex.getMessage();
+        }
+    }
+
+
+    @AuraEnabled
     public static string addGlobalMarkup(Id quoteId, Decimal markup) {
 
         try{
@@ -153,16 +181,22 @@ public without sharing class QuotePage {
     }
 
     @AuraEnabled
-    public static List<buildertek__Quote_Item__c> massUpdateQuote(String Quote) {
+    public static massUpdateQuoteItemWrapper massUpdateQuote(String Quote) {
+        massUpdateQuoteItemWrapper QIWrapper = new massUpdateQuoteItemWrapper();
         try {
-            System.debug('Quote: ' + Quote);
             List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Quantity__c, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Notes__c, buildertek__Quote__r.Name, buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :Quote ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST , Name ASC];
+            QIWrapper.QuoteItemList = quoteItemList;
             
-            return quoteItemList;
+            List<buildertek__Quote_Line_Group__c> groupingList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name];
+            QIWrapper.QuoteItemGroupList = groupingList;
+            
+            return QIWrapper;
         } catch(Exception e) {
             System.debug(e.getMessage());
             BT_ExceptionHandler.Store_Exception(e);
-            return new List<buildertek__Quote_Item__c>();
+            QIWrapper.QuoteItemList = new List<buildertek__Quote_Item__c>();
+            QIWrapper.QuoteItemGroupList = new List<buildertek__Quote_Line_Group__c>();
+            return QIWrapper;
         }
     }
 
@@ -181,6 +215,7 @@ public without sharing class QuotePage {
                 quoteItem.buildertek__Markup__c = quoteItemWrapper.Markup;
                 quoteItem.buildertek__Tax__c = quoteItemWrapper.Tax;
                 quoteItem.buildertek__Notes__c = quoteItemWrapper.notes;
+                quoteItem.buildertek__Grouping__c = quoteItemWrapper.Grouping;
 
                 quoteItemList.add(quoteItem);
             }
@@ -240,5 +275,15 @@ public without sharing class QuotePage {
         @AuraEnabled public Decimal Markup;
         @AuraEnabled public Decimal Tax;
         @AuraEnabled public String Notes;
+        @AuraEnabled public String Grouping;
+    }
+
+    public class massUpdateQuoteItemWrapper {
+
+        @AuraEnabled 
+        public List<buildertek__Quote_Item__c> QuoteItemList;
+        
+        @AuraEnabled
+        public List<buildertek__Quote_Line_Group__c> QuoteItemGroupList;
     }
 }
