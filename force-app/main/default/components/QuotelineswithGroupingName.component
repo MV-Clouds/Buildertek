@@ -5,7 +5,7 @@
 
   <!-- <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">  -->
   <table style="width: 100%;text-align: left;border-spacing: 0;">
-    <thead style="background: #ddd;">
+    <thead style="background: {!tableHeaderDynamicColor}">
       <tr>
         <apex:repeat value="{!lableslst}" var="labelname">
 
