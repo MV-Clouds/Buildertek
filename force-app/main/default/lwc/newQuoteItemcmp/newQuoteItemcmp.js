@@ -280,11 +280,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 }, 0);
 
                 this.quoteName = result.Quote.Name;
-                if (result.Quote.buildertek__Project__c != null) {
-                    this.projectName = result.Quote.buildertek__Project__r.Name;
-                } else {
-                    this.projectName = '';
-                }
 
                 var quoteData = [];
                 for (var i = 0; i < result.Quotecolumns.length; i++) {

@@ -36,13 +36,33 @@
                     duration: 5000
                 });
                 tst.fire();
-                var navEvent = $A.get("e.force:navigateToSObject");
-                navEvent.setParams({
-                    "recordId": result,
-                });
-    
-                navEvent.fire();
+                
+                var workspaceAPI = component.find("workspace"); //get the workspace component
+                workspaceAPI.getFocusedTabInfo().then(function(response) {
+                  var focusedTabId = response.tabId;
+
+                  //Opening New Tab
+                  workspaceAPI.openSubtab({ //open sub tab
+                    focus: true, //make the tab in focus
+                    parentTabId : focusedTabId, //parent tab
+                    pageReference: {
+                      "type": "standard__recordPage",
+                      "attributes": {
+                          "recordId": result,
+                          "actionName":"view"
+                      }
+                    },
+                  }) 
+                   .catch(function(error) {
+                       console.log('error in inner block ',error);
+                   });
+
+                })
+                .catch(function(error) {
+                    console.log(error);
+                }); 
             }
+
             $A.get("e.force:closeQuickAction").fire();
         });
         $A.enqueueAction(action);
