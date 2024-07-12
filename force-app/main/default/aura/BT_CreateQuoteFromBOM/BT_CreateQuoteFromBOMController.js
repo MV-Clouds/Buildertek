@@ -36,13 +36,67 @@
                     duration: 5000
                 });
                 tst.fire();
-                var navEvent = $A.get("e.force:navigateToSObject");
-                navEvent.setParams({
-                    "recordId": result,
-                });
+                // var navEvent = $A.get("e.force:navigateToSObject");
+                // navEvent.setParams({
+                //     "recordId": result,
+                // });
     
-                navEvent.fire();
+                // navEvent.fire();
+                var workspaceAPI = component.find("workspace"); //get the workspace component
+                // workspaceAPI.getFocusedTabInfo().then(function(response) {
+                // console.log('response ',{response});
+                // console.log('response.parentTabId ',response.parentTabId);
+                  //workspaceAPI.openSubtab({ //open sub tab
+                  //  focus: true, //make the tab in focus
+                  //  parentTabId : response.parentTabId, //parent tab
+                  //  pageReference: {
+                  //    "type": "standard__recordPage",
+                  //    "attributes": {
+                  //        "recordId": result,
+                  //        "actionName":"view"
+                  //    }
+                  //  },
+                  //})
+                  //  .catch(function(error) { //catch errors
+                  //    console.log('Error here >> ' + error);
+                  //    //if(error == 'Error: API `openTab` is not currently supported in this application.'){
+                  //    var urlEvent = $A.get("e.force:navigateToSObject");
+                  //    urlEvent.setParams({
+                  //        "recordId": result,
+                  //        "isredirect": "true"
+                  //    });
+                  //    urlEvent.fire();
+                  //  });
+                // })
+                // .catch(function(error) {
+                //     console.log(error);
+                // });
+                workspaceAPI.getFocusedTabInfo().then(function(response) {
+                  var focusedTabId = response.tabId;
+                  console.log(focusedTabId);
+
+                  //Opening New Tab
+                  workspaceAPI.openSubtab({ //open sub tab
+                    focus: true, //make the tab in focus
+                    parentTabId : focusedTabId, //parent tab
+                    pageReference: {
+                      "type": "standard__recordPage",
+                      "attributes": {
+                          "recordId": result,
+                          "actionName":"view"
+                      }
+                    },
+                  }) 
+                   .catch(function(error) {
+                       console.log('error in inner block ',error);
+                   });
+
+                })
+                .catch(function(error) {
+                    console.log(error);
+                }); 
             }
+
             $A.get("e.force:closeQuickAction").fire();
         });
         $A.enqueueAction(action);
