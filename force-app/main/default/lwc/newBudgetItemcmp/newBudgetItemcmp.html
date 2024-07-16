@@ -1,0 +1,341 @@
+<template>
+
+    <template if:true={isLoading}>
+        <lightning-spinner class="spinner__1" alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+
+    <div class="budgetData">
+        <div class="leftSection">
+            <div class="budgetName">
+                <h1>{budgetName}</h1>
+            </div>
+        </div>
+        <div class="rightSection">
+            <div class="quoteDetails">
+                <template for:each={budgetData} for:item="item">
+                    <div key={item.label} class="row">
+                        <div class="label">
+                            {item.label}
+                        </div>
+                        <template if:true={item.isStatus}>
+                            <div class="value statusCSS">
+                                {item.value}
+                            </div>
+                        </template>
+                        <template if:false={item.isStatus}>
+                            <template if:true={item.isCurrency}>
+                                <div class="value">
+                                    {item.currencyCode} 
+                                    &nbsp;
+                                    <lightning-formatted-number value={item.value} style="currency" currency-code={item.currencyCode}></lightning-formatted-number>
+                                </div>
+                            </template>
+                            <template if:false={item.isCurrency}>
+                                <div class="value">
+                                    {item.value}
+                                </div>
+                            </template>
+                        </template>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <div class="buttonSection rightSection">
+              <template if:true={isMargin}>
+
+                <div class="globalMarkup">
+                    <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                        Global Margin
+                    </div>
+                    <lightning-input type="number" value={globalMargin} class="uiInputCss" label="" onchange={handleMarginChnage} step="0.01" variant="label-hidden"></lightning-input>
+                    <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                        onclick={handleMargin}></lightning-button-icon>
+                </div>
+
+            </template>
+            <template if:true={isMarkup}>
+
+              <div class="globalMarkup">
+                  <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                      Global Markup
+                  </div>
+                  <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" variant="label-hidden"></lightning-input>
+                  <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                      onclick={handleMarkup}></lightning-button-icon>
+              </div>
+
+            </template>
+            <lightning-button variant="brand" label="Add Product" title="Add Product"
+                onclick={handleAddProduct}></lightning-button>
+            <lightning-button variant="brand" label="Mass Update" title="Mass Update"
+                onclick={handleMassUpdate}></lightning-button>
+            <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
+                onclick={handleImportRfq}></lightning-button>
+        </div>
+
+    <template if:true={isSingleLineenabled}>
+        <div class="singleLineEntry">
+            <table class="table-container">
+                <thead>
+                    <tr class="table-header">
+                        <th>Description</th>
+                        <th>Phase</th>
+                        <th>Notes</th>
+                        <th>Quantity</th>
+                        <th>Unit Cost</th>
+                        <template if:true={isMargin}>
+                            <th>Margin</th>
+                        </template>
+                        <template if:true={isMarkup}>
+                            <th>Markup</th>
+                        </template>
+                        <th>Save</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <lightning-input type="text" name="buildertek__Description__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Description__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-combobox options={groupingOption} name="buildertek__Grouping__c"
+                                variant="label-hidden" class="input-field" value={fields.buildertek__Grouping__c}
+                                onchange={handlePicklistChange} placeholder="No Grouping">
+                            </lightning-combobox>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="text" name="buildertek__Notes__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Notes__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="number" name="buildertek__Quantity__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Quantity__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="number" name="buildertek__Unit_Cost__c" variant="label-hidden"
+                                class="input-field" step="0.01" value={fields.buildertek__Unit_Cost__c}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <template if:true={isMargin}>
+                            <td class="table-cell">
+                                <lightning-input type="number" name="buildertek__Margin__c" variant="label-hidden"
+                                    class="input-field" step="0.01" value={fields.buildertek__Margin__c}
+                                    onchange={handleInputChange}>
+                                </lightning-input>
+                            </td>
+                        </template>
+                        <template if:true={isMarkup}>
+                            <td class="table-cell">
+                                <lightning-input type="number" name="buildertek__Markup__c" variant="label-hidden"
+                                    class="input-field" step="0.01" value={fields.buildertek__Markup__c}
+                                    onchange={handleInputChange}>
+                                </lightning-input>
+                            </td>
+                        </template>
+                        <td class="table-cell">
+                            <lightning-button-icon icon-name="utility:save" class="saveInputCss"
+                                onclick={handleSingleLineSave}>
+                            </lightning-button-icon>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+
+
+    <template for:each={data} for:item="group">
+        <div key={group.groupName} class="slds-card slds-m-around_medium">
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <template if:true={group.isVisible}>
+                                <lightning-icon class="dropIcon" icon-name="utility:chevronup" alternative-text="close"
+                                    variant="inverse" onclick={dropdownHandler} data-id={group.groupId}
+                                    size="small"></lightning-icon>
+                            </template>
+                            <template if:false={group.isVisible}>
+                                <lightning-icon class="dropIcon" icon-name="utility:chevrondown" alternative-text="open"
+                                    variant="inverse" onclick={dropdownHandler} data-id={group.groupId}
+                                    size="small"></lightning-icon>
+                            </template>
+                            <span class="grpname">
+                                {group.groupName}
+                            </span>
+                            <div class="button-div">
+                                <button class="slds-button slds-button_neutral slds-m-left_auto" data-id={group.groupName}
+                                    onclick={handleAddItem}>
+                                    <p data-id={group.groupName}>+</p>
+                                </button>
+                            </div>
+                        </h2>
+                    </div>
+                </header>
+            </div>
+            <div class="budget-table">
+                <div class="slds-card__body">
+                    <template if:true={group.isVisible}>
+                        <div class="lastRowCSS">
+                            <lightning-datatable key-field="id" data={group.items} columns={columns} onrowaction={handleRowAction}
+                                hide-checkbox-column>
+                            </lightning-datatable>
+                        </div>
+                    </template>
+                    <template if:false={group.isVisible}>
+                        <div class="lastRowCSS">
+                            <lightning-datatable key-field="id" data={group.subtotal} columns={columns}
+                                hide-checkbox-column>
+                            </lightning-datatable>
+                        </div>
+                    </template>
+
+                </div>
+            </div>
+            <footer>
+                <div>
+                    <!-- <strong>Subtotal:</strong>  -->
+                </div>
+            </footer>
+        </div>
+    </template>
+    <div class="slds-m-around_medium">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                    <span class="grpname">
+                        Grand Total
+                    </span>
+                </h2>
+            </div>
+        </header>
+        <div class="quote-table">
+            <div class="lastRowCSS">
+                <lightning-datatable key-field="buildertek__Quantity__c" data={grandTotalList} columns={columns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+        </div>
+    </div>
+
+    <template if:true={showdeleteModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true"
+          aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <!-- modal header start -->
+            <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                onclick={cancelDelete}>
+                <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                  size="small"></lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Confirmation Message</h2>
+            </header>
+        
+            <!-- modal body start -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
+                <p style="text-align: center;">Are you sure you want to delete this?</p>
+            </div>
+        
+            <!-- modal footer start-->
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick={cancelDelete}>Cancel</button>
+                <button class="slds-button slds-button_brand" onclick={deleteQuoteLine}>Delete</button>
+            </footer>
+        
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={filterModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- modal header start -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                        title="Close" onclick={hideModalBox}>
+                        <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"
+                            size="small"></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Choose Filter</h2>
+                </header>
+
+                <!-- modal body start -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-select name="filter" value={filterValue} options={filterOption}
+                        onchange={filterChange}></lightning-select>
+                </div>
+
+                <!-- modal footer start-->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={hideModalBox}>Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={applyFilter}>Next</button>
+                </footer>
+
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    <template if:true={showPricebookModal}>
+        <!-- call aura component named Add_QuoteLine_In_Quote -->
+        <!-- <c-Add_QuoteLine_In_Quote
+            getPhase = {filterGroupId}
+            quoteId = {recordId}
+            openProductBox = {showPricebookModal}>
+         </c-Add_QuoteLine_In_Quote> -->
+    </template>
+    <template if:true={isAddProductTrue}>
+        <c-add-product-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId} product-family-from-parent={selectedGroupForAddProduct}></c-add-product-lwc-cmp>
+    </template>
+    <template if:true={isImportRfqTrue}>
+        <c-import-rfq-lwc-cmp onclosechildscreen={closePopUp} quote-id={recordId}></c-import-rfq-lwc-cmp>
+    </template>
+    <template if:true={isEditModal}>
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-03" aria-modal="true" aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeEditModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">Edit Record</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium editForm" id="modal-content-id-3">
+                <lightning-record-edit-form object-api-name="buildertek__Quote_Item__c" record-id={EditrecordId} onsubmit={handleSubmit} onsuccess={handleSucess} onerror={handleError}>
+                        <div class="fixHeight slds-grid slds-wrap">
+                            <template for:each={budgetLineEditFields} for:item="field">
+                                <div key={field.fieldName} class="slds-size_1-of-2" style="padding: 3px 10px;">
+                                    <lightning-input-field field-name={field.fieldName}></lightning-input-field>
+                                </div>
+                            </template>
+                        </div>
+                        <div class="slds-m-top_medium">
+                        </div>
+                        <lightning-button type="submit" class="hidden" label="Save" variant="brand"></lightning-button>
+                    </lightning-record-edit-form>
+                    
+                </div>
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={closeEditModal} title="Cancel">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={submitDetails2} title="Update">Update</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>
