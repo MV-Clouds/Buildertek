@@ -104,6 +104,7 @@
 }
 
 .buttonSection{
+    height: 5.7vh;
     justify-content: flex-end;
     gap: 1%;
     width: 100%;

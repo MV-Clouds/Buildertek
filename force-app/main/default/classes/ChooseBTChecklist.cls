@@ -15,7 +15,7 @@ public class ChooseBTChecklist {
       try {
         SectionInfo sectionData = new SectionInfo();
         sectionData.sectionList = [SELECT Id, Name FROM buildertek__Checklist_Section_Junction__c WHERE (buildertek__Global_Section__c = true OR buildertek__BT_Checklist_Configuration__c =: checkListId) AND 
-          buildertek__Checklist_Section_Junction__c = NULL];
+        buildertek__Checklist_Section_Junction__c = NULL];
 
         sectionData.subSectionList = [SELECT Id, Name, buildertek__Checklist_Section_Junction__c, buildertek__Checklist_Section_Junction__r.Name FROM buildertek__Checklist_Section_Junction__c WHERE (buildertek__Global_Section__c = true OR buildertek__BT_Checklist_Configuration__c =: checkListId) AND buildertek__Checklist_Section_Junction__c != NULL];
 
@@ -27,12 +27,17 @@ public class ChooseBTChecklist {
       }
     }
 
-  @AuraEnabled
+    @AuraEnabled
     public static list<buildertek__Questions__c> getQuestions(String checklistId){
+      if(String.isBlank(checklistId)){
+        list<buildertek__Questions__c> Questions = [SELECT Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name, buildertek__Global_Question__c, buildertek__Checklist__c FROM buildertek__Questions__c WHERE buildertek__Global_Question__c = TRUE ORDER BY buildertek__Section__r.Name nulls last];
+        return Questions;
+      }
       list<buildertek__Questions__c> Questions = [SELECT Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name, buildertek__Global_Question__c, buildertek__Checklist__c FROM buildertek__Questions__c WHERE buildertek__Global_Question__c = TRUE OR buildertek__Checklist__c =:checklistId ORDER BY buildertek__Section__r.Name nulls last];
       System.debug('Questions: ' + Questions);
       return Questions;
     }
+    
   @AuraEnabled
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
       system.debug('QuestionIds.......'+QuestionIds);
@@ -79,7 +84,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static buildertek__Questions__c saveQuestion(string QuestionType,string QuestionText,string Options,string groupname,string selectedgroup,string recordid, String subsection, Boolean isQuestionGlobal, String checklistId){
       buildertek__Questions__c qt = new buildertek__Questions__c();
-      qt.ID= recordid;
+
       qt.buildertek__Question_Type__c = QuestionType;
       qt.buildertek__Customize__c =  QuestionText;
       qt.buildertek__Options__c = Options;
@@ -329,7 +334,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static string createSectionOrSubsection(String parentId, String sectionName, String checkListId, Boolean isGlobal) {
       try {
-
+        
         system.debug('parentId '+parentId);
         system.debug('sectionName '+sectionName);
         system.debug('checkListeId ,'+checkListId);
@@ -338,7 +343,7 @@ public class ChooseBTChecklist {
         buildertek__Checklist_Section_Junction__c checkListSectionJunction = new buildertek__Checklist_Section_Junction__c();
         checkListSectionJunction.Name = sectionName;
         checkListSectionJunction.buildertek__Checklist_Section_Junction__c = String.isBlank(parentId) ? null : parentId;
-
+        
 
         if(isGlobal){
           checkListSectionJunction.buildertek__Global_Section__c = isGlobal;
@@ -355,11 +360,11 @@ public class ChooseBTChecklist {
       }
     }
 
-  public class SectionInfo {
-    @AuraEnabled
+    public class SectionInfo {
+      @AuraEnabled
       public List<buildertek__Checklist_Section_Junction__c> sectionList;
-    @AuraEnabled
+      @AuraEnabled
       public List<buildertek__Checklist_Section_Junction__c> subSectionList;
-  }
+    }
 
 }

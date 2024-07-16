@@ -1,20 +1,53 @@
-import { LightningElement, track, api, wire } from 'lwc';
-import getQuoteDataFromServer from '@salesforce/apex/RFQDAO.getAllApprovedRFQ';
-import saveData from '@salesforce/apex/QuoteDAO.createQuoteItem';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { loadStyle } from 'lightning/platformResourceLoader';
-import myResource from '@salesforce/resourceUrl/newImportRfqOnQuoteExternalCss';
+import { LightningElement, track, api, wire } from "lwc";
+import getQuoteDataFromServer from "@salesforce/apex/RFQDAO.getAllApprovedRFQ";
+import saveData from "@salesforce/apex/QuoteDAO.createQuoteItem";
+import { ShowToastEvent } from "lightning/platformShowToastEvent";
+import { loadStyle } from "lightning/platformResourceLoader";
+import myResource from "@salesforce/resourceUrl/newImportRfqOnQuoteExternalCss";
 
 const columns = [
-	{ label: 'Name', fieldName: 'Name', type: 'text', sortable: false, hideDefaultActions: true },
-	{ label: 'RFQ Details', fieldName: 'buildertek__RFQ_Details__c', type: 'text', hideDefaultActions: true },
-	{ label: 'Project', fieldName: 'projectName', type: 'text', hideDefaultActions: true },
-	{ label: 'Vendor', fieldName: 'vendorName', type: 'text', hideDefaultActions: true },
-	{
-		label: 'Contractor Ammount', fieldName: 'buildertek__Vendor_Quote__c', type: 'currency',
-		typeAttributes: { currencyCode: { fieldName: 'CurrencyIso' }, currencyDisplayAs: "code" }, cellAttributes: { alignment: 'left' }, hideDefaultActions: true
-	},
-	{ label: 'Status', fieldName: 'buildertek__Status__c', type: 'text', hideDefaultActions: true }
+  {
+    label: "Name",
+    fieldName: "Name",
+    type: "text",
+    sortable: false,
+    hideDefaultActions: true,
+  },
+  {
+    label: "RFQ Details",
+    fieldName: "buildertek__RFQ_Details__c",
+    type: "text",
+    hideDefaultActions: true,
+  },
+  {
+    label: "Project",
+    fieldName: "projectName",
+    type: "text",
+    hideDefaultActions: true,
+  },
+  {
+    label: "Vendor",
+    fieldName: "vendorName",
+    type: "text",
+    hideDefaultActions: true,
+  },
+  {
+    label: "Contractor Ammount",
+    fieldName: "buildertek__Vendor_Quote__c",
+    type: "currency",
+    typeAttributes: {
+      currencyCode: { fieldName: "CurrencyIso" },
+      currencyDisplayAs: "code",
+    },
+    cellAttributes: { alignment: "left" },
+    hideDefaultActions: true,
+  },
+  {
+    label: "Status",
+    fieldName: "buildertek__Status__c",
+    type: "text",
+    hideDefaultActions: true,
+  },
 ];
 
 export default class ImportRfqLwcCmp extends LightningElement {

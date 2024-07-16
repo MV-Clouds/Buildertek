@@ -91,7 +91,7 @@ vendorUserMap.put(usr.AccountId,usr);
         //if (Schema.sObjectType.EmailTemplate.fields.id.isAccessible()){
         rfqRejectedTemplate = [SELECT Id,DeveloperName
                                FROM EmailTemplate
-                               WHERE DeveloperName = 'RFQ_Rejected_Email'].Id;
+                               WHERE DeveloperName = 'RFQ_Rejected_Email_New'].Id;
         // } 
         string rfqAwardTemplate;
         // if (Schema.sObjectType.EmailTemplate.fields.id.isAccessible()){
@@ -118,11 +118,12 @@ vendorUserMap.put(usr.AccountId,usr);
         for(buildertek__RFQ_To_Vendor__c rfq :rfqToVendor){
             for(Contact conRec : contactlist){
                 if(conRec.Email != null){
-                    if(rfq.buildertek__Status__c == 'Email Sent'){
+                    if(rfq.buildertek__Status__c == 'Email Sent' || rfq.buildertek__Status__c == 'Waiting for Answer') {
                         if(!duplicateid.contains(conRec.Id)){
                             contactMap.put(conRec.Id,conRec);
                             buildertek__RFQ_To_Vendor__c vendorRec = vendorUserMap2.containsKey(conRec.AccountId) ? vendorUserMap2.get(conRec.AccountId) : vendorUserMap3.get(conRec.Id);
                             if(vendorUserMap1.get(conRec.Id) == null){
+                                System.debug('1 setWhatId: ' + vendorRec.Id);
                                 string toemailadd = conRec.Email;
                                 Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
                                 email.toAddresses = new String[] { toemailadd};
@@ -235,6 +236,7 @@ vendorUserMap.put(usr.AccountId,usr);
                              emailToSend.setOrgWideEmailAddressId(email.getOrgWideEmailAddressId());
                         }
                         emailToSend.setSaveAsActivity(true);
+                        emailToSend.setWhatId(email.getWhatId());
                         emailToSend.setReplyTo(fromAddress);   
                         system.debug('&&&&'+emailToSend);
                         actualMessageList.add(emailToSend);

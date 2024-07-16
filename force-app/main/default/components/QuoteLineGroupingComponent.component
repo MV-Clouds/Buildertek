@@ -6,22 +6,22 @@
     <table style="width: 100%;text-align: left;border-spacing: 0;">
         <thead style="background: #ddd;">
             <tr>
-                <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Product Description</th>
-                <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; padding: 5px 15px;">Major Description</th>
-                <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align: right">Total List Price</th>
+                <th style="font-size: 15px;border: 1px solid #ccc; padding: 5px 15px;">Product Description</th>
+                <th style="font-size: 15px;border: 1px solid #ccc; padding: 5px 15px;">Major Description</th>
+                <th style="font-size: 15px;border: 1px solid #ccc; padding: 5px 15px;text-align: right">Total List Price</th>
             </tr>
         </thead>
         <tbody>
 
             <apex:repeat value="{!wrapperlst}" var="quoteItem">
                 <tr style="line-height: 1.6;">
-                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: left; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
+                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: left; border: 1px solid #ccc;">
                         <apex:outputText value="{!quoteItem.groupName}" />
                     </td>
-                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: left; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; max-width: 240px; word-wrap: break-word;">
+                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: left; border: 1px solid #ccc; max-width: 240px; word-wrap: break-word;">
                         <apex:outputText value="{!quoteItem.groupMajorDescription}" />
                     </td>                    
-                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: right; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;">
+                    <td style="font-size: 14px; padding: 5px 15px; color: black; text-align: right; border: 1px solid #ccc;">
                         <apex:outputText value="{0, number, $###,###,###,##0.00}">
                             <apex:param value="{!quoteItem.listTotal}" />
                         </apex:outputText>

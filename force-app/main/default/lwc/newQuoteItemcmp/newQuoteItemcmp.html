@@ -6,9 +6,6 @@
 
     <div class="quoteData">
         <div class="leftSection">
-            <div class="projectName">
-                <h3>{projectName}</h3>
-            </div>
             <div class="quoteName">
                 <h1>{quoteName}</h1>
             </div>
@@ -46,22 +43,114 @@
     </div>
 
     <div class="buttonSection rightSection">
-        <div class="globalMarkup">
-            <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
-                Global Markup
-            </div>
-            <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" style="padding-bottom: 0.9rem;"></lightning-input>
-            <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
-                onclick={handleMarkup}></lightning-button-icon>
+              <template if:true={isMargin}>
+
+                <div class="globalMarkup">
+                    <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                        Global Margin
+                    </div>
+                    <lightning-input type="number" value={globalMargin} class="uiInputCss" label="" onchange={handleMarginChnage} step="0.01" variant="label-hidden"></lightning-input>
+                    <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                        onclick={handleMargin}></lightning-button-icon>
+                </div>
+
+            </template>
+            <template if:true={isMarkup}>
+
+              <div class="globalMarkup">
+                  <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                      Global Markup
+                  </div>
+                  <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" variant="label-hidden"></lightning-input>
+                  <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                      onclick={handleMarkup}></lightning-button-icon>
+              </div>
+
+            </template>
+            <lightning-button variant="brand" label="Add Product" title="Add Product"
+                onclick={handleAddProduct}></lightning-button>
+            <lightning-button variant="brand" label="Mass Update" title="Mass Update"
+                onclick={handleMassUpdate}></lightning-button>
+            <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
+                onclick={handleImportRfq}></lightning-button>
         </div>
 
-        <lightning-button variant="brand" label="Add Product" title="Add Product"
-            onclick={handleAddProduct}></lightning-button>
-        <lightning-button variant="brand" label="Mass Update" title="Mass Update"
-            onclick={handleMassUpdate}></lightning-button>
-        <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
-            onclick={handleImportRfq}></lightning-button>
-    </div>
+    <template if:true={isSingleLineenabled}>
+        <div class="singleLineEntry">
+            <table class="table-container">
+                <thead>
+                    <tr class="table-header">
+                        <th>Description</th>
+                        <th>Phase</th>
+                        <th>Notes</th>
+                        <th>Quantity</th>
+                        <th>Unit Cost</th>
+                        <template if:true={isMargin}>
+                            <th>Margin</th>
+                        </template>
+                        <template if:true={isMarkup}>
+                            <th>Markup</th>
+                        </template>
+                        <th>Save</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-row">
+                        <td class="table-cell">
+                            <lightning-input type="text" name="buildertek__Description__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Description__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-combobox options={groupingOption} name="buildertek__Grouping__c"
+                                variant="label-hidden" class="input-field" value={fields.buildertek__Grouping__c}
+                                onchange={handlePicklistChange} placeholder="No Grouping">
+                            </lightning-combobox>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="text" name="buildertek__Notes__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Notes__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="number" name="buildertek__Quantity__c" variant="label-hidden"
+                                class="input-field" value={fields.buildertek__Quantity__c} onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <td class="table-cell">
+                            <lightning-input type="number" name="buildertek__Unit_Cost__c" variant="label-hidden"
+                                class="input-field" step="0.01" value={fields.buildertek__Unit_Cost__c}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
+                        <template if:true={isMargin}>
+                            <td class="table-cell">
+                                <lightning-input type="number" name="buildertek__Margin__c" variant="label-hidden"
+                                    class="input-field" step="0.01" value={fields.buildertek__Margin__c}
+                                    onchange={handleInputChange}>
+                                </lightning-input>
+                            </td>
+                        </template>
+                        <template if:true={isMarkup}>
+                            <td class="table-cell">
+                                <lightning-input type="number" name="buildertek__Markup__c" variant="label-hidden"
+                                    class="input-field" step="0.01" value={fields.buildertek__Markup__c}
+                                    onchange={handleInputChange}>
+                                </lightning-input>
+                            </td>
+                        </template>
+                        <td class="table-cell">
+                            <lightning-button-icon icon-name="utility:save" class="saveInputCss"
+                                onclick={handleSingleLineSave}>
+                            </lightning-button-icon>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+
 
     <template if:true={isSingleLineenabled}>
         <div class="singleLineEntry">
@@ -324,6 +413,4 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-
 </template>
-

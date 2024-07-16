@@ -4,6 +4,7 @@ import getallData from '@salesforce/apex/QuotePage.getallData';
 import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
+import addGlobalMargin from '@salesforce/apex/QuotePage.addGlobalMargin';
 import saveQL from '@salesforce/apex/QuotePage.saveQL';
 import { RefreshEvent } from 'lightning/refresh';
 
@@ -17,6 +18,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isMargin ;
     @track groupingOption = [];
     @track globalMarkup = null;
+    @track globalMargin = null;
     @track isLoading = true;
     @track showdeleteModal = false;
     @track deleteRecordId;
@@ -278,11 +280,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 }, 0);
 
                 this.quoteName = result.Quote.Name;
-                if (result.Quote.buildertek__Project__c != null) {
-                    this.projectName = result.Quote.buildertek__Project__r.Name;
-                } else {
-                    this.projectName = '';
-                }
 
                 var quoteData = [];
                 for (var i = 0; i < result.Quotecolumns.length; i++) {
@@ -671,6 +668,55 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     handleMarkupChnage(event){
         this.globalMarkup = event.target.value;
+    }
+
+    handleMarginChnage(event){
+        this.globalMargin = event.target.value;
+    }
+
+    handleMargin(){
+        this.isLoading = true;
+        var globalMargin = this.globalMargin;
+        console.log('Global Markup: ' + globalMargin);
+        //if globalMargin is null then show error message
+        if(globalMargin == null || globalMargin == ''){
+            var message = 'Please enter Global Margin';
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: message,
+                variant: 'error'
+            }));
+            this.isLoading = false;
+            return;
+        }
+        //call addGlobalMarkup and pass recordId and globalMargin
+        addGlobalMargin({
+            quoteId: this.recordId,
+            margin: globalMargin
+        }).then(result => {
+            console.log({result});
+            if(result == 'Success'){
+                console.log('Global Margin updated successfully');
+                //show toast message 
+                var message = 'Global Margin updated successfully';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Success',
+                    message: message,
+                    variant: 'success'
+                }));
+                this.refreshData();
+                this.globalMargin = null;
+            }else{
+                this.isLoading = false;
+                var message = 'Error updating Global Markup';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: message,
+                    variant: 'error'
+                }));
+            }
+        });
+
     }
 
     handleMarkup(){

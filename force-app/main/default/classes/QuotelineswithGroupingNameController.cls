@@ -162,6 +162,29 @@ global  without sharing class QuotelineswithGroupingNameController {
         Quotelinegroup = [Select Id, Name,buildertek__Sort_Id__c from buildertek__Quote_Line_Group__c where Id =: groupId order by buildertek__Sort_Id__c ASC NULLS LAST, Name ASC];
         system.debug('Quotelinegroupsize---->'+ Quotelinegroup.size());
 
+        buildertek__Quote_Line_Group__c noGroup; 
+ 
+        Integer index = -1;
+        Integer count = 0;
+
+        for(buildertek__Quote_Line_Group__c groupingRec : Quotelinegroup){
+          if(groupingRec.Name == 'No Grouping'){
+            noGroup = groupingRec;
+            index = count;
+          }
+          count++;
+        }
+
+        if(index != -1 && Quotelinegroup.size() > 1){
+          system.debug('in side if for index '+index);
+          Quotelinegroup.remove(index);
+        }
+
+        if(noGroup != null && Quotelinegroup.size() > 1){
+          system.debug('inside another if for noGroup '+noGroup);
+          Quotelinegroup.add(0, noGroup);
+        }
+
         for(buildertek__Quote_Line_Group__c quotelinegrouprec : Quotelinegroup){
 
              decimal quoteitemNetunitprice =0.0;

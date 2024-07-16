@@ -1,67 +1,75 @@
 <apex:component controller="QuotelineswithGroupingNameController" access="global">
-    <apex:attribute type="id" name="relatedTo_id" assignTo="{!relatedToId}" description="RelatedTo" access="global" />
-    <apex:attribute type="string" name="querystringfields" assignTo="{!querystring}" description="querystring" access="global"
-    />
+  <apex:attribute type="id" name="relatedTo_id" assignTo="{!relatedToId}" description="RelatedTo" access="global" />
+  <apex:attribute type="string" name="querystringfields" assignTo="{!querystring}" description="querystring"
+    access="global" />
 
-    <!-- <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">  -->
-    <table style="width: 100%;text-align: left;border-spacing: 0;">
-        <thead style="background: #ddd;">
-            <tr>
-                <apex:repeat value="{!lableslst}" var="labelname">
+  <!-- <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">  -->
+  <table style="width: 100%;text-align: left;border-spacing: 0;">
+    <thead style="background: #ddd;">
+      <tr>
+        <apex:repeat value="{!lableslst}" var="labelname">
 
-                    <th style="{!if(OR(labelname == 'Name', labelname == 'buildertek__Item_Name__c', labelname == 'buildertek__Description__c', labelname == 'buildertek__Notes__c', labelname == 'buildertek__Product__c'),
-                    'font-size: 15px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; padding: 5px 15px; text-align: left;',
-                    'font-size: 15px; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; padding: 5px 15px; text-align: right')}">
-                          {!sortlablevalueMap[labelname]}
-                    </th>
-                    <!--
+          <th style="{!if(OR(labelname == 'Name', labelname == 'buildertek__Item_Name__c', labelname == 'buildertek__Description__c', labelname == 'buildertek__Notes__c', labelname == 'buildertek__Product__c'),
+                    'font-size: 15px; border: 1px solid #ccc; padding: 5px 15px; text-align: left;',
+                    'font-size: 15px; border: 1px solid #ccc; padding: 5px 15px; text-align: right')}">
+            {!sortlablevalueMap[labelname]}
+          </th>
+          <!--
                     <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;">Product Description</th>
                     <th style="font-size: 15px;border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;padding: 5px 15px;text-align: right">Total List Price</th>
 					-->
-                </apex:repeat>
-            </tr>
-        </thead>
-        <tbody>
+        </apex:repeat>
+      </tr>
+    </thead>
+    <tbody>
 
-            <apex:repeat value="{!wrapperlst}" var="quoteItem">
-                <tr style="line-height: 1.6; {!if(quoteItem.groupName == null, 'display:none','')}">
-                    <td style="font-size: 14px;padding: 5px 15px;color:white;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151);">
-                        <apex:outputText value="{!quoteItem.groupName}" />
-                    </td>
-                    <td style="font-size: 14px;padding: 5px 15px;color:white;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;background-color:rgb(27 82 151); "
-                        colspan="{!colomspanvalue}">
-                        <apex:outputText value="{0, number, $###,###,###,##0.00}">
-                            <apex:param value="{!quoteItem.listTotal}" />
-                        </apex:outputText>
-                    </td>
+      <apex:repeat value="{!wrapperlst}" var="quoteItem">
+        <tr
+          style="line-height: 1.6; {!if(quoteItem.groupName == null, 'display:none',If((quoteItem.groupName == 'No Grouping'),'display:none',''))}">
+          <td
+            style="font-size: 14px;padding: 5px 15px;color:white;text-align: left;border: 1px solid #ccc; background-color:rgb(27 82 151);">
+            <apex:outputText value="{!quoteItem.groupName}" />
+          </td>
+          <td
+            style="font-size: 14px;padding: 5px 15px;color:white;text-align: right;border: 1px solid #ccc; background-color:rgb(27 82 151); "
+            colspan="{!colomspanvalue}">
+            <apex:outputText value="{0, number, $###,###,###,##0.00}">
+              <apex:param value="{!quoteItem.listTotal}" />
+            </apex:outputText>
+          </td>
 
-                </tr>
-                <apex:repeat value="{!quoteItem.quotelineitemlst}" var="quotelinesrecs">
-                    <tr style="
+        </tr>
+        <apex:repeat value="{!quoteItem.quotelineitemlst}" var="quotelinesrecs">
+          <tr style="
                     {!if
                     (quotelinesrecs.Status__c == 'Reject' ,
                     'background-color: lightgrey;text-decoration: line-through;','')}
                     
                     
                     {!if(quotelinesrecs.Not_Customer_Visible__c == TRUE,'display: none;','')}">
-                        <apex:repeat value="{!lableslst}" var="apiname">
-                            <td style="{!if(OR(apiname == 'Name', apiname == 'buildertek__Item_Name__c', apiname == 'buildertek__Description__c', apiname == 'buildertek__Notes__c', apiname == 'buildertek__Product__c'),
-                            'font-size: 14px;padding: 5px 15px;color:black;text-align: left;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;',
-                            'font-size: 14px;padding: 5px 15px;color:black;text-align: right;border-bottom:  1px solid  #ccc;border-right:  1px solid  #ccc;')}">
-                                <!-- <apex:outputfield value="{!quotelinesrecs[apiname]}"/> -->
-                                <apex:outputfield rendered="{!apiname != 'buildertek__Item_Name__c' || NOT(ISBLANK(quotelinesrecs.Item_Name__c))}" value="{!quotelinesrecs[apiname]}" />
-                                <apex:outputfield rendered="{!apiname == 'buildertek__Item_Name__c' && ISBLANK(quotelinesrecs.Item_Name__c)}" value="{!quotelinesrecs.Name}" />
-                            </td>
-                        </apex:repeat>
-
-
-                    </tr>
-                </apex:repeat>
+            <apex:repeat value="{!lableslst}" var="apiname">
+              <td
+                style="{!if(OR(apiname == 'Name', apiname == 'buildertek__Item_Name__c', apiname == 'buildertek__Description__c', apiname == 'buildertek__Notes__c', apiname == 'buildertek__Product__c'),
+                            'font-size: 14px;padding: 5px 15px;color:black;text-align: left;border: 1px solid  #ccc;',
+                            'font-size: 14px;padding: 5px 15px;color:black;text-align: right;border: 1px solid  #ccc;')}">
+                <!-- <apex:outputfield value="{!quotelinesrecs[apiname]}"/> -->
+                <apex:outputfield
+                  rendered="{!apiname != 'buildertek__Item_Name__c' || NOT(ISBLANK(quotelinesrecs.Item_Name__c))}"
+                  value="{!quotelinesrecs[apiname]}" />
+                <apex:outputfield
+                  rendered="{!apiname == 'buildertek__Item_Name__c' && ISBLANK(quotelinesrecs.Item_Name__c)}"
+                  value="{!quotelinesrecs.Name}" />
+              </td>
             </apex:repeat>
 
 
+          </tr>
+        </apex:repeat>
+      </apex:repeat>
 
-            <!-- <tr>
+
+
+      <!-- <tr>
                 <td colspan="{!colomspanvalue}" style="font-size: 15px;padding: 5px 15px;font-weight: bold;text-align: right;color:black;border-bottom:  1px solid  #ccc;border-right:1px solid #ccc;">Subtotal: </td>
                 <td style="font-size: 14px;padding: 5px 15px;text-align: right;color:black;border-bottom:1px solid #ccc;border-right: 1px solid  #ccc;">
                     <apex:outputField value="{!quotesList[0].Total__c}" />
@@ -88,9 +96,9 @@
             </tr> -->
 
 
-        </tbody>
+    </tbody>
 
-    </table>
-    <!-- </div> -->
+  </table>
+  <!-- </div> -->
 
 </apex:component>
