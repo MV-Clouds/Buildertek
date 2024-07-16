@@ -14,7 +14,7 @@
     background-color: #f3f2f2;
     color: #0070d2;
     font-weight: bold;
-    padding: 0.75rem;
+    padding: 0.75rem 0.3rem;
 }
 
 .slds-table tbody tr:nth-child(odd) {
@@ -26,7 +26,7 @@
 }
 
 .slds-table tbody td {
-    padding: 0.75rem;
+    padding: 0.75rem 0.3rem;
     border-bottom: 1px solid #e0e0e0;
 }
 

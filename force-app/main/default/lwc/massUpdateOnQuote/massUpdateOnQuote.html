@@ -22,6 +22,9 @@
                                 <th scope="col" class="slds-wider-column">
                                     <div class="slds-truncate" title="Additional Costs">Notes</div>
                                 </th>
+                                <th scope="col" style="width: 15%;">
+                                    <div class="slds-truncate" title="Additional Costs">Phase</div>
+                                </th>
                                 <th scope="col">
                                     <div class="slds-truncate" title="Quantity">Quantity</div>
                                 </th>
@@ -52,6 +55,12 @@
                                             value={item.buildertek__Notes__c} onchange={handleInputChange}
                                             data-id={item.Id} data-field="buildertek__Notes__c" variant="label-hidden"> 
                                         </lightning-input>
+                                    </td>
+                                    <td data-label="Phase" style="width: 15%;">
+                                        <lightning-combobox options={availableGroupingOption} variant="label-hidden"
+                                            data-id={item.Id} data-field="buildertek__Grouping__c" value={item.buildertek__Grouping__c}
+                                            onchange={handleInputChange}>
+                                        </lightning-combobox>
                                     </td>
                                     <td data-label="Quantity">
                                         <lightning-input class="slds-truncate" value={item.buildertek__Quantity__c}
