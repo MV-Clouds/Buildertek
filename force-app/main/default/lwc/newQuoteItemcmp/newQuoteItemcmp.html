@@ -6,9 +6,6 @@
 
     <div class="quoteData">
         <div class="leftSection">
-            <div class="projectName">
-                <h3>{projectName}</h3>
-            </div>
             <div class="quoteName">
                 <h1>{quoteName}</h1>
             </div>
@@ -46,22 +43,37 @@
     </div>
 
     <div class="buttonSection rightSection">
-        <div class="globalMarkup">
-            <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
-                Global Markup
-            </div>
-            <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" style="padding-bottom: 0.9rem;"></lightning-input>
-            <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
-                onclick={handleMarkup}></lightning-button-icon>
-        </div>
+              <template if:true={isMargin}>
 
-        <lightning-button variant="brand" label="Add Product" title="Add Product"
-            onclick={handleAddProduct}></lightning-button>
-        <lightning-button variant="brand" label="Mass Update" title="Mass Update"
-            onclick={handleMassUpdate}></lightning-button>
-        <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
-            onclick={handleImportRfq}></lightning-button>
-    </div>
+                <div class="globalMarkup">
+                    <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                        Global Margin
+                    </div>
+                    <lightning-input type="number" value={globalMargin} class="uiInputCss" label="" onchange={handleMarginChnage} step="0.01" variant="label-hidden"></lightning-input>
+                    <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                        onclick={handleMargin}></lightning-button-icon>
+                </div>
+
+            </template>
+            <template if:true={isMarkup}>
+
+              <div class="globalMarkup">
+                  <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
+                      Global Markup
+                  </div>
+                  <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" variant="label-hidden"></lightning-input>
+                  <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                      onclick={handleMarkup}></lightning-button-icon>
+              </div>
+
+            </template>
+            <lightning-button variant="brand" label="Add Product" title="Add Product"
+                onclick={handleAddProduct}></lightning-button>
+            <lightning-button variant="brand" label="Mass Update" title="Mass Update"
+                onclick={handleMassUpdate}></lightning-button>
+            <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
+                onclick={handleImportRfq}></lightning-button>
+        </div>
 
     <template if:true={isSingleLineenabled}>
         <div class="singleLineEntry">
