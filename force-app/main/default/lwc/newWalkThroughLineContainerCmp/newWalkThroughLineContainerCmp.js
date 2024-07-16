@@ -58,7 +58,7 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
     @api errMsgs;
 
     connectedCallback() {
-        this.recordId = this.getParameterByName();
+        console.log('recordId-->', this.recordId);
         this.getCategoryData();
         this.getAdminSettingForSharinPix();
     }
