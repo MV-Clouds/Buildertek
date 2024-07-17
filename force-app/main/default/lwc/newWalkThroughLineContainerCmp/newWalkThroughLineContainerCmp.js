@@ -471,6 +471,15 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
         this.refreshTheDataTable();
     }
 
+    handlerefresh(){
+        this.showNewModel = false;
+        this.refreshTheDataTable();
+        setTimeout(() => {
+            const plusIcon = this.template.querySelector('.plusIcon');
+            plusIcon.click();
+        }, 0);
+    }
+
     refreshTheDataTable() {
         this.getRelatedRecords();
     }

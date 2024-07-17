@@ -132,7 +132,7 @@
           <div class="header_css">
             <div class="heading_bt">BT Walk Through Line Items</div>
             <div class="button_group">
-              <button onclick={handlePlusButtonClick}>
+              <button class="plusIcon" onclick={handlePlusButtonClick}>
                 <svg width="12" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10 5.71429H5.71429V10H4.28571V5.71429H0V4.28571H4.28571V0H5.71429V4.28571H10V5.71429Z"
                     fill="#0176D3" />
@@ -162,7 +162,7 @@
     </template>
   </lightning-card>
   <template if:true={showNewModel}>
-    <c-new-walk-through-line-cmp walk-through-id={recordId} category-id={selectedCategory} onclose={handleClose} oncloseandrefresh={handleCloseAndRefresh}></c-new-walk-through-line-cmp>
+    <c-new-walk-through-line-cmp walk-through-id={recordId} category-id={selectedCategory} onclose={handleClose} oncloseandrefresh={handleCloseAndRefresh} onrefresh={handlerefresh}></c-new-walk-through-line-cmp>
   </template>
   <template if:true={showFileUploadModel}>
     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
