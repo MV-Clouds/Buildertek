@@ -11,7 +11,8 @@ export default class NewWalkThroughLineCmp extends LightningElement {
 
     @api walkThroughId;
     @api categoryId;
-    
+
+    @track isSaveandNew = false;
     @track recordTypeName;
     @track selectedRecordType;
     @track step1 = false;
@@ -102,6 +103,10 @@ export default class NewWalkThroughLineCmp extends LightningElement {
         this.dispatchEvent(new CustomEvent("close"));
     }
 
+    handleSaveAndNew(event){
+        this.isSaveandNew = true;
+    }
+
     handleSave(event){
         try{
             event.preventDefault();
@@ -148,7 +153,13 @@ export default class NewWalkThroughLineCmp extends LightningElement {
             .then(result =>{
                 this.spinner = false;
                 console.log('result', result);
-                this.dispatchEvent(new CustomEvent("closeandrefresh"));
+                if(this.isSaveandNew){
+                    console.log('Save and New');
+                    this.isSaveandNew = false;
+                    this.dispatchEvent(new CustomEvent("refresh"));
+                }else{
+                    this.dispatchEvent(new CustomEvent("closeandrefresh"));
+                }
                 this.showToast('Success', 'Record Created Successfully', 'success');
             }).catch(error => {
                 this.spinner = false;
