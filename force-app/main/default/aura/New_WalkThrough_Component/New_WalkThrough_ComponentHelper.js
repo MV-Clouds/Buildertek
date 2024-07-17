@@ -18,13 +18,14 @@
             if (state === "SUCCESS") {
                 let result = response.getReturnValue();
                 if (!result || result.length === 0) {
-                    let toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "message": "No Master Walk Through(s) Available",
-                        "type": "error"
-                    });
-                    toastEvent.fire();
+                    // let toastEvent = $A.get("e.force:showToast");
+                    // toastEvent.setParams({
+                    //     "title": "Error!",
+                    //     "message": "No Master Walk Through(s) Available",
+                    //     "type": "error"
+                    // });
+                    // toastEvent.fire();
+                    console.error("No Master Walk Through(s) Available");
                     component.set("v.masterWTList", []);
                 } else {
                     component.set("v.masterWTList", result);
