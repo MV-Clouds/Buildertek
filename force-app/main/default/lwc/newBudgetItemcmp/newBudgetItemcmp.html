@@ -4,15 +4,15 @@
         <lightning-spinner class="spinner__1" alternative-text="Loading" size="large"></lightning-spinner>
     </template>
 
-    <div class="quoteData">
+    <div class="budgetData">
         <div class="leftSection">
-            <div class="quoteName">
-                <h1>{quoteName}</h1>
+            <div class="budgetName">
+                <h1>{budgetName}</h1>
             </div>
         </div>
         <div class="rightSection">
             <div class="quoteDetails">
-                <template for:each={quoteData} for:item="item">
+                <template for:each={budgetData} for:item="item">
                     <div key={item.label} class="row">
                         <div class="label">
                             {item.label}
@@ -67,8 +67,8 @@
               </div>
 
             </template>
-            <lightning-button variant="brand" label="Add Product" title="Add Product"
-                onclick={handleAddProduct}></lightning-button>
+            <lightning-button variant="brand" label="Add PO" title="Add PO"
+                onclick={handleAddPO}></lightning-button>
             <lightning-button variant="brand" label="Mass Update" title="Mass Update"
                 onclick={handleMassUpdate}></lightning-button>
             <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
@@ -181,7 +181,7 @@
                     </div>
                 </header>
             </div>
-            <div class="quote-table">
+            <div class="budget-table">
                 <div class="slds-card__body">
                     <template if:true={group.isVisible}>
                         <div class="lastRowCSS">
@@ -317,7 +317,7 @@
                 <div class="slds-modal__content slds-p-around_medium editForm" id="modal-content-id-3">
                 <lightning-record-edit-form object-api-name="buildertek__Quote_Item__c" record-id={EditrecordId} onsubmit={handleSubmit} onsuccess={handleSucess} onerror={handleError}>
                         <div class="fixHeight slds-grid slds-wrap">
-                            <template for:each={quoteLineEditFields} for:item="field">
+                            <template for:each={budgetLineEditFields} for:item="field">
                                 <div key={field.fieldName} class="slds-size_1-of-2" style="padding: 3px 10px;">
                                     <lightning-input-field field-name={field.fieldName}></lightning-input-field>
                                 </div>
@@ -337,5 +337,7 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-
+    <template if:true={isAddPOTrue}>
+        <c-add-p-o-from-budget budget-id={recordId} onclose={closeAddPO}></c-add-p-o-from-budget>
+    </template>
 </template>

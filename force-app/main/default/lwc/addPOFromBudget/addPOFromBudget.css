@@ -1,0 +1,79 @@
+.slds-modal__container {
+    max-width: 70vw;
+}
+
+.slds-modal__footer {
+    justify-content: space-between;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 0.25rem;
+    border: 1px solid #d8dde6;
+}
+
+.custom-table th,
+.custom-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e3e8ee;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.custom-table th {
+    background-color: #0070d2;
+    color: #ffffff;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #eaf1f9;
+}
+
+.custom-table tbody td {
+    vertical-align: middle;
+}
+
+.custom-table th input[type="checkbox"],
+.custom-table td input[type="checkbox"] {
+    margin: 0;
+}
+
+.wider-column {
+    width: 40%;
+    max-width: 300px;
+}
+
+.checkbox-column {
+    width: 5%;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: #0070d2;
+    z-index: 1;
+}
+
+.custom-spinner-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}

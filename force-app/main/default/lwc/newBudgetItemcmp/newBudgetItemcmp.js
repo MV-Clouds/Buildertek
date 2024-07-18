@@ -1,44 +1,45 @@
 import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getallData from '@salesforce/apex/QuotePage.getallData';
-import deleteQuoteLine from '@salesforce/apex/QuotePage.deleteQuoteLine';
+import getallData from '@salesforce/apex/BudgetPage.getallData';
+import deleteQuoteLine from '@salesforce/apex/BudgetPage.deleteQuoteLine';
 import { NavigationMixin } from 'lightning/navigation';
-import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
-import addGlobalMargin from '@salesforce/apex/QuotePage.addGlobalMargin';
-import saveQL from '@salesforce/apex/QuotePage.saveQL';
+import addGlobalMarkup from '@salesforce/apex/BudgetPage.addGlobalMarkup';
+import addGlobalMargin from '@salesforce/apex/BudgetPage.addGlobalMargin';
+import saveQL from '@salesforce/apex/BudgetPage.saveQL';
 import { RefreshEvent } from 'lightning/refresh';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
-    @track quoteLineEditFields;
+    @track budgetLineEditFields;
     @track isEditModal = false;
-    @track isSingleLineenabled ;
-    @track isMarkup ;
-    @track isMargin ;
+    @track isSingleLineenabled;
+    @track isMarkup;
+    @track isMargin;
     @track groupingOption = [];
     @track globalMarkup = null;
     @track globalMargin = null;
     @track isLoading = true;
     @track showdeleteModal = false;
     @track deleteRecordId;
-    @track quoteName;
+    @track budgetName;
     @track currencyCode;
-    @track projectName;
-    @track quoteData;
-    @track quote;
-    @track quoteFields;
+    @track projectNfame;
+    @track budgetData;
+    @track budget;
+    @track budgetFields;
     @track totalColumns;
     @track columns;
-    @track quoteLines;
+    @track budgetLines;
     @track data = [];
     @track totalColumns;
     @track isImportRfqTrue = false;
     @track EditrecordId;
     @track isAddProductTrue = false;
+    @track isAddPOTrue = false;
     @track fields = {
         buildertek__Description__c: '',
-        buildertek__Grouping__c: '',
+        buildertek__Group__c: '',
         buildertek__Notes__c: '',
         buildertek__Quantity__c: 1,
         buildertek__Unit_Cost__c: 0.00,
@@ -71,7 +72,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
             const style = document.createElement('style');
             style.innerText = `
-                .quote-table .slds-cell-fixed{
+                .budget-table .slds-cell-fixed{
                     background: #e0ebfa !important;
                     color:#0176d3;
                 }
@@ -170,7 +171,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     this.refreshData();
                     this.fields = {
                         buildertek__Description__c: '',
-                        buildertek__Grouping__c: '',
+                        buildertek__Group__c: '',
                         buildertek__Notes__c: '',
                         buildertek__Quantity__c: 1,
                         buildertek__Unit_Cost__c: 0.00,
@@ -215,7 +216,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleSucess(){
-        this.isLoading = false;
         this.refreshData();
         var message = 'Record updated successfully';
         this.dispatchEvent(new ShowToastEvent({
@@ -226,7 +226,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleError(){
-        this.isLoading = false;
         var message = 'Error updating record';
         this.dispatchEvent(new ShowToastEvent({
             title: 'Error',
@@ -243,67 +242,67 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handlePicklistChange(event) {
-        this.fields.buildertek__Grouping__c = event.target.value;
+        this.fields.buildertek__Group__c = event.target.value;
     }
 
     getData() {
         this.isLoading = true;
-        var QuoteId = this.recordId;
-        console.log('Quote ID: ' + QuoteId);
-        getallData({ quoteId: QuoteId })
+        var budgetId = this.recordId;
+        console.log('Budget ID: ' + budgetId);
+        getallData({ budgetId: budgetId })
             .then(result => {
                 console.log({ result });
-                this.quote = result.Quote;
-                this.quoteLineEditFields = result.QuoteLineFields;
-                this.quoteFields = result.Quotecolumns;
+                this.budget = result.Budget;
+                this.budgetLineEditFields = result.BudgetLineFields;
+                this.budgetFields = result.Budgetcolumns;
                 this.currencyCode = result.OrgCurrency;
                 this.isSingleLineenabled = !result.checkSingleQLine;
                 this.isMarkup = !result.checkButtonMarkup;
                 this.isMargin = !result.checkButtonMargin;
                 let groupingOption = [];
-                for (var i = 0; i < result.QuoteItemGroupList.length; i++) {
-                    label: result.QuoteItemGroupList[i].Name;
-                    value: result.QuoteItemGroupList[i].Id;
-                    groupingOption.push({ label: result.QuoteItemGroupList[i].Name, value: result.QuoteItemGroupList[i].Id });
+                for (var i = 0; i < result.BudgetItemGroupList.length; i++) {
+                    label: result.BudgetItemGroupList[i].Name;
+                    value: result.BudgetItemGroupList[i].Id;
+                    groupingOption.push({ label: result.BudgetItemGroupList[i].Name, value: result.BudgetItemGroupList[i].Id });
                 }
                 this.groupingOption = groupingOption;
 
                 setTimeout(() => {
                     var statusCSS = this.template.querySelector('.statusCSS');
                     if (statusCSS) {
-                        if (result.Quote.buildertek__Status__c === 'Customer Accepted') {
+                        if (result.Budget.buildertek__Status__c === 'Customer Accepted') {
                             statusCSS.style.background = '#18764ad9';
                             statusCSS.style.color = 'white';
-                        } else if (result.Quote.buildertek__Status__c === 'Rejected') {
+                        } else if (result.Budget.buildertek__Status__c === 'Rejected') {
                             statusCSS.style.background = '#af1617';
                             statusCSS.style.color = 'white';
                         }
                     }
                 }, 0);
 
-                this.quoteName = result.Quote.Name;
+                this.budgetName = result.Budget.Name;
 
-                var quoteData = [];
-                for (var i = 0; i < result.Quotecolumns.length; i++) {
+                var budgetData = [];
+                for (var i = 0; i < result.Budgetcolumns.length; i++) {
                     var quoteDataToDisplay = {};
-                    quoteDataToDisplay.label = result.Quotecolumns[i].label;
-                    quoteDataToDisplay.fieldName = result.Quotecolumns[i].fieldName;
-                    quoteDataToDisplay.type = result.Quotecolumns[i].type;
-                    if (result.Quotecolumns[i].label === 'Status') {
+                    quoteDataToDisplay.label = result.Budgetcolumns[i].label;
+                    quoteDataToDisplay.fieldName = result.Budgetcolumns[i].fieldName;
+                    quoteDataToDisplay.type = result.Budgetcolumns[i].type;
+                    if (result.Budgetcolumns[i].label === 'Status') {
                         quoteDataToDisplay.isStatus = true;
                     } else {
                         quoteDataToDisplay.isStatus = false;
                     }
-                    if (result.Quotecolumns[i].type === 'currency') {
+                    if (result.Budgetcolumns[i].type === 'currency') {
                         quoteDataToDisplay.isCurrency = true;
                         quoteDataToDisplay.currencyCode = this.currencyCode;
                     } else {
                         quoteDataToDisplay.isCurrency = false;
                     }
-                    quoteDataToDisplay.value = result.Quote[result.Quotecolumns[i].fieldName];
-                    quoteData.push(quoteDataToDisplay);
+                    quoteDataToDisplay.value = result.Budget[result.Budgetcolumns[i].fieldName];
+                    budgetData.push(quoteDataToDisplay);
                 }
-                this.quoteData = quoteData;
+                this.budgetData = budgetData;
 
                 //loop on the colums cooming from FieldSet
                 for (var i = 0; i < result.columns.length; i++) {
@@ -395,35 +394,35 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                 this.totalColumns = totalCol;
                 this.columns = result.columns;
-                this.quoteLines = result.quoteLineList;
+                this.budgetLines = result.budgetLineList;
 
 
-                //loop on the quote lines and group them by Grouping
-                for (var i = 0; i < this.quoteLines.length; i++) {
-                    var groupName = this.quoteLines[i].buildertek__Grouping__r.Name;
-                    var groupId = this.quoteLines[i].buildertek__Grouping__c;
-                    if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
-                        this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
+                //loop on the budget lines and group them by Grouping
+                for (var i = 0; i < this.budgetLines.length; i++) {
+                    var groupName = this.budgetLines[i].buildertek__Group__r.Name;
+                    var groupId = this.budgetLines[i].buildertek__Group__c;
+                    if (this.budgetLines[i].buildertek__Cost_Code__c != null) {
+                        this.budgetLines[i].CostCode = this.budgetLines[i].buildertek__Cost_Code__r.Name;
                     }
 
-                    if (this.quoteLines[i].buildertek__Markup__c != null) {
-                        this.quoteLines[i].buildertek__Markup__c = this.quoteLines[i].buildertek__Markup__c / 100;
+                    if (this.budgetLines[i].buildertek__Markup__c != null) {
+                        this.budgetLines[i].buildertek__Markup__c = this.budgetLines[i].buildertek__Markup__c / 100;
                     }
 
-                    if (this.quoteLines[i].buildertek__Tax__c != null) {
-                        this.quoteLines[i].buildertek__Tax__c = this.quoteLines[i].buildertek__Tax__c / 100;
+                    if (this.budgetLines[i].buildertek__Tax__c != null) {
+                        this.budgetLines[i].buildertek__Tax__c = this.budgetLines[i].buildertek__Tax__c / 100;
                     }
 
-                    if (this.quoteLines[i].buildertek__Profit_Margin__c != null) {
-                        this.quoteLines[i].buildertek__Profit_Margin__c = this.quoteLines[i].buildertek__Profit_Margin__c / 100;
+                    if (this.budgetLines[i].buildertek__Profit_Margin__c != null) {
+                        this.budgetLines[i].buildertek__Profit_Margin__c = this.budgetLines[i].buildertek__Profit_Margin__c / 100;
                     }
 
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
-                        this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].items.push(this.quoteLines[i]);
+                        this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].items.push(this.budgetLines[i]);
                     } else {
-                        this.data.push({ groupName: groupName, groupId: groupId, items: [this.quoteLines[i]] });
+                        this.data.push({ groupName: groupName, groupId: groupId, items: [this.budgetLines[i]] });
                     }
-                    this.quoteLines[i].Number = i + 1;
+                    this.budgetLines[i].Number = i + 1;
                 }
                 console.log({ data: this.data });
                 this.calculateTotal(this.data);
@@ -447,6 +446,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         let columns = this.columns;
         let totalColumns = columns.filter(col => col.type === 'number' || col.type === 'currency');
         let grandTotal = {};
+
+        console.log('data : ',JSON.parse(JSON.stringify(data)));
 
         data.forEach(item => {
             let subtotalList = [];
@@ -597,10 +598,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
     }
 
-    handleAddProduct(event) {
-        console.log('Add Product button clicked');
-        // this.filterModal = true;
-        this.isAddProductTrue = true;
+    handleAddPO(event) {
+        console.log('Add PO button clicked');
+        this.isAddPOTrue = true;
     }
 
     handleImportRfq(event) {
@@ -764,5 +764,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             }
         });
 
+    }
+
+    closeAddPO(event){
+        this.isAddPOTrue = false;
+        if (event.detail.refresh) {
+            this.refreshData();
+        }
     }
 }
