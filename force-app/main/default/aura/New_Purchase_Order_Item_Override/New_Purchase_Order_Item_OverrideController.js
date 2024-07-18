@@ -162,7 +162,8 @@
 
             }else{
                 var errors = response.getError();
-                if (errors[0].pageErrors != undefined && (errors[0].pageErrors[0].statusCode.includes('REQUIRED_FIELD_MISSING') && errors[0].pageErrors[0].message.includes('Vendor'))) {
+                console.log('error is ',errors);
+                if (errors[0].pageErrors.length > 0 && errors[0].pageErrors[0].statusCode && (errors[0].pageErrors[0].statusCode.includes('REQUIRED_FIELD_MISSING') && errors[0].pageErrors[0].message.includes('Vendor'))) {
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "title": "Error!",
@@ -170,7 +171,7 @@
                         "type": "error"
                     });
                     toastEvent.fire();
-                }else if (errors[0].pageErrors != undefined && (errors[0].pageErrors[0].statusCode.includes("FIELD_CUSTOM_VALIDATION_EXCEPTION") && errors[0].pageErrors[0].message.includes("You cannot update this Purchase Order because there is a Contract Invoice associated with it.  If you would like to change this Purchase Order, please remove the Contract Invoice first."))) {
+                }else if (errors[0].pageErrors.length > 0 && errors[0].pageErrors[0].statusCode && (errors[0].pageErrors[0].statusCode.includes("FIELD_CUSTOM_VALIDATION_EXCEPTION") && errors[0].pageErrors[0].message.includes("You cannot update this Purchase Order because there is a Contract Invoice associated with it.  If you would like to change this Purchase Order, please remove the Contract Invoice first."))) {
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "title": "Error!",

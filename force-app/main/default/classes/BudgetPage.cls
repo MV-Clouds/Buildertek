@@ -1,69 +1,14 @@
 public without sharing class BudgetPage {
 
     @AuraEnabled
-    public static string deleteQuoteLine(Id quoteItemId) {
+    public static string deleteBudgetLine(Id budgetItemId) {
 
         try{
-            buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c();
-            quoteItem.Id = quoteItemId;
-            delete quoteItem;
+            buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+            budgetItem.Id = budgetItemId;
+            delete budgetItem;
         
             return 'Sucess';
-
-        } catch(Exception ex){
-            System.debug('Error: ' + ex.getMessage());
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
-                BT_ExceptionHandler.Store_Exception(ex);
-            }
-            return ex.getMessage();
-        }
-    }
-
-    @AuraEnabled
-    public static string addGlobalMargin(Id quoteId, Decimal margin) {
-
-        try{
-            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Margin__c  FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
-            System.debug('quoteItemList: ' + quoteItemList);
-
-            for(buildertek__Quote_Item__c quoteItem : quoteItemList){
-                if(quoteItem.buildertek__Margin__c == null || quoteItem.buildertek__Margin__c == 0 ){
-                    quoteItem.buildertek__Margin__c = margin;
-                }
-            }
-
-            update quoteItemList;
-
-            return 'Success';
-
-        } catch(Exception ex){
-            System.debug('Error: ' + ex.getMessage());
-            List<buildertek__Exception_Log_Store_Option__c> StoreExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
-            if (!StoreExcCustomSetting.isEmpty() && StoreExcCustomSetting[0].buildertek__Store_Exception_Log_in_Object__c == true) {
-                BT_ExceptionHandler.Store_Exception(ex);
-            }
-            return ex.getMessage();
-        }
-    }
-
-
-    @AuraEnabled
-    public static string addGlobalMarkup(Id quoteId, Decimal markup) {
-
-        try{
-            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Markup__c  FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
-            System.debug('quoteItemList: ' + quoteItemList);
-
-            for(buildertek__Quote_Item__c quoteItem : quoteItemList){
-                if(quoteItem.buildertek__Markup__c == null || quoteItem.buildertek__Markup__c == 0 ){
-                    quoteItem.buildertek__Markup__c = markup;
-                }
-            }
-
-            update quoteItemList;
-
-            return 'Success';
 
         } catch(Exception ex){
             System.debug('Error: ' + ex.getMessage());
@@ -101,15 +46,14 @@ public without sharing class BudgetPage {
 
             ad.OrgCurrency = UserInfo.getDefaultCurrency();
 
-            List<BT_Lightning_Utils.dataTableFields> Quotecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget__c', 'buildertek__BudgetPage');
-            ad.Quotecolumns = Quotecolumn;
+            List<BT_Lightning_Utils.dataTableFields> Budgetcolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget__c', 'buildertek__BudgetPage');
+            ad.Budgetcolumns = Budgetcolumn;
 
-            List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget_Item__c', 'buildertek__BT_Related_List_View_Fields');
-            // List<BT_Lightning_Utils.dataTableFields> QuoteLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__Mass_add_Quote_Item');
-            ad.QuoteLineFields = QuoteLinecolumn;
+            List<BT_Lightning_Utils.dataTableFields> BudgetLinecolumn = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget_Item__c', 'buildertek__BT_Detail_Page_Fields');
+            ad.BudgetLineFields = BudgetLinecolumn;
 
             String budgetFields = '';
-            for(BT_Lightning_Utils.dataTableFields dt : Quotecolumn){
+            for(BT_Lightning_Utils.dataTableFields dt : Budgetcolumn){
                 if(dt.fieldName != 'Id' && dt.fieldName != 'Name' && dt.fieldName != 'buildertek__Project__r.Name'){
                     budgetFields += dt.fieldName + ',';
                 }
@@ -121,11 +65,11 @@ public without sharing class BudgetPage {
             System.debug('budgetQuery: ' + budgetQuery);
 
             buildertek__Budget__c  budget = Database.query(budgetQuery);
-            ad.quote = budget;
+            ad.Budget = budget;
     
             String apiString = '';
     
-            List<BT_Lightning_Utils.dataTableFields> column = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Quote_Item__c', 'buildertek__BT_Related_List_View_Fields');
+            List<BT_Lightning_Utils.dataTableFields> column = BT_Lightning_Utils.getFieldSetForDataTable('buildertek__Budget_Item__c', 'buildertek__BT_Related_List_View_Fields');
             System.debug('column: ' + column);
             ad.columns = column;
     
@@ -137,13 +81,13 @@ public without sharing class BudgetPage {
             }
     
             String query = 'SELECT Id, ' + apiString;
-            query += 'buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =\'' + quoteId + '\'';
-            query += ' ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS Last, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last , Name ASC';
+            query += 'buildertek__Group__c, buildertek__Group__r.Name, buildertek__Group__r.buildertek__Sort_Id__c FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =\'' + budgetId + '\'';
+            query += ' ORDER BY buildertek__Group__r.buildertek__Sort_Id__c NULLS Last, buildertek__Group__r.Name, Name ASC';
             System.debug('query: ' + query);
     
-            List<buildertek__Quote_Item__c> quoteLineList = Database.query(query);
-            System.debug('quoteLineList: ' + quoteLineList);
-            ad.quoteLineList = quoteLineList;
+            List<buildertek__Budget_Item__c> budgetLineList = Database.query(query);
+            System.debug('budgetLineList: ' + budgetLineList);
+            ad.budgetLineList = budgetLineList;
 
             ad.Status = 'Success';
             
@@ -162,9 +106,9 @@ public without sharing class BudgetPage {
     }
 
     @AuraEnabled
-    public static string saveQL(buildertek__Quote_Item__c QL ){
+    public static string saveBL(buildertek__Budget_Item__c BL ){
         try{
-            upsert QL;
+            upsert BL;
             return 'Success';
         }catch(Exception ex){
             System.debug('Error: ' + ex.getMessage());
@@ -174,7 +118,6 @@ public without sharing class BudgetPage {
             }
             return ex.getMessage();
         }
-
     }
 
     @AuraEnabled
@@ -228,10 +171,35 @@ public without sharing class BudgetPage {
         }
     }
 
+    @AuraEnabled
+    public static poDataTableWrapper getPOData(String budgetId) {
+        poDataTableWrapper poData = new poDataTableWrapper();
+
+        try {
+            buildertek__Budget__c budgetRec = [SELECT Id, Name, buildertek__Project__c FROM buildertek__Budget__c WHERE Id = :budgetId LIMIT 1];
+
+            Boolean isMultiCurrency = UserInfo.isMultiCurrencyOrganization();
+
+            if (isMultiCurrency) {
+                String status = 'Master';
+                poData.poList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name, buildertek__PO_Type__c, buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Budget__c = null AND buildertek__Budget_Line__c = null AND buildertek__Project__c = :budgetRec.buildertek__Project__c AND buildertek__PO_Type__c != :status AND Id NOT IN (SELECT buildertek__Purchase_Order__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__BT_Budget__c != null ) ORDER BY Name ASC];
+            } else {
+                poData.poList = [SELECT Id, Name, buildertek__Project__c, buildertek__Project__r.Name, buildertek__PO_Type__c, buildertek__Description__c, buildertek__Vendor__c, buildertek__Vendor__r.Name, buildertek__PO_Total__c FROM buildertek__Purchase_Order__c WHERE buildertek__Budget__c = null AND buildertek__Budget_Line__c = null AND buildertek__Project__c = :budgetRec.buildertek__Project__c AND buildertek__PO_Type__c != 'Master' AND Id NOT IN (SELECT buildertek__Purchase_Order__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__BT_Budget__c != null ) ORDER BY Name ASC];
+            }
+
+            poData.poItemList = [SELECT Id, Name, buildertek__Purchase_Order__r.Name, buildertek__Purchase_Order__r.buildertek__Description__c, buildertek__Purchase_Order__r.buildertek__Project__r.Name, buildertek__Purchase_Order__r.buildertek__PO_Type__c, buildertek__Purchase_Order__r.buildertek__Vendor__c, buildertek__Purchase_Order__r.buildertek__Vendor__r.Name, buildertek__Purchase_Order__r.buildertek__Project__c, buildertek__Total_Amount_Tax__c FROM buildertek__Purchase_Order_Item__c WHERE buildertek__Purchase_Order__r.buildertek__Project__c = :budgetRec.buildertek__Project__c AND buildertek__BT_Budget__c = null AND buildertek__Budget_Item__c = null AND buildertek__Purchase_Order__r.buildertek__Budget_Line__c = null AND buildertek__Purchase_Order__r.buildertek__Budget__c = null AND buildertek__Purchase_Order__r.buildertek__PO_Type__c != 'Master' ORDER BY buildertek__Purchase_Order__r.Name, Name NULLS Last];
+        } catch (Exception e) {
+            System.debug('Exception occurred: ' + e.getMessage());
+            BT_ExceptionHandler.Store_Exception(e);
+            poData = null;
+        }
+        return poData;
+    }
+
     public class allData{
 
         @AuraEnabled
-        public List<BT_Lightning_Utils.dataTableFields> QuoteLineFields;
+        public List<BT_Lightning_Utils.dataTableFields> BudgetLineFields;
 
         @AuraEnabled
         public boolean checkSingleQLine;
@@ -252,13 +220,19 @@ public without sharing class BudgetPage {
         public string OrgCurrency;
 
         @AuraEnabled
-        public List<BT_Lightning_Utils.dataTableFields> Quotecolumns;
+        public List<BT_Lightning_Utils.dataTableFields> Budgetcolumns;
 
         @AuraEnabled
         public buildertek__Quote__c Quote;
 
         @AuraEnabled
         public List<buildertek__Quote_Item__c> quoteLineList;
+
+        @AuraEnabled
+        public buildertek__Budget__c Budget;
+
+        @AuraEnabled
+        public List<buildertek__Budget_Item__c> budgetLineList;
 
         @AuraEnabled
         public List<BT_Lightning_Utils.dataTableFields> columns;
@@ -285,5 +259,13 @@ public without sharing class BudgetPage {
         
         @AuraEnabled
         public List<buildertek__Quote_Line_Group__c> QuoteItemGroupList;
+    }
+
+    public class poDataTableWrapper {
+        @AuraEnabled
+        public List<buildertek__Purchase_Order__c> poList{ get; set; }
+
+        @AuraEnabled
+        public List<buildertek__Purchase_Order_Item__c> poItemList{ get; set; }
     }
 }

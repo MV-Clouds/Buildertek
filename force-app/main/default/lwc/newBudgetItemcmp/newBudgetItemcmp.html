@@ -43,37 +43,13 @@
     </div>
 
     <div class="buttonSection rightSection">
-              <template if:true={isMargin}>
-
-                <div class="globalMarkup">
-                    <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
-                        Global Margin
-                    </div>
-                    <lightning-input type="number" value={globalMargin} class="uiInputCss" label="" onchange={handleMarginChnage} step="0.01" variant="label-hidden"></lightning-input>
-                    <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
-                        onclick={handleMargin}></lightning-button-icon>
-                </div>
-
-            </template>
-            <template if:true={isMarkup}>
-
-              <div class="globalMarkup">
-                  <div class="slds-truncate" title="test1" style="width: 100px; font-weight: 500;">
-                      Global Markup
-                  </div>
-                  <lightning-input type="number" value={globalMarkup} class="uiInputCss" label="" onchange={handleMarkupChnage} step="0.01" variant="label-hidden"></lightning-input>
-                  <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
-                      onclick={handleMarkup}></lightning-button-icon>
-              </div>
-
-            </template>
-            <lightning-button variant="brand" label="Add Product" title="Add Product"
-                onclick={handleAddProduct}></lightning-button>
-            <lightning-button variant="brand" label="Mass Update" title="Mass Update"
-                onclick={handleMassUpdate}></lightning-button>
-            <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
-                onclick={handleImportRfq}></lightning-button>
-        </div>
+        <lightning-button variant="brand" label="Add PO" title="Add PO"
+            onclick={handleAddPO}></lightning-button>
+        <lightning-button variant="brand" label="Mass Update" title="Mass Update"
+            onclick={handleMassUpdate}></lightning-button>
+        <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
+            onclick={handleImportRfq}></lightning-button>
+    </div>
 
     <template if:true={isSingleLineenabled}>
         <div class="singleLineEntry">
@@ -85,12 +61,7 @@
                         <th>Notes</th>
                         <th>Quantity</th>
                         <th>Unit Cost</th>
-                        <template if:true={isMargin}>
-                            <th>Margin</th>
-                        </template>
-                        <template if:true={isMarkup}>
-                            <th>Markup</th>
-                        </template>
+                        <th>Markup</th>
                         <th>Save</th>
                     </tr>
                 </thead>
@@ -102,8 +73,8 @@
                             </lightning-input>
                         </td>
                         <td class="table-cell">
-                            <lightning-combobox options={groupingOption} name="buildertek__Grouping__c"
-                                variant="label-hidden" class="input-field" value={fields.buildertek__Grouping__c}
+                            <lightning-combobox options={groupingOption} name="buildertek__Group__c"
+                                variant="label-hidden" class="input-field" value={fields.buildertek__Group__c}
                                 onchange={handlePicklistChange} placeholder="No Grouping">
                             </lightning-combobox>
                         </td>
@@ -118,27 +89,17 @@
                             </lightning-input>
                         </td>
                         <td class="table-cell">
-                            <lightning-input type="number" name="buildertek__Unit_Cost__c" variant="label-hidden"
-                                class="input-field" step="0.01" value={fields.buildertek__Unit_Cost__c}
+                            <lightning-input type="number" name="buildertek__Unit_Price__c" variant="label-hidden"
+                                class="input-field" step="0.01" value={fields.buildertek__Unit_Price__c}
                                 onchange={handleInputChange}>
                             </lightning-input>
                         </td>
-                        <template if:true={isMargin}>
-                            <td class="table-cell">
-                                <lightning-input type="number" name="buildertek__Margin__c" variant="label-hidden"
-                                    class="input-field" step="0.01" value={fields.buildertek__Margin__c}
-                                    onchange={handleInputChange}>
-                                </lightning-input>
-                            </td>
-                        </template>
-                        <template if:true={isMarkup}>
-                            <td class="table-cell">
-                                <lightning-input type="number" name="buildertek__Markup__c" variant="label-hidden"
-                                    class="input-field" step="0.01" value={fields.buildertek__Markup__c}
-                                    onchange={handleInputChange}>
-                                </lightning-input>
-                            </td>
-                        </template>
+                        <td class="table-cell">
+                            <lightning-input type="number" name="buildertek__Markup__c" variant="label-hidden"
+                                class="input-field" step="0.01" value={fields.buildertek__Markup__c}
+                                onchange={handleInputChange}>
+                            </lightning-input>
+                        </td>
                         <td class="table-cell">
                             <lightning-button-icon icon-name="utility:save" class="saveInputCss"
                                 onclick={handleSingleLineSave}>
@@ -171,12 +132,6 @@
                             <span class="grpname">
                                 {group.groupName}
                             </span>
-                            <div class="button-div">
-                                <button class="slds-button slds-button_neutral slds-m-left_auto" data-id={group.groupName}
-                                    onclick={handleAddItem}>
-                                    <p data-id={group.groupName}>+</p>
-                                </button>
-                            </div>
                         </h2>
                     </div>
                 </header>
@@ -185,26 +140,18 @@
                 <div class="slds-card__body">
                     <template if:true={group.isVisible}>
                         <div class="lastRowCSS">
-                            <lightning-datatable key-field="id" data={group.items} columns={columns} onrowaction={handleRowAction}
-                                hide-checkbox-column>
+                            <lightning-datatable key-field="id" data={group.items} columns={columns} data-id={group.groupId} onrowaction={handleRowAction} onrowselection={getSelectedLines}>
                             </lightning-datatable>
                         </div>
                     </template>
                     <template if:false={group.isVisible}>
                         <div class="lastRowCSS">
-                            <lightning-datatable key-field="id" data={group.subtotal} columns={columns}
-                                hide-checkbox-column>
+                            <lightning-datatable key-field="id" data={group.subtotal} columns={columns}>
                             </lightning-datatable>
                         </div>
                     </template>
-
                 </div>
             </div>
-            <footer>
-                <div>
-                    <!-- <strong>Subtotal:</strong>  -->
-                </div>
-            </footer>
         </div>
     </template>
     <div class="slds-m-around_medium">
@@ -219,8 +166,7 @@
         </header>
         <div class="quote-table">
             <div class="lastRowCSS">
-                <lightning-datatable key-field="buildertek__Quantity__c" data={grandTotalList} columns={columns}
-                    hide-checkbox-column>
+                <lightning-datatable key-field="buildertek__Quantity__c" data={grandTotalList} columns={columns}>
                 </lightning-datatable>
             </div>
         </div>
@@ -249,7 +195,7 @@
             <!-- modal footer start-->
             <footer class="slds-modal__footer">
                 <button class="slds-button slds-button_neutral" onclick={cancelDelete}>Cancel</button>
-                <button class="slds-button slds-button_brand" onclick={deleteQuoteLine}>Delete</button>
+                <button class="slds-button slds-button_brand" onclick={deleteBudgetLine}>Delete</button>
             </footer>
         
           </div>
@@ -315,7 +261,7 @@
                     <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">Edit Record</h2>
                 </header>
                 <div class="slds-modal__content slds-p-around_medium editForm" id="modal-content-id-3">
-                <lightning-record-edit-form object-api-name="buildertek__Quote_Item__c" record-id={EditrecordId} onsubmit={handleSubmit} onsuccess={handleSucess} onerror={handleError}>
+                <lightning-record-edit-form object-api-name="buildertek__Budget_Item__c" record-id={EditrecordId} onsubmit={handleSubmit} onsuccess={handleSucess} onerror={handleError}>
                         <div class="fixHeight slds-grid slds-wrap">
                             <template for:each={budgetLineEditFields} for:item="field">
                                 <div key={field.fieldName} class="slds-size_1-of-2" style="padding: 3px 10px;">
@@ -337,5 +283,7 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-
+    <template if:true={isAddPOTrue}>
+        <c-add-p-o-from-budget budget-id={recordId} budget-line-list={selectedTableData} onclose={closeAddPO}></c-add-p-o-from-budget>
+    </template>
 </template>

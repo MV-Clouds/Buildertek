@@ -215,6 +215,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleSucess(){
+        this.isLoading = false;
         this.refreshData();
         var message = 'Record updated successfully';
         this.dispatchEvent(new ShowToastEvent({
@@ -224,8 +225,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }));
     }
 
-    handleError(){
-        var message = 'Error updating record';
+    handleError(event){
+        this.isLoading = false;
+        console.log('event error ',JSON.parse(JSON.stringify(event.detail)));
+        var message = event?.detail?.detail || 'Error updating record';
         this.dispatchEvent(new ShowToastEvent({
             title: 'Error',
             message: message,
@@ -707,7 +710,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.refreshData();
                 this.globalMargin = null;
             }else{
-                this.isLoading = false;
                 var message = 'Error updating Global Markup';
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',
@@ -715,6 +717,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     variant: 'error'
                 }));
             }
+        }).catch(error => {
+            console.log(error);
+            const evt = new ShowToastEvent({
+                title: 'Error',
+                message: error.body.message,
+                variant: 'error'
+            });
+            this.dispatchEvent(evt);
+        }).finally(() => {
+            this.isLoading = false;
         });
 
     }

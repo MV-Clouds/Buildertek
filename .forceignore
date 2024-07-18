@@ -39,3 +39,7 @@ mm.log
 .[dD][sS]_[sS]tore
 
 **/.eslintrc.json
+
+**/tsconfig.json
+
+**/*.ts
