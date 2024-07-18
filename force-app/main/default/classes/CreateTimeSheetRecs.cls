@@ -14,8 +14,7 @@ public without sharing class CreateTimeSheetRecs {
         }
 
         List<buildertek__BT_Time_Sheet__c> timeSheetList = createTimeSheetList(contactList);
-        Map<Id, String> contactEmailMap = createContactEmailMap(contactList);
-        Map<Id, String> contactNameMap = createContactNameMap(contactList);
+        Map<Id, ContactInfo> contactInfoMap = createContactInfoMap(contactList);
 
         String baseUrl = Url.getOrgDomainURL().toExternalForm();
 
@@ -31,8 +30,8 @@ public without sharing class CreateTimeSheetRecs {
             }
         }
 
-        sendSuccessEmails(successTimeSheetList, contactEmailMap, contactNameMap, baseUrl);
-        sendErrorEmails(errorTimeSheetList, contactNameMap, saveResults, baseUrl);
+        sendSuccessEmails(successTimeSheetList, contactInfoMap, baseUrl);
+        sendErrorEmails(errorTimeSheetList, contactInfoMap, saveResults, baseUrl);
     }
 
     private static List<Contact> getContactList() {
@@ -59,35 +58,27 @@ public without sharing class CreateTimeSheetRecs {
         return timeSheetList;
     }
 
-    private static Map<Id, String> createContactEmailMap(List<Contact> contactList) {
-        Map<Id, String> contactEmailMap = new Map<Id, String>();
+    private static Map<Id, ContactInfo> createContactInfoMap(List<Contact> contactList) {
+        Map<Id, ContactInfo> contactInfoMap = new Map<Id, ContactInfo>();
 
         for(Contact contact : contactList) {
-            contactEmailMap.put(contact.Id, contact.Email);
+            ContactInfo info = new ContactInfo(contact.Email, contact.Name);
+            contactInfoMap.put(contact.Id, info);
         }
 
-        return contactEmailMap;
+        return contactInfoMap;
     }
 
-    private static Map<Id, String> createContactNameMap(List<Contact> contactList) {
-        Map<Id, String> contactNameMap = new Map<Id, String>();
-
-        for(Contact contact : contactList) {
-            contactNameMap.put(contact.Id, contact.Name);
-        }
-
-        return contactNameMap;
-    }
-
-    private static void sendSuccessEmails(List<buildertek__BT_Time_Sheet__c> successTimeSheetList, Map<Id, String> contactEmailMap, Map<Id, String> contactNameMap, String baseUrl) {
+    private static void sendSuccessEmails(List<buildertek__BT_Time_Sheet__c> successTimeSheetList, Map<Id, ContactInfo> contactInfoMap, String baseUrl) {
         if(!successTimeSheetList.isEmpty()) {
             List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
             for(buildertek__BT_Time_Sheet__c timeSheet : successTimeSheetList) {
-                if(contactEmailMap.containsKey(timeSheet.buildertek__Contact__c)) {
+                if(contactInfoMap.containsKey(timeSheet.buildertek__Contact__c)) {
+                    ContactInfo info = contactInfoMap.get(timeSheet.buildertek__Contact__c);
                     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-                    mail.setToAddresses(new String[] {contactEmailMap.get(timeSheet.buildertek__Contact__c)});
-                    mail.setSubject('Time Sheet record created for ' + contactNameMap.get(timeSheet.buildertek__Contact__c));
-                    mail.setHtmlBody('Hello ' + contactNameMap.get(timeSheet.buildertek__Contact__c) + ',<br><br>Time Sheet record created for you. here is the link to the record <a href="' + baseUrl + '/' + timeSheet.Id + '">Click here</a>');
+                    mail.setToAddresses(new String[] {info.email});
+                    mail.setSubject('Time Sheet record created for ' + info.name);
+                    mail.setHtmlBody('Hello ' + info.name + ',<br><br>Time Sheet record created for you. here is the link to the record <a href="' + baseUrl + '/' + timeSheet.Id + '">Click here</a>');
                     mails.add(mail);
                 }
             }
@@ -95,7 +86,7 @@ public without sharing class CreateTimeSheetRecs {
         }
     }
 
-    private static void sendErrorEmails(List<buildertek__BT_Time_Sheet__c> errorTimeSheetList, Map<Id, String> contactNameMap, List<Database.SaveResult> saveResults, String baseUrl) {1
+    private static void sendErrorEmails(List<buildertek__BT_Time_Sheet__c> errorTimeSheetList, Map<Id, ContactInfo> contactInfoMap, List<Database.SaveResult> saveResults, String baseUrl) {
         if(!errorTimeSheetList.isEmpty()) {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             mail.setToAddresses(new String[] {'jaimin.s@mvclouds.com'});
@@ -103,10 +94,23 @@ public without sharing class CreateTimeSheetRecs {
             mail.setHtmlBody(mail.getHtmlBody() + 'Hello Admin,<br><br>There was an error while creating Time Sheet records. Please find the details below:<br><br>');
             mail.setHtmlBody(mail.getHtmlBody() + 'Base URL: ' + baseUrl + '<br><br>');
             for(buildertek__BT_Time_Sheet__c timeSheet : errorTimeSheetList) {
-                mail.setHtmlBody(mail.getHtmlBody() + 'Error while creating Time Sheet record for ' + contactNameMap.get(timeSheet.buildertek__Contact__c) + '<br>');
-                mail.setHtmlBody(mail.getHtmlBody() + 'Error Message: ' + saveResults.get(errorTimeSheetList.indexOf(timeSheet)).getErrors() + '<br><br>');
+                if(contactInfoMap.containsKey(timeSheet.buildertek__Contact__c)) {
+                    ContactInfo info = contactInfoMap.get(timeSheet.buildertek__Contact__c);
+                    mail.setHtmlBody(mail.getHtmlBody() + 'Error while creating Time Sheet record for ' + info.name + '<br>');
+                    mail.setHtmlBody(mail.getHtmlBody() + 'Error Message: ' + saveResults.get(errorTimeSheetList.indexOf(timeSheet)).getErrors() + '<br><br>');
+                }
             }
             Messaging.sendEmail(new Messaging.SingleEmailMessage[] {mail});
+        }
+    }
+
+    public class ContactInfo {
+        public String email;
+        public String name;
+
+        public ContactInfo(String email, String name) {
+            this.email = email;
+            this.name = name;
         }
     }
 }
