@@ -63,7 +63,7 @@ public with sharing class CreatePOFromRFQ{
                 for (buildertek__RFQ_To_Vendor__c rfqItems : RFQ){
                     buildertek__Purchase_Order__c PO = new buildertek__Purchase_Order__c();
                     PO.buildertek__Project__c = rfqItems.buildertek__Rfq__r.buildertek__Project__c;
-                    PO.buildertek__Status__c = 'Approved';
+                    PO.buildertek__Status__c = 'Open';
                     PO.buildertek__Type__c = 'Sales';
                     PO.buildertek__Trade_Type__c = rfqItems.buildertek__Rfq__r.buildertek__Trade_Type__c;
                     PO.buildertek__Vendor__c = rfqItems.buildertek__Vendor__c;
