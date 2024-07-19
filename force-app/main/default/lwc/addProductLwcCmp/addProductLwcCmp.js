@@ -627,7 +627,8 @@ export default class AddProductLwcCmp extends LightningElement {
 
         } catch (error) {
             console.log('error in callApexForPricebookList ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -641,7 +642,8 @@ export default class AddProductLwcCmp extends LightningElement {
             await this.callApexForTableDataList();
         } catch (error) {
             console.log('error in callApexForProdcutFamilyList ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -655,7 +657,8 @@ export default class AddProductLwcCmp extends LightningElement {
 
         } catch (error) {
             console.log('error in callApexForTableDataList ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -668,7 +671,8 @@ export default class AddProductLwcCmp extends LightningElement {
 
         } catch (error) {
             console.log('error in callApexForVendorsList ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -704,7 +708,8 @@ export default class AddProductLwcCmp extends LightningElement {
 
         } catch (error) {
             console.log('error in callApexForProductsThroughVendorsList ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -718,7 +723,8 @@ export default class AddProductLwcCmp extends LightningElement {
             this.dispatchEvent(new CustomEvent('closechildscreen', { detail: { refresh: true } }));
         } catch (error) {
             console.log('error in saveQuoteLineItems ', {error});
-            this.showToastMsg('Error', error.message, 'error');
+            let { errorMessage, errorObject} = this.returnErrorMsg(error);
+            this.showToastMsg('Error', errorMessage, 'error');
         }
     }
 
@@ -731,4 +737,21 @@ export default class AddProductLwcCmp extends LightningElement {
 			})
 		);
 	}
+
+    returnErrorMsg(error) {
+        // console.error('An error occurred:', error);
+    
+        let errorMessage = 'Unknown error';
+        if (error && error.body) {
+            if (error.body.message) {
+                errorMessage = error.body.message;
+            } else if (error.body.pageErrors && error.body.pageErrors.length > 0) {
+                errorMessage = error.body.pageErrors[0].message;
+            }
+        } else if (error && error.message) {
+            errorMessage = error.message;
+        }
+    
+        return { errorMessage, errorObject: error };
+    }
 }

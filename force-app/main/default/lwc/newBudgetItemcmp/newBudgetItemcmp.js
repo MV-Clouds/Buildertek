@@ -165,7 +165,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     var message = 'Error saving record';
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Error',
-                        message: message,
+                        message: result,
                         variant: 'error'
                     }));
                     this.isLoading = false;
@@ -173,9 +173,11 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             })
             .catch(error => {
                 console.log(error);
+                const { errorMessage, errorObject } = this.returnErrorMsg(error);
+                console.error('Error in updating Budget Line:', errorObject);
                 const evt = new ShowToastEvent({
                     title: 'Error',
-                    message: error.body.message,
+                    message: errorMessage,
                     variant: 'error'
                 });
                 this.dispatchEvent(evt);
@@ -212,7 +214,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     handleError(event){
         this.isLoading = false;
         console.log('event error ',JSON.parse(JSON.stringify(event.detail)));
-        var message = event?.detail?.detail || 'Error updating record';
+        var message = event.detail?.detail || 'Error updating record';
         this.dispatchEvent(new ShowToastEvent({
             title: 'Error',
             message: message,
@@ -407,9 +409,11 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             })
             .catch(error => {
                 console.log(error);
+                const { errorMessage, errorObject } = this.returnErrorMsg(error);
+                console.error('Error in updating Budget Line:', errorObject);
                 const evt = new ShowToastEvent({
                     title: 'Error',
-                    message: error.body.message,
+                    message: errorMessage,
                     variant: 'error'
                 });
                 this.dispatchEvent(evt);
@@ -650,5 +654,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         } catch (error) {
             console.log('error ',error);
         }
+    }
+
+    returnErrorMsg(error){
+        let errorMessage = 'Unknown error';
+        if (error && error.body) {
+            if (error.body.message) {
+                errorMessage = error.body.message;
+            } else if (error.body.pageErrors && error.body.pageErrors.length > 0) {
+                errorMessage = error.body.pageErrors[0].message;
+            }
+        } else if (error && error.message) {
+            errorMessage = error.message;
+        }
+
+        return { errorMessage, errorObject: error };
     }
 }
