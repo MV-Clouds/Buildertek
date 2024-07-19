@@ -115,16 +115,13 @@
                                             <div class="slds-truncate">Phase</div>
                                         </th>
                                         <th scope="col">
+                                            <div class="slds-truncate">Cost Code</div>
+                                        </th>
+                                        <th scope="col">
                                             <div class="slds-truncate">Quantity</div>
                                         </th>
                                         <th scope="col">
                                             <div class="slds-truncate">Unit Cost</div>
-                                        </th>
-                                        <th scope="col">
-                                            <div class="slds-truncate">Cost Cost</div>
-                                        </th>
-                                        <th scope="col">
-                                            <div class="slds-truncate">List Price</div>
                                         </th>
                                         <template if:true={isShowMargin}>
                                             <th scope="col">
@@ -133,9 +130,6 @@
                                         </template>
                                         <th scope="col">
                                             <div class="slds-truncate">Markup %</div>
-                                        </th>
-                                        <th scope="col">
-                                            <div class="slds-truncate">Discount %</div>
                                         </th>
                                     </tr>
                                 </thead>
@@ -171,6 +165,11 @@
                                                     onselect={handleSelected}></c-lookup>
                                             </td>
                                             <td>
+                                                <lightning-input type="text" label="" value={quote.buildertek__Cost_Code__c}
+                                                onchange={handleInputChange} data-id={quote.Id}
+                                                data-field="buildertek__Cost_Code__c" disabled></lightning-input>
+                                            </td>
+                                            <td>
                                                 <lightning-input type="number" label=""
                                                     value={quote.buildertek__Quantity__c} onchange={handleInputChange}
                                                     data-id={quote.Id}
@@ -181,17 +180,6 @@
                                                     value={quote.buildertek__Unit_Cost__c} formatter="currency"
                                                     onchange={handleInputChange} data-id={quote.Id}
                                                     data-field="buildertek__Unit_Cost__c"></lightning-input>
-                                            </td>
-                                            <td>
-                                                <lightning-input type="text" label="" value={quote.buildertek__Cost_Code__c}
-                                                onchange={handleInputChange} data-id={quote.Id}
-                                                data-field="buildertek__Cost_Code__c" disabled></lightning-input>
-                                            </td>
-                                            <td>
-                                                <lightning-input type="number" label=""
-                                                    value={quote.buildertek__Unit_Price__c} formatter="currency"
-                                                    onchange={handleInputChange} data-id={quote.Id}
-                                                    data-field="buildertek__Unit_Price__c"></lightning-input>
                                             </td>
                                             <template if:true={isShowMargin}>
                                                 <td>
@@ -208,13 +196,6 @@
                                                     step="0.01" onchange={handleInputChange}
                                                     data-id={quote.Id}
                                                     data-field="buildertek__Markup__c"></lightning-input>
-                                            </td>
-                                            <td>
-                                                <lightning-input type="number" label=""
-                                                    value={quote.buildertek__Additional_Discount__c} formatter="percent-fixed"
-                                                    step="0.01" onchange={handleInputChange}
-                                                    data-id={quote.Id}
-                                                    data-field="buildertek__Additional_Discount__c"></lightning-input>
                                             </td>
                                         </tr>
                                     </template>
