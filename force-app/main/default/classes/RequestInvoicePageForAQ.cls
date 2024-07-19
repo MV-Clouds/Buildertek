@@ -53,8 +53,8 @@ public without sharing class RequestInvoicePageForAQ{
             oldPurchaseOrderItemsMap = new Map<Id, buildertek__Purchase_Order_Item__c>();
             newPurchaseOrderItemsMap = new Map<Id, buildertek__Purchase_Order_Item__c>();
             for (buildertek__Purchase_Order_Item__c item : poLineRecord) {
-                oldPurchaseOrderItemsMap.put(item.Id, item.clone());
-                newPurchaseOrderItemsMap.put(item.Id, item.clone());
+                oldPurchaseOrderItemsMap.put(item.Id, item.clone(true));
+                newPurchaseOrderItemsMap.put(item.Id, item.clone(true));
             }
 
             isErrorMessage = false;
