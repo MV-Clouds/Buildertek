@@ -5,7 +5,7 @@
 
   <!-- <div class="wrapper-box" style="margin: 0 auto;background: #fcfcfc;">  -->
   <table style="width: 100%;text-align: left;border-spacing: 0;">
-    <thead style="background: #ddd;">
+    <thead style="background: {!tableHeaderDynamicColor}">
       <tr>
         <apex:repeat value="{!lableslst}" var="labelname">
 
@@ -27,11 +27,11 @@
         <tr
           style="line-height: 1.6; {!if(quoteItem.groupName == null, 'display:none',If((quoteItem.groupName == 'No Grouping'),'display:none',''))}">
           <td
-            style="font-size: 14px;padding: 5px 15px;color:white;text-align: left;border: 1px solid #ccc; background-color:rgb(27 82 151);">
+            style="font-size: 14px;padding: 5px 15px;color:white;text-align: left;border: 1px solid #ccc; background-color:{!tableHeaderDynamicColor}">
             <apex:outputText value="{!quoteItem.groupName}" />
           </td>
           <td
-            style="font-size: 14px;padding: 5px 15px;color:white;text-align: right;border: 1px solid #ccc; background-color:rgb(27 82 151); "
+            style="font-size: 14px;padding: 5px 15px;color:white;text-align: right;border: 1px solid #ccc; background-color:{!tableHeaderDynamicColor}"
             colspan="{!colomspanvalue}">
             <apex:outputText value="{0, number, $###,###,###,##0.00}">
               <apex:param value="{!quoteItem.listTotal}" />
@@ -53,11 +53,9 @@
                             'font-size: 14px;padding: 5px 15px;color:black;text-align: left;border: 1px solid  #ccc;',
                             'font-size: 14px;padding: 5px 15px;color:black;text-align: right;border: 1px solid  #ccc;')}">
                 <!-- <apex:outputfield value="{!quotelinesrecs[apiname]}"/> -->
-                <apex:outputfield
-                  rendered="{!apiname != 'buildertek__Item_Name__c' || NOT(ISBLANK(quotelinesrecs.Item_Name__c))}"
+                <apex:outputfield rendered="{!apiname != 'buildertek__Item_Name__c' || NOT(ISBLANK(quotelinesrecs.Item_Name__c))}"
                   value="{!quotelinesrecs[apiname]}" />
-                <apex:outputfield
-                  rendered="{!apiname == 'buildertek__Item_Name__c' && ISBLANK(quotelinesrecs.Item_Name__c)}"
+                <apex:outputfield rendered="{!apiname == 'buildertek__Item_Name__c' && ISBLANK(quotelinesrecs.Item_Name__c)}"
                   value="{!quotelinesrecs.Name}" />
               </td>
             </apex:repeat>

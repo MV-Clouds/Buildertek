@@ -1,9 +1,9 @@
 <apex:page controller="CreateProjectfromQuoteAcceptanceonOpp" sidebar="false" lightningStylesheets="true">
     <apex:slds />
-    <apex:form >
-        <apex:pageBlock mode="maindetail">
+    <apex:form id="frmConfigure">
+        <apex:pageBlock mode="maindetail" id="mainDetailPageBlock">
             <apex:pageMessages />  
-            <apex:pageblocksection >
+            <apex:pageblocksection id="pageBlockSection">
                 <apex:inputcheckbox value="{!isCreateProjectfromQuoteAcceptanceonOpp}" label="Create Project from Quote Acceptance on Opportunity">
                 </apex:inputcheckbox>
                 <apex:inputcheckbox value="{!isCreatesendcustomerquoteaftersignature}" label="Send Owner Email after Quote acceptance">
@@ -42,6 +42,10 @@
                 <apex:inputcheckbox value="{!showmargin}" label="Show Margin (for Add product/Quote Line) ">
                 </apex:inputcheckbox>
 
+                <label for="head"  style="margin-left: 116px;">Color Code</label>
+                <input type="color" id="head" name="ColorCode" onchange="updateColorCode(this.value)" value="{!colorcode}" style="margin-left: 23px;"/>
+                <apex:inputHidden value="{!colorcode}" id="colorCodeInput"/>
+
 
                 <center>
                     <apex:commandButton value="Save" id="onCreateProjectfromQuoteAcceptanceonOpp"  styleClass="slds-button slds-button_brand" action="{!onCreateProjectfromQuoteAcceptanceonOpp}"></apex:commandButton>
@@ -50,7 +54,13 @@
         </apex:pageBlock>
     </apex:form>
 
-    
+    <script type="text/javascript">
+      function updateColorCode(color) {
+        console.log(color);
+        document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value = color;
+        console.log(document.getElementById('{!$Component.frmConfigure.mainDetailPageBlock.pageBlockSection.colorCodeInput}').value );
+      }
+    </script>
 
 
    

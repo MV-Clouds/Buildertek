@@ -9,6 +9,7 @@ public class CreateProjectfromQuoteAcceptanceonOpp {
  public Boolean hideGlobalMarkup{get;set;}
  public Boolean reject_Quote_on_Rejected_Lines{get;set;}
  public Boolean showmargin{get;set;}
+ public String colorcode {get; set;} 
 //  public Boolean Margin{get;set;}
 //  public Boolean Markup{get;set;}
 
@@ -16,7 +17,6 @@ public String GroupingLevel1 { get; set; }
 public String GroupingLevel2 { get; set; }
 public String GroupingLevel3 { get; set; }
 public String GroupingLevel4 { get; set; }
-
 
 
  public string  isBaseUrl {get;set;} 
@@ -27,7 +27,7 @@ public String GroupingLevel4 { get; set; }
         admininterface = New buildertek__Admin_Interface_Node_Configuration__c();
         buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id,buildertek__Quote_Configuration__c,
                                                                                               buildertek__Email_Subject__c,buildertek__Send_customer_Quote_after_signature__c, buildertek__Reject_Quote_on_Rejected_Lines__c,buildertek__ShowMargin__c,
-                                                                                              buildertek__Create_Project_from_Opportunity__c,buildertek__Update_the_Opp_Amount__c,buildertek__Remove_Single_Quote_Line_Option__c,
+                                                                                              buildertek__Create_Project_from_Opportunity__c,buildertek__Update_the_Opp_Amount__c,buildertek__Remove_Single_Quote_Line_Option__c,buildertek__Color_code__c,
                                                                                               buildertek__Default_Project_Owner__c,buildertek__Org_Base_URL__c, buildertek__Hide_Global_Margin__c, buildertek__Hide_Global_Markup__c,buildertek__Grouping_Level_1__c,buildertek__Grouping_Level_2__c,buildertek__Grouping_Level_3__c,buildertek__Grouping_Level_4__c
                                                                                               from buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Quote Configuration'];
         isCreateProjectfromQuoteAcceptanceonOpp=adminInterfaceNodeConfigurations.buildertek__Quote_Configuration__c;
@@ -45,6 +45,7 @@ public String GroupingLevel4 { get; set; }
         GroupingLevel2 = adminInterfaceNodeConfigurations.buildertek__Grouping_Level_2__c;
         GroupingLevel3 = adminInterfaceNodeConfigurations.buildertek__Grouping_Level_3__c;
         GroupingLevel4 = adminInterfaceNodeConfigurations.buildertek__Grouping_Level_4__c;
+        colorcode = adminInterfaceNodeConfigurations.buildertek__Color_code__c;
         //if(adminInterfaceNodeConfigurations.buildertek__Org_Base_URL__c == null){
             isBaseUrl = System.URL.getSalesforceBaseUrl().toExternalForm();
        // }else{
@@ -77,6 +78,7 @@ public String GroupingLevel4 { get; set; }
         adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c = hideGlobalMarkup;
         adminInterfaceNodeConfigurations.buildertek__Reject_Quote_on_Rejected_Lines__c = reject_Quote_on_Rejected_Lines;
         adminInterfaceNodeConfigurations.buildertek__ShowMargin__c = showmargin;
+        adminInterfaceNodeConfigurations.buildertek__Color_code__c = colorcode;
         if(GroupingLevel1 == 'None'){
             GroupingLevel1 = null;
         }
