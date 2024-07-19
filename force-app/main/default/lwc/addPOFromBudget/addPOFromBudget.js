@@ -16,7 +16,8 @@ export default class AddPOFromBudget extends LightningElement {
     @track poItemList;
     @track selectedRows = [];
     @api budgetId;
-
+    @api budgetLineList = [];
+    budgetLineId;
     get availableOptions() {
         return [
             { label: 'Purchase Order', value: 'Purchase Order' },
@@ -25,6 +26,7 @@ export default class AddPOFromBudget extends LightningElement {
     }
 
     connectedCallback() {
+        this.budgetLineId = this.budgetLineList[0].Id;
         this.fetchPOData();
         this.getOrgCurrency();
     }
@@ -118,7 +120,7 @@ export default class AddPOFromBudget extends LightningElement {
         }
         this.isLoading = true;
         if (event.target.dataset.name === 'PO') {
-            updatePOFromBudget({ poList: JSON.parse(JSON.stringify(this.selectedRows)), budgetId: this.budgetId, BudgetLineId: 'a051K00001qwS5aQAE' })
+            updatePOFromBudget({ poList: JSON.parse(JSON.stringify(this.selectedRows)), budgetId: this.budgetId, BudgetLineId: this.budgetLineId })
                 .then(() => {
                     this.showToast('Success', 'PO added successfully', 'success');
                     this.dispatchEvent(new CustomEvent('close', { detail: { refresh: true } }));
@@ -132,8 +134,8 @@ export default class AddPOFromBudget extends LightningElement {
                 });
         } else {
             let poItemListOfID = this.selectedRows.map(obj => obj.Id);
-            
-            updatePOLineFromBudget({ POLineId: poItemListOfID, budgetId: this.budgetId, BudgetLineId: ['a051K00001qwS5aQAE'] })
+
+            updatePOLineFromBudget({ POLineId: poItemListOfID, budgetId: this.budgetId, BudgetLineId: [this.budgetLineId] })
                 .then(() => {
                     this.showToast('Success', 'PO Line added successfully', 'success');
                     this.dispatchEvent(new CustomEvent('close', { detail: { refresh: true } }));
