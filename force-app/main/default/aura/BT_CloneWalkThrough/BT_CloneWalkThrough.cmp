@@ -1,0 +1,11 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader" controller="CloneWalkThroughController" access="global">
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+	<lightning:notificationsLibrary aura:id="notifLib"/>
+	<div aura:id="progressbar">
+    	<center>
+	    	<img alt="Creating new Quote." src="{!$Resource.gearsloading}" style="height:150px !important;"/>
+	    	<br/>
+	    	Creating new Walk Through <br/> Please don't leave this page until Walk Through is created.
+    	</center>
+    </div>
+</aura:component>
