@@ -18,6 +18,7 @@ export default class AddPOFromBudget extends LightningElement {
     @api budgetId;
     @api budgetLineList = [];
     budgetLineId;
+
     get availableOptions() {
         return [
             { label: 'Purchase Order', value: 'Purchase Order' },
@@ -31,7 +32,24 @@ export default class AddPOFromBudget extends LightningElement {
         this.getOrgCurrency();
     }
 
-    // * Fetching currency data
+    // Error handling function
+    returnErrorMsg(error) {
+        console.error('An error occurred:', error);
+
+        let errorMessage = 'Unknown error';
+        if (error && error.body) {
+            if (error.body.message) {
+                errorMessage = error.body.message;
+            } else if (error.body.pageErrors && error.body.pageErrors.length > 0) {
+                errorMessage = error.body.pageErrors[0].message;
+            }
+        } else if (error && error.message) {
+            errorMessage = error.message;
+        }
+
+        return { errorMessage, errorObject: error };
+    }
+
     getOrgCurrency() {
         getcurrency()
             .then(result => {
@@ -66,15 +84,13 @@ export default class AddPOFromBudget extends LightningElement {
         this.initialScreen = false;
     }
 
-    // * Fetching PO nad PO Line data
     fetchPOData() {
         this.isLoading = true;
         getPOData({ budgetId: this.budgetId })
             .then(result => {
                 if (result) {
-                    console.log(result);
-                    this.poList = result.poList;
-                    this.poItemList = result.poItemList;
+                    this.poList = result.poList.length > 0 ? result.poList : undefined;
+                    this.poItemList = result.poItemList.length > 0 ? result.poItemList : undefined;
                 }
             })
             .catch(error => {
@@ -126,8 +142,9 @@ export default class AddPOFromBudget extends LightningElement {
                     this.dispatchEvent(new CustomEvent('close', { detail: { refresh: true } }));
                 })
                 .catch(error => {
-                    console.error('Error in updating PO', error);
-                    this.showToast('Error', `Error in updating PO: ${error.body.message}`, 'error');
+                    const { errorMessage, errorObject } = this.returnErrorMsg(error);
+                    console.error('Error in updating PO:', errorObject);
+                    this.showToast('Error', `Error in updating PO: ${errorMessage}`, 'error');
                 })
                 .finally(() => {
                     this.isLoading = false;
@@ -141,13 +158,14 @@ export default class AddPOFromBudget extends LightningElement {
                     this.dispatchEvent(new CustomEvent('close', { detail: { refresh: true } }));
                 })
                 .catch(error => {
-                    console.error('Error in updating PO Line', error);
-                    this.showToast('Error', `Error in updating PO Line: ${error.body.message}`, 'error');
+                    const { errorMessage, errorObject } = this.returnErrorMsg(error);
+                    console.error('Error in updating PO Line:', errorObject);
+                    this.showToast('Error', `Error in updating PO Line: ${errorMessage}`, 'error');
                 })
                 .finally(() => {
                     this.isLoading = false;
                 });
         }
-
     }
+
 }

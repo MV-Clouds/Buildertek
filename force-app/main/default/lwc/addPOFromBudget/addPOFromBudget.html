@@ -1,4 +1,11 @@
 <template>
+
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </template>
+
     <!-- Initial screen modal -->
     <template if:true={initialScreen}>
         <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
@@ -71,8 +78,8 @@
                             </template>
                             <template if:false={poList}>
                                 <tr>
-                                    <td colspan="5" class="slds-text-align_center">
-                                        <div class="slds-text-color_error">No records found</div>
+                                    <td colspan="5">
+                                        <div class="slds-text-color_error slds-text-align_center">No records found</div>
                                     </td>
                                 </tr>
                             </template>
@@ -143,8 +150,8 @@
                             </template>
                             <template if:false={poItemList}>
                                 <tr>
-                                    <td colspan="6" class="slds-text-align_center">
-                                        <div class="slds-text-color_error">No records found</div>
+                                    <td colspan="6">
+                                        <div class="slds-text-color_error slds-text-align_center">No records found</div>
                                     </td>
                                 </tr>
                             </template>
@@ -163,12 +170,5 @@
         </section>
         <div class="slds-backdrop slds-backdrop_open"></div>
     </template>
-
-    <!-- Spinner -->
-    <!-- <template if:true={isLoading}>
-        <div class="custom-spinner-container">
-            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
-        </div>
-    </template> -->
 
 </template>
