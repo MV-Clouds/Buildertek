@@ -1,7 +1,12 @@
 ({
 	doInit : function(component, event, helper) {
 	    component.set("v.Spinner", true);
-        var action = component.get("c.getquotes");
+        var action = component.get("c.getquotes2");
+
+        action.setParams({
+            budgetId : component.get("v.recordId")
+        });
+
         action.setCallback(this, function(response){
             var state = response.getState();
             if(state === "SUCCESS"){

@@ -18,6 +18,28 @@ public with sharing class ImportquoteClass {
         }
         return  MasterquoteClassList;                                               
     }
+
+    @AuraEnabled
+    public static object getquotes2(String budgetId){
+        List<MasterquoteClass> MasterquoteClassList = new List<MasterquoteClass>();
+        buildertek__Budget__c currBudget = [SELECT Id, buildertek__project__c FROM buildertek__budget__c WHERE Id =:budgetId];
+        
+        List<buildertek__Quote__c> quotesList;
+                         quotesList = [SELECT Id,
+                                        Name,buildertek__Project__c,
+                                        buildertek__Project__r.Name,
+                                        buildertek__Type__c
+                                        from buildertek__Quote__c
+                                        WHERE buildertek__project__c = :currBudget.buildertek__project__c ORDER BY Name ASC];    
+        
+        for(buildertek__Quote__c bud : quotesList){
+            MasterquoteClass MasterquotesClassRecord = new MasterquoteClass(); 
+            MasterquotesClassRecord.quoteRecord = bud;
+            MasterquotesClassRecord.budgetCheck = false;
+            MasterquoteClassList.add(MasterquotesClassRecord);
+        }
+        return  MasterquoteClassList;                                               
+    }
     
     @AuraEnabled
     public static MessageClass importMasterBudgetLines(List<String> budgetIds, String recordId){
