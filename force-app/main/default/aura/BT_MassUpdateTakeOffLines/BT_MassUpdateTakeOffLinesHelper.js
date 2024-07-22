@@ -95,7 +95,7 @@
         $A.enqueueAction(action);
     },
 
-    getTableRows: function (component, event, helper, pageNumber, pageSize, productType, searchLocation, searchCategory, searchTradeType) {
+    getTableRows: function (component, event, helper, pageNumber, pageSize, productType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase) {
         component.set('v.isLoading', true);
         var action = component.get("c.getRecords");
         var fieldSetValues = component.get("v.fieldSetValues");
@@ -127,7 +127,10 @@
             productType: productType,
             searchLocation: searchLocation,
             searchCategory: searchCategory,
-            searchTradeType: searchTradeType
+            searchTradeType: searchTradeType,
+            searchCostCode: searchCostCode,
+            searchVendor: searchVendor,
+            searchPhase: searchPhase
         });
         action.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
@@ -171,7 +174,7 @@
                     $A.getCallback(function () {
                       component.set('v.isLoading', false);
                     }),
-                    3000
+                    300
                 );
             } else {
                 component.set("v.listOfRecords", []);
@@ -181,7 +184,7 @@
         $A.enqueueAction(action);
     },
 
-    updateMassRecords: function (component, event, helper, productType, searchLocation, searchCategory, searchTradeType) {
+    updateMassRecords: function (component, event, helper, productType, searchLocation, searchCategory, searchTradeType, searchVendor, searchPhase, searchCostCode) {
         component.set('v.isLoading', true);
         var listOfRecords = component.get('v.listOfRecords');
         var fieldSetValues = component.get('v.fieldSetValues');
@@ -271,7 +274,7 @@
         $A.enqueueAction(action);
     },
 
-    deleteRecord: function (component, event, helper, deleteRecordId, productType, searchLocation, searchCategory, searchTradeType) {
+    deleteRecord: function (component, event, helper, deleteRecordId, productType, searchLocation, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase) {
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
 
@@ -285,7 +288,10 @@
             productType: productType,
             searchLocation: searchLocation,
             searchCategory: searchCategory,
-            searchTradeType: searchTradeType
+            searchTradeType: searchTradeType,
+            searchVendor: searchVendor,
+            searchCostCode: searchCostCode,
+            searchPhase: searchPhase
         });
 
         action.setCallback(this, function (response) {
