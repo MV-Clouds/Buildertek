@@ -57,11 +57,9 @@ global without sharing class QuotelineGroupingController{
                 if (qutitem.buildertek__Grouping__c != null){
                     groupid.add(qutitem.buildertek__Grouping__c);
                 }
-            }
+            } 
 
-            Quotelinegroup = [Select Id, Name
-                              from buildertek__Quote_Line_Group__c
-                              where Id = :groupId];
+            Quotelinegroup = [SELECT Id, Name,buildertek__Sort_Id__c FROM buildertek__Quote_Line_Group__c WHERE Id =: groupId ORDER BY buildertek__Sort_Id__c ASC NULLS LAST, Name ASC];
             system.debug('Quotelinegroupsize---->' + Quotelinegroup.size());
 
             for (buildertek__Quote_Line_Group__c quotelinegrouprec : Quotelinegroup){
