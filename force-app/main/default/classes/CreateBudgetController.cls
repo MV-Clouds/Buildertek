@@ -1,5 +1,5 @@
 public class CreateBudgetController {
-	@AuraEnabled
+    @AuraEnabled
     public static ResponseBase createBudget(Id contractId) {
         ResponseBase response = new ResponseBase();
         response.isSuccess = true;
@@ -36,7 +36,7 @@ public class CreateBudgetController {
         return response;
     }
     
-	@AuraEnabled
+    @AuraEnabled
     public static ResponseBase createContract(Id quotetId) {
         ResponseBase response = new ResponseBase();
         response.isSuccess = true;
