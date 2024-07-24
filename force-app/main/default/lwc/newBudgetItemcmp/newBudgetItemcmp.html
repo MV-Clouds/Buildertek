@@ -45,6 +45,12 @@
     <div class="buttonSection rightSection">
         <lightning-button variant="brand" label="Add PO" title="Add PO"
             onclick={handleAddPO}></lightning-button>
+        <lightning-button variant="brand" label="Add Contractor Invoice" title="Add Contractor Invoice"
+            onclick={handleAddCI}></lightning-button>
+        <lightning-button variant="brand" label="Add Expense" title="Add Expense"
+            onclick={handleAddExpense}></lightning-button>
+        <lightning-button variant="brand" label="Add Payable Invoice" title="Add Payable Invoice"
+            onclick={handleAddPayableInvoice}></lightning-button>
         <lightning-button variant="brand" label="Mass Update" title="Mass Update"
             onclick={handleMassUpdate}></lightning-button>
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
@@ -285,5 +291,16 @@
     </template>
     <template if:true={isAddPOTrue}>
         <c-add-p-o-from-budget budget-id={recordId} budget-line-list={selectedTableData} onclose={closeAddPO}></c-add-p-o-from-budget>
+    </template>
+    <template if:true={isAddContractorInvoiceTrue}>
+        <c-add-contractor-invoice-from-budget budget-id={recordId} budget-item-list={selectedTableData} onclose={closePopUp}></c-add-contractor-invoice-from-budget>
+    </template>
+
+    <template if:true={isAddExpenseTrue}>
+      <c-add-expense-from-budget budget-id={recordId} selected-budget-lines={selectedTableData} onclosechildscreen={closePopUp}></c-add-expense-from-budget>
+    </template>
+    
+    <template if:true={isAddPayableInvoiceTrue}>
+      <c-add-payable-invoice-from-budget budget-id={recordId} budget-item-list={selectedTableData} onclose={closePopUp}></c-add-payable-invoice-from-budget>
     </template>
 </template>
