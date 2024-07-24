@@ -15,7 +15,12 @@ export default class MassUpdateOnBudget extends LightningElement {
         this.showSpinner = true;
         getallData({ Budget: this.budgetId })
             .then(result => {
-                this.budgetItem = result.BudgetItemList;
+                this.budgetItem = result.BudgetItemList || [];
+                if (this.budgetItem.length === 0) {
+                    this.showToast('Error', 'No Budget Items found', 'error');
+                    this.handleCancel();
+                    return;
+                }
                 this.BudgetName = this.budgetItem[0].buildertek__Budget__r.Name;
                 let groupingOption = [];
                 for (let i = 0; i < result.BudgetItemGroupList.length; i++) {
