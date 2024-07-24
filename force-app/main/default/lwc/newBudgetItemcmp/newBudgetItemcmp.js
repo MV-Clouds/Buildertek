@@ -31,6 +31,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track EditrecordId;
     @track isAddProductTrue = false;
     @track isAddPOTrue = false;
+    @track isAddContractorInvoiceTrue = false;
+    @track isAddExpenseTrue = false;
     @track fields = {
         buildertek__Description__c: '',
         buildertek__Group__c: '',
@@ -547,6 +549,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
+        this.isAddExpenseTrue = false;
+        this.isAddContractorInvoiceTrue = false;
         if (event.detail.refresh) {
             this.refreshData();
         }
@@ -564,6 +568,24 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 })
             );
         }
+    }
+
+    handleAddCI(event) {
+        if (this.selectedTableData.length <= 1) {
+            this.isAddContractorInvoiceTrue = true;
+        } else {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Warning',
+                    message: 'Please select one or fewer Budget Lines for the Invoice (PO).',
+                    variant: 'warning'
+                })
+            );
+        }
+    }
+
+    handleAddExpense(event) {
+        this.isAddExpenseTrue = true;
     }
 
     handleImportRfq(event) {

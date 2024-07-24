@@ -3273,10 +3273,10 @@ public with sharing class BudgetDAO{
     @AuraEnabled
     public static string addInvoicePOToBudget(list<String> invoicePoList, String BudgetId){
         list<buildertek__Account_Payable__c> invoicePoToUpdate = new list<buildertek__Account_Payable__c>();
-        list<buildertek__Payment__c> cashDisburshment = [SELECT Id, buildertek__Payable__c
-                                                         FROM buildertek__Payment__c
-                                                         WHERE buildertek__Payable__c IN:invoicePoList];  // Changes for BUIL-3498 START
-        System.debug('cashDisburshment -- SIZE---->' + cashDisburshment.size());
+        // list<buildertek__Payment__c> cashDisburshment = [SELECT Id, buildertek__Payable__c
+        //                                                  FROM buildertek__Payment__c
+        //                                                  WHERE buildertek__Payable__c IN:invoicePoList];  // Changes for BUIL-3498 START
+
         // if(invoicePoList.size() > 0 && cashDisburshment.size() == 0){   // Changes for BUIL-3675 --> commnent by Brian to disable RestrictToUpdateCashDisbursement Functionality...
         list<buildertek__Account_Payable__c> invPoList = [SELECT Id, Name
                                                           FROM buildertek__Account_Payable__c
