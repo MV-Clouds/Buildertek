@@ -56,6 +56,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     connectedCallback() {
         this.getData();
+        this.handleMassUpdate = this.handleMassUpdate.bind(this);
+        window.addEventListener('message', this.handleMessage.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('message', this.handleMessage.bind(this));
     }
 
     renderedCallback() {
@@ -638,10 +644,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
-                componentName: 'buildertek__quoteMassUpdateHelper'
+                componentName: 'buildertek__budgetMassUpdate',
             },
             state: {
-                c__quoteId: this.recordId,
+                c__budgetId: this.recordId,
             }
         });
     }

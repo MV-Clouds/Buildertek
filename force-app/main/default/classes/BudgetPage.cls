@@ -121,46 +121,45 @@ public without sharing class BudgetPage {
     }
 
     @AuraEnabled
-    public static massUpdateQuoteItemWrapper massUpdateQuote(String Quote) {
-        massUpdateQuoteItemWrapper QIWrapper = new massUpdateQuoteItemWrapper();
+    public static massUpdateBudgetItemWrapper massUpdateBudget(String Budget) {
+        massUpdateBudgetItemWrapper BIWrapper = new massUpdateBudgetItemWrapper();
         try {
-            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, Name, buildertek__Quantity__c, buildertek__Unit_Cost__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Notes__c, buildertek__Quote__r.Name, buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :Quote ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS LAST, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS LAST , Name ASC];
-            QIWrapper.QuoteItemList = quoteItemList;
+            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name, buildertek__Group__c, buildertek__Group__r.Name, buildertek__Budget__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Forecast_To_Complete__c FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =: Budget ORDER BY buildertek__Group__r.buildertek__Sort_Id__c NULLS Last, buildertek__Group__r.Name, Name ASC];
+            BIWrapper.BudgetItemList = budgetLineList;
             
-            List<buildertek__Quote_Line_Group__c> groupingList = [SELECT Id, Name FROM buildertek__Quote_Line_Group__c ORDER BY Name];
-            QIWrapper.QuoteItemGroupList = groupingList;
+            List<buildertek__Budget_Line_Group__c> groupingList = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c ORDER BY Name];
+            BIWrapper.BudgetItemGroupList = groupingList;
             
-            return QIWrapper;
+            return BIWrapper;
         } catch(Exception e) {
             System.debug(e.getMessage());
             BT_ExceptionHandler.Store_Exception(e);
-            QIWrapper.QuoteItemList = new List<buildertek__Quote_Item__c>();
-            QIWrapper.QuoteItemGroupList = new List<buildertek__Quote_Line_Group__c>();
-            return QIWrapper;
+            BIWrapper.BudgetItemList = new List<buildertek__Budget_Item__c>();
+            BIWrapper.BudgetItemGroupList = new List<buildertek__Budget_Line_Group__c>();
+            return BIWrapper;
         }
     }
 
     @AuraEnabled
-    public static String massUpdateQuoteItem(String QuoteItems) {
+    public static String massUpdateBudgetItem(String BudgetItems) {
         try {
-            List<QuoteItemWrapper> quoteItemsList = (List<QuoteItemWrapper>) JSON.deserialize(QuoteItems, List<QuoteItemWrapper>.class);
-            List<buildertek__Quote_Item__c> quoteItemList = new List<buildertek__Quote_Item__c>();
+            List<BudgetItemWrapper> budgetItemsList = (List<BudgetItemWrapper>) JSON.deserialize(BudgetItems, List<BudgetItemWrapper>.class);
+            List<buildertek__Budget_Item__c> budgetItemList = new List<buildertek__Budget_Item__c>();
 
-            for (QuoteItemWrapper quoteItemWrapper : quoteItemsList) {
-                buildertek__Quote_Item__c quoteItem = new buildertek__Quote_Item__c();
-                quoteItem.Id = quoteItemWrapper.QuoteItemId;
-                quoteItem.Name = quoteItemWrapper.Name;
-                quoteItem.buildertek__Quantity__c = quoteItemWrapper.Quantity;
-                quoteItem.buildertek__Unit_Cost__c = quoteItemWrapper.UnitCost;
-                quoteItem.buildertek__Markup__c = quoteItemWrapper.Markup;
-                quoteItem.buildertek__Tax__c = quoteItemWrapper.Tax;
-                quoteItem.buildertek__Notes__c = quoteItemWrapper.notes;
-                quoteItem.buildertek__Grouping__c = quoteItemWrapper.Grouping;
+            for (BudgetItemWrapper BudgetItemWrapper : budgetItemsList) {
+                buildertek__Budget_Item__c budgetItem = new buildertek__Budget_Item__c();
+                budgetItem.Id = BudgetItemWrapper.BudgetItemId;
+                budgetItem.Name = BudgetItemWrapper.Name;
+                budgetItem.buildertek__Quantity__c = BudgetItemWrapper.Quantity;
+                budgetItem.buildertek__Unit_Price__c = BudgetItemWrapper.UnitCost;
+                budgetItem.buildertek__Markup__c = BudgetItemWrapper.Markup;
+                budgetItem.buildertek__Tax__c = BudgetItemWrapper.Tax;
+                budgetItem.buildertek__Forecast_To_Complete__c = BudgetItemWrapper.ForeToComplete;
 
-                quoteItemList.add(quoteItem);
+                budgetItemList.add(budgetItem);
             }
             
-            update quoteItemList;
+            update budgetItemList;
 
             return 'Success';
 
@@ -241,24 +240,23 @@ public without sharing class BudgetPage {
         public string status;
     }
 
-    public class QuoteItemWrapper {
-        @AuraEnabled public String QuoteItemId;
+    public class BudgetItemWrapper {
+        @AuraEnabled public String BudgetItemId;
         @AuraEnabled public String Name;
         @AuraEnabled public Decimal Quantity;
         @AuraEnabled public Decimal UnitCost;
         @AuraEnabled public Decimal Markup;
         @AuraEnabled public Decimal Tax;
-        @AuraEnabled public String Notes;
-        @AuraEnabled public String Grouping;
+        @AuraEnabled public Decimal ForeToComplete;
     }
 
-    public class massUpdateQuoteItemWrapper {
+    public class massUpdateBudgetItemWrapper {
 
         @AuraEnabled 
-        public List<buildertek__Quote_Item__c> QuoteItemList;
+        public List<buildertek__Budget_Item__c> BudgetItemList;
         
         @AuraEnabled
-        public List<buildertek__Quote_Line_Group__c> QuoteItemGroupList;
+        public List<buildertek__Budget_Line_Group__c> BudgetItemGroupList;
     }
 
     public class poDataTableWrapper {

@@ -47,10 +47,10 @@
             onclick={handleAddPO}></lightning-button>
         <lightning-button variant="brand" label="Add Contractor Invoice" title="Add Contractor Invoice"
             onclick={handleAddCI}></lightning-button>
-        <!-- <lightning-button variant="brand" label="Add Expense" title="Add Expense"
-            onclick={handleAddExpense}></lightning-button> -->
-        <!-- <lightning-button variant="brand" label="Mass Update" title="Mass Update"
-            onclick={handleMassUpdate}></lightning-button> -->
+        <lightning-button variant="brand" label="Add Expense" title="Add Expense"
+            onclick={handleAddExpense}></lightning-button>
+        <lightning-button variant="brand" label="Mass Update" title="Mass Update"
+            onclick={handleMassUpdate}></lightning-button>
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
             onclick={handleImportRfq}></lightning-button>
     </div>
@@ -295,6 +295,6 @@
     </template>
 
     <template if:true={isAddExpenseTrue}>
-        <c-add-expense-from-budget budget-id={recordId} onclosechildscreen={closePopUp}></c-add-expense-from-budget>
+      <c-add-expense-from-budget budget-id={recordId} selected-budget-lines={selectedTableData}  onclosechildscreen={closePopUp}></c-add-expense-from-budget>
     </template>
 </template>
