@@ -31,6 +31,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track EditrecordId;
     @track isAddProductTrue = false;
     @track isAddPOTrue = false;
+    @track isAddContractorInvoiceTrue = false;
+    @track isAddExpenseTrue = false;
+    @track isAddPayableInvoiceTrue = false;
+
     @track fields = {
         buildertek__Description__c: '',
         buildertek__Group__c: '',
@@ -54,6 +58,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     connectedCallback() {
         this.getData();
+        this.handleMassUpdate = this.handleMassUpdate.bind(this);
+        window.addEventListener('message', this.handleMessage.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('message', this.handleMessage.bind(this));
     }
 
     renderedCallback() {
@@ -547,6 +557,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     closePopUp(event){
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
+        this.isAddExpenseTrue = false;
+        this.isAddContractorInvoiceTrue = false;
+        this.isAddPayableInvoiceTrue = false;
         if (event.detail.refresh) {
             this.refreshData();
         }
@@ -564,6 +577,38 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 })
             );
         }
+    }
+
+    handleAddCI(event) {
+        if (this.selectedTableData.length <= 1) {
+            this.isAddContractorInvoiceTrue = true;
+        } else {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Warning',
+                    message: 'Please select one or fewer Budget Lines for the Invoice (PO).',
+                    variant: 'warning'
+                })
+            );
+        }
+    }
+
+    handleAddPayableInvoice() {
+        this.isAddPayableInvoiceTrue = true;
+    }
+
+    handleAddExpense(event) {
+        if(this.selectedTableData.length > 1){
+          this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Warning',
+                message: 'Please select only one Budget Line to add Expense.',
+                variant: 'warning'
+            })
+          );
+          return;
+        }
+        this.isAddExpenseTrue = true;
     }
 
     handleImportRfq(event) {
@@ -616,10 +661,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this[NavigationMixin.Navigate]({
             type: 'standard__component',
             attributes: {
-                componentName: 'buildertek__quoteMassUpdateHelper'
+                componentName: 'buildertek__budgetMassUpdate',
             },
             state: {
-                c__quoteId: this.recordId,
+                c__budgetId: this.recordId,
             }
         });
     }
