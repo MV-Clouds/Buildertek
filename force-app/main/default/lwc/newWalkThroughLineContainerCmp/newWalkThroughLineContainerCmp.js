@@ -294,8 +294,9 @@ export default class NewWalkThroughLineContainerCmp extends NavigationMixin(Ligh
 
             const style = document.createElement('style');
             style.innerText = `
-                .datatable_class .slds-cell-fixed{
-                    background: #0678FF1A !important;
+                .datatable_class .slds-cell-fixed {
+                    background: #e0ebfa !important;
+                    color:#0176d3;
                 }
 
                 .slds-dropdown_length-with-icon-10{
