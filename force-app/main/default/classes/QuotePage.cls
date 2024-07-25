@@ -231,6 +231,29 @@ public without sharing class QuotePage {
         }
     }
 
+    //create a method which takes in the quote id, a list of id considered , another list of id not considered, 
+    @AuraEnabled
+    public static string updateCustomerVisible(String quoteId, List<String> consideredIds, List<String> notConsideredIds) {
+        System.debug('consideredIds: ' + consideredIds);
+        System.debug('notConsideredIds: ' + notConsideredIds);
+        try {
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, buildertek__Not_Customer_Visible__c, buildertek__Grouping__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
+            for (buildertek__Quote_Item__c quoteItem : quoteItemList) {
+                if (consideredIds.contains(quoteItem.buildertek__Grouping__c)) {
+                    quoteItem.buildertek__Not_Customer_Visible__c = false;
+                } else if (notConsideredIds.contains(quoteItem.buildertek__Grouping__c)) {
+                    quoteItem.buildertek__Not_Customer_Visible__c = true;
+                }
+            }
+            update quoteItemList;
+            return 'Success';
+        } catch(Exception e) {
+            System.debug('Error: ' + e.getMessage());
+            BT_ExceptionHandler.Store_Exception(e);
+            return 'Error: ' + e.getMessage();
+        }
+    }
+
     public class allData{
 
         @AuraEnabled

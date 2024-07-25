@@ -6,21 +6,25 @@ import { NavigationMixin } from 'lightning/navigation';
 import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
 import addGlobalMargin from '@salesforce/apex/QuotePage.addGlobalMargin';
 import saveQL from '@salesforce/apex/QuotePage.saveQL';
+import updateCustomerVisible from '@salesforce/apex/QuotePage.updateCustomerVisible';
 import { RefreshEvent } from 'lightning/refresh';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track groupsNotConsidered = [];
     @track quoteLineEditFields;
     @track isEditModal = false;
-    @track isSingleLineenabled ;
-    @track isMarkup ;
-    @track isMargin ;
+    @track isSingleLineenabled;
+    @track isMarkup;
+    @track isMargin;
     @track groupingOption = [];
+    @track presentGroups = [];
     @track globalMarkup = null;
     @track globalMargin = null;
     @track isLoading = true;
     @track showdeleteModal = false;
+    @track showfilterModal = false;
     @track deleteRecordId;
     @track quoteName;
     @track currencyCode;
@@ -32,7 +36,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track columns;
     @track quoteLines;
     @track data = [];
-    @track totalColumns;
     @track isImportRfqTrue = false;
     @track EditrecordId;
     @track isAddProductTrue = false;
@@ -67,8 +70,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     renderedCallback() {
         if (this.isInitalRender) {
+            console.log('Inital Render');
             const body = document.querySelector("body");
-
             const style = document.createElement('style');
             style.innerText = `
                 .quote-table .slds-cell-fixed{
@@ -108,7 +111,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             `;
 
             body.appendChild(style);
-
             this.isInitalRender = false;
         }
 
@@ -118,43 +120,48 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.data = [];
         this.getData();
         this.selectedGroupForAddProduct = null;
+        this.dispatchEvent(new RefreshEvent());
     }
 
-    handleSingleLineSave(){
+    handleSingleLineSave() {
         this.isLoading = true;
         this.fields.buildertek__Quantity__c = parseInt(this.fields.buildertek__Quantity__c);
         if (!this.fields.buildertek__Description__c) {
             this.dispatchEvent(
-            new ShowToastEvent({
-                title: 'Error',
-                message: 'Description is required',
-                variant: 'error'
-            })
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Description is required',
+                    variant: 'error'
+                })
             );
             this.isLoading = false;
             return;
         } else if (!this.fields.buildertek__Quantity__c || this.fields.buildertek__Quantity__c <= 0) {
             this.dispatchEvent(
-            new ShowToastEvent({
-                title: 'Error',
-                message: 'Quantity should be greater than 0',
-                variant: 'error'
-            })
+                new ShowToastEvent({
+                    title: 'Error',
+                    message: 'Quantity should be greater than 0',
+                    variant: 'error'
+                })
             );
             this.isLoading = false;
             return;
         }
 
-        if(!this.isMarkup){
+        if (!this.isMarkup) {
             delete this.fields.buildertek__Markup__c;
         }
-        if(!this.isMargin){
+        if (!this.isMargin) {
             delete this.fields.buildertek__Margin__c;
+        }
+        //check if fields.buildertek__Grouping__c has the value in groupsNotConsidered then add buildertek__Not_Customer_Visible__c = true
+        if (this.groupsNotConsidered.includes(this.fields.buildertek__Grouping__c)) {
+            this.fields.buildertek__Not_Customer_Visible__c = true;
         }
         this.fields.buildertek__Quote__c = this.recordId;
         this.fields.Name = this.fields.buildertek__Description__c;
         console.log({ fields: this.fields });
-        
+
         saveQL({ QL: this.fields })
             .then(result => {
                 console.log({ result });
@@ -207,7 +214,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.fields[fieldName] = event.target.value;
     }
 
-    handleSubmit(event){
+    handleSubmit(event) {
         this.isLoading = true;
         event.preventDefault();
         const fields = event.detail.fields;
@@ -216,7 +223,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.template.querySelector('lightning-record-edit-form').submit(fields);
     }
 
-    handleSucess(){
+    handleSucess() {
         this.isLoading = false;
         this.refreshData();
         var message = 'Record updated successfully';
@@ -227,9 +234,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }));
     }
 
-    handleError(event){
+    handleError(event) {
         this.isLoading = false;
-        console.log('event error ',JSON.parse(JSON.stringify(event.detail)));
+        console.log('event error ', JSON.parse(JSON.stringify(event.detail)));
         var message = event.detail?.detail || 'Error updating record';
         this.dispatchEvent(new ShowToastEvent({
             title: 'Error',
@@ -238,9 +245,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }));
     }
 
-    submitDetails2(){
-        const btn = this.template.querySelector( ".hidden" );
-        if( btn ){ 
+    submitDetails2() {
+        const btn = this.template.querySelector(".hidden");
+        if (btn) {
             btn.click();
         }
     }
@@ -268,6 +275,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     label: result.QuoteItemGroupList[i].Name;
                     value: result.QuoteItemGroupList[i].Id;
                     groupingOption.push({ label: result.QuoteItemGroupList[i].Name, value: result.QuoteItemGroupList[i].Id });
+                    if (result.QuoteItemGroupList[i].Name === 'No Grouping') {
+                        this.fields.buildertek__Grouping__c = result.QuoteItemGroupList[i].Id;
+                    }
                 }
                 this.groupingOption = groupingOption;
 
@@ -315,7 +325,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         result.columns[i].type = 'string';
                     }
 
-                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Profit_Margin__c' ){
+                    if (result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Profit_Margin__c') {
                         result.columns[i].type = 'percent';
                         result.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
                     }
@@ -394,7 +404,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     hideDefaultActions: true,
                     cellAttributes: { alignment: 'center' },
                 });
-                let totalCol = result.colums;  
+                let totalCol = result.colums;
 
                 this.totalColumns = totalCol;
                 this.columns = result.columns;
@@ -405,6 +415,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 for (var i = 0; i < this.quoteLines.length; i++) {
                     var groupName = this.quoteLines[i].buildertek__Grouping__r.Name;
                     var groupId = this.quoteLines[i].buildertek__Grouping__c;
+
                     if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
                         this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
                     }
@@ -422,13 +433,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     }
 
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
+                        if (this.quoteLines[i].buildertek__Not_Customer_Visible__c) {
+                            this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].isConsidered = false;
+                        }
                         this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].items.push(this.quoteLines[i]);
                     } else {
-                        this.data.push({ groupName: groupName, groupId: groupId, items: [this.quoteLines[i]] });
+                        let isConsidered = !this.quoteLines[i].buildertek__Not_Customer_Visible__c;
+                        this.data.push({ groupName: groupName, isConsidered: isConsidered, groupId: groupId, items: [this.quoteLines[i]] });
                     }
                     this.quoteLines[i].Number = i + 1;
                 }
-                console.log({ data: this.data });
+
                 this.calculateTotal(this.data);
             })
             .catch(error => {
@@ -450,18 +465,28 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     calculateTotal(data) {
         let columns = this.columns;
-        let totalColumns = columns.filter(col => col.type === 'number' || col.type === 'currency');
+        let totalColumns = columns.filter(col => (col.type === 'number' || col.type === 'currency') && col.fieldName !== 'buildertek__Unit_Cost__c');
         let grandTotal = {};
+        this.groupsNotConsidered = [];
+        this.presentGroups = [];
 
-        data.forEach(item => {
+        this.data.forEach(item => {
+            if (!item.isConsidered) {
+                this.groupsNotConsidered.push(item.groupId);
+            }
+            this.presentGroups.push({ label: item.groupName, value: item.groupId });
+
             let subtotalList = [];
             let subTotal = {};
             totalColumns.forEach(col => {
                 subTotal[col.fieldName] = item.items.reduce((acc, currentItem) => acc + currentItem[col.fieldName], 0);
-                if (grandTotal[col.fieldName]) {
-                    grandTotal[col.fieldName] += subTotal[col.fieldName];
-                } else {
-                    grandTotal[col.fieldName] = subTotal[col.fieldName];
+                grandTotal[col.fieldName] = grandTotal[col.fieldName] || 0;
+                if (item.isConsidered) {
+                    if (grandTotal[col.fieldName]) {
+                        grandTotal[col.fieldName] += subTotal[col.fieldName];
+                    } else {
+                        grandTotal[col.fieldName] = subTotal[col.fieldName];
+                    }
                 }
             });
             subTotal['Name'] = 'Subtotal';
@@ -473,17 +498,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
         this.grandTotalList = [JSON.parse(JSON.stringify(grandTotal))];
 
+
         console.log({ grandTotal });
-        console.log({ grandTotalList: this.grandTotalList });
         console.log({ data });
     }
 
-    handleRowAction(event){
+    handleRowAction(event) {
         const actionName = event.detail.action.name;
         const row = event.detail.row;
         const recordId = row.Id;
 
-        switch(actionName){
+        switch (actionName) {
             case 'edit_called':
                 this.handleEdit(recordId);
                 break;
@@ -512,7 +537,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isEditModal = true;
     }
 
-    closeEditModal(){
+    closeEditModal() {
         this.isEditModal = false;
         this.EditrecordId = null;
     }
@@ -523,21 +548,21 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.deleteRecordId = recordId;
     }
 
-    cancelDelete(){
+    cancelDelete() {
         this.showdeleteModal = false;
         this.deleteRecordId = null;
     }
 
-    deleteQuoteLine(){
+    deleteQuoteLine() {
         var recordId = this.deleteRecordId;
-        if(recordId){
+        if (recordId) {
             this.isLoading = true;
             this.cancelDelete();
             deleteQuoteLine({
                 quoteItemId: recordId
             }).then(result => {
-                console.log({result});
-                if(result == "Sucess"){
+                console.log({ result });
+                if (result == "Sucess") {
                     console.log('Record deleted successfully');
                     //show toast message 
                     var message = 'Record deleted successfully';
@@ -547,7 +572,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         variant: 'success'
                     }));
                     this.refreshData();
-                }else{
+                } else {
                     var message = 'Error deleting record';
                     this.dispatchEvent(new ShowToastEvent({
                         title: 'Error',
@@ -557,7 +582,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     this.isLoading = false;
                 }
             });
-        }else{
+        } else {
             var message = 'Please select a record to delete';
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -577,7 +602,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 objectApiName: 'buildertek__Quote_Item__c',
                 actionName: 'view'
             }
-         });
+        });
     }
 
 
@@ -594,7 +619,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
 
-    closePopUp(event){
+    closePopUp(event) {
         this.isImportRfqTrue = false;
         this.isAddProductTrue = false;
         if (event.detail.refresh) {
@@ -614,7 +639,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.isAddProductTrue = true;
     }
 
-    handleImportRfq(event){
+    handleImportRfq(event) {
         console.log('Add Product button clicked');
         // this.filterModal = true;
         this.isImportRfqTrue = true;
@@ -673,20 +698,20 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         });
     }
 
-    handleMarkupChnage(event){
+    handleMarkupChnage(event) {
         this.globalMarkup = event.target.value;
     }
 
-    handleMarginChnage(event){
+    handleMarginChnage(event) {
         this.globalMargin = event.target.value;
     }
 
-    handleMargin(){
+    handleMargin() {
         this.isLoading = true;
         var globalMargin = this.globalMargin;
         console.log('Global Markup: ' + globalMargin);
         //if globalMargin is null then show error message
-        if(globalMargin == null || globalMargin == ''){
+        if (globalMargin == null || globalMargin == '') {
             var message = 'Please enter Global Margin';
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -701,8 +726,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             quoteId: this.recordId,
             margin: globalMargin
         }).then(result => {
-            console.log({result});
-            if(result == 'Success'){
+            console.log({ result });
+            if (result == 'Success') {
                 console.log('Global Margin updated successfully');
                 //show toast message 
                 var message = 'Global Margin updated successfully';
@@ -713,7 +738,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 }));
                 this.refreshData();
                 this.globalMargin = null;
-            }else{
+            } else {
                 var message = 'Error updating Global Markup';
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',
@@ -737,12 +762,12 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
-    handleMarkup(){
+    handleMarkup() {
         this.isLoading = true;
         var globalMarkup = this.globalMarkup;
         console.log('Global Markup: ' + globalMarkup);
         //if globalMarkup is null then show error message
-        if(globalMarkup == null || globalMarkup == ''){
+        if (globalMarkup == null || globalMarkup == '') {
             var message = 'Please enter Global Markup';
             this.dispatchEvent(new ShowToastEvent({
                 title: 'Error',
@@ -757,8 +782,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             quoteId: this.recordId,
             markup: globalMarkup
         }).then(result => {
-            console.log({result});
-            if(result == 'Success'){
+            console.log({ result });
+            if (result == 'Success') {
                 console.log('Global Markup updated successfully');
                 //show toast message 
                 var message = 'Global Markup updated successfully';
@@ -769,7 +794,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 }));
                 this.refreshData();
                 this.globalMarkup = null;
-            }else{
+            } else {
                 this.isLoading = false;
                 var message = 'Error updating Global Markup';
                 this.dispatchEvent(new ShowToastEvent({
@@ -782,7 +807,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
     }
 
-    returnErrorMsg(error){
+    returnErrorMsg(error) {
         let errorMessage = 'Unknown error';
         if (error && error.body) {
             if (error.body.message) {
@@ -795,5 +820,64 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         }
 
         return { errorMessage, errorObject: error };
+    }
+
+    handleFilter() {
+        this.showfilterModal = true;
+    }
+
+    cancelFilter() {
+        this.showfilterModal = false;
+    }
+
+    handleGroupChange(event) {
+        this.groupsNotConsidered = event.target.value;
+        console.log(JSON.stringify(this.groupsNotConsidered));
+    }
+
+    saveFilter() {
+        this.showfilterModal = false;
+        this.isLoading = true;
+        var groupsNotConsidered = this.groupsNotConsidered;
+        console.log('Groups Not Considered: ' + groupsNotConsidered);
+        var presentGroups = this.presentGroups;
+        var groupsConsidered = [];
+        for (var i = 0; i < presentGroups.length; i++) {
+            if (!groupsNotConsidered.includes(presentGroups[i].value)) {
+                groupsConsidered.push(presentGroups[i].value);
+            }
+        }
+        console.log('Groups Considered: ' + groupsConsidered);
+
+        updateCustomerVisible({
+            quoteId: this.recordId,
+            notConsideredIds: groupsNotConsidered,
+            consideredIds: groupsConsidered
+        }).then(result => {
+            console.log({ result });
+            this.isLoading = false;
+            if (result == 'Success') {
+                console.log('Groups updated successfully');
+                //show toast message 
+                var message = 'Groups updated successfully';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Success',
+                    message: message,
+                    variant: 'success'
+                }));
+            } else {
+                var message = 'Error updating groups';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: message,
+                    variant: 'error'
+                }));
+            }
+        })
+            .finally(() => {
+                this.refreshData();
+            });
+
+
     }
 }
