@@ -7,7 +7,7 @@
     <aura:attribute name="isSaveNew" type="boolean" default="false"/>
     <aura:attribute name="saveAndNew" type="Boolean" default="false" />
    <aura:attribute name="parentprojectRecordId" type="String" default="" />
-   <aura:attribute name="parentRecordId" type="String" default="" />
+   <aura:attribute name="parentRecordId" type="String" default="" />g
    <aura:attribute name="parentOppRecordId" type="String" default="" />
 
     <!--Declare Attributes-->

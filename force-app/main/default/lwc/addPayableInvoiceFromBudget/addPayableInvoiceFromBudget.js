@@ -25,7 +25,7 @@ export default class AddPayableInvoiceFromBudget extends LightningElement {
         getInvoiceData({ pageNumber: 1, pageSize: 10, RecId: this.budgetId })
             .then(result => {
                 console.log('fetchInvoiceRecords: ', JSON.parse(JSON.stringify(result)));
-                this.invoiceRecordList = result.recordList;
+                this.invoiceRecordList = result?.recordList.length > 0 ? result.recordList : false;
             })
             .catch(error => {
                 const { errorMessage } = this.returnErrorMsg(error);
@@ -76,23 +76,23 @@ export default class AddPayableInvoiceFromBudget extends LightningElement {
     }
 
     handleSaveInvoice() {
-        const selectedInvoices = this.invoiceRecordList.filter(item => item.Selected);
-        if (selectedInvoices.length === 0) {
+        const selectedInvoicesData = this.invoiceRecordList.filter(item => item.Selected);
+        if (selectedInvoicesData.length === 0) {
             this.showToast('Error', 'Please select atleast one Invoice (AP)', 'error');
             return;
         }
 
-        let selectedInvoiceIDList = selectedInvoices.map(item => item.Id)
+        let selectedInvoiceIDList = selectedInvoicesData.map(item => item.Id)
         this.isLoading = true;
         if (this.budgetItemId) {
-            this.updateInvoicePrice(selectedInvoices.toString());
+            this.updateInvoicePrice(selectedInvoiceIDList.toString());
         } else {
-            this.addInvoicePO(selectedInvoiceIDList);
+            this.addInvoicePO(selectedInvoicesData);
         }
     }
 
-    updateInvoicePrice(selectedInvoices) {
-        saveInvoicePrice({ recordId: selectedInvoices, budgeLineIds: this.budgetItemId })
+    updateInvoicePrice(selectedInvoiceIDList) {
+        saveInvoicePrice({ recordId: selectedInvoiceIDList, budgeLineIds: this.budgetItemId })
             .then(result => {
                 console.log('updateInvoicePrice: ', result);
                 this.showToast('Success', 'Invoice Price Updated Successfully', 'success');
@@ -107,8 +107,8 @@ export default class AddPayableInvoiceFromBudget extends LightningElement {
             });
     }
 
-    addInvoicePO(selectedInvoiceIDList) {
-        createInvoice({ selectedInvoices: selectedInvoiceIDList, RecId: this.budgetId })
+    addInvoicePO(selectedInvoicesData) {
+        createInvoice({ selectedInvoices: selectedInvoicesData, RecId: this.budgetId })
             .then(result => {
                 console.log('addInvoicePO: ', result);
                 this.showToast('Success', 'Invoice Added Successfully', 'success');
