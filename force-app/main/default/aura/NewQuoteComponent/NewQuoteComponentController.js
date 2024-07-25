@@ -93,9 +93,11 @@
             "action": "SHOW"
         }).fire();
 
+        var quoteRecordTypeId = component.get("v.pageReference").state.recordTypeId;
         console.log('handleSubmit');
         event.preventDefault();
         var fields = event.getParam('fields');
+        fields.recordTypeId = quoteRecordTypeId;
         console.log('fields: ' + JSON.stringify(fields));
         var data = JSON.stringify(fields);
         console.log('data-->>',{data});
