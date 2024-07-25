@@ -186,14 +186,14 @@
                 <div class="slds-card__body">
                     <template if:true={group.isVisible}>
                         <div class="lastRowCSS">
-                            <lightning-datatable data-id={group.groupId} class="custom-table" key-field="id" data={group.items} columns={columns} onrowaction={handleRowAction}
+                            <lightning-datatable class="custom-table" key-field="id" data={group.items} columns={columns} onrowaction={handleRowAction}
                                 hide-checkbox-column>
                             </lightning-datatable>
                         </div>
                     </template>
                     <template if:false={group.isVisible}>
                         <div class="lastRowCSS">
-                            <lightning-datatable data-id={group.groupId} class="custom-table" key-field="id" data={group.subtotal} columns={columns}
+                            <lightning-datatable class="custom-table" key-field="id" data={group.subtotal} columns={columns}
                                 hide-checkbox-column>
                             </lightning-datatable>
                         </div>

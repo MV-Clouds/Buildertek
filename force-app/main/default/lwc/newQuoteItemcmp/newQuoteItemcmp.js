@@ -332,7 +332,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                     result.columns[i].editable = false;
                     result.columns[i].hideDefaultActions = true;
-                    result.columns[i].cellAttributes = { alignment: 'left' };
+                    result.columns[i].cellAttributes = { alignment: 'left', class: { fieldName: 'format' } };
 
                     if (result.columns[i].fieldName == 'buildertek__Notes__c') {
                         result.columns[i].wrapText = false;
@@ -415,35 +415,42 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 for (var i = 0; i < this.quoteLines.length; i++) {
                     var groupName = this.quoteLines[i].buildertek__Grouping__r.Name;
                     var groupId = this.quoteLines[i].buildertek__Grouping__c;
-
+                
                     if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
                         this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
                     }
-
+                
                     if (this.quoteLines[i].buildertek__Markup__c != null) {
                         this.quoteLines[i].buildertek__Markup__c = this.quoteLines[i].buildertek__Markup__c / 100;
                     }
-
+                
                     if (this.quoteLines[i].buildertek__Tax__c != null) {
                         this.quoteLines[i].buildertek__Tax__c = this.quoteLines[i].buildertek__Tax__c / 100;
                     }
-
+                
                     if (this.quoteLines[i].buildertek__Profit_Margin__c != null) {
                         this.quoteLines[i].buildertek__Profit_Margin__c = this.quoteLines[i].buildertek__Profit_Margin__c / 100;
                     }
-
+                
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
+                        let currentItem = this.data.find(item => item.groupName === groupName && item.groupId === groupId);
+                
                         if (this.quoteLines[i].buildertek__Not_Customer_Visible__c) {
-                            this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].isConsidered = false;
+                            this.quoteLines[i]['format'] = 'slds-text-color_error';
+                            currentItem.isConsidered = false;
                         }
-                        this.data.filter(item => item.groupName === groupName && item.groupId === groupId)[0].items.push(this.quoteLines[i]);
+                
+                        currentItem.items.push(this.quoteLines[i]);
                     } else {
                         let isConsidered = !this.quoteLines[i].buildertek__Not_Customer_Visible__c;
+                        if (!isConsidered) {
+                            this.quoteLines[i]['format'] = 'slds-text-color_error';
+                        }
                         this.data.push({ groupName: groupName, isConsidered: isConsidered, groupId: groupId, items: [this.quoteLines[i]] });
                     }
+                
                     this.quoteLines[i].Number = i + 1;
                 }
-
                 this.calculateTotal(this.data);
             })
             .catch(error => {
@@ -487,6 +494,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     } else {
                         grandTotal[col.fieldName] = subTotal[col.fieldName];
                     }
+                }else{
+                    //we want to add color to the subtotal row
+                    subTotal['format'] = 'slds-text-color_error';
                 }
             });
             subTotal['Name'] = 'Subtotal';
@@ -497,7 +507,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         });
 
         this.grandTotalList = [JSON.parse(JSON.stringify(grandTotal))];
-
 
         console.log({ grandTotal });
         console.log({ data });
