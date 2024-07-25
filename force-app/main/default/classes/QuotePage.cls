@@ -140,7 +140,7 @@ public without sharing class QuotePage {
             }
     
             String query = 'SELECT Id, ' + apiString;
-            query += 'buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =\'' + quoteId + '\'';
+            query += 'buildertek__Grouping__c, buildertek__Grouping__r.Name, buildertek__Grouping__r.buildertek__Sort_Id__c, buildertek__Not_Customer_Visible__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c =\'' + quoteId + '\'';
             query += ' ORDER BY buildertek__Grouping__r.buildertek__Sort_Id__c NULLS Last, buildertek__Grouping__r.Name, buildertek__Priority__c ASC NULLS Last , Name ASC';
             System.debug('query: ' + query);
     
