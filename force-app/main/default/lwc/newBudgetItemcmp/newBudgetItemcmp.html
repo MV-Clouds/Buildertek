@@ -55,6 +55,8 @@
             onclick={handleMassUpdate}></lightning-button>
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
             onclick={handleImportRfq}></lightning-button>
+        <lightning-button variant="brand" label="Delete Lines" title="Delete Lines"
+            onclick={deleteSelectedBudgetItem}></lightning-button>
     </div>
 
     <template if:true={isSingleLineenabled}>
@@ -302,5 +304,28 @@
     
     <template if:true={isAddPayableInvoiceTrue}>
       <c-add-payable-invoice-from-budget budget-id={recordId} budget-item-list={selectedTableData} onclose={closePopUp}></c-add-payable-invoice-from-budget>
+    </template>
+
+    <template if:true={isDeleteModal}>
+        <div class="custom-modal">
+            <section role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <span class="slds-modal__close">
+                            <lightning-icon icon-name="utility:close" variant="inverse" alternative-text="close" onclick={closeDeleteModel}></lightning-icon>
+                        </span>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Delete Budget Lines</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="text-align:center">
+                        <p>Are you sure you want to delete Budget Lines?.</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" title="Cancel" class="slds-m-right_small" onclick={closeDeleteModel}></lightning-button>
+                        <lightning-button variant="brand" label="Save" title="Save" onclick={deleteBudgetLines}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
     </template>
 </template>

@@ -1,5 +1,6 @@
 .spinner__1{
     position: fixed !important;
+    z-index: 9999 !important;
 }
 
 .slds-card__header {

@@ -4,6 +4,7 @@ import getallData from '@salesforce/apex/BudgetPage.getallData';
 import deleteBudgetLine from '@salesforce/apex/BudgetPage.deleteBudgetLine';
 import { NavigationMixin } from 'lightning/navigation';
 import saveBL from '@salesforce/apex/BudgetPage.saveBL';
+import deleteSelectedItems from '@salesforce/apex/BudgetDAO.deleteSelectedItems';
 import { RefreshEvent } from 'lightning/refresh';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
@@ -23,6 +24,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track budget;
     @track budgetFields;
     @track totalColumns;
+    @track isDeleteModal = false;
     @track columns;
     @track budgetLines;
     @track data = [];
@@ -594,7 +596,17 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleAddPayableInvoice() {
-        this.isAddPayableInvoiceTrue = true;
+		if (this.selectedTableData.length <= 1) {
+			this.isAddPayableInvoiceTrue = true;
+        } else {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Warning',
+                    message: 'Please select one or fewer Budget Lines for the Invoice (AP).',
+                    variant: 'warning'
+                })
+            );
+        }
     }
 
     handleAddExpense(event) {
@@ -715,4 +727,60 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
         return { errorMessage, errorObject: error };
     }
+
+	deleteSelectedBudgetItem(event) {
+		console.log('deleteSelectedBudgetItem');
+		if (this.selectedTableData.length > 0) {
+			this.isDeleteModal = true;
+		} else {
+			this.dispatchEvent(
+				new ShowToastEvent({
+					title: 'Error',
+					message: 'Please select the Budget Line you would like to Delete.',
+					variant: 'error'
+				})
+			);
+		}
+	}
+
+	deleteBudgetLines(){
+		this.isLoading = true;
+		let recordIds = this.selectedTableData.map(item => item.Id);
+		deleteSelectedItems({
+			recordIds: recordIds
+		})
+		.then(result => {
+			if(result == "success"){
+				let message = 'Budget Lines deleted successfully';
+				this.dispatchEvent(new ShowToastEvent({
+					title: 'Success',
+					message: message,
+					variant: 'success'
+				}));
+			}else{
+				this.dispatchEvent(new ShowToastEvent({
+					title: 'Error',
+					message: result,
+					variant: 'error'
+				}));
+			}
+			this.refreshData();
+		})
+		.catch(error => {
+			const { errorMessage, errorObject } = this.returnErrorMsg(error);
+			this.dispatchEvent(new ShowToastEvent({
+				title: "Error",
+				message: errorMessage,
+				variant: "error"
+			}));
+		})
+		.finally(() => {
+			this.isLoading = false;
+			this.isDeleteModal = false;
+		});
+	}
+
+	closeDeleteModel(){
+		this.isDeleteModal = false;
+	}
 }
