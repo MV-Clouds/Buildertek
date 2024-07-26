@@ -42,7 +42,7 @@ public with sharing class CreatePOFromRFQ{
                                                                                         buildertek__Total_Price__c, buildertek__Item_Name__c, 
                                                                                         buildertek__Vendor__c, buildertek__RFQ_Item__c, 
                                                                                         buildertek__Vendor_Name__c, buildertek__Description__c, 
-                                                                                        buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c
+                                                                                        buildertek__Budget_Line_Amount__c, buildertek__Vendor_Note__c, buildertek__RFQ_Item__r.buildertek__Product__c, buildertek__RFQ_Item__r.buildertek__BT_Category__c, buildertek__RFQ_Item__r.buildertek__Trade_Type__c
                                                                                       FROM buildertek__Vendor_Items__r)
                        FROM buildertek__RFQ_To_Vendor__c
                        WHERE buildertek__RFQ__c = :RFQId AND (buildertek__Status__c =: 'Awarded' OR buildertek__Status__c =: 'Accepted')];
@@ -112,6 +112,9 @@ public with sharing class CreatePOFromRFQ{
                         arItem.Unit_Price__c = RfqItem.Unit_Price__c;
                         arItem.Quantity__c = RfqItem.Quantity__c;
                         arItem.buildertek__RFQ_Item__c = RfqItem.buildertek__RFQ_Item__c;
+                        arItem.buildertek__Product__c = RfqItem.buildertek__RFQ_Item__r.buildertek__Product__c;
+                        arItem.buildertek__BT_Trade_Type__c = RfqItem.buildertek__RFQ_Item__r.buildertek__Trade_Type__c;
+                        arItem.buildertek__BT_Category__c = RfqItem.buildertek__RFQ_Item__r.buildertek__BT_Category__c;
                         POLines.add(arItem);
                     }
                 }
