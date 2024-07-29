@@ -14,7 +14,7 @@ public class PurchaseOrderAttachmentController {
         
         EmailTemplate et = [SELECT Id,Subject, Body FROM EmailTemplate WHERE name ='Purchase Order Template' limit 1];
         
-          List<contact> conlist = [select id,name from contact limit 1];
+          List<contact> conlist = [select id,name from contact WHERE Email != null limit 1];
         
         
         if (poRec.buildertek__Vendor__c != null && poRec.buildertek__Vendor__r.buildertek__Email_Address__c != null) {
