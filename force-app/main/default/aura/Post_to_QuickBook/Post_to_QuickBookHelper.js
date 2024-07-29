@@ -260,6 +260,7 @@
                 if(state === "SUCCESS") {
                     var result = response.getReturnValue();
                     console.log('return value ==> '+ result);
+                    $A.get("e.force:closeQuickAction").fire();
                     
                     if(result != null){
                         helper.ShowResponsePopupHelper(component, event, helper,result, result);
