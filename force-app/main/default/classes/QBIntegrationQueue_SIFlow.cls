@@ -1,4 +1,4 @@
-public with sharing class QBIntegrationQueue_SIFlow {
+public without sharing class QBIntegrationQueue_SIFlow {
 
 //  *********  Integration flow --> Customer - Items(Product and Service) - TaxRate - Term  - Invoice - Payment(Receipt)
 
