@@ -153,7 +153,7 @@ public class MassUpdateTakeOffLines{
     }
 
     @AuraEnabled
-    public static String getRecords(String recordId, String fieldNameJson, Integer pageNumber, Integer pageSize, String productType, String searchLocation, String searchCategory, String searchTradeType){
+    public static String getRecords(String recordId, String fieldNameJson, Integer pageNumber, Integer pageSize, String productType, String searchLocation, String searchCategory, String searchTradeType, String searchVendor, String searchCostCode, String searchPhase){
         List<sObject> lstResult = new List<sObject>();
         String result = '[]';
         try{
@@ -196,7 +196,21 @@ public class MassUpdateTakeOffLines{
                     searchTradeType = '%' + searchTradeType + '%';
                     query += ' AND buildertek__Trade_Type__r.Name LIKE : searchTradeType';
                 }
-                query += ' ORDER BY buildertek__Cost_Code__r.Name ASC NULLS LAST';
+                if (String.isNotBlank(searchVendor)){
+                    searchVendor = '%' + searchVendor + '%';
+                    query += ' AND buildertek__Vendor__r.Name LIKE : searchVendor';
+                }
+                if (String.isNotBlank(searchCostCode)){
+                    searchCostCode = '%' + searchCostCode + '%';
+                    query += ' AND buildertek__Cost_Code__r.Name LIKE : searchCostCode';
+                }
+                if (String.isNotBlank(searchPhase)){
+                    searchPhase = '%' + searchPhase + '%';
+                    query += ' AND buildertek__Build_Phase__r.Name LIKE : searchPhase';
+                }
+                
+                
+                query += ' ORDER BY buildertek__Vendor__r.Name NULLS LAST, buildertek__Cost_Code__r.Name ASC NULLS LAST, buildertek__Build_Phase__r.Name ASC NULLS LAST';                
                 query += ' LIMIT : pageSize OFFSET : offset';
 
                 for (sObject s : Database.query(query)){
@@ -242,7 +256,7 @@ public class MassUpdateTakeOffLines{
     }
 
     @AuraEnabled
-    public static String updateRecords(String recordId, String updatedRecords, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType){
+    public static String updateRecords(String recordId, String updatedRecords, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType, String searchVendor, String searchCostCode, String searchPhase){
         try{
             if (String.isNotBlank(updatedRecords)){
                 List<buildertek__Project_Takeoff_Lines__c> items = (List<buildertek__Project_Takeoff_Lines__c>)JSON.deserialize(updatedRecords, List<buildertek__Project_Takeoff_Lines__c>.class);
@@ -256,8 +270,8 @@ public class MassUpdateTakeOffLines{
                     upsert items;
                 }
                 system.debug('item size : ' + items.size());
-                return 'Success';
-                //return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
+                //return 'Success';
+                return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase);
             }
         } catch (Exception e){
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
@@ -272,13 +286,13 @@ public class MassUpdateTakeOffLines{
     }
 
     @AuraEnabled
-    public static String deleteProject(String deleteRecordId, String recordId, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType){
+    public static String deleteProject(String deleteRecordId, String recordId, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType, String searchVendor, String searchCostCode, String searchPhase){
         try{
             if (String.isNotBlank(deleteRecordId)){
                 delete [Select Id
                         FROM buildertek__Project_Takeoff_Lines__c
                         WHERE ID = :deleteRecordId];
-                return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
+                return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase);
             }
         } catch (Exception e){
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];

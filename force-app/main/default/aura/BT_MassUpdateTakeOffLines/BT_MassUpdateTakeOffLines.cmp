@@ -90,13 +90,19 @@
             </div>
             <div class="slds-grid slds-wrap">
                 <lightning:input type="text" class=" slds-m-right_small" name="SearchProductType"
-                    aura:id="SearchProductType" onchange="{!c.searchKeyChange}" placeholder="Search Product Type" />
+                    aura:id="SearchProductType" onchange="{!c.searchKeyChange}" placeholder="Search Product Type" />                
                 <lightning:input type="text" class="slds-m-right_small" name="searchLocation" aura:id="searchLocation"
-                    onchange="{!c.searchKeyChange}" placeholder="Search Location" />
+                    onchange="{!c.searchKeyChange}" placeholder="Search Location" />                
                 <lightning:input type="text" class="slds-m-right_small" name="searchCategory" aura:id="searchCategory"
-                    onchange="{!c.searchKeyChange}" placeholder="Search Category" />
-                <lightning:input type="text" class="" name="searchTradeType" aura:id="searchTradeType"
+                    onchange="{!c.searchKeyChange}" placeholder="Search Category" />                
+                <lightning:input type="text" class="slds-m-right_small" name="searchTradeType" aura:id="searchTradeType"
                     onchange="{!c.searchKeyChange}" placeholder="Search Trade Type" />
+                <lightning:input type="text" class="slds-m-right_small" name="searchVendor" aura:id="searchVendor"
+                    onchange="{!c.searchKeyChange}" placeholder="Search Vendor" />
+                <lightning:input type="text" class="slds-m-right_small" name="searchPhase" aura:id="searchPhase" onchange="{!c.searchKeyChange}"
+                    placeholder="Search Phase" />
+                <lightning:input type="text" name="searchCostCode" aura:id="searchCostCode"
+                    onchange="{!c.searchKeyChange}" placeholder="Search Cost Code" />
             </div>
         </aura:set>
         <p class="slds-p-horizontal_medium">
