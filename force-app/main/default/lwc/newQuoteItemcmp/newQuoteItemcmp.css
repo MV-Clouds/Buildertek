@@ -194,6 +194,7 @@
     align-items: flex-end;
     margin: 1rem;
     flex-wrap: wrap;
+    row-gap: 1rem;
 }
 
 .rightContainer {
