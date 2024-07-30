@@ -51,10 +51,18 @@ public without sharing class ReceiptTriggerHandler {
     public static void QBIntegrationOnInsert(buildertek__Receipt__c[] newReceiptList, buildertek__Receipt__c[] oldReceiptList){
         try {
 
+            // SELECT Id, buildertek__Sync_Receipt_created_through_stripe__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1
+            // store the boolean value in a variable 
+
+            buildertek__QuickBooks_Setting__mdt QBMetadata = [SELECT Id, buildertek__Sync_Receipt_created_through_stripe__c FROM buildertek__QuickBooks_Setting__mdt LIMIT 1];
+            Boolean syncReceiptCreatedThroughStripe = QBMetadata.buildertek__Sync_Receipt_created_through_stripe__c;
+            
+
             for(buildertek__Receipt__c rec : newReceiptList){
                 // QBIntegrationQueueable.QBIntegrationMethod(rec.buildertek__Billing__c, rec.Id);
-                boolean Create_Payment = true;
-                QBIntegrationQueue_SIFlow.qb_Payment_Invoice_Flow_Callout(rec.buildertek__Billing__c, rec.Id);
+                if(rec.buildertek__Stripe_Payment_ID__c != null && syncReceiptCreatedThroughStripe){
+                    QBIntegrationQueue_SIFlow.qb_Payment_Invoice_Flow_Callout(rec.buildertek__Billing__c, rec.Id);
+                }
                 // QBPaymentCreation.CreateQBPayment(rec.Id);
             }
 
