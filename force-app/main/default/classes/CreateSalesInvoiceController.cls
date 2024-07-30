@@ -48,6 +48,14 @@ public with sharing class CreateSalesInvoiceController {
     @AuraEnabled
     public static String saveRecord(String salesInvoiceData){
         buildertek__Billings__c salesInvoice = (buildertek__Billings__c)JSON.deserialize(salesInvoiceData, buildertek__Billings__c.class);
+        system.debug('salesInvoice: ' + salesInvoice);
+        //if (salesInvoice.buildertek__Project__c != null) then query the project and get the buildertek__Customer__c from the project
+        if (salesInvoice.buildertek__Project__c != null){
+            buildertek__Project__c project = [SELECT Id, buildertek__Customer__c FROM buildertek__Project__c WHERE Id = :salesInvoice.buildertek__Project__c];
+            if(project.buildertek__Customer__c != null){
+                salesInvoice.buildertek__Customer_Account__c = project.buildertek__Customer__c;
+            }
+        }
         insert salesInvoice;
         return salesInvoice.Id;
     }
