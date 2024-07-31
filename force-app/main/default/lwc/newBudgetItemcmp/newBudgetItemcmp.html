@@ -8,9 +8,9 @@
         <div class="title">
             <h1>{budgetName}</h1>
         </div>
-        <div class="container">
-            <div class="rightContainer">
-                <template for:each={budgetData} for:item="item">
+        <!-- <div class="container">
+            <div class="rightContainer"> -->
+                <!-- <template for:each={budgetData} for:item="item">
                     <div key={item.label} class="row">
                         <div class="label">
                             {item.label}
@@ -36,9 +36,31 @@
                             </template>
                         </template>
                     </div>
+                </template> -->
+            <!-- </div> -->
+            <div class="container">
+                <!-- <template if:true={isMargin}>
+                    <div class="globalBtn">
+                        <div class="slds-truncate globalTitle" title="test1">
+                            Global Margin
+                        </div>
+                        <lightning-input type="number" value={globalMargin} class="uiInputCss" onchange={handleMarginChange}
+                            step="0.01" variant="label-hidden"></lightning-input>
+                        <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                            onclick={handleMargin}></lightning-button-icon>
+                    </div>
+                </template> -->
+                <template if:true={isMarkup}>
+                    <div class="globalBtn">
+                        <div class="slds-truncate globalTitle" title="test1">
+                            Global Markup
+                        </div>
+                        <lightning-input type="number" value={globalMarkup} class="uiInputCss" onchange={handleMarkupChange}
+                            step="0.01" variant="label-hidden"></lightning-input>
+                        <lightning-button-icon icon-name="utility:save" class="saveInputCss slds-m-left_xx-small"
+                            onclick={handleMarkup}></lightning-button-icon>
+                    </div>
                 </template>
-            </div>
-            <div class="leftContainer">
                 <lightning-button class="no-wrap" variant="brand" label="Add PO" title="Add PO"
                     onclick={handleAddPO}></lightning-button>
                 <lightning-button class="no-wrap" variant="brand" label="Add Contractor Invoice"
@@ -55,7 +77,7 @@
                     onclick={deleteSelectedBudgetItem}></lightning-button>
             </div>
         </div>
-    </div>
+    <!-- </div> -->
 
     <template if:true={isSingleLineenabled}>
         <div class="singleLineEntry">
