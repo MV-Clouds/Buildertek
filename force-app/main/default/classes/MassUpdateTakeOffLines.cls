@@ -208,8 +208,6 @@ public class MassUpdateTakeOffLines{
                     searchPhase = '%' + searchPhase + '%';
                     query += ' AND buildertek__Build_Phase__r.Name LIKE : searchPhase';
                 }
-
-
                 query += ' ORDER BY buildertek__Vendor__r.Name NULLS LAST, buildertek__Cost_Code__r.Name ASC NULLS LAST, buildertek__Build_Phase__r.Name ASC NULLS LAST';                
                 query += ' LIMIT : pageSize OFFSET : offset';
 
@@ -256,7 +254,7 @@ public class MassUpdateTakeOffLines{
     }
 
     @AuraEnabled
-    public static String updateRecords(String recordId, String updatedRecords, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType){
+    public static String updateRecords(String recordId, String updatedRecords, String fieldSetName, Integer pageNumber, Integer pageSize, String searchName, String searchPlan, String searchCategory, String searchTradeType, String searchVendor, String searchCostCode, String searchPhase){
         try{
             if (String.isNotBlank(updatedRecords)){
                 List<buildertek__Project_Takeoff_Lines__c> items = (List<buildertek__Project_Takeoff_Lines__c>)JSON.deserialize(updatedRecords, List<buildertek__Project_Takeoff_Lines__c>.class);
@@ -270,8 +268,8 @@ public class MassUpdateTakeOffLines{
                     upsert items;
                 }
                 system.debug('item size : ' + items.size());
-                return 'Success';
-                //return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType);
+                //return 'Success';
+                return getRecords(recordId, fieldSetName, pageNumber, pageSize, searchName, searchPlan, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase);
             }
         } catch (Exception e){
             List<buildertek__Exception_Log_Store_Option__c> storeExcCustomSetting = [SELECT Id, buildertek__Store_Exception_Log_in_Object__c FROM buildertek__Exception_Log_Store_Option__c];
