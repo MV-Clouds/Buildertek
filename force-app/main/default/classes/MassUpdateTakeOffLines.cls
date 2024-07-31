@@ -208,8 +208,6 @@ public class MassUpdateTakeOffLines{
                     searchPhase = '%' + searchPhase + '%';
                     query += ' AND buildertek__Build_Phase__r.Name LIKE : searchPhase';
                 }
-                
-                
                 query += ' ORDER BY buildertek__Vendor__r.Name NULLS LAST, buildertek__Cost_Code__r.Name ASC NULLS LAST, buildertek__Build_Phase__r.Name ASC NULLS LAST';                
                 query += ' LIMIT : pageSize OFFSET : offset';
 

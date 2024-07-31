@@ -182,3 +182,36 @@
 .change-bg-color{
     background-color: #35d101;
 }
+
+.title {
+    font-size: x-large;
+    padding-left: 1rem;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin: 1rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+}
+
+.rightContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.leftContainer {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.no-wrap {
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: 2.3rem;
+}
