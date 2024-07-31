@@ -25,7 +25,10 @@
             var searchLocation = component.find("searchLocation").get("v.value");
             var searchCategory = component.find("searchCategory").get("v.value");
             var searchTradeType = component.find("searchTradeType").get("v.value");
-        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+        	var searchCostCode = component.find("searchCostCode").get("v.value");
+        	var searchVendor = component.find("searchVendor").get("v.value");
+        	var searchPhase = component.find("searchPhase").get("v.value");
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase);
         helper.getTableFieldSet(component, event, helper);
         // console.log('recID--',component.get('v.recordId'));
         
@@ -151,10 +154,13 @@
         var searchLocation = component.find("searchLocation").get("v.value");
         var searchCategory = component.find("searchCategory").get("v.value");
         var searchTradeType = component.find("searchTradeType").get("v.value");
+        var searchCostCode = component.find("searchCostCode").get("v.value");
+        var searchVendor = component.find("searchVendor").get("v.value");
+        var searchPhase = component.find("searchPhase").get("v.value");
         if (records[index].Id != undefined) {
             component.set('v.listOfRecords', records);
             component.set('v.isModalOpen', false);
-            helper.deleteRecord(component, event, helper, records[index].Id, SearchProductType, searchLocation, searchCategory, searchTradeType);
+            helper.deleteRecord(component, event, helper, records[index].Id, SearchProductType, searchLocation, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase);
         }
     },
 
@@ -163,11 +169,14 @@
         var searchLocation = component.find("searchLocation").get("v.value");
         var searchCategory = component.find("searchCategory").get("v.value");
         var searchTradeType = component.find("searchTradeType").get("v.value");
+        var searchCostCode = component.find("searchCostCode").get("v.value");
+        var searchVendor = component.find("searchVendor").get("v.value");
+        var searchPhase = component.find("searchPhase").get("v.value");
         component.set('v.isLoading', true);
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
         pageNumber++;
-        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase);
     },
 
     handlePrev: function (component, event, helper) {
@@ -175,11 +184,15 @@
         var searchLocation = component.find("searchLocation").get("v.value");
         var searchCategory = component.find("searchCategory").get("v.value");
         var searchTradeType = component.find("searchTradeType").get("v.value");
+        var searchVendor = component.find("searchVendor").get("v.value");
+        var searchCostCode = component.find("searchCostCode").get("v.value");
+        var searchPhase = component.find("searchPhase").get("v.value");
+
         component.set('v.isLoading', true);
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
         pageNumber--;
-        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase);
     },
 
     searchKeyChange: function (component, event, helper) {
@@ -188,10 +201,12 @@
         var searchLocation = component.find("searchLocation").get("v.value");
         var searchCategory = component.find("searchCategory").get("v.value");
         var searchTradeType = component.find("searchTradeType").get("v.value");
+        var searchCostCode = component.find("searchCostCode").get("v.value");
+        var searchVendor = component.find("searchVendor").get("v.value");
+        var searchPhase = component.find("searchPhase").get("v.value");
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
-        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType);
-        component.set('v.isLoading', false);
+        helper.getTableRows(component, event, helper, pageNumber, pageSize, SearchProductType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase);
     },
 
     redirectTakeOff: function (component, event, helper) {
@@ -323,7 +338,7 @@
 
         
         var selectedSOVLines = component.get("v.listOfSelectedTakeOffIds");
-        
+        console.log(`selectedSOVLines : ${selectedSOVLines}`);
         if(selectedSOVLines.length > 0){
             
             component.set("v.isMassDeleteClick", true);

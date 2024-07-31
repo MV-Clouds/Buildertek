@@ -147,7 +147,9 @@ public without sharing class BT_CreateBOMfromTakeoffController {
                 }
     
                 returValues.returnState = 'success';            
-                returValues.CreatedrecordId = BOMtoCreate.Id;            
+                returValues.CreatedrecordId = BOMtoCreate.Id;
+                Takeoff.buildertek__BOM__c = BOMtoCreate.Id;
+                update Takeoff;       
             }
             else {
                 returValues.returnState = 'No lines. Please create at least one line.';            

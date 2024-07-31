@@ -1,4 +1,4 @@
-<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride" access="global" controller="NewQuoteComponentController" >
+<aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader,lightning:actionOverride,lightning:hasPageReference" access="global" controller="NewQuoteComponentController" >
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <ltng:require styles="{!$Resource.ModalPreview62moreMedia}"/>
     <lightning:notificationsLibrary aura:id="notifLib"/>

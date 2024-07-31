@@ -194,7 +194,7 @@ b{
 }
 
 thead{
-    background: #0678FF1A;
+    background: #0678ff;
     height: 4rem;
     padding: 1rem;
     font-size: 16px;
@@ -213,8 +213,13 @@ td{
 
 .inside_dt_cls{
     overflow: hidden;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+    /* border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem; */
+}
+
+.inside_dt_cls inside_dt_cls {
+    background: #e0ebfa !important;
+    color: #0176d3 !important;
 }
 
 .datatable_class{

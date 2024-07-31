@@ -153,13 +153,13 @@ public with sharing class AddRFQToQuote_AC {
                 rfq.buildertek__Added_to_Quote__c = QuoteWraps;
                 getPurchaseOrderLists.add(rfq);
                 
-                buildertek__Quote_Item__c quotes = new buildertek__Quote_Item__c();
-                quotes.buildertek__Quote__c = QuoteWraps;
-                quotes.buildertek__Grouping__c = groupId;
-                quotes.Name = PurchaseRec.getPurchaseOrderList.Name;
-                quotes.buildertek__Quantity__c = 1;
-                quotes.buildertek__Unit_Cost__c = PurchaseRec.getPurchaseOrderList.Vendor_Quote__c;
-                quoteItemList.add(quotes);
+               //  buildertek__Quote_Item__c quotes = new buildertek__Quote_Item__c();
+               //  quotes.buildertek__Quote__c = QuoteWraps;
+               //  quotes.buildertek__Grouping__c = groupId;
+               //  quotes.Name = PurchaseRec.getPurchaseOrderList.Name;
+               //  quotes.buildertek__Quantity__c = 1;
+               //  quotes.buildertek__Unit_Cost__c = PurchaseRec.getPurchaseOrderList.Vendor_Quote__c;
+               //  quoteItemList.add(quotes);
            }
        }
        system.debug('quoteItemList -------->  ' + quoteItemList);
@@ -168,14 +168,14 @@ public with sharing class AddRFQToQuote_AC {
            && Schema.sObjectType.buildertek__RFQ__c.fields.buildertek__Added_to_Quote__c.isUpdateable()){
            update getPurchaseOrderLists;
        } 
-       if (Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()
-           && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable()
-            && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable()
-            && Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()
-            && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable()
-            && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable()){
-            insert quoteItemList;
-       }
+      //  if (Schema.sObjectType.buildertek__Quote_Item__c.isCreateable()
+      //      && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quote__c.isCreateable()
+      //       && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Grouping__c.isCreateable()
+      //       && Schema.sObjectType.buildertek__Quote_Item__c.fields.Name.isCreateable()
+      //       && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Quantity__c.isCreateable()
+      //       && Schema.sObjectType.buildertek__Quote_Item__c.fields.buildertek__Unit_Cost__c.isCreateable()){
+            // insert quoteItemList;
+      //  }
         
    }
    
