@@ -208,6 +208,18 @@ public with sharing class bryntumGanttController {
             dataTableDtls.includeWeekend = adminInterfaceNodeConfigurations[0].buildertek__Include_Weekend__c;
         }
 
+        List<Holiday> holidayList = [SELECT Id, Name, NextOccurrenceDate, ActivityDate FROM Holiday limit 10000];
+
+        for(Holiday holiday : holidayList){
+            holidayWrapper holidayWrapperObj = new holidayWrapper();
+            holidayWrapperObj.Id = holiday.Id;
+            holidayWrapperObj.name = holiday.name;
+            holidayWrapperObj.startDate = holiday.NextOccurrenceDate != null ? holiday.NextOccurrenceDate : holiday.ActivityDate;
+            holidayWrapperObj.endDate = holidayWrapperObj.startDate;
+            holidayWrapperObj.isWorking = false;
+            dataTableDtls.holidayList.add(holidayWrapperObj);
+        }
+        
         return dataTableDtls;
     }
 
@@ -377,19 +389,18 @@ public with sharing class bryntumGanttController {
 
     @AuraEnabled
     public static String createNewSchedule(String description, String project ,Date initialStartDate, String type, String user, String masterId) {
-        System.debug('description: ' + description);
-        System.debug('project: ' + project);
-        System.debug('initialStartDate: ' + initialStartDate);
-        System.debug('type: ' + type);
-        System.debug('user: ' + user);
-        System.debug('masterId: ' + masterId);
+        List<buildertek__Admin_Interface_Node_Configuration__c> adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Include_Weekend__c FROM buildertek__Admin_Interface_Node_Configuration__c WHERE Name=:'Schedule Configuration'];
+        Boolean checkIncludeWeekendSettings = false;
+        if (adminInterfaceNodeConfigurations.size() > 0) {
+            checkIncludeWeekendSettings = adminInterfaceNodeConfigurations[0].buildertek__Include_Weekend__c;
+        }
 
         if(initialStartDate == null ){
             initialStartDate = Date.Today();
             System.debug('initialStartDate: ' + initialStartDate);
         }
-
-        initialStartDate = getInitialStartDate(initialStartDate);
+        String bHId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
+        initialStartDate = checkIncludeWeekendSettings ? initialStartDate : getInitialStartDate(initialStartDate, bHId);
 
         System.debug('initialStartDate: outif' + initialStartDate);
 
@@ -404,7 +415,7 @@ public with sharing class bryntumGanttController {
         String pageUrl = schedule.Id;
 
         if(masterId != null && masterId != ''){
-            createScheduleLineFromMasterSchedule(schedule.Id, masterId, initialStartDate);
+            createScheduleLineFromMasterSchedule(schedule.Id, masterId, initialStartDate, checkIncludeWeekendSettings);
         }
 
         return pageUrl;
@@ -416,7 +427,7 @@ public with sharing class bryntumGanttController {
      */
 
     @AuraEnabled
-    public static void createScheduleLineFromMasterSchedule (String recordId, String masterId, Date initialStartDate){
+    public static void createScheduleLineFromMasterSchedule (String recordId, String masterId, Date initialStartDate, Boolean checkIncludeWeekendSettings){
 
         buildertek__Schedule__c masterSchedule = [SELECT Id, Name, buildertek__Start_Date__c, buildertek__Initial_Start_Date__c FROM buildertek__Schedule__c WHERE Id =: masterId];
         String businessHourId = [SELECT Id, IsDefault, IsActive FROM BusinessHours WHERE IsDefault = true LIMIT 1].Id;
@@ -425,7 +436,7 @@ public with sharing class bryntumGanttController {
         if (masterStartDate == null) {
             masterStartDate = System.today();
         }
-        initialStartDate = getInitialStartDate(initialStartDate);
+        initialStartDate = checkIncludeWeekendSettings ? initialStartDate : getInitialStartDate(initialStartDate, businessHourId);
         DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
         DateTime newDate = DateTime.newInstance(initialStartDate.year(), initialStartDate.month(),initialStartDate.day());
 
@@ -534,15 +545,9 @@ public with sharing class bryntumGanttController {
      * Date           24-08-2023
      * Description :  This method is used for checking sat & sun on InitialStartdate.
      */
-    public static Date getInitialStartDate(Date startDate){
-		DateTime currDate = DateTime.newInstance(startDate.year(), startDate.month(), startDate.day());
-		String todayDay = currDate.format('EEEE');
-		if (todayDay == 'Saturday'){
-			startDate = startDate.addDays(2);
-		} else if (todayDay == 'Sunday'){
-			startDate = startDate.addDays(1);
-		}
-		return startDate;
+    public static Date getInitialStartDate(Date startDate, String businessHourId){ 
+        Datetime nextStart = BusinessHours.nextStartDate(businessHourId, startDate);
+		return nextStart.date();
 	}
 
     /* @Author        Nishit Suthar
@@ -605,6 +610,8 @@ public with sharing class bryntumGanttController {
         public string profileName;
         @AuraEnabled
         public Boolean includeWeekend = false;
+        @AuraEnabled
+        public List<holidayWrapper> holidayList = new List<holidayWrapper>();
     }
 
     public class NotesAttachmet{
@@ -665,6 +672,23 @@ public with sharing class bryntumGanttController {
 
         @AuraEnabled
         public Boolean check {get;set;}
+    }
+
+    public class holidayWrapper{
+        @AuraEnabled
+        public String Id; 
+
+        @AuraEnabled
+        public String Name;
+
+        @AuraEnabled
+        public Boolean isWorking;
+
+        @AuraEnabled
+        public Date startDate;
+
+        @AuraEnabled
+        public Date endDate; 
     }
 
     public class contactWrap{

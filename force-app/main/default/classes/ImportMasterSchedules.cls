@@ -315,7 +315,7 @@ public static object getMasterSchedule(String recordId, String searchKeyword){
         if (masterStartDate == null) {
             masterStartDate = System.today();
         }
-        initialStartDate = bryntumGanttController.getInitialStartDate(initialStartDate);
+        initialStartDate = bryntumGanttController.getInitialStartDate(initialStartDate, businessHourId.Id);
         DateTime oldDate = DateTime.newInstance(masterStartDate.year(), masterStartDate.month(),masterStartDate.day());
         DateTime newDate = DateTime.newInstance(initialStartDate.year(), initialStartDate.month(),initialStartDate.day());
 
