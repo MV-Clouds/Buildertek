@@ -36,7 +36,6 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isAddContractorInvoiceTrue = false;
     @track isAddExpenseTrue = false;
     @track isAddPayableInvoiceTrue = false;
-
     @track fields = {
         buildertek__Description__c: '',
         buildertek__Group__c: '',
