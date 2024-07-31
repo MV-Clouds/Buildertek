@@ -83,16 +83,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     color:#0176d3;
                 }
 
-                .lastRowCSS table tr:last-child {
+                .lastRowsCSS table tr:last-child {
                     font-weight: 700;
                 }
 
                 
-                .lastRowCSS table tr:first-child th:nth-child(1) span,
-                .lastRowCSS table tr:last-child td:nth-child(1) span,
-                .lastRowCSS table tr:last-child td:nth-child(3) span,
-                .lastRowCSS table tr:last-child td:nth-child(4) span,
-                .lastRowCSS table tr:last-child td:nth-child(5) span{
+                .lastRowsCSS table tr:first-child th:nth-child(1) span,
+                .lastRowsCSS table tr:last-child td:nth-child(1) span,
+                .lastRowsCSS table tr:last-child td:nth-child(3) span,
+                .lastRowsCSS table tr:last-child td:nth-child(4) span,
+                .lastRowsCSS table tr:last-child td:nth-child(5) span{
                     display: none;
                 }
                 .editForm {

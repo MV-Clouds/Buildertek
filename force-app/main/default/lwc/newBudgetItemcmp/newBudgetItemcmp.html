@@ -167,13 +167,13 @@
             <div class="budget-table">
                 <div class="slds-card__body">
                     <template if:true={group.isVisible}>
-                        <div class="lastRowCSS">
+                        <div class="lastRowsCSS">
                             <lightning-datatable key-field="id" data={group.items} columns={columns} data-id={group.groupId} onrowaction={handleRowAction} onrowselection={getSelectedLines}>
                             </lightning-datatable>
                         </div>
                     </template>
                     <template if:false={group.isVisible}>
-                        <div class="lastRowCSS">
+                        <div class="lastRowsCSS">
                             <lightning-datatable key-field="id" data={group.subtotal} columns={columns}>
                             </lightning-datatable>
                         </div>
@@ -193,7 +193,7 @@
             </div>
         </header>
         <div class="quote-table">
-            <div class="lastRowCSS">
+            <div class="lastRowsCSS">
                 <lightning-datatable key-field="buildertek__Quantity__c" data={grandTotalList} columns={columns}>
                 </lightning-datatable>
             </div>
