@@ -20,11 +20,39 @@ public without sharing class QuoteTriggerHandler {
 
     public void OnBeforeInsert(Quote__c[] newQuotes){
         set<Id> oppoids = new set<Id>();
+        set<Id> projectIds = new set<Id>();
+
         for(Quote__c quoterec : newQuotes){
             if(quoterec.buildertek__Opportunity__c !=null){
                 oppoids.add(quoterec.buildertek__Opportunity__c);
             }
+            if (quoterec.buildertek__Project__c != null) {
+                projectIds.add(quoterec.buildertek__Project__c);
+            }
+            
         }
+
+        Map<Id, Id> projectToAccountMap = new Map<Id, Id>();
+
+        if (!projectIds.isEmpty()) {
+            List<buildertek__Project__c> projects = [SELECT Name, buildertek__Customer__c
+                                                     FROM buildertek__Project__c
+                                                     WHERE Id IN :projectIds];
+
+            for (buildertek__Project__c project : projects) {
+                if (project.buildertek__Customer__c != null) {
+                    projectToAccountMap.put(project.Id, project.buildertek__Customer__c);
+                }
+            }
+
+            for (Quote__c quote : newQuotes) {
+                if (projectToAccountMap.containsKey(quote.buildertek__Project__c) && quote.buildertek__Customer_Account__c == null) {
+                    quote.buildertek__Customer_Account__c = projectToAccountMap.get(quote.buildertek__Project__c);
+                }
+            }
+            
+        }
+
         if(oppoids.size() > 0 ){
             list<Opportunity> opplst = [Select Id, Name,AccountId,
                                         Account.buildertek__Email_Address__c,
