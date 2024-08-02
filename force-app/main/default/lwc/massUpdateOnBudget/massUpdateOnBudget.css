@@ -1,0 +1,94 @@
+.slds-table {
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(100vh - 200px);
+}
+
+.slds-table thead th {
+    background-color: #f3f2f2;
+    color: #0070d2;
+    font-weight: bold;
+    padding: 0.75rem 0.3rem;
+}
+
+.slds-table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.slds-table tbody tr:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.slds-table tbody td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.slds-table tbody td .slds-truncate {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slds-wider-column {
+    width: 30%;
+}
+
+.lightning-card {
+    max-width: 100%;
+}
+
+.group-container {
+    margin-bottom: 2rem;
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    background-color: #f4f6f9;
+}
+
+.group-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    background-color: #0070d2;
+    color: #ffffff;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.slds-truncate {
+    max-width: 100%;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem auto;
+    gap: 1rem;
+}
+
+.lightning-card {
+    max-width: 100%;
+}
+
+.heading {
+    font-size: large;
+    font-weight: bold;
+    color: #0070d2;
+    padding-inline: 1.5rem;
+}

@@ -95,7 +95,7 @@
         $A.enqueueAction(action);
     },
 
-    getTableRows: function (component, event, helper, pageNumber, pageSize, productType, searchLocation, searchCategory, searchTradeType) {
+    getTableRows: function (component, event, helper, pageNumber, pageSize, productType, searchLocation, searchCategory, searchTradeType, searchCostCode, searchVendor, searchPhase) {
         component.set('v.isLoading', true);
         var action = component.get("c.getRecords");
         var fieldSetValues = component.get("v.fieldSetValues");
@@ -127,7 +127,10 @@
             productType: productType,
             searchLocation: searchLocation,
             searchCategory: searchCategory,
-            searchTradeType: searchTradeType
+            searchTradeType: searchTradeType,
+            searchCostCode: searchCostCode,
+            searchVendor: searchVendor,
+            searchPhase: searchPhase
         });
         action.setCallback(this, function (response) {
             if (response.getState() == 'SUCCESS' && response.getReturnValue()) {
@@ -171,7 +174,7 @@
                     $A.getCallback(function () {
                       component.set('v.isLoading', false);
                     }),
-                    3000
+                    300
                 );
             } else {
                 component.set("v.listOfRecords", []);
@@ -181,31 +184,14 @@
         $A.enqueueAction(action);
     },
 
-    updateMassRecords: function (component, event, helper, productType, searchLocation, searchCategory, searchTradeType) {
+    updateMassRecords: function (component, event, helper, productType, searchLocation, searchCategory, searchTradeType, searchVendor, searchPhase, searchCostCode) {
         component.set('v.isLoading', true);
         var listOfRecords = component.get('v.listOfRecords');
         var fieldSetValues = component.get('v.fieldSetValues');
         var action = component.get("c.updateRecords");
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
-        /*for (var i in listOfRecords) {
-            var record = listOfRecords[i];
-            if (record != undefined) {
-                for (var j in fieldSetValues) {
-                    if (record.buildertek__Project_Takeoff__c === undefined || record.buildertek__Project_Takeoff__c === '') {
-                        record.buildertek__Project_Takeoff__c = component.get('v.recordId');
-                    } else if (record[fieldSetValues[j].name] === '' || record[fieldSetValues[j].name] === undefined) {
-                        record[fieldSetValues[j].name] = null;
-                        record[fieldSetValues[j].name] = fieldSetValues[j].name.includes('__r') ? null : record[fieldSetValues[j].name];
-                    }
-                }
-            } else {
-                listOfRecords.splice(i, 1);
-                i--;
-            }
-        }*/
-        component.set('v.listOfRecords', []); 
-        // debugger;
+        component.set('v.listOfRecords', []);
         action.setParams({
             recordId: component.get('v.recordId'),
             updatedRecords: JSON.stringify(listOfRecords),
@@ -215,17 +201,18 @@
             productType: productType,
             searchLocation: searchLocation,
             searchCategory: searchCategory,
-            searchTradeType: searchTradeType
+            searchTradeType: searchTradeType,
+            searchVendor: searchVendor,
+            searchCostCode: searchCostCode,
+            searchPhase: searchPhase
         });
 
         action.setCallback(this, function (response) {
             var state = response.getState();
             var theBomId = component.get('v.bomId');
-            // console.log('theBomId-- ',theBomId);
-            // console.log('state-- ',state);
-            if (state === "SUCCESS" && response.getReturnValue() == 'Success' && (theBomId == null || theBomId == undefined)) {
+            console.log('result', response.getReturnValue());
+            if (state === "SUCCESS" && (theBomId == null || theBomId == undefined)) {
                 component.set('v.isCancelModalOpen', false);
-                // var redirectUrl = '/one/one.app?#/sObject/' + component.get('v.recordId') + '/view';
                 $A.get("e.force:refreshView").fire();
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
@@ -233,9 +220,8 @@
                     "message": 'Record Save Successfully.',
                     "type": 'Success'
                 });
-                toastEvent.fire(); 
-                // window.open(redirectUrl, '_self');
-            }else if (state === "SUCCESS" && response.getReturnValue() == 'Success' && theBomId != null && theBomId != undefined && theBomId != '') {
+                toastEvent.fire();
+            } else if (state === "SUCCESS" && theBomId != null && theBomId != undefined && theBomId != '') {
                 component.set('v.isCancelModalOpen', false);
                 component.find("goToPrevious").navigate({
                     type: "standard__component",
@@ -243,11 +229,8 @@
                         componentName: "buildertek__DuplicateSSTLFromProducts",
                         attributes: {
                             "recordId": theBomId
-                        } 
+                        }
                     },
-                    // state: { 
-                    //     "c__recordId": component.get("v.recordId")
-                    // }
                 });
                 var toastEvent = $A.get("e.force:showToast");
                 toastEvent.setParams({
@@ -255,7 +238,7 @@
                     "message": 'Record Save Successfully.',
                     "type": 'Success'
                 });
-                toastEvent.fire(); 
+                toastEvent.fire();
             } else if (state === "ERROR") {
                 component.set('v.isLoading', false);
                 var toastEvent = $A.get("e.force:showToast");
@@ -266,12 +249,15 @@
                 });
                 toastEvent.fire();
                 console.log(`Error: ${JSON.stringify(response.getError())}`);
+            } else {
+                component.set('v.isLoading', false);
+                $A.get("e.force:refreshView").fire();
             }
         });
         $A.enqueueAction(action);
     },
 
-    deleteRecord: function (component, event, helper, deleteRecordId, productType, searchLocation, searchCategory, searchTradeType) {
+    deleteRecord: function (component, event, helper, deleteRecordId, productType, searchLocation, searchCategory, searchTradeType, searchVendor, searchCostCode, searchPhase) {
         var pageNumber = component.get("v.PageNumber");
         var pageSize = component.get("v.pageSize");
 
@@ -285,7 +271,10 @@
             productType: productType,
             searchLocation: searchLocation,
             searchCategory: searchCategory,
-            searchTradeType: searchTradeType
+            searchTradeType: searchTradeType,
+            searchVendor: searchVendor,
+            searchCostCode: searchCostCode,
+            searchPhase: searchPhase
         });
 
         action.setCallback(this, function (response) {

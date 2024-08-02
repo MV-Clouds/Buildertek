@@ -4,14 +4,12 @@
         <lightning-spinner class="spinner__1" alternative-text="Loading" size="large"></lightning-spinner>
     </template>
 
-    <div class="budgetData">
-        <div class="leftSection">
-            <div class="budgetName">
-                <h1>{budgetName}</h1>
-            </div>
+    <div class="header">
+        <div class="title">
+            <h1>{budgetName}</h1>
         </div>
-        <div class="rightSection">
-            <div class="quoteDetails">
+        <div class="container">
+            <div class="rightContainer">
                 <template for:each={budgetData} for:item="item">
                     <div key={item.label} class="row">
                         <div class="label">
@@ -25,9 +23,10 @@
                         <template if:false={item.isStatus}>
                             <template if:true={item.isCurrency}>
                                 <div class="value">
-                                    {item.currencyCode} 
+                                    {item.currencyCode}
                                     &nbsp;
-                                    <lightning-formatted-number value={item.value} style="currency" currency-code={item.currencyCode}></lightning-formatted-number>
+                                    <lightning-formatted-number value={item.value} style="currency"
+                                        currency-code={item.currencyCode}></lightning-formatted-number>
                                 </div>
                             </template>
                             <template if:false={item.isCurrency}>
@@ -38,6 +37,22 @@
                         </template>
                     </div>
                 </template>
+            </div>
+            <div class="leftContainer">
+                <lightning-button class="no-wrap" variant="brand" label="Add PO" title="Add PO"
+                    onclick={handleAddPO}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Add Contractor Invoice"
+                    title="Add Contractor Invoice" onclick={handleAddCI}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Add Expense" title="Add Expense"
+                    onclick={handleAddExpense}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Add Payable Invoice" title="Add Payable Invoice"
+                    onclick={handleAddPayableInvoice}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Mass Update" title="Mass Update"
+                    onclick={handleMassUpdate}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Import RFQ's" title="Import RFQ's"
+                    onclick={handleImportRfq}></lightning-button>
+                <lightning-button class="no-wrap" variant="brand" label="Delete Lines" title="Delete Lines"
+                    onclick={deleteSelectedBudgetItem}></lightning-button>
             </div>
         </div>
     </div>
@@ -56,7 +71,6 @@
         <lightning-button variant="brand" label="Import RFQ's" title="Import RFQ's"
             onclick={handleImportRfq}></lightning-button>
     </div>
-
     <template if:true={isSingleLineenabled}>
         <div class="singleLineEntry">
             <table class="table-container">
@@ -297,10 +311,32 @@
     </template>
 
     <template if:true={isAddExpenseTrue}>
-      <c-add-expense-from-budget budget-id={recordId} selected-budget-lines={selectedTableData} onclosechildscreen={closePopUp}></c-add-expense-from-budget>
+      <c-add-expense-from-budget budget-id={recordId} selected-budget-lines={selectedTableData} onclose={closePopUp}></c-add-expense-from-budget>
     </template>
     
     <template if:true={isAddPayableInvoiceTrue}>
       <c-add-payable-invoice-from-budget budget-id={recordId} budget-item-list={selectedTableData} onclose={closePopUp}></c-add-payable-invoice-from-budget>
+    </template>
+    <template if:true={isDeleteModal}>
+        <div class="custom-modal">
+            <section role="dialog" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <span class="slds-modal__close">
+                            <lightning-icon icon-name="utility:close" variant="inverse" alternative-text="close" onclick={closeDeleteModel}></lightning-icon>
+                        </span>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">Delete Budget Lines</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="text-align:center">
+                        <p>Are you sure you want to delete Budget Lines?.</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" title="Cancel" class="slds-m-right_small" onclick={closeDeleteModel}></lightning-button>
+                        <lightning-button variant="brand" label="Save" title="Save" onclick={deleteBudgetLines}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </div>
     </template>
 </template>

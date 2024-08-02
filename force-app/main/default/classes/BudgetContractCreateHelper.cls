@@ -589,7 +589,7 @@ public without sharing class BudgetContractCreateHelper {
                                     buildertek__Category__c, 
                                     buildertek__Grouping__r.Name
                                     FROM buildertek__Quote_Item__c
-                                    WHERE buildertek__Quote__c IN: quoteIds  And buildertek__Status__c != 'Reject'];      
+                                    WHERE buildertek__Quote__c IN: quoteIds  And buildertek__Status__c != 'Reject' AND buildertek__Not_Customer_Visible__c != true];      
         
         
         return quoteItemList;
