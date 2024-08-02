@@ -166,9 +166,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             delete this.fields.buildertek__Margin__c;
         }
         //check if fields.buildertek__Grouping__c has the value in groupsNotConsidered then add buildertek__Not_Customer_Visible__c = true
-        if (this.groupsNotConsidered.includes(this.fields.buildertek__Grouping__c)) {
-            this.fields.buildertek__Not_Customer_Visible__c = true;
-        }
+        // if (this.groupsNotConsidered.includes(this.fields.buildertek__Grouping__c)) {
+        //     this.fields.buildertek__Not_Customer_Visible__c = true;
+        // }
         this.fields.buildertek__Quote__c = this.recordId;
         this.fields.Name = this.fields.buildertek__Description__c;
         console.log({ fields: this.fields });
