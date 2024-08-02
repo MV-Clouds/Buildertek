@@ -41,7 +41,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
       system.debug('QuestionIds.......'+QuestionIds);
-      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name from buildertek__Questions__c WHERE Id IN: QuestionIds ORDER BY buildertek__Section__r.Name nulls last];
+      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name from buildertek__Questions__c WHERE Id IN: QuestionIds ORDER BY buildertek__Section__r.Name, buildertek__Sub_Section__r.Name nulls last];
       system.debug(Questionlist);
       return Questionlist;
     }
