@@ -7,12 +7,22 @@ import addGlobalMarkup from '@salesforce/apex/QuotePage.addGlobalMarkup';
 import addGlobalMargin from '@salesforce/apex/QuotePage.addGlobalMargin';
 import saveQL from '@salesforce/apex/QuotePage.saveQL';
 import updateCustomerVisible from '@salesforce/apex/QuotePage.updateCustomerVisible';
+import updateCustomerVisiblebyLine from '@salesforce/apex/QuotePage.updateCustomerVisiblebyLine';
 import { RefreshEvent } from 'lightning/refresh';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
     @api recordId;
+    @track nameFilter = '';
+    @track subgroupFilter = 'All';
+    @track phaseFilter = 'All';
+    @track filterModalSelected = [];
+    @track filteredquoteItems;
+    @track filteredquoteItemsFinal;
+    @track filtermodalColumns = [];
     @track groupsNotConsidered = [];
+    @track subgroupOptions = [{ label: '--All--', value: 'All' }];
+    @track phaseOptions = [{ label: '--All--', value: 'All' }];
     @track quoteLineEditFields;
     @track isEditModal = false;
     @track isSingleLineenabled;
@@ -25,6 +35,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isLoading = true;
     @track showdeleteModal = false;
     @track showfilterModal = false;
+    @track showfilterLineModal = false;
     @track deleteRecordId;
     @track quoteName;
     @track currencyCode;
@@ -317,34 +328,43 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     quoteData.push(quoteDataToDisplay);
                 }
                 this.quoteData = quoteData;
+                this.columns = result.columns;
+                this.filtermodalColumns = result.columns;
 
                 //loop on the colums cooming from FieldSet
-                for (var i = 0; i < result.columns.length; i++) {
-                    if (result.columns[i].label === 'Cost Code') {
-                        result.columns[i].fieldName = 'CostCode';
-                        result.columns[i].type = 'string';
-                    }
+                for (var i = 0; i < this.columns.length; i++) {
+                    for (var i = 0; i < this.columns.length; i++) {
+                        if (this.columns[i].label === 'Cost Code') {
+                            this.columns[i].fieldName = 'CostCode';
+                            this.columns[i].type = 'string';
+                        }
 
-                    if (result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Profit_Margin__c') {
-                        result.columns[i].type = 'percent';
-                        result.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-                    }
+                        if (this.columns[i].label === 'Sub Group') {
+                            this.columns[i].fieldName = 'SubGroup';
+                            this.columns[i].type = 'string';
+                        }
 
-                    result.columns[i].editable = false;
-                    result.columns[i].hideDefaultActions = true;
-                    result.columns[i].cellAttributes = { alignment: 'left', class: { fieldName: 'format' } };
+                        if (this.columns[i].fieldName === 'buildertek__Markup__c' || this.columns[i].fieldName === 'buildertek__Tax__c' || this.columns[i].fieldName === 'buildertek__Profit_Margin__c') {
+                            this.columns[i].type = 'percent';
+                            this.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+                        }
 
-                    if (result.columns[i].fieldName == 'buildertek__Notes__c') {
-                        result.columns[i].wrapText = false;
-                    } else {
-                        result.columns[i].wrapText = true;
-                    }
+                        this.columns[i].editable = false;
+                        this.columns[i].hideDefaultActions = true;
+                        this.columns[i].cellAttributes = { alignment: 'left', class: { fieldName: 'format' } };
 
-                    if (result.columns[i].label == 'Notes') {
-                        result.columns[i].initialWidth = 200;
-                    }
-                    else {
-                        result.columns[i].initialWidth = result.columns[i].label.length * 15;
+                        if (this.columns[i].fieldName == 'buildertek__Notes__c') {
+                            this.columns[i].wrapText = false;
+                        } else {
+                            this.columns[i].wrapText = true;
+                        }
+
+                        if (this.columns[i].label == 'Notes') {
+                            this.columns[i].initialWidth = 200;
+                        }
+                        else {
+                            this.columns[i].initialWidth = this.columns[i].label.length * 15;
+                        }
                     }
 
 
@@ -394,8 +414,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         hideDefaultActions: true
                     },
                 ];
-                result.columns = cols.concat(result.columns);
-                result.columns.unshift({
+                this.columns = cols.concat(result.columns);
+                this.columns.unshift({
                     // label: 'No.',
                     fieldName: 'Number',
                     type: 'string',
@@ -404,20 +424,40 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     hideDefaultActions: true,
                     cellAttributes: { alignment: 'center' },
                 });
-                let totalCol = result.colums;
+                let totalCol = this.colums;
 
                 this.totalColumns = totalCol;
-                this.columns = result.columns;
                 this.quoteLines = result.quoteLineList;
+                this.filteredquoteItems = result.quoteLineList;
+                this.filteredquoteItemsFinal = result.quoteLineList;
 
-
-                //loop on the quote lines and group them by Grouping
                 for (var i = 0; i < this.quoteLines.length; i++) {
                     var groupName = this.quoteLines[i].buildertek__Grouping__r.Name;
                     var groupId = this.quoteLines[i].buildertek__Grouping__c;
+
+                    //if not customer visible then add the id to filterModalSelected
+                    if (this.quoteLines[i].buildertek__Not_Customer_Visible__c) {
+                        this.filterModalSelected.push(this.quoteLines[i].Id);
+                    }
+
+                    if (this.quoteLines[i].buildertek__Sub_Group__r != null) {
+                        if (!this.subgroupOptions.some(item => item.value === this.quoteLines[i].buildertek__Sub_Group__r.Id)) {
+                            this.subgroupOptions.push({ label: this.quoteLines[i].buildertek__Sub_Group__r.Name, value: this.quoteLines[i].buildertek__Sub_Group__r.Id });
+                        }
+                    }
+
+                    if (this.quoteLines[i].buildertek__Grouping__r != null) {
+                        if (!this.phaseOptions.some(item => item.value === this.quoteLines[i].buildertek__Grouping__r.Id)) {
+                            this.phaseOptions.push({ label: this.quoteLines[i].buildertek__Grouping__r.Name, value: this.quoteLines[i].buildertek__Grouping__r.Id });
+                        }
+                    }
                 
                     if (this.quoteLines[i].buildertek__Cost_Code__c != null) {
                         this.quoteLines[i].CostCode = this.quoteLines[i].buildertek__Cost_Code__r.Name;
+                    }
+
+                    if (this.quoteLines[i].buildertek__Sub_Group__c != null) {
+                        this.quoteLines[i].SubGroup = this.quoteLines[i].buildertek__Sub_Group__r.Name;
                     }
                 
                     if (this.quoteLines[i].buildertek__Markup__c != null) {
@@ -437,7 +477,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 
                         if (this.quoteLines[i].buildertek__Not_Customer_Visible__c) {
                             this.quoteLines[i]['format'] = 'slds-text-color_error';
-                            currentItem.isConsidered = false;
+                            // currentItem.isConsidered = false;
                         }
                 
                         currentItem.items.push(this.quoteLines[i]);
@@ -446,7 +486,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         if (!isConsidered) {
                             this.quoteLines[i]['format'] = 'slds-text-color_error';
                         }
-                        this.data.push({ groupName: groupName, isConsidered: isConsidered, groupId: groupId, items: [this.quoteLines[i]] });
+                        this.data.push({ groupName: groupName, isConsidered: true , groupId: groupId, items: [this.quoteLines[i]] });
                     }
                 
                     this.quoteLines[i].Number = i + 1;
@@ -478,6 +518,19 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
         this.presentGroups = [];
 
         this.data.forEach(item => {
+
+            item.isConsidered = true;
+            let length = item.items.length;
+            let count = 0;
+            for (let i = 0; i < length; i++) {
+                if (item.items[i].buildertek__Not_Customer_Visible__c) {
+                    count++;
+                }
+            }
+            if (count === length) {
+                item.isConsidered = false;
+            }
+
             if (!item.isConsidered) {
                 this.groupsNotConsidered.push(item.groupId);
             }
@@ -486,17 +539,14 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             let subtotalList = [];
             let subTotal = {};
             totalColumns.forEach(col => {
-                subTotal[col.fieldName] = item.items.reduce((acc, currentItem) => acc + currentItem[col.fieldName], 0);
+                subTotal[col.fieldName] = item.items
+                    .filter(currentItem => !currentItem.buildertek__Not_Customer_Visible__c)
+                    .reduce((acc, currentItem) => acc + currentItem[col.fieldName], 0);
                 grandTotal[col.fieldName] = grandTotal[col.fieldName] || 0;
-                if (item.isConsidered) {
-                    if (grandTotal[col.fieldName]) {
-                        grandTotal[col.fieldName] += subTotal[col.fieldName];
-                    } else {
-                        grandTotal[col.fieldName] = subTotal[col.fieldName];
-                    }
-                }else{
-                    //we want to add color to the subtotal row
-                    subTotal['format'] = 'slds-text-color_error';
+                if (grandTotal[col.fieldName]) {
+                    grandTotal[col.fieldName] += subTotal[col.fieldName];
+                } else {
+                    grandTotal[col.fieldName] = subTotal[col.fieldName];
                 }
             });
             subTotal['Name'] = 'Subtotal';
@@ -832,11 +882,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     }
 
     handleFilter() {
-        this.showfilterModal = true;
+        // this.showfilterModal = true;
+        this.showfilterLineModal = true;
     }
 
     cancelFilter() {
         this.showfilterModal = false;
+    }
+
+    hidefilterLineModal() {
+        this.showfilterLineModal = false;
     }
 
     handleGroupChange(event) {
@@ -888,5 +943,103 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             });
 
 
+    }
+
+    handleNameFilter(event) {
+        this.nameFilter = event.target.value;
+        this.handleFilterhere();
+    }
+
+    handleSubgroupFilter(event) {
+        this.subgroupFilter = event.target.value;
+        this.handleFilterhere();
+    }
+
+    handlePhaseFilter(event) {
+        this.phaseFilter = event.target.value;
+        this.handleFilterhere();
+    }
+
+    handleRowSelection(event) {
+        var selectedRows = event.detail.selectedRows;
+        this.filterModalSelected = selectedRows.map(item => item.Id);
+    }
+
+    handleFilterhere(){
+        console.log(this.filterModalSelected);
+
+        console.log('Name Filter: ' + this.nameFilter);
+        console.log('Subgroup Filter: ' + this.subgroupFilter);
+        console.log('Phase Filter: ' + this.phaseFilter);
+
+        this.filteredquoteItems = this.filteredquoteItemsFinal.filter(item => {
+            if (this.nameFilter === '' && this.subgroupFilter === 'All' && this.phaseFilter === 'All') {
+            return true;
+            } else if (this.nameFilter !== '' && this.subgroupFilter === 'All' && this.phaseFilter === 'All') {
+            return item.Name.toLowerCase().includes(this.nameFilter.toLowerCase());
+            } else if (this.nameFilter === '' && this.subgroupFilter !== 'All' && this.phaseFilter === 'All') {
+            return item.buildertek__Sub_Group__c === this.subgroupFilter;
+            } else if (this.nameFilter === '' && this.subgroupFilter === 'All' && this.phaseFilter !== 'All') {
+            return item.buildertek__Grouping__c === this.phaseFilter;
+            } else if (this.nameFilter !== '' && this.subgroupFilter !== 'All' && this.phaseFilter === 'All') {
+            return item.Name.toLowerCase().includes(this.nameFilter.toLowerCase()) && item.buildertek__Sub_Group__c === this.subgroupFilter;
+            } else if (this.nameFilter !== '' && this.subgroupFilter === 'All' && this.phaseFilter !== 'All') {
+            return item.Name.toLowerCase().includes(this.nameFilter.toLowerCase()) && item.buildertek__Grouping__c === this.phaseFilter;
+            } else if (this.nameFilter === '' && this.subgroupFilter !== 'All' && this.phaseFilter !== 'All') {
+            return item.buildertek__Sub_Group__c === this.subgroupFilter && item.buildertek__Grouping__c === this.phaseFilter;
+            } else {
+            return item.Name.toLowerCase().includes(this.nameFilter.toLowerCase()) && item.buildertek__Sub_Group__c === this.subgroupFilter && item.buildertek__Grouping__c === this.phaseFilter;
+            }
+        });
+
+        this.filteredquoteItems = this.filteredquoteItems.filter(item => !this.filterModalSelected.includes(item.Id));
+        this.filterModalSelected.forEach(item => {
+            this.filteredquoteItems.unshift(this.filteredquoteItemsFinal.find(quoteItem => quoteItem.Id === item));
+        });
+
+    }
+
+    applyFilterLine() {
+        var seletecdIds = this.filterModalSelected;
+        var allIds = this.filteredquoteItemsFinal.map(item => item.Id);
+        var nonselectedIds = allIds.filter(item => !seletecdIds.includes(item));
+
+        console.log('Selected Ids: ' + JSON.stringify(seletecdIds));
+        console.log('Non Selected Ids: ' + JSON.stringify(nonselectedIds));
+        this.filterModalSelected = [];
+        this.nameFilter = '';
+        this.subgroupFilter = 'All';
+        this.phaseFilter = 'All';
+
+        this.isLoading = true;
+        this.showfilterLineModal = false;
+        updateCustomerVisiblebyLine({
+            quoteId: this.recordId,
+            consideredIds: seletecdIds,
+            notConsideredIds: nonselectedIds
+        }).then(result => {
+            console.log({ result });
+            this.isLoading = false;
+            if (result == 'Success') {
+                console.log('Filter applied successfully');
+                //show toast message 
+                var message = 'Filter applied successfully';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Success',
+                    message: message,
+                    variant: 'success'
+                }));
+            } else {
+                var message = 'Error updating groups';
+                this.dispatchEvent(new ShowToastEvent({
+                    title: 'Error',
+                    message: message,
+                    variant: 'error'
+                }));
+            }
+        })
+            .finally(() => {
+                this.refreshData();
+            });
     }
 }
