@@ -162,7 +162,8 @@
                     'buildertek__Size__c': element.Size,
                     'buildertek__Description__c': element.Description ? element.Description : element.Name,
                     'buildertek__Product_Family__c': element.Family ? element.Family : 'No Grouping',
-                    'buildertek__UOM__c': element.QuantityUnitOfMeasure   
+                    'buildertek__UOM__c': element.QuantityUnitOfMeasure,
+                    'buildertek__Notes__c': element.Notes,   
                 })
                 console.log('Quantity Unit Of Measure => ', element.QuantityUnitOfMeasure);
                 console.log('Quantity Unit Of Measure New => ', element.CostCode);           

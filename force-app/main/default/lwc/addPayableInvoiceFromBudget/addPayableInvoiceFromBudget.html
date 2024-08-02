@@ -1,0 +1,81 @@
+<template>
+    <template if:true={isLoading}>
+        <div class="spinner-container">
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </template>
+
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+        aria-describedby="modal-content" class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="modal-container">
+                <header class="slds-modal__header">
+                    <lightning-button-icon icon-name="utility:close" onclick={handleCloseModal} alternative-text="close"
+                        variant="bare-inverse" class="slds-modal__close custom-icon-size"
+                        size="large"></lightning-button-icon>
+
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Invoices (AP)</h2>
+                </header>
+                <div class="slds-modal__content modal-content" id="modal-content"></div>
+                <div class="table-container">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr class="slds-text-title_caps">
+                                <th scope="col" class="truncate">
+                                    <lightning-input type="checkbox"
+                                        onchange={handleCheckAllInvoices}></lightning-input>
+                                </th>
+                                <th scope="col">
+                                    <div class="truncate">Invoice Name</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="truncate">Description</div>
+                                </th>
+                                <th scope="col">
+                                    <div class="truncate">Invoice Total</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template if:true={invoiceRecordList}>
+                                <template for:each={invoiceRecordList} for:item="item" for:index="index">
+                                    <tr key={item.Id}>
+                                        <td class="checkbox-cell">
+                                            <lightning-input type="checkbox" name="input1" checked={item.Selected}
+                                                data-id={item.Id} onchange={handleCheckInvoice}></lightning-input>
+                                        </td>
+                                        <td class="truncate">
+                                            {item.Name}
+                                        </td>
+                                        <td class="truncate">
+                                            {item.buildertek__Description__c}
+                                        </td>
+                                        <td>
+                                            <lightning-formatted-number value={item.buildertek__Total_Amount__c}
+                                                format-style="currency" currency-code={currencycode}
+                                                currency-display-as="code"></lightning-formatted-number>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </template>
+                            <template if:false={invoiceRecordList}>
+                                <tr>
+                                    <td colspan="4" class="no-records-cell">
+                                        No Records Found
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <lightning-button variant="neutral" class="slds-m-right_small" label="Cancel"
+                    onclick={handleCloseModal}></lightning-button>
+                <lightning-button variant="brand" label="Save" onclick={handleSaveInvoice}></lightning-button>
+            </footer>
+        </div>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
