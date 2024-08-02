@@ -16,7 +16,6 @@
             if (state === "SUCCESS") {
                 var result = response.getReturnValue();
                 if (result) {
-                    console.log('result: ', JSON.parse(JSON.stringify(result)));
                     component.set("v.budgetItems", result.budgetItemList);
                     component.set("v.budgetName", result.budgetItemList[0].buildertek__Budget__r.Name);
                     component.set("v.fieldSetValues", result.FieldSetValues);
@@ -50,7 +49,6 @@
         var counter = 1;
 
         budgetItem.forEach(item => {
-            console.log('item: ', item);
             var groupName = item.buildertek__Group__r ? item.buildertek__Group__r.Name : 'No Grouping';
             var groupId = item.buildertek__Group__c ? item.buildertek__Group__c : 'no-group';
             item.Number = counter++;
