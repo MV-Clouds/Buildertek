@@ -104,7 +104,7 @@
                 if(a.getState()==='SUCCESS'){
                     var result = a.getReturnValue();
                      component.set("v.imgUrl",component.get("v.siteUrl")+"servlet/servlet.FileDownload?file="+result);
-                     //$A.get('e.force:refreshView').fire();
+                     $A.get('e.force:refreshView').fire();
                   }
             });
             $A.enqueueAction(action); 
