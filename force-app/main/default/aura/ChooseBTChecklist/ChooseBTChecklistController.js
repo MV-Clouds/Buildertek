@@ -185,6 +185,21 @@
     $A.enqueueAction(getAllgroups);
   },
 
+    showOrderSectionModel: function (component, event, helper) {
+        console.log('yeh calling section popup method')
+        component.set("v.showOrderSectionModel", true);
+    },
+
+    showOrderSubsectionModel: function (component, event, helper) {
+        console.log('yeh calling sub section popup method')
+        component.set("v.showOrderSubsectionModel", true);
+    },
+
+    closeChildCmpMethod: function (component, event, helper) {
+        console.log('yeh calling close child cmp method')
+        component.set("v.showOrderSubsectionModel", false);
+        component.set("v.showOrderSectionModel", false);
+    },
 
   saveAndContinue: function (component, event, helper) {
 
