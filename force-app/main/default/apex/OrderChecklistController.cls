@@ -46,6 +46,14 @@ public with sharing class OrderChecklistController {
        checkListConfig.buildertek__Ordered_Section__c = jsonSectionOrderedString;
        update checkListConfig;
     }
+    
+    @AuraEnabled
+    public static void updateCheckListForSubsectionOrder(string checkListId, String jsonSubsectionOrderedString){
+       buildertek__Checklist_Configuration__c checkListConfig = new buildertek__Checklist_Configuration__c();
+       checkListConfig.id = checkListId;
+       checkListConfig.buildertek__Ordered_Subsection__c = jsonSubsectionOrderedString;
+       update checkListConfig;
+    }
 
     public class sectionSubsectionWrp{
         @AuraEnabled
