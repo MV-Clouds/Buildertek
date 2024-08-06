@@ -185,7 +185,7 @@ public without sharing class checkListQuestionsCtrl{
                                                                  from buildertek__Checklist_Questions__c
                                                                  where buildertek__Checklist_Configuration__c = :CheckQuestionId AND buildertek__Questions__r.buildertek__Section__c != null
                                                                  ORDER BY buildertek__Questions__r.buildertek__Section__r.Name ASC
-                                                                 NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS Last];
+                                                                 NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS Last, CreatedDate desc];
 
         Map<String, List<buildertek__Checklist_Questions__c>> sectionCustomOrderMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
         String jsonSectionOrder;
