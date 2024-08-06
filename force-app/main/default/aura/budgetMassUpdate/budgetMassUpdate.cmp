@@ -1,0 +1,127 @@
+<aura:component controller="massUpdateBudgetItem"
+    implements="force:appHostable,force:lightningQuickAction,flexipage:availableForRecordHome,flexipage:availableForAllPageTypes,lightning:actionOverride,force:hasRecordId,forceCommunity:availableForAllPageTypes,lightning:isUrlAddressable"
+    access="global">
+    <aura:attribute type="String" name="budgetId" />
+    <aura:attribute type="String" name="budgetName" />
+    <aura:attribute name="isCancelModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="budgetItems" type="List" default="[]" />
+    <aura:attribute name="deletedbudgetItems" type="List" default="[]" />
+    <aura:attribute name="availableGroupingOption" type="List" default="[]" />
+    <aura:attribute name="data" type="List" default="[]" />
+    <aura:attribute name="fieldSetValues" type="List" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler name="onSelectEvt" event="c:BT_LookupEvent" action="{!c.handleLookUpEvent}" />
+    <aura:handler name="oClearRecordEvent" event="c:BT_LightningLookupEvent" action="{!c.clearSelectedHandler}" />
+
+    <lightning:workspaceAPI aura:id="workspace" />
+    <lightning:overlayLibrary aura:id="overlayLib" />
+
+    <aura:html tag="style">
+        .slds-scope .slds-form-element_stacked:not(.slds-form-element_readonly){
+        padding-bottom: 0px !important;
+        margin-bottom: 0px !important;
+        }
+    </aura:html>
+
+    <lightning:card>
+        <div class="slds-media" style="margin-left: 1rem;">
+            <div class="slds-media__figure">
+                <lightning:icon iconName="custom:custom14" size="small" alternativeText="Budget Icon" />
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-text-heading_medium">Mass Update</h2>
+            </div>
+        </div>
+        <div class="slds-card__body">
+            <p class="heading">{!v.budgetName}</p>
+            <div class="button-group">
+                <lightning:button label="Save" variant="brand" onclick="{!c.onMassUpdate}"></lightning:button>
+                <lightning:button label="Cancel" variant="neutral" onclick="{!c.handleCancel}"></lightning:button>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <!-- Outer Iteration: Grouping Level -->
+            <aura:iteration items="{!v.data}" var="group">
+                <div key="{!group.groupId}" class="group-container">
+                    <h3 class="group-header">{!group.groupName}</h3>
+                    <div class="slds-scrollable" style="overflow-x:auto;">
+                        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                            <thead>
+                                <tr class="slds-line-height_reset">
+                                    <th scope="col">
+                                        <div class="slds-truncate" title="No.">No.</div>
+                                    </th>
+                                    <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                        <th scope="col">
+                                            <div class="slds-truncate">
+                                                {!field.label}
+                                            </div>
+                                        </th>
+                                    </aura:iteration>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Inner Iteration: Items within Each Group -->
+                                <aura:iteration items="{!group.items}" var="row" indexVar="index">
+                                    <tr style="height: 4rem;">
+                                        <td>
+                                            {!row.Number}
+                                        </td>
+                                        <aura:iteration items="{!v.fieldSetValues}" var="field">
+                                            <aura:if
+                                                isTrue="{!!AND(v.currectModifiedIndex == index, v.rerender == true)}">
+                                                <aura:if
+                                                    isTrue="{!OR(OR(field.type == 'DOUBLE', field.type == 'CURRENCY'), field.type == 'PERCENT')}">
+                                                    <td style="max-width: 5rem; min-width: 5rem;">
+                                                        <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}"
+                                                            field="{!field}" isMassUpdateEnable="true"
+                                                            childObjectName="buildertek__Budget_Item__c" />
+                                                    </td>
+                                                    <aura:set attribute="else">
+                                                        <td style="max-width: 11rem; min-width: 11rem;">
+                                                            <c:BT_FieldSetMassUpdate record="{!row}" index="{!index}"
+                                                                field="{!field}" isMassUpdateEnable="true"
+                                                                childObjectName="buildertek__Budget_Item__c" />
+                                                        </td>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </aura:if>
+                                        </aura:iteration>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aura:iteration>
+        </div>
+
+    </lightning:card>
+
+    <aura:if isTrue="{!v.isCancelModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeCancelModal}"
+                        alternativeText="close" size="medium" variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Cancel Changes
+                        Confirmation
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <p style="text-align: center;">Are you sure you want to Cancel?</p>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="No" title="No" onclick="{! c.closeCancelModal }" />
+                    <lightning:button variant="brand" label="Yes" title="Yes" onclick="{! c.closeScreen }" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+
+    <c:BT_Spinner />
+
+</aura:component>

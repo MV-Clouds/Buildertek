@@ -115,6 +115,7 @@ export default class AddProductLwcCmp extends LightningElement {
 
     connectedCallback() {
 		loadStyle(this, myResource);
+        console.log('check your productFamilyFromParent ',this.productFamilyFromParent);
         this.productFamilyValue = this.productFamilyFromParent || '-- All Product Family --';
 	}
 

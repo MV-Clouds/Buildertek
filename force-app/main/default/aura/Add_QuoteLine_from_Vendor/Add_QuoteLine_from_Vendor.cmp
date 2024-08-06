@@ -310,6 +310,9 @@
                                         <div class="slds-truncate" title="Phase">Phase</div>
                                     </th>
                                     <th class="" scope="col">
+                                        <div class="slds-truncate" title="Notes">Notes</div>
+                                    </th>
+                                    <th class="" scope="col">
                                         <div class="slds-truncate" title="Quantity">Quantity</div>
                                     </th>
                                     <th class="" scope="col">
@@ -338,50 +341,53 @@
                                 <aura:iteration items="{!v.selectedProducts}" var="item" indexVar="recIndex">
                                     <tr title="Product">
                                         <td style="padding-top: 15px;">
-                                            <span data-id="{!item.PriceBookEntryId}"  onclick="{!c.removeQuoteLine}">
+                                            <span data-id="{!item.PriceBookEntryId}" onclick="{!c.removeQuoteLine}">
                                                 <lightning:icon iconName="utility:delete" size="xx-small" />   
                                             </span>                     
                                         </td>
-                                        <td style="width:14% !important">
+                                        <td style="width:10% !important">
                                             <lightning:input name="input1" label="" value="{!item.buildertek__Size__c}" disabled="true" />
                                         </td>
-                                        <td style="width:16% !important">
+                                        <td style="width:15% !important">
                                             <lightning:input name="input1" label="" value="{!item.Name}" disabled="true" />
                                         </td>
-                                        <td style="width:16% !important">
+                                        <td style="width:15% !important">
                                             <lightning:input name="input3" label="" value="{!item.buildertek__Description__c}" />
                                         </td>
-                                        <td style="width:14% !important">
-                                            <lightning:select  name="mySelect" label="" value="{!item.buildertek__Grouping__c}">
+                                        <td style="width:12% !important">
+                                            <lightning:select name="mySelect" label="" value="{!item.buildertek__Grouping__c}">
                                                 <aura:iteration items="{!v.quoteLineGroupOptions}" var="rec">
-                                                    <option value="{!rec.value}" >{!rec.key}</option>
+                                                    <option value="{!rec.value}">{!rec.key}</option>
                                                 </aura:iteration>
                                             </lightning:select>
+                                        </td>
+                                        <td style="width:15% !important">
+                                            <lightning:input name="input11" label="" value="{!item.buildertek__Notes__c}" />
                                         </td>
                                         <td style="width:5% !important">
                                             <lightning:input name="input4" label="" value="{!item.buildertek__Quantity__c}" />
                                         </td>
-                                        <td style="width:9% !important">
+                                        <td style="width:6% !important">
                                             <lightning:input name="input6" label="" value="{!item.buildertek__Unit_Cost__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                        <td style="width:7% !important">
+                                        <td style="width:8% !important">
                                             <lightning:input name="input8" label="" value="{!item.buildertek__Cost_Code__c}" disabled="true"/>
                                         </td>
-                                        <td style="width:9% !important">
+                                        <td style="width:6% !important">
                                             <lightning:input name="input2" label="" value="{!item.buildertek__Unit_Price__c}" formatter="currency" type="number" maximumFractionDigits="5" step="0.01" />
                                         </td>
-                                <aura:if isTrue="{!v.showmargin}">                                                                            
-                                        <td style="width:5% !important">
-                                            <lightning:input name="input10" label="" value="{!item.buildertek__Margin__c}" />
-                                        </td>
-                                </aura:if>
-                                        <td style="width:5% !important">
+                                        <aura:if isTrue="{!v.showmargin}">                                                                            
+                                            <td style="width:4% !important">
+                                                <lightning:input name="input10" label="" value="{!item.buildertek__Margin__c}" />
+                                            </td>
+                                        </aura:if>
+                                        <td style="width:4% !important">
                                             <lightning:input name="input7" label="" value="{!item.buildertek__Markup__c}" />
                                         </td>
-                                        <td style="width:5% !important">
-                                            <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}"/>
+                                        <td style="width:4% !important">
+                                            <lightning:input name="input5" label="" value="{!item.buildertek__Additional_Discount__c}" />
                                         </td>
-                                    </tr>
+                                    </tr>                                    
                                 </aura:iteration>
                             </tbody>
                         </table>

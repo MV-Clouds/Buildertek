@@ -16,12 +16,14 @@ public with sharing class CreateInvoiceFromQuote {
                                         quoteRec= [select Id, 
                                                  Name, 
                                                  buildertek__Project__c, 
+                                                 buildertek__Customer_Account__c,
                                                  buildertek__Tax__c,
                                                  buildertek__Status__c 
                                                  from buildertek__Quote__c 
                                                  where Id =: QuoteId];
                // }
             buildertek__Billings__c AR = new buildertek__Billings__c();
+            AR.buildertek__Customer_Account__c = quoteRec.buildertek__Customer_Account__c;
             AR.buildertek__Project__c = quoteRec.buildertek__Project__c;
             AR.buildertek__Status__c = 'Open';
           //  AR.buildertek__Customer_Account__c = quoteRec.buildertek__Vendor__c;
@@ -61,6 +63,7 @@ public with sharing class CreateInvoiceFromQuote {
                                          buildertek__Product__c,
                                          buildertek__Quantity__c,
                                          buildertek__Unit_Price__c,
+                                         buildertek__Tax__c,
                                          buildertek__Status__c,
                                          buildertek__Notes__c,buildertek__Net_Unit__c
                                          from buildertek__Quote_Item__c 
@@ -69,7 +72,7 @@ public with sharing class CreateInvoiceFromQuote {
             for(buildertek__Quote_Item__c quoteItem : quoteItemList){
                 
                 Billable_Lines__c arItem = new Billable_Lines__c();
-                
+                arItem.buildertek__Item_Name__c = quoteItem.Name;
                 arItem.buildertek__Billings__c = AR.Id;
                 arItem.buildertek__Line_Title__c = quoteItem.buildertek__Item_Name__c;
                 arItem.buildertek__Cost_Code__c = quoteItem.buildertek__Cost_Code__c;
@@ -79,6 +82,7 @@ public with sharing class CreateInvoiceFromQuote {
                 arItem.buildertek__Unit_Price__c = quoteItem.buildertek__Net_Unit__c;
                 arItem.buildertek__Quantity__c = quoteItem.buildertek__Quantity__c;
                 arItem.buildertek__Notes__c = quoteItem.buildertek__Notes__c;
+                arItem.buildertek__Tax_Rate__c = quoteItem.buildertek__Tax__c;
                 arItem.buildertek__Quote_Line__c = quoteItem.Id;
                 arLines.add(arItem);
             }

@@ -18,6 +18,8 @@
   <aura:attribute name="message" type="boolean" default="false" />
   <aura:attribute name="isNewChecklist" type="boolean" default="false" />
   <aura:attribute name="showSectionModel" type="boolean" default="false" />
+  <aura:attribute name="showOrderSectionModel" type="boolean" default="false" />
+  <aura:attribute name="showOrderSubsectionModel" type="boolean" default="false" />
   <aura:attribute name="btnLabel" type="String" default="New Section" />
   <aura:attribute name="deleteIndex" type="Integer" />
   <aura:attribute name="SelectedChecklistObject" type="string" default="" />
@@ -270,6 +272,14 @@
                     class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
                     <span class="slds-text-not-selected">Manage Question</span>
                   </div>
+                  <div onclick="{!c.showOrderSectionModel}" style="cursor: pointer; border-color: #0176d3; "
+                    class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                    <span class="slds-text-not-selected">Order Section</span>
+                  </div>
+                  <div onclick="{!c.showOrderSubsectionModel}" style="cursor: pointer; border-color: #0176d3; "
+                    class="slds-float--left slds-button slds-button--neutral slds-not-selected" aria-live="assertive">
+                    <span class="slds-text-not-selected">Order Subsection</span>
+                  </div>
                   &nbsp;&nbsp;
                 </aura:if>
               </div>
@@ -406,6 +416,13 @@
             parentSectionList="{!v.grouplist}" />
         </aura:if>
 
+        <aura:if isTrue="{!v.showOrderSectionModel}">
+        <c:orderChecklistSection onvaluechange="{!c.closeChildCmpMethod}" checkListId="{!v.configureId}" /> 
+        </aura:if>
+
+        <aura:if isTrue="{!v.showOrderSubsectionModel}"> 
+
+        </aura:if>
 
         <!-- Delete Questions -->
         <div>

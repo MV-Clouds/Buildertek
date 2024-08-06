@@ -45,8 +45,8 @@
             </div>
           </aura:if>
           <aura:if isTrue="{!!v.SuccessMessage}">
-            <div style="width: 100%;text-align: center;margin-bottom: 20px;">
-              <img src="{!v.imgUrl}" id="logoImg" style="width:60%;" />
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+              <img src="{!v.imgUrl}" id="logoImg"/>
             </div>
             <aura:iteration items="{!v.Questions}" var="Group">
               <div style="background: #C7C4C4;padding: 8px;border-radius: 5px;font-weight: 600;font-size: 22px;">

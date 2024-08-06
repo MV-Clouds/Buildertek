@@ -7,7 +7,7 @@ trigger ReceiptTrigger on buildertek__Receipt__c(before insert,after insert, aft
       //* commented out because this method updates records in bulk unnecessary do any thing Commented By Nishit Suthar on 29/01/2024
       //  ReceiptTriggerHandler.OnAfterInsert(Trigger.new);
 
-      //  ReceiptTriggerHandler.QBIntegrationOnInsert(Trigger.new, Trigger.old);
+       ReceiptTriggerHandler.QBIntegrationOnInsert(Trigger.new, Trigger.old);
       //  QBMap.MapInvoiceData(Trigger.new[0]);
    }
 

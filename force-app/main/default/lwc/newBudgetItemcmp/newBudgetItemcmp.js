@@ -317,7 +317,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         result.columns[i].type = 'string';
                     }
 
-                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' ){
+                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Projected_Gross_Profit__c' || result.columns[i].fieldName === 'buildertek__Gross_Profit_Margin__c'){
                         result.columns[i].type = 'percent';
                         result.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
                     }
@@ -416,6 +416,14 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                     if (this.budgetLines[i].buildertek__Tax__c != null) {
                         this.budgetLines[i].buildertek__Tax__c = this.budgetLines[i].buildertek__Tax__c / 100;
+                    }
+
+                    if (this.budgetLines[i].buildertek__Projected_Gross_Profit__c != null) {
+                        this.budgetLines[i].buildertek__Projected_Gross_Profit__c = this.budgetLines[i].buildertek__Projected_Gross_Profit__c / 100;
+                    }
+
+                    if (this.budgetLines[i].buildertek__Gross_Profit_Margin__c != null) {
+                        this.budgetLines[i].buildertek__Gross_Profit_Margin__c = this.budgetLines[i].buildertek__Gross_Profit_Margin__c / 100;
                     }
 
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
