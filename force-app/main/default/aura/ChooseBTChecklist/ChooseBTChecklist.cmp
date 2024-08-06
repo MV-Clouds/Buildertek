@@ -417,11 +417,11 @@
         </aura:if>
 
         <aura:if isTrue="{!v.showOrderSectionModel}">
-        <c:orderChecklistSection onvaluechange="{!c.closeChildCmpMethod}" isOrderSection="true" checkListId="{!v.configureId}" /> 
+        <c:orderChecklistSection onvaluechange="{!c.closeChildCmpMethod}" checkListId="{!v.configureId}" /> 
         </aura:if>
 
         <aura:if isTrue="{!v.showOrderSubsectionModel}"> 
-         <c:orderChecklistSection onvaluechange="{!c.closeChildCmpMethod}" checkListId="{!v.configureId}" /> 
+
         </aura:if>
 
         <!-- Delete Questions -->
