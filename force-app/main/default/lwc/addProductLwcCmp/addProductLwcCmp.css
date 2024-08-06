@@ -13,7 +13,7 @@
 }
 
 .myCustomStyle{
-    width: 80% !important;
+    width: 90% !important;
 }
 
 .myCustomStyle2{
@@ -54,7 +54,7 @@
 .slds-table thead th {
     background-color: #f3f2f2;
     font-weight: bold;
-    padding: 0.75rem;
+    padding: 0.5rem;
 }
 
 .slds-table tbody tr:nth-child(odd) {
@@ -66,7 +66,7 @@
 }
 
 .slds-table tbody td {
-    padding-inline: 0.75rem;
+    padding-inline: 0.5rem;
     border-bottom: 1px solid #e0e0e0;
 }
 
@@ -75,10 +75,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.slds-wider-column {
-    width: 15%;
 }
 
 .lightning-card {
@@ -118,3 +114,11 @@
 .vendor-child-class-1{
     margin: 1em;
 }
+
+/* .notes-field {
+    width: 300px;
+}
+
+.numeric-field {
+    width: 80px;
+} */
