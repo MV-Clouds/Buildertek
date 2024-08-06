@@ -12,34 +12,19 @@
                 </button>
                 <h2 id="modal-heading-06" class="slds-text-heading_medium slds-hyphenate">Select Order</h2>
             </header>
-
-            <template lwc:if={isOrderSection}>
-                <!-- modal body start -->
-                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <lightning-dual-listbox name="groups" source-label="Available Sections"
-                        selected-label="Ordered Sections" options={presentSections} value={orderedSectionList} onchange={handleOrderChange}>
-                    </lightning-dual-listbox>
-                </div>
-            </template>
-            <template lwc:else>
-                <!-- modal body start -->
-
-                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-2">
-                    <!-- WARN: choose sections with combo first -->
-                    <lightning-combobox placeholder="Select Section" options={comboOptions} onchange={handleChangeInCombo} ></lightning-combobox>
-
-                    <lightning-dual-listbox name="groups" source-label="Available Subsections"
-                        selected-label="Ordered Subsections" options={presentSubsections} value={orderedSubectionList} onchange={handleSubOrderChange}>
-                    </lightning-dual-listbox>
-                </div>
-            </template>
+            <!-- modal body start -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <lightning-dual-listbox name="groups" source-label="Available Sections"
+                    selected-label="Ordered Sections" options={presentSections} value={orderedSectionList}
+                    onchange={handleOrderChange}>
+                </lightning-dual-listbox>
+            </div>
             <!-- modal footer start-->
             <footer class="slds-modal__footer">
                 <button class="slds-button slds-button_neutral" onclick={cancelPopup}>Cancel</button>
                 <button class="slds-button slds-button_brand" onclick={saveOrder}>Save</button>
             </footer>
-
         </div>
     </section>
-    <div class="slds-backdrop slds-backdrop_open"></div> 
+    <div class="slds-backdrop slds-backdrop_open"></div>
 </template>
