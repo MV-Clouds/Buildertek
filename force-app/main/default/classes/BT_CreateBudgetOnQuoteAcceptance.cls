@@ -10,7 +10,9 @@ public class BT_CreateBudgetOnQuoteAcceptance {
     public String GroupingLevel2 { get; set; }
     public buildertek__Admin_Interface_Node_Configuration__c adminConfiguration { get; set; }
     public String selectedOption { get; set;}
-
+    
+    // public Boolean hideGlobalMargin{get;set;}
+    public Boolean hideGlobalMarkup{get;set;}
     
  // public buildertek__Admin_Interface_Node_Configuration__c adminterface {get;set;} 
     //public string  emailsubject {get;set;} 
@@ -20,7 +22,8 @@ public class BT_CreateBudgetOnQuoteAcceptance {
                                                                                               buildertek__Email_Subject__c, buildertek__Automatically_add_Expense_to_Budget__c,
                                                                                               buildertek__Automatically_add_Time_Card_to_Budget__c, buildertek__Group_by_Cost_Code__c, 
                                                                                               buildertek__Group_by_vendor__c, buildertek__Budget_Grouping_Data__c, buildertek__Budget_Grouping_Level_1__c, 
-                                                                                              buildertek__Budget_Grouping_Level_2__c, buildertek__Hide_These_budget_Buttons__c
+                                                                                              buildertek__Budget_Grouping_Level_2__c, buildertek__Hide_These_budget_Buttons__c, buildertek__Hide_Global_Margin__c, 
+                                                                                              buildertek__Hide_Global_Markup__c
                                                                                               FROM buildertek__Admin_Interface_Node_Configuration__c 
                                                                                               WHERE Name = 'Budget Configuration'];
         if (!adminInterfaceNodeConfigurations.isEmpty()) {
@@ -34,6 +37,8 @@ public class BT_CreateBudgetOnQuoteAcceptance {
             GroupingLevel1 = adminConfiguration.buildertek__Budget_Grouping_Level_1__c;
             GroupingLevel2 = adminConfiguration.buildertek__Budget_Grouping_Level_2__c;
             selectedOption = adminConfiguration.buildertek__Hide_These_budget_Buttons__c;
+            // hideGlobalMargin = adminConfiguration.buildertek__Hide_Global_Margin__c;
+            hideGlobalMarkup = adminConfiguration.buildertek__Hide_Global_Markup__c;
         }
     }
 
@@ -56,6 +61,8 @@ public class BT_CreateBudgetOnQuoteAcceptance {
         adminConfiguration.buildertek__Budget_Grouping_Data__c = selectedGrouping;
         adminConfiguration.buildertek__Budget_Grouping_Level_1__c = (GroupingLevel1 == 'None') ? null : GroupingLevel1;
         adminConfiguration.buildertek__Budget_Grouping_Level_2__c = (GroupingLevel2 == 'None') ? null : GroupingLevel2;
+        // adminConfiguration.buildertek__Hide_Global_Margin__c = hideGlobalMargin;
+        adminConfiguration.buildertek__Hide_Global_Markup__c = hideGlobalMarkup;
 
         if (GroupingLevel1 == GroupingLevel2 && GroupingLevel1 != null && GroupingLevel2 != null) {
             ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'Grouping Level 1 and Grouping Level 2 cannot be the same.'));

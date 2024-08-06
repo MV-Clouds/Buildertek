@@ -28,15 +28,15 @@ public without sharing class BudgetPage {
 
             allData ad = new allData();
 
-            buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [Select Id, buildertek__Remove_Single_Quote_Line_Option__c, buildertek__Hide_Global_Margin__c, buildertek__Hide_Global_Markup__c
-                                                                                              from buildertek__Admin_Interface_Node_Configuration__c
-                                                                                              WHERE Name = :'Quote Configuration'];
+            buildertek__Admin_Interface_Node_Configuration__c adminInterfaceNodeConfigurations = [SELECT Id, buildertek__Hide_Global_Margin__c, buildertek__Hide_Global_Markup__c 
+                FROM buildertek__Admin_Interface_Node_Configuration__c 
+                WHERE Name = 'Budget Configuration'];
 
             // Boolean checkSingleQLine = adminInterfaceNodeConfigurations.buildertek__Remove_Single_Quote_Line_Option__c ;
             // Boolean checkButtonMargin = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Margin__c;
             // Boolean checkButtonMarkup = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c;
 
-            ad.checkSingleQLine = adminInterfaceNodeConfigurations.buildertek__Remove_Single_Quote_Line_Option__c;
+            // ad.checkSingleQLine = adminInterfaceNodeConfigurations.buildertek__Remove_Single_Quote_Line_Option__c;
             ad.checkButtonMargin = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Margin__c;
             ad.checkButtonMarkup = adminInterfaceNodeConfigurations.buildertek__Hide_Global_Markup__c;
 
@@ -193,6 +193,45 @@ public without sharing class BudgetPage {
             poData = null;
         }
         return poData;
+    }
+
+    // @AuraEnabled
+    // public static string addGlobalMargin(Id budgetId, Decimal margin) {
+    //     try{
+    //         List<buildertek__Budget_Item__c> budgetItemList = [SELECT Id, Name, buildertek__Markup__c  FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c = :budgetId];
+    //         for(buildertek__Budget_Item__c budgetItem : budgetItemList){
+    //             if(budgetItem.buildertek__Markup__c == null || budgetItem.buildertek__Markup__c == 0 ){
+    //                 budgetItem.buildertek__Markup__c = margin;
+    //             }
+    //         }
+
+    //         update budgetItemList;
+    //         return 'Success';
+    //     } catch(Exception ex){
+    //         System.debug('Error: ' + ex.getMessage());
+    //         BT_ExceptionHandler.Store_Exception(ex);
+    //         return ex.getMessage();
+    //     }
+    // }
+
+
+    @AuraEnabled
+    public static string addGlobalMarkup(Id budgetId, Decimal markup) {
+        try{
+            List<buildertek__Budget_Item__c> budgetItemList = [SELECT Id, Name, buildertek__Markup__c  FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c = :budgetId];
+            for(buildertek__Budget_Item__c budgetItem : budgetItemList){
+                if(budgetItem.buildertek__Markup__c == null || budgetItem.buildertek__Markup__c == 0 ){
+                    budgetItem.buildertek__Markup__c = markup;
+                }
+            }
+
+            update budgetItemList;
+            return 'Success';
+        } catch(Exception ex){
+            System.debug('Error: ' + ex.getMessage());
+            BT_ExceptionHandler.Store_Exception(ex);
+            return ex.getMessage();
+        }
     }
 
     public class allData{
