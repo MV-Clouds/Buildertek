@@ -91,6 +91,10 @@ public with sharing class New_PO_ComponentController{
         try {
             System.debug('In save method');
             buildertek__Purchase_Order__c POInsert = (buildertek__Purchase_Order__c)JSON.deserialize(data, buildertek__Purchase_Order__c.class);
+            if (POInsert.buildertek__Vendor__c != null){
+                Account vendor = [SELECT Id, buildertek__Payment_Terms__c FROM Account WHERE Id = :POInsert.buildertek__Vendor__c];
+                POInsert.buildertek__Terms__c = vendor.buildertek__Payment_Terms__c;
+            }
             if (POInsert.buildertek__Type__c == null) {
                 POInsert.buildertek__Type__c = 'Standard';
             }
