@@ -1,0 +1,61 @@
+<aura:component controller="MultiSelectLookupController">
+
+	<!-- Attributes that can be set while component calling-->
+    <aura:attribute name="objectName" 		type="string" default="" required="true" />
+    <aura:attribute name="containerForExtraId1" 		type="string" default="" />
+    <aura:attribute name="containerForExtraId2" 		type="string" default="" />
+    <aura:attribute name="fieldName" 		type="string" default="" required="true" />
+    <aura:attribute name="selectedRecords" 	type="List"   default="[]" description="selected Records Id Array" />
+    <aura:attribute name="recordCount" 		type="string" default="5" description="Records visible at once"/>
+    <aura:attribute name="label" 			type="string" default="" description="Label will be displayed above input Box" />
+    <aura:attribute name="placeholder" 		type="string" default="Search..." description="placeholder for input Box" />
+    <aura:attribute name="disabled" 		type="Boolean" default="false" description="To disable the combobox"/>
+    <aura:attribute name="iconName" 		type="string" default="standard:drafts" description="complete icon name eg. standard:account" />
+
+    <!-- Registered Events for data transportation -->
+    <aura:registerEvent name="multiSelectLookUpEvent" type="c:multiSelectLookUpCompEvent"/>
+
+    <!-- Internal Use Attributes -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute name="message" 		   type="String" access="private" default="" />
+    <aura:attribute name="searchString"    type="string" access="private" default="" description="String to search"/>
+    <aura:attribute name="recordsList" 	   type="List"   access="private" description="List of Records having data" />
+    <aura:attribute name="selectedDataObj" type="List"   access="private" description="Selected Records Object List" />
+
+    <!-- Component Markup -->
+    <div>
+        <p>{!if(!empty(v.label), v.label, '')}</p>
+        <div class="slds-combobox_container">
+            <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-is-open" aura:id="resultsDiv" aria-expanded="true" aria-haspopup="listbox" role="combobox">
+                <div class="slds-input-has-icon slds-input-has-icon_right">
+                    <!-- Icon, Search Bar, Search Icon -->
+                    <lightning:icon class="slds-combobox__input-entity-icon" iconName="{!v.iconName}" size="large" alternativeText="icon"/>
+                    <lightning:input aura:id="inputLookup" class="inputBox" placeholder="{!v.placeholder}" onblur="{!c.blurEvent}" onclick="{!c.showRecords}" disabled="{!v.disabled}" onkeyup="{!c.searchRecords}" value="{!v.searchString}" autoComplete="off" variant="label-hidden" id="combobox-id-1" />
+                    <lightning:icon class="slds-input__icon" iconName="utility:search" size="x-small" alternativeText="search"/> 
+                    <lightning:spinner class="slds-hide" aura:id="Spinner" alternativeText="Loading" size="small" variant="brand"/>
+                </div>
+                <!-- Dropdown List -->
+                <div id="listbox-id-1" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" style="{! 'max-height:' + (8 + (v.recordCount * 40)) + 'px' }">
+                    <ul class="slds-listbox slds-listbox_vertical recordListBox">
+                        <aura:if isTrue="{!empty(v.message)}" >
+                            <!-- To display Drop down List -->
+                            <aura:iteration items="{!v.recordsList}" var="rec" >
+                                <li id="{!rec.value}" class="slds-listbox__item eachItem" onmousedown="{!c.selectItem}">
+                                    <lightning:icon class="{!if(rec.isSelected,'','slds-hide')}" iconName="utility:check" size="x-small" alternativeText="icon" />
+                                    <span class="verticalAlign slds-truncate">{!rec.label}</span>
+                                </li>
+                            </aura:iteration>
+                            <!-- To display Error Message -->
+                            <aura:set attribute="else">
+                                <span class="slds-media slds-listbox__option_entity">{!v.message}</span>
+                            </aura:set>
+                        </aura:if>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <aura:iteration items="{!v.selectedDataObj}" var="data">
+            <lightning:pill class="slds-m-around_xx-small" name="{!data.value}" label="{!data.label}" onremove="{!c.removePill}"/>
+        </aura:iteration>
+	</div>
+</aura:component>

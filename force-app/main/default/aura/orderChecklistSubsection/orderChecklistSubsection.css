@@ -1,2 +1,13 @@
-.THIS {
+.THIS .setUpRows{
+    display: flex;
+    margin: 1rem 2rem;
+    gap: 1rem;
+}
+.THIS .titleForSection{
+    width: 20%;
+    padding: 0.5rem;
+}
+
+.THIS .cmp-section-style{
+    width: 80%;
 }

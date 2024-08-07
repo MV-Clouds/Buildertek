@@ -56,6 +56,9 @@
 
   <lightning:workspaceAPI aura:id="workspace" />
 
+  <aura:handler name="childOrderSubsectionComponentEvent" event="c:compEvent"
+        action="{!c.handleChildOrderSubsectionComponentEvent}"/>
+
   <aura:attribute name="deleterecord" type="string" default="" />
   <aura:attribute name="deleteQuestionId" type="string" default="" />
 
@@ -421,7 +424,7 @@
         </aura:if>
 
         <aura:if isTrue="{!v.showOrderSubsectionModel}"> 
-
+          <c:orderChecklistSubsection checkListId="{!v.configureId}" />
         </aura:if>
 
         <!-- Delete Questions -->

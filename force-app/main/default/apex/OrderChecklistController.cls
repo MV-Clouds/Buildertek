@@ -7,6 +7,7 @@ public with sharing class OrderChecklistController {
             List<buildertek__Checklist_Questions__c> checkListDataList = [SELECT id, buildertek__Checklist_Configuration__r.buildertek__Ordered_Subsection__c, buildertek__Checklist_Configuration__r.buildertek__Ordered_Section__c, buildertek__Questions__r.buildertek__Section__c, buildertek__Questions__r.buildertek__Section__r.Name, buildertek__Questions__r.buildertek__Sub_Section__c, buildertek__Questions__r.buildertek__Sub_Section__r.Name FROM buildertek__Checklist_Questions__c WHERE buildertek__Checklist_Configuration__c =:checkListId AND buildertek__Questions__r.buildertek__Section__c != null ORDER BY buildertek__Questions__r.buildertek__Section__r.Name ASC NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS LAST];
             Set<buildertek__Checklist_Section_Junction__c> sectionRecordSet = new Set<buildertek__Checklist_Section_Junction__c>();
             Map<Id, List<buildertek__Checklist_Section_Junction__c>> subSectionRecordMap = new Map<Id, List<buildertek__Checklist_Section_Junction__c>>();
+            Map<Id, String> sectionIdNampMap = new Map<Id, String>();
             if(checkListDataList.size() > 0){
                 for(buildertek__Checklist_Questions__c queJunction : checkListDataList){
                     buildertek__Checklist_Section_Junction__c sectionObj = new buildertek__Checklist_Section_Junction__c(); 
@@ -21,6 +22,7 @@ public with sharing class OrderChecklistController {
                         subSectionObj.Name = queJunction.buildertek__Questions__r.buildertek__Sub_Section__r.Name;
                         if(!subSectionRecordMap.containsKey(queJunction.buildertek__Questions__r.buildertek__Section__c)){
                             subSectionRecordMap.put(queJunction.buildertek__Questions__r.buildertek__Section__c, new List<buildertek__Checklist_Section_Junction__c>());
+                            sectionIdNampMap.put(queJunction.buildertek__Questions__r.buildertek__Section__c, queJunction.buildertek__Questions__r.buildertek__Section__r.Name);
                         }
                         subSectionRecordMap.get(queJunction.buildertek__Questions__r.buildertek__Section__c).add(subSectionObj);
                     }
@@ -30,6 +32,7 @@ public with sharing class OrderChecklistController {
             }
             sectionSubSectionListContainer.sectionList = new List<buildertek__Checklist_Section_Junction__c>(sectionRecordSet);
             sectionSubSectionListContainer.subSectionMap = subSectionRecordMap;
+            sectionSubSectionListContainer.sectionIdNampMap = sectionIdNampMap;
             sectionSubSectionListContainer.message = 'success';
         } catch (Exception e){    
             BT_ExceptionHandler.Store_Exception(e);
@@ -61,6 +64,9 @@ public with sharing class OrderChecklistController {
 
         @AuraEnabled
         public Map<Id, List<buildertek__Checklist_Section_Junction__c>>subSectionMap;
+
+        @AuraEnabled
+        public Map<Id, String>sectionIdNampMap;
 
         @AuraEnabled
         public String message;
