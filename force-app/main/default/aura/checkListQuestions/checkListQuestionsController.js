@@ -305,206 +305,90 @@
         });
         $A.enqueueAction(action);
     },
-    
-    sendchecklists: function(component,event,helper){
-       
-        
-        var lookup = component.get("v.selectedFieldValue");
-        var ar = lookup.split("--");
-        var lookupfield = ar[0];
-        var iserror = false;
-        var EmailResult;
-        var SelectChecklistval = component.get("v.selectedValue");
-        
-        //if(EmailResult != undefined && EmailResult != null && EmailResult != ""){}
-         
-        if((component.get("v.Email") == undefined || component.get("v.Email") == '') 
-           && (component.get("v.selectedFieldValue") == undefined || component.get("v.selectedFieldValue") == '')
-          && (component.get("v.SelectedContactId") == "" || component.get("v.SelectedContactId") == undefined || component.get("v.SelectedContactId") == null)){ 
-            //alert("hjj");
-            iserror = true;
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "title": "Error!",
-                "message": "Please enter an email address or select an email recipient.",
-                "type":"error"
-            });
-            toastEvent.fire();
-        } else if(component.get("v.selectedFieldValue") != undefined && (component.get("v.selectedFieldValue") != '')){
-            //alert("hai");
-            iserror = true;
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "title": "Error!",
-                "message": "Select a valid email field",
-                "type":"error"
-            });
-            toastEvent.fire();          
-        }else if(!component.get("v.TextField").includes("{URL}")){
-                // alert("hai"+"v.TextField");
-                iserror = true;
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    "title": "Error!",
-                    "message": "Please enter the URL text in email body",
-                    "type":"error"
-                });
-                toastEvent.fire();   
-            }else if(component.get("v.TextField") == undefined || component.get("v.TextField") == '' || component.get("v.TextField") == null ){
-                    // alert("hai");
-                    // alert("hai"+"v.TextField");
-                    iserror = true;
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "message": "Please enter email body",
-                        "type":"error"
-                    });
-                    toastEvent.fire();   
-                }else if(SelectChecklistval == undefined || SelectChecklistval == '' || SelectChecklistval == null ){
-                    iserror = true;
-                    var toastEvent = $A.get("e.force:showToast");
-                    toastEvent.setParams({
-                        "title": "Error!",
-                        "message": "Please Select Checklist",
-                        "type":"error"
-                    });
-                    toastEvent.fire();   
-                }
-        else if (lookupfield.includes(">")){
-            iserror = true;
-            var toastEvent = $A.get("e.force:showToast");
-            toastEvent.setParams({
-                "title": "Error!",
-                "message": "Please select a valid email field from Select Field",
-                "type":"error"
-            });
-            toastEvent.fire();
-        }
-        
-        if(iserror == false){
-            /*alert(component.get("v.SelectedContactId"));
-            alert(component.get("v.SelectedContactEmail"));*/
-            console.log(component.get("v.SelectedContactId"));
-            console.log(component.get("v.SelectedContactEmail"));
-            var action =component.get("c.validateEmail");
-            action.setParams({
-                "isparent" : component.get("v.IsParent"),
-                "recordId" : component.get("v.recordId"),
-                "FieldName" : lookupfield,
-                "parentObj" : component.get("v.SelectedparentObject"),
-            });
-            action.setCallback(this,function(a){
-               // alert(a.getState());
-               // alert(a.getReturnValue());
-                if(a.getState()==='SUCCESS'){
-                   
-                    var EmailResult = a.getReturnValue();
-                   
-                   if((component.get("v.Email") == null || component.get("v.Email") == undefined || component.get("v.Email") == '') && (EmailResult == undefined || EmailResult == null || EmailResult == "") && (component.get("v.SelectedContactId") == null || component.get("v.SelectedContactId") == "") ){ 
-                        
-                         var toastEvent = $A.get("e.force:showToast");
-                            toastEvent.setParams({
-                                "title": "Error!",
-                                "message": "Please enter an email address or select an email recipient.",
-                                "type":"error"
-                            });
-                            toastEvent.fire();
-                    } else if(component.get("v.SelectedContactEmail") == null 
-                                && component.get("v.SelectedContactId") != null){
 
-                           var toastEvent = $A.get("e.force:showToast");
-                            toastEvent.setParams({
-                                "title": "Error!",
-                                "message": "The selected contact doesn't have email recipient. Please add and try again.",
-                                "type":"error"
-                            });
-                            toastEvent.fire();
-                       
-                    }
-                    else{
-                      // alert("call");
-                        component.set("v.Spinner",true);
-                        var Parenttrue = component.get("v.IsParent");
-                        var apiname = component.get("v.selectedFieldValue");
-                        var myArr = apiname.split("--");
-                        var recId = component.get("v.selectedValue");
-                        var action =component.get("c.sendchecklist");
-                        var fieldName = myArr[0];
-                      // alert(fieldName);
-                        //alert(component.get("v.SelectedparentObject"));
-                        //alert(Parenttrue);
-                        action.setParams({
-                            "checklistId" : recId,
-                            "recordId" : component.get("v.recordId"),
-                            "FieldName" : fieldName,
-                            "Email": component.get("v.Email"),
-                            "isparent" : Parenttrue,
-                            "parentObj" : component.get("v.SelectedparentObject"),
-                            "recipient" : component.get("v.recepientName"),
-                            "text"  : component.get("v.TextField"),
-                            "Url" : component.get("v.Url"),
-                            "subject":component.get("v.subject"),
-                            "contactEmail" : component.get("v.SelectedContactEmail"),
-                            "selectCheckListName" : component.get("v.checklistName"),
-                            "contactId" : component.get("v.SelectedContactId"),
-                        });
-                        action.setCallback(this,function(a){
-                            component.set("v.Spinner",false);
-                            
-                            if(a.getState()==='SUCCESS'){
-                                var result = a.getReturnValue();   
-                                if(result == 'Success'){
-                                    
-                                    var toastEvent = $A.get("e.force:showToast");
-                                    toastEvent.setParams({
-                                        "title": "Success!",
-                                        "message": "Checklist Sent Successfully.",
-                                        "type":"success"
-                                    });
-                                    
-                                    var navEvent = $A.get("e.force:navigateToSObject");
-                                    navEvent.setParams({
-                                        recordId: component.get("v.recordId"),
-                                        slideDevName: "detail"
-                                    });
-                                    navEvent.fire();    
-                                    toastEvent.fire();
-                                    
-                                }else{
-                                    //alert("error"+result);
-                                    var toastEvent = $A.get("e.force:showToast");
-                                    toastEvent.setParams({
-                                        "title": "Error!",
-                                        "message": result,
-                                        "type":"error"
-                                    });
-                                    
-                                    var navEvent = $A.get("e.force:navigateToSObject");
-                                    navEvent.setParams({
-                                        recordId: component.get("v.recordId"),
-                                        slideDevName: "detail"
-                                    });
-                                    navEvent.fire();
-                                    toastEvent.fire();
-                                }
-                            }
-                        });
-                        $A.enqueueAction(action);
-                        
-                    }
-                }  
-            });
-            $A.enqueueAction(action);
-            
-            
-            
+    sendchecklists: function (component, event, helper) {
+        var isError = false;
+        var SelectChecklistval = component.get("v.selectedValue");
+        var selectedContactJSON = component.get("v.selectedToContact");
+        console.log(`selectedContactJSON: ${JSON.stringify(selectedContactJSON)}`);
+
+        // Check for missing {URL} in the email body
+        if (!component.get("v.TextField").includes("{URL}")) {
+            isError = true;
+            helper.showToast("Error!", "Please enter the URL text in email body", "error");
         }
-        
-        
-        
+        // Check if email body is empty
+        else if (!component.get("v.TextField")) {
+            isError = true;
+            helper.showToast("Error!", "Please enter email body", "error");
+        }
+        // Check if a checklist is selected
+        else if (!SelectChecklistval) {
+            isError = true;
+            helper.showToast("Error!", "Please Select Checklist", "error");
+        }
+        // Check if any contact is selected
+        else if (!selectedContactJSON || selectedContactJSON.length === 0) {
+            isError = true;
+            helper.showToast("Error!", "Please Select Contact", "error");
+        }
+        // Check for contacts without email
+        else {
+            var contactsWithoutEmail = [];
+
+            selectedContactJSON.forEach(contact => {
+                if (!contact.Email) {
+                    contactsWithoutEmail.push(contact.Name);
+                }
+            });
+
+            if (contactsWithoutEmail.length > 0) {
+                isError = true;
+                var names = contactsWithoutEmail.join(', ');
+                var errorMessage = 'The following contact(s) do not have an email associated with them: ' + names;
+                helper.showToast('Error', errorMessage, 'error');
+            }
+        }
+
+        if (!isError) {
+            component.set("v.Spinner", true);
+            var action = component.get("c.sendChecklistViaEmail");
+            action.setParams({
+                "checklistId": SelectChecklistval,
+                "recordId": component.get("v.recordId"),
+                "text": component.get("v.TextField"),
+                "subject": component.get("v.subject"),
+                "selectCheckListName": component.get("v.checklistName"),
+                "contactData": JSON.stringify(selectedContactJSON)
+            });
+
+            action.setCallback(this, function (response) {
+                var state = response.getState();
+                if (state === "SUCCESS") {
+                    var result = response.getReturnValue();
+                    console.log(`result: ${result}`);
+                    helper.showToast("Success!", "Email sent successfully", "success");
+                } else if (state === "ERROR") {
+                    var errors = response.getError();
+                    var errorMessage = "Unknown error";
+                    if (errors && Array.isArray(errors) && errors.length > 0) {
+                        errorMessage = errors[0].message;
+                    }
+                    console.log(`Error: ${errorMessage}`);
+                    helper.showToast("Error!", errorMessage, "error");
+                }
+                var navEvent = $A.get("e.force:navigateToSObject");
+                navEvent.setParams({
+                    recordId: component.get("v.recordId"),
+                    slideDevName: "detail"
+                });
+                navEvent.fire();
+                component.set("v.Spinner", false);
+            });
+
+            $A.enqueueAction(action);
+        }
     },
-    
     cancel: function(component,event,helper){
         
         component.set("v.IssendEmailScreen",false);
@@ -703,91 +587,105 @@
         
         
     },
-        handleClick : function(component,event,helper){
-     
-            debugger;
-     component.set("v.isButtonDisabled",false);
-        var Questions = component.get("v.Questions");  
-            console.log("Questions : ",JSON.stringify(Questions))
-            console.log("Length : ",Questions.length)
-        component.set("v.Spinner",true);
-            
-            var today = new Date();
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = today.getFullYear();
-            
-            today = dd + '/' + mm + '/' + yyyy;
-            var nameDate = component.get("v.DynamiccheckListName");
-            if(nameDate != undefined){
-            var nameDate = nameDate+'-'+today;
-            }
-            else{
-                nameDate = today;
-            }
-            component.set("v.DynamiccheckListName",nameDate)
-        var action =component.get("c.createchecklistquestion");
-         action.setParams({
-             "QuestionString" : JSON.stringify(Questions),
-             "recordId" : component.get("v.recordId"),
-             "checkName" : nameDate
-             
+    handleClick: function (component, event, helper) {
+        component.set("v.isButtonDisabled", false);
+        var Questions = component.get("v.Questions");
+        let finaleArray = [];
+        Questions.forEach(innerRow => {
+            innerRow.subsectionWrapperList.forEach(row => {
+                finaleArray = finaleArray.concat(row.QuestionsInnerclasslist);
+            })
+            innerRow.QuestionsInnerclasslist = finaleArray;
+            finaleArray = [];
         });
-        
-         action.setCallback(this,function(a){
-            
-            if(a.getState()==='SUCCESS'){
+        console.log("Questions : ", JSON.stringify(Questions))
+        component.set("v.Spinner", true);
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+
+        today = dd + '/' + mm + '/' + yyyy;
+        var nameDate = component.get("v.DynamiccheckListName");
+        if (nameDate != undefined) {
+            var nameDate = nameDate + '-' + today;
+        }
+        else {
+            nameDate = today;
+        }
+        component.set("v.DynamiccheckListName", nameDate)
+        var action = component.get("c.createchecklistquestion");
+        action.setParams({
+            "QuestionString": JSON.stringify(Questions),
+            "recordId": component.get("v.recordId"),
+            "checkName": nameDate
+
+        });
+
+        action.setCallback(this, function (a) {
+
+            if (a.getState() === 'SUCCESS') {
                 var result = a.getReturnValue();
-               //alert( JSON.stringify(result));
-                if(result == 'Success'){
-                    component.set("v.Spinner",false);
+                //alert( JSON.stringify(result));
+                if (result == 'Success') {
+                    component.set("v.Spinner", false);
                     var toastEvent = $A.get("e.force:showToast");
                     toastEvent.setParams({
                         "title": "Success!",
-                        "type" : "success",
+                        "type": "success",
                         "message": "Checklist Submitted Successfully."
                     });
                     toastEvent.fire();
-                
+
                     /*  Call the apex for email confirmation */
-                   /*    var action2 =component.get("c.sendEmail");
-                  
-                     action2.setCallback(this,function(b){
-                     
-                         if(b.getState() === "SUCCESS"){
-                             
-                             alert(b.getReturnValue());
-                         }
-                         
-                         
-                     });
-                    $A.enqueueAction(action2); */
-                    
+                    /*    var action2 =component.get("c.sendEmail");
+                   
+                      action2.setCallback(this,function(b){
+                      
+                          if(b.getState() === "SUCCESS"){
+                              
+                              alert(b.getReturnValue());
+                          }
+                          
+                          
+                      });
+                     $A.enqueueAction(action2); */
+
                     /* End of Email action */
                     var ac1 = component.get("c.closeEditPopup1")
-                    $A.enqueueAction(ac1) 
-                   // component.set("v.SuccessMessage",true);
+                    $A.enqueueAction(ac1)
+                    // component.set("v.SuccessMessage",true);
+                } else {
+                    component.set("v.Spinner", false);
+                    var toastEvent = $A.get("e.force:showToast");
+                    toastEvent.setParams({
+                        "title": "Error!",
+                        "type": "error",
+                        "message": "Error" + result
+                    });
+                    toastEvent.fire();
                 }
             }
         });
-            if(component.get("v.DynamiccheckListName") != undefined && component.get("v.DynamiccheckListName") != null && component.get("v.DynamiccheckListName") != ""){
-                $A.enqueueAction(action);
-            }else{
-                 component.set("v.isButtonDisabled",true);
-                component.set("v.Spinner",false);
-                var toastEvent = $A.get("e.force:showToast");
-                toastEvent.setParams({
-                    title : 'Error',
-                    message:'Checklist name should not be null',
-                    duration:' 5000',
-                    key: 'info_alt',
-                    type: 'error',
-                    mode: 'pester'
-                });
-                toastEvent.fire();
-            } 
-          //$A.enqueueAction(action);  
-        
+        if (component.get("v.DynamiccheckListName") != undefined && component.get("v.DynamiccheckListName") != null && component.get("v.DynamiccheckListName") != "") {
+            $A.enqueueAction(action);
+        } else {
+            component.set("v.isButtonDisabled", true);
+            component.set("v.Spinner", false);
+            var toastEvent = $A.get("e.force:showToast");
+            toastEvent.setParams({
+                title: 'Error',
+                message: 'Checklist name should not be null',
+                duration: ' 5000',
+                key: 'info_alt',
+                type: 'error',
+                mode: 'pester'
+            });
+            toastEvent.fire();
+        }
+        //$A.enqueueAction(action);  
+
     },
     closeEditPopup1 : function(component, event, helper) {
         var navEvt = $A.get("e.force:navigateToSObject");
