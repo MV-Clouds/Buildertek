@@ -139,7 +139,7 @@ public without sharing class BudgetContractCreateHelper {
         //List<buildertek__Quote__c> allQuote = getQuotesWithLines(QuoteId);
         List<buildertek__Quote__c> allQuote = [SELECT Id, Name, buildertek__Description__c, buildertek__Quote_Amount__c, buildertek__Status__c, buildertek__Project__c, 
                         buildertek__Auto_Number__c, buildertek__Primary__c, buildertek__Markup__c, buildertek__Shipping_and_Handling__c,
-                        buildertek__Profit_Margin__c, buildertek__Payment_Terms__c, buildertek__Discount__c, buildertek__Tax__c,
+                        buildertek__Profit_Margin__c, buildertek__Payment_Terms__c, buildertek__Discount__c, buildertek__Tax__c, buildertek__Additional_Fees__c,
                         buildertek__Expires_On__c, buildertek__Sales_Rep__c, buildertek__Primary_Contact__c, buildertek__Start_Date__c, 
                         buildertek__Bill_To_Name__c, buildertek__Bill_To_Street__c, buildertek__Bill_To_City__c, buildertek__Bill_To_State__c, 
                         buildertek__Bill_To_Country__c, buildertek__Ship_To_Name__c, buildertek__Ship_To_Street__c, buildertek__Ship_To_City__c, 
@@ -154,7 +154,8 @@ public without sharing class BudgetContractCreateHelper {
                 new buildertek__Budget__c(   
                     Name = curQuote.Name,
                     buildertek__Project__c = curQuote.buildertek__Project__c,
-                    buildertek__BT_Quote__c = curQuote.Id
+                    buildertek__BT_Quote__c = curQuote.Id,
+                    buildertek__Additional_Fees__c = curQuote.buildertek__Additional_Fees__c
                 )
             );
             quoteIdsList.add(curQuote.Id);
@@ -202,12 +203,14 @@ public without sharing class BudgetContractCreateHelper {
                 buildertek__Quantity__c = currQuoteLine.buildertek__Quantity__c,
                 buildertek__Unit_Price__c = currQuoteLine.buildertek__Unit_Cost__c,
                 buildertek__Sort_Id__c = currQuoteLine.buildertek__Priority__c,
+                buildertek__Markup__c = currQuoteLine.buildertek__Markup__c,
                 buildertek__Category__c = currQuoteLine.buildertek__Category__c,                                
                 buildertek__Sales_Price__c = currQuoteLine.buildertek__Net_Unit__c,  // ===> Changes for Open Issue - 1 - Quote - Create Budget button is still not correct. 23/08/23 ....
                 buildertek__Tax__c = currQuoteLine.buildertek__Tax__c,
                 buildertek__UOM__c = currQuoteLine.buildertek__UOM__c,
                 buildertek__Budget_Line_Group__c = currQuoteLine.buildertek__Grouping__c,
-                buildertek__Group__c = groupMap.get(currQuoteLine.buildertek__Grouping__r.Name)
+                buildertek__Group__c = groupMap.get(currQuoteLine.buildertek__Grouping__r.Name),
+                buildertek__BT_Quote_Line__c = currQuoteLine.Id
             ));
             if(currQuoteLine.buildertek__Purchase_Order__c!=null){
                 poIds.add(currQuoteLine.buildertek__Purchase_Order__c);    
@@ -587,7 +590,7 @@ public without sharing class BudgetContractCreateHelper {
                                     buildertek__Category__c, 
                                     buildertek__Grouping__r.Name
                                     FROM buildertek__Quote_Item__c
-                                    WHERE buildertek__Quote__c IN: quoteIds  And buildertek__Status__c != 'Reject'];      
+                                    WHERE buildertek__Quote__c IN: quoteIds  And buildertek__Status__c != 'Reject' AND buildertek__Not_Customer_Visible__c != true];      
         
         
         return quoteItemList;
