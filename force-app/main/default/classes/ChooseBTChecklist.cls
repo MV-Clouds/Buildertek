@@ -41,7 +41,7 @@ public class ChooseBTChecklist {
   @AuraEnabled
     public static list<buildertek__Questions__c> getQuestion(list<String> QuestionIds){
       system.debug('QuestionIds.......'+QuestionIds);
-      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name from buildertek__Questions__c WHERE Id IN: QuestionIds ORDER BY buildertek__Section__r.Name nulls last];
+      list<buildertek__Questions__c> Questionlist = [Select Id, buildertek__Customize__c, buildertek__Options__c, buildertek__Question_Type__c, buildertek__Section__c, buildertek__Section__r.Name, buildertek__Sub_Section__c, buildertek__Sub_Section__r.Name from buildertek__Questions__c WHERE Id IN: QuestionIds ORDER BY buildertek__Section__r.Name, buildertek__Sub_Section__r.Name nulls last];
       system.debug(Questionlist);
       return Questionlist;
     }
@@ -164,45 +164,54 @@ public class ChooseBTChecklist {
     }
 
   @AuraEnabled
-    public static string ChecklistConfiguration(List<string> QuestionIds,string Name,string SelectedObject,string recordId){
-      try{
-        system.debug(' SelectedObject ' + SelectedObject);
+  public static string ChecklistConfiguration(List<String> QuestionIds, String Name, String SelectedObject, String recordId) {
+    try {
         createlookup(SelectedObject);
         List<buildertek__Checklist_Questions__c> bcqList = new List<buildertek__Checklist_Questions__c>();
         buildertek__Checklist_Configuration__c bcc = new buildertek__Checklist_Configuration__c();
         bcc.Name = Name;
         bcc.buildertek__Object_Name__c = SelectedObject;
-        if(recordId != null && recordId !=''){
-          bcc.Id = Id.valueOf(recordId);
-        }
-        upsert bcc;
-        if(recordId != null && recordId !=''){
-          list<buildertek__Checklist_Questions__c> questionlist = [select id from buildertek__Checklist_Questions__c where buildertek__Checklist_Configuration__c=: bcc.Id];
-          delete questionlist;
-        }
-        //List<buildertek__Questions__c> questionsList = [SELECT Id,];
 
-
-
-
-        for(string id:QuestionIds){
-          system.debug(id);
-          buildertek__Checklist_Questions__c bcq = new buildertek__Checklist_Questions__c();
-          bcq.buildertek__Checklist_Configuration__c   = bcc.id;
-          bcq.buildertek__Questions__c = id;
-          bcqList.add(bcq);
-        }
-        if(!bcqList.isEmpty()){
-          insert bcqList;
+        if (recordId != null && recordId != '') {
+            bcc.Id = Id.valueOf(recordId);
         }
 
+        if (recordId != null && recordId != '') {
+            List<buildertek__Checklist_Questions__c> existingQuestions = [SELECT buildertek__Questions__c FROM buildertek__Checklist_Questions__c WHERE buildertek__Checklist_Configuration__c = :bcc.Id];
+            
+            Set<String> existingQuestionIds = new Set<String>();
+            for (buildertek__Checklist_Questions__c q : existingQuestions) {
+                existingQuestionIds.add(q.buildertek__Questions__c);
+            }
+            
+            List<buildertek__Checklist_Questions__c> questionListToDelete = [SELECT Id FROM buildertek__Checklist_Questions__c WHERE buildertek__Checklist_Configuration__c = :bcc.Id AND buildertek__Questions__c NOT IN :QuestionIds];
+            
+            if (questionListToDelete.size() > 0) {              
+              bcc.buildertek__Ordered_Section__c = null;
+              bcc.buildertek__Ordered_Subsection__c = null;
+            }
+            upsert bcc;
+            delete questionListToDelete;
+            for (String questionId : QuestionIds) {
+                if (!existingQuestionIds.contains(questionId)) {
+                    buildertek__Checklist_Questions__c bcq = new buildertek__Checklist_Questions__c();
+                    bcq.buildertek__Checklist_Configuration__c = bcc.id;
+                    bcq.buildertek__Questions__c = questionId;
+                    bcqList.add(bcq);
+                }
+            }
+        }
+
+        if (!bcqList.isEmpty()) {
+            insert bcqList;
+        }
 
         return 'Success';
-      }
-      catch(Exception e){
+    } catch (Exception e) {
         return e.getMessage();
-      }  
     }
+  }
+
   @future(callout=true)
     public static void createlookup(string objectname){
       system.debug('@@@@@ create lookup called');

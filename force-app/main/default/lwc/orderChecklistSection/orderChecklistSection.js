@@ -1,7 +1,6 @@
 import { LightningElement, api, track } from 'lwc';
 import getChecklistSectionSubsection from '@salesforce/apex/OrderChecklistController.getChecklistSectionSubsection';
 import saveSectionOrderOnServer from '@salesforce/apex/OrderChecklistController.updateCheckListForSectionOrder';
-import saveSubsectionOrderOnServer from '@salesforce/apex/OrderChecklistController.updateCheckListForSubsectionOrder';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class OrderChecklistSection extends LightningElement {
@@ -27,16 +26,12 @@ export default class OrderChecklistSection extends LightningElement {
 
     doOperationForSection(result) {
         let orderedSection = result.storedSectionOrder ? JSON.parse(result.storedSectionOrder) : {};
+        this.orderedSectionList = Object.keys(orderedSection);
         console.log('ordered section ', orderedSection);
         result.sectionList.forEach((section, index) => {
             //* create data for the lightning-dual-listbox
             section['label'] = section.Name;
             section['value'] = section.Name;
-
-            //* push data into list for value attribute in lightning-dual-listbox
-            if (orderedSection[section.Name]) {
-                this.orderedSectionList.push(section.Name);
-            }
         });
         this.presentSections = result.sectionList;
     }
@@ -59,7 +54,10 @@ export default class OrderChecklistSection extends LightningElement {
     saveOrder() {
         console.log('orderedSectionList ', JSON.parse(JSON.stringify(this.orderedSectionList)));
         saveSectionOrderOnServer({ checkListId: this.checkListId, jsonSectionOrderedString: this.jsonStringForSection })
-            .then(this.cancelPopup())
+            .then(result => {
+                this.showToast('Success', 'Order For Section Updated.', 'success');
+                this.cancelPopup();
+            })
             .catch(error => {
                 let { errorMessage, errorObject } = this.returnErrorMsg(error);
                 this.showToast('Error', errorMessage, 'error');

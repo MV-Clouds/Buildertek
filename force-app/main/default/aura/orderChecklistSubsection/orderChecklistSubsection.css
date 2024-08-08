@@ -11,3 +11,16 @@
 .THIS .cmp-section-style{
     width: 80%;
 }
+
+.THIS .mainBody{
+    min-height: 20vh;
+
+}
+
+.THIS .whenNoRecords{
+    display: flex;
+    align-items: center;
+    height: 18vh;
+    justify-content: center;
+    font-size: 1rem;
+}
