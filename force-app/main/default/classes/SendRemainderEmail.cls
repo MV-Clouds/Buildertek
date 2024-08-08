@@ -15,11 +15,13 @@ public with sharing class SendRemainderEmail {
         String baseUrl = Url.getOrgDomainURL().toExternalForm();
 
         List<Messaging.SingleEmailMessage> emails = new List<Messaging.SingleEmailMessage>();
+        EmailTemplate tem = [SELECT Id, DeveloperName from EmailTemplate where DeveloperName  = 'TimeSheet_Remainder' limit 1];
         for(buildertek__BT_Time_Sheet__c timeSheet : timeSheetList) {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
             mail.setToAddresses(new List<String>{timeSheet.buildertek__Contact__r.Email});
-            mail.setSubject('Time Sheet Reminder');
-            mail.setHtmlBody('Hello ' + timeSheet.buildertek__Contact__r.Name + ',<br><br> This is a reminder to review and submit your time sheet for the week.  Please click <a href="' + baseUrl + '/' + timeSheet.Id + '">here</a> to update your time sheet.');
+            mail.setTemplateId(tem.Id);
+            mail.setTargetObjectId(timeSheet.buildertek__Contact__c);
+            mail.setWhatId(timeSheet.Id);
             emails.add(mail);
         }
 

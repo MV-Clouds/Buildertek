@@ -72,13 +72,15 @@ public without sharing class CreateTimeSheetRecs {
     private static void sendSuccessEmails(List<buildertek__BT_Time_Sheet__c> successTimeSheetList, Map<Id, ContactInfo> contactInfoMap, String baseUrl) {
         if(!successTimeSheetList.isEmpty()) {
             List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+            EmailTemplate tem = [SELECT Id, DeveloperName from EmailTemplate where DeveloperName  = 'TimeSheet_Created' limit 1];
             for(buildertek__BT_Time_Sheet__c timeSheet : successTimeSheetList) {
                 if(contactInfoMap.containsKey(timeSheet.buildertek__Contact__c)) {
                     ContactInfo info = contactInfoMap.get(timeSheet.buildertek__Contact__c);
                     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
                     mail.setToAddresses(new String[] {info.email});
-                    mail.setSubject('Time Sheet record created for ' + info.name);
-                    mail.setHtmlBody('Hello ' + info.name + ',<br><br>Time Sheet record created for you. here is the link to the record <a href="' + baseUrl + '/' + timeSheet.Id + '">Click here</a>');
+                    mail.setTemplateId(tem.Id);
+                    mail.setTargetObjectId(timeSheet.buildertek__Contact__c);
+                    mail.setWhatId(timeSheet.Id);
                     mails.add(mail);
                 }
             }
