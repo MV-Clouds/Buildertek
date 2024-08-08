@@ -139,7 +139,7 @@ public without sharing class BudgetContractCreateHelper {
         //List<buildertek__Quote__c> allQuote = getQuotesWithLines(QuoteId);
         List<buildertek__Quote__c> allQuote = [SELECT Id, Name, buildertek__Description__c, buildertek__Quote_Amount__c, buildertek__Status__c, buildertek__Project__c, 
                         buildertek__Auto_Number__c, buildertek__Primary__c, buildertek__Markup__c, buildertek__Shipping_and_Handling__c,
-                        buildertek__Profit_Margin__c, buildertek__Payment_Terms__c, buildertek__Discount__c, buildertek__Tax__c,
+                        buildertek__Profit_Margin__c, buildertek__Payment_Terms__c, buildertek__Discount__c, buildertek__Tax__c, buildertek__Additional_Fees__c,
                         buildertek__Expires_On__c, buildertek__Sales_Rep__c, buildertek__Primary_Contact__c, buildertek__Start_Date__c, 
                         buildertek__Bill_To_Name__c, buildertek__Bill_To_Street__c, buildertek__Bill_To_City__c, buildertek__Bill_To_State__c, 
                         buildertek__Bill_To_Country__c, buildertek__Ship_To_Name__c, buildertek__Ship_To_Street__c, buildertek__Ship_To_City__c, 
@@ -154,7 +154,8 @@ public without sharing class BudgetContractCreateHelper {
                 new buildertek__Budget__c(   
                     Name = curQuote.Name,
                     buildertek__Project__c = curQuote.buildertek__Project__c,
-                    buildertek__BT_Quote__c = curQuote.Id
+                    buildertek__BT_Quote__c = curQuote.Id,
+                    buildertek__Additional_Fees__c = curQuote.buildertek__Additional_Fees__c
                 )
             );
             quoteIdsList.add(curQuote.Id);

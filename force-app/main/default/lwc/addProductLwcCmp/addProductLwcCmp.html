@@ -19,9 +19,9 @@
             <div class="slds-modal__content slds-p-around_medium myCls" id="modal-content-id-1">
                 <template lwc:if={isComboScreen}>
                     <div>
-                        <lightning-combobox name="picker" label="Select a Filter" value={pickerValue}
+                        <lightning-select name="picker" label="Select a Filter" value={pickerValue}
                             placeholder="Select Option" options={options}
-                            onchange={handleChangeInPicker}></lightning-combobox>
+                            onchange={handleChangeInPicker}></lightning-select>
                     </div>
                 </template>
 
@@ -34,8 +34,9 @@
                                     onchange={handlePricebookChange}></lightning-combobox>
                             </div>
                             <div class="search-box-child">
-                                <lightning-combobox name="productFamily picker" label="Product Family" value={productFamilyValue}
-                                    placeholder="Select Product Family" options={productFamilyOptions}
+                                <lightning-combobox name="productFamily picker" label="Product Family"
+                                    value={productFamilyValue} placeholder="Select Product Family"
+                                    options={productFamilyOptions}
                                     onchange={handleProductFamilyChange}></lightning-combobox>
                             </div>
                             <div class="search-box-child" onchange={handleKeyUp}>
@@ -63,7 +64,8 @@
                     </div>
 
                     <div class="vendor-child-class-1">
-                        <lightning-datatable key-field="id-2" data={vendorList} columns={columnsForVendorList} onrowselection={handleRowSelection}>
+                        <lightning-datatable key-field="id-2" data={vendorList} columns={columnsForVendorList}
+                            onrowselection={handleRowSelection}>
                         </lightning-datatable>
                     </div>
                 </template>
@@ -77,8 +79,9 @@
                                     onchange={handlePricebookChangeForVendor}></lightning-combobox>
                             </div>
                             <div class="search-box-child-vendor">
-                                <lightning-combobox name="productFamily picker" label="Product Family" value={productFamilyValue}
-                                    placeholder="Select Product Family" options={productFamilyOptions}
+                                <lightning-combobox name="productFamily picker" label="Product Family"
+                                    value={productFamilyValue} placeholder="Select Product Family"
+                                    options={productFamilyOptions}
                                     onchange={handleProductFamilyChangeForVendor}></lightning-combobox>
                             </div>
                             <div class="search-box-child-vendor" onchange={handleProductNameSearchForVendor}>
@@ -88,8 +91,8 @@
                         </div>
 
                         <div>
-                            <lightning-datatable key-field="id-2" data={filteredData} columns={columnsForVendorsDataTable}
-                                resize-column-disabled>
+                            <lightning-datatable key-field="id-2" data={filteredData}
+                                columns={columnsForVendorsDataTable} resize-column-disabled>
                             </lightning-datatable>
                         </div>
                     </div>
@@ -101,34 +104,37 @@
                             <table class="slds-table slds-table_bordered slds-table_cell-buffer">
                                 <thead>
                                     <tr class="slds-line-height_reset">
-                                        <th></th>
-                                        <th scope="col" class="slds-wider-column">
+                                        <th style="width: 2%;"></th>
+                                        <th scope="col" style="width: 10%;">
                                             <div class="slds-truncate">Price Book</div>
                                         </th>
-                                        <th scope="col" class="slds-wider-column">
+                                        <th scope="col" style="width: 10%;">
                                             <div class="slds-truncate">Product</div>
                                         </th>
-                                        <th scope="col" class="slds-wider-column">
+                                        <th scope="col" style="width: 15%;">
                                             <div class="slds-truncate">Description</div>
                                         </th>
-                                        <th scope="col" class="slds-wider-column">
+                                        <th scope="col" style="width: 15%;">
                                             <div class="slds-truncate">Phase</div>
                                         </th>
-                                        <th scope="col">
+                                        <th scope="col" style="width: 9%;">
                                             <div class="slds-truncate">Cost Code</div>
                                         </th>
-                                        <th scope="col">
+                                        <th scope="col" style="width: 15%;">
+                                            <div class="slds-truncate">Notes</div>
+                                        </th>
+                                        <th scope="col" style="width: 5%;">
                                             <div class="slds-truncate">Quantity</div>
                                         </th>
-                                        <th scope="col">
+                                        <th scope="col" style="width: 7%;">
                                             <div class="slds-truncate">Unit Cost</div>
                                         </th>
                                         <template if:true={isShowMargin}>
-                                            <th scope="col">
+                                            <th scope="col" style="width: 6%;">
                                                 <div class="slds-truncate">Margin %</div>
                                             </th>
                                         </template>
-                                        <th scope="col">
+                                        <th scope="col" style="width: 6%;">
                                             <div class="slds-truncate">Markup %</div>
                                         </th>
                                     </tr>
@@ -137,8 +143,9 @@
                                     <template for:each={selectedQuoteLineRecords} for:item="quote">
                                         <tr key={quote.Id}>
                                             <td style="padding-top: 17px !important;">
-                                                <span data-id={quote.Id}  onclick={removeQuoteLine}>
-                                                    <lightning-icon icon-name='utility:delete' alternative-text='delete' size='x-small' title='delete'></lightning-icon>
+                                                <span data-id={quote.Id} onclick={removeQuoteLine}>
+                                                    <lightning-icon icon-name='utility:delete' alternative-text='delete'
+                                                        size='x-small' title='delete'></lightning-icon>
                                                 </span>
                                             </td>
                                             <td>
@@ -148,8 +155,8 @@
                                             </td>
                                             <td>
                                                 <lightning-input type="text" label="" value={quote.Name}
-                                                    onchange={handleInputChange} data-id={quote.Id}
-                                                    data-field="Name" disabled></lightning-input>
+                                                    onchange={handleInputChange} data-id={quote.Id} data-field="Name"
+                                                    disabled></lightning-input>
                                             </td>
                                             <td>
                                                 <lightning-input type="text" label=""
@@ -165,36 +172,41 @@
                                                     onselect={handleSelected}></c-lookup>
                                             </td>
                                             <td>
-                                                <lightning-input type="text" label="" value={quote.buildertek__Cost_Code__c}
-                                                onchange={handleInputChange} data-id={quote.Id}
-                                                data-field="buildertek__Cost_Code__c" disabled></lightning-input>
+                                                <lightning-input type="text" label=""
+                                                    value={quote.buildertek__Cost_Code__c} onchange={handleInputChange}
+                                                    data-id={quote.Id} data-field="buildertek__Cost_Code__c"
+                                                    disabled></lightning-input>
                                             </td>
                                             <td>
-                                                <lightning-input type="number" label=""
+                                                <lightning-input class="notes-field" type="text" label=""
+                                                    value={quote.buildertek__Notes__c} onchange={handleInputChange}
+                                                    data-id={quote.Id}
+                                                    data-field="buildertek__Notes__c"></lightning-input>
+                                            </td>
+                                            <td>
+                                                <lightning-input class="numeric-field" type="number" label=""
                                                     value={quote.buildertek__Quantity__c} onchange={handleInputChange}
                                                     data-id={quote.Id}
                                                     data-field="buildertek__Quantity__c"></lightning-input>
                                             </td>
                                             <td>
-                                                <lightning-input type="number" label=""
+                                                <lightning-input class="numeric-field" type="number" label=""
                                                     value={quote.buildertek__Unit_Cost__c} formatter="currency"
                                                     onchange={handleInputChange} data-id={quote.Id}
                                                     data-field="buildertek__Unit_Cost__c"></lightning-input>
                                             </td>
                                             <template if:true={isShowMargin}>
                                                 <td>
-                                                    <lightning-input type="number" label=""
+                                                    <lightning-input class="numeric-field" type="number" label=""
                                                         value={quote.buildertek__Margin__c} formatter="percent-fixed"
-                                                        step="0.01" onchange={handleInputChange}
-                                                        data-id={quote.Id}
+                                                        step="0.01" onchange={handleInputChange} data-id={quote.Id}
                                                         data-field="buildertek__Margin__c"></lightning-input>
                                                 </td>
                                             </template>
                                             <td>
-                                                <lightning-input type="number" label=""
+                                                <lightning-input class="numeric-field" type="number" label=""
                                                     value={quote.buildertek__Markup__c} formatter="percent-fixed"
-                                                    step="0.01" onchange={handleInputChange}
-                                                    data-id={quote.Id}
+                                                    step="0.01" onchange={handleInputChange} data-id={quote.Id}
                                                     data-field="buildertek__Markup__c"></lightning-input>
                                             </td>
                                         </tr>
@@ -204,6 +216,7 @@
                         </div>
                     </div>
                 </template>
+
             </div>
             <!-- modal footer start-->
             <footer class="slds-modal__footer">
@@ -212,13 +225,15 @@
                     <button class="slds-button slds-button_neutral" onclick={goBackToPriceBookDatatable}>Back</button>
                 </template>
                 <template if:false={isForVendorFlow}>
-                    <button class="slds-button slds-button_brand" onclick={goToNextScreen} value={btnValue}>{btnName}</button>
+                    <button class="slds-button slds-button_brand" onclick={goToNextScreen}
+                        value={btnValue}>{btnName}</button>
                 </template>
                 <template if:true={isBackForVendor}>
                     <button class="slds-button slds-button_neutral" onclick={goBackToVendorDatatable}>Back</button>
                 </template>
                 <template if:true={isForVendorFlow}>
-                    <button class="slds-button slds-button_brand" onclick={goToNextScreenVendorFlow} value={btnValueVendorFlow}>{btnNameVendorFlow}</button>
+                    <button class="slds-button slds-button_brand" onclick={goToNextScreenVendorFlow}
+                        value={btnValueVendorFlow}>{btnNameVendorFlow}</button>
                 </template>
             </footer>
 

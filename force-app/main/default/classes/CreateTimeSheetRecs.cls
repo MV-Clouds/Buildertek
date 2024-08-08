@@ -52,7 +52,6 @@ public without sharing class CreateTimeSheetRecs {
             timeSheet.buildertek__Contact__c = contact.Id;
             timeSheet.Name = contact.Name + ' ' + Date.today().format() ;
             timeSheet.buildertek__Status__c = 'New';
-            timeSheet.buildertek__Send_Remainder_Email__c = true;
             timeSheetList.add(timeSheet);
         }
 

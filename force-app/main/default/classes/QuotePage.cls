@@ -254,6 +254,28 @@ public without sharing class QuotePage {
         }
     }
 
+    @AuraEnabled
+    public static string updateCustomerVisiblebyLine(String quoteId, List<String> consideredIds, List<String> notConsideredIds) {
+        System.debug('consideredIds: ' + consideredIds);
+        System.debug('notConsideredIds: ' + notConsideredIds);
+        try {
+            List<buildertek__Quote_Item__c> quoteItemList = [SELECT Id, buildertek__Not_Customer_Visible__c, buildertek__Grouping__c FROM buildertek__Quote_Item__c WHERE buildertek__Quote__c = :quoteId];
+            for (buildertek__Quote_Item__c quoteItem : quoteItemList) {
+                if (consideredIds.contains(quoteItem.Id)) {
+                    quoteItem.buildertek__Not_Customer_Visible__c = true;
+                } else if (notConsideredIds.contains(quoteItem.Id)) {
+                    quoteItem.buildertek__Not_Customer_Visible__c = false;
+                }
+            }
+            update quoteItemList;
+            return 'Success';
+        } catch(Exception e) {
+            System.debug('Error: ' + e.getMessage());
+            BT_ExceptionHandler.Store_Exception(e);
+            return 'Error: ' + e.getMessage();
+        }
+    }
+
     public class allData{
 
         @AuraEnabled

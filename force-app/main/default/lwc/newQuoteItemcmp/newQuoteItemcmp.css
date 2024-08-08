@@ -215,3 +215,20 @@
     flex-shrink: 0;
     height: 2.3rem;
 }
+
+.filterModal .slds-modal__container{
+    max-width: 70rem !important;
+    max-height: 50rem !important;
+    width: 80% !important;
+}
+
+.filterInputGroup{
+    display: flex;
+    gap: 2rem;
+    padding-bottom: 1rem;
+    justify-content: flex-start;
+}
+
+.filterInput{
+    width: 30%;
+}

@@ -5,7 +5,8 @@ import deleteBudgetLine from '@salesforce/apex/BudgetPage.deleteBudgetLine';
 import { NavigationMixin } from 'lightning/navigation';
 import saveBL from '@salesforce/apex/BudgetPage.saveBL';
 import deleteSelectedItems from '@salesforce/apex/BudgetDAO.deleteSelectedItems';
-import { RefreshEvent } from 'lightning/refresh';
+import addGlobalMarkup from '@salesforce/apex/BudgetPage.addGlobalMarkup';
+// import addGlobalMargin from '@salesforce/apex/BudgetPage.addGlobalMargin';
 
 export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     isInitalRender = true;
@@ -36,6 +37,10 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
     @track isAddContractorInvoiceTrue = false;
     @track isAddExpenseTrue = false;
     @track isAddPayableInvoiceTrue = false;
+    @track globalMarkup = null;
+    // @track globalMargin = null;
+    @track isMarkup;
+    // @track isMargin;
     @track fields = {
         buildertek__Description__c: '',
         buildertek__Group__c: '',
@@ -78,16 +83,16 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                     color:#0176d3;
                 }
 
-                .lastRowCSS table tr:last-child {
+                .lastRowsCSS table tr:last-child {
                     font-weight: 700;
                 }
 
                 
-                .lastRowCSS table tr:first-child th:nth-child(1) span,
-                .lastRowCSS table tr:last-child td:nth-child(1) span,
-                .lastRowCSS table tr:last-child td:nth-child(3) span,
-                .lastRowCSS table tr:last-child td:nth-child(4) span,
-                .lastRowCSS table tr:last-child td:nth-child(5) span{
+                .lastRowsCSS table tr:first-child th:nth-child(1) span,
+                .lastRowsCSS table tr:last-child td:nth-child(1) span,
+                .lastRowsCSS table tr:last-child td:nth-child(3) span,
+                .lastRowsCSS table tr:last-child td:nth-child(4) span,
+                .lastRowsCSS table tr:last-child td:nth-child(5) span{
                     display: none;
                 }
                 .editForm {
@@ -150,7 +155,9 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
             this.isLoading = false;
             return;
         }
-        
+        if (!this.isMarkup) {
+            delete this.fields.buildertek__Markup__c;
+        }
         this.fields.buildertek__Budget__c = this.recordId;
         this.fields.Name = this.fields.buildertek__Description__c;
         
@@ -256,6 +263,8 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                 this.budgetLines = result.budgetLineList;
                 this.currencyCode = result.OrgCurrency;
                 this.isSingleLineenabled = !result.checkSingleQLine;
+                this.isMarkup = !result.checkButtonMarkup;
+                // this.isMargin = !result.checkButtonMargin;
                 let groupingOption = [];
                 for (var i = 0; i < result.BudgetItemGroupList.length; i++) {
                     label: result.BudgetItemGroupList[i].Name;
@@ -308,7 +317,7 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
                         result.columns[i].type = 'string';
                     }
 
-                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' ){
+                    if(result.columns[i].fieldName === 'buildertek__Markup__c' || result.columns[i].fieldName === 'buildertek__Tax__c' || result.columns[i].fieldName === 'buildertek__Projected_Gross_Profit__c' || result.columns[i].fieldName === 'buildertek__Gross_Profit_Margin__c'){
                         result.columns[i].type = 'percent';
                         result.columns[i].typeAttributes = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
                     }
@@ -407,6 +416,14 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 
                     if (this.budgetLines[i].buildertek__Tax__c != null) {
                         this.budgetLines[i].buildertek__Tax__c = this.budgetLines[i].buildertek__Tax__c / 100;
+                    }
+
+                    if (this.budgetLines[i].buildertek__Projected_Gross_Profit__c != null) {
+                        this.budgetLines[i].buildertek__Projected_Gross_Profit__c = this.budgetLines[i].buildertek__Projected_Gross_Profit__c / 100;
+                    }
+
+                    if (this.budgetLines[i].buildertek__Gross_Profit_Margin__c != null) {
+                        this.budgetLines[i].buildertek__Gross_Profit_Margin__c = this.budgetLines[i].buildertek__Gross_Profit_Margin__c / 100;
                     }
 
                     if (this.data.some(item => item.groupName === groupName && item.groupId === groupId)) {
@@ -782,4 +799,103 @@ export default class NewQuoteItemcmp extends NavigationMixin(LightningElement) {
 	closeDeleteModel(){
 		this.isDeleteModal = false;
 	}
+
+    handleMarkupChange(event) {
+        this.globalMarkup = event.target.value;
+    }
+
+    // handleMarginChange(event) {
+    //     this.globalMargin = event.target.value;
+    // }
+
+    // handleMargin() {
+    //     if (!this.globalMargin) {
+    //         this.dispatchEvent(new ShowToastEvent({
+    //             title: 'Error',
+    //             message: 'Please enter a valid margin',
+    //             variant: 'error'
+    //         }));
+    //         return;
+    //     }
+    //     this.isLoading = true;
+    //     addGlobalMargin({
+    //         budgetId: this.recordId,
+    //         margin: this.globalMargin
+    //     })
+    //         .then(result => {
+    //             if (result == "Success") {
+    //                 let message = 'Global Margin updated successfully';
+    //                 this.dispatchEvent(new ShowToastEvent({
+    //                     title: 'Success',
+    //                     message: message,
+    //                     variant: 'success'
+    //                 }));
+    //                 this.refreshData();
+    //                 this.globalMargin = null;
+    //             } else {
+    //                 this.dispatchEvent(new ShowToastEvent({
+    //                     title: 'Error',
+    //                     message: result,
+    //                     variant: 'error'
+    //                 }));
+    //             }
+    //         })
+    //         .catch(error => {
+    //             const { errorMessage, errorObject } = this.returnErrorMsg(error);
+    //             this.dispatchEvent(new ShowToastEvent({
+    //                 title: "Error",
+    //                 message: errorMessage,
+    //                 variant: "error"
+    //             }));
+    //         })
+    //         .finally(() => {
+    //             this.isLoading = false;
+    //         });
+    // }
+
+    handleMarkup() {
+        if (!this.globalMarkup) {
+            this.dispatchEvent(new ShowToastEvent({
+                title: 'Error',
+                message: 'Please enter a valid markup',
+                variant: 'error'
+            }));
+            return;
+        }
+        this.isLoading = true;
+        addGlobalMarkup({
+            budgetId: this.recordId,
+            markup: this.globalMarkup
+        })
+            .then(result => {
+                if (result == "Success") {
+                    let message = 'Global Markup updated successfully';
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Success',
+                        message: message,
+                        variant: 'success'
+                    }));
+                    this.refreshData();
+                    this.globalMarkup = null;
+                } else {
+                    this.dispatchEvent(new ShowToastEvent({
+                        title: 'Error',
+                        message: result,
+                        variant: 'error'
+                    }));
+                }
+            })
+            .catch(error => {
+                const { errorMessage, errorObject } = this.returnErrorMsg(error);
+                this.dispatchEvent(new ShowToastEvent({
+                    title: "Error",
+                    message: errorMessage,
+                    variant: "error"
+                }));
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
 }

@@ -183,11 +183,11 @@
 
 .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     align-items: flex-end;
     margin: 1rem;
     flex-wrap: wrap;
-    row-gap: 1rem;
+    gap: 1rem;
 }
 
 .rightContainer {
@@ -206,5 +206,14 @@
 .no-wrap {
     white-space: nowrap;
     flex-shrink: 0;
-    height: 2.3rem;
+}
+
+.globalBtn {
+    display: flex;
+    align-items: center;
+}
+
+.globalTitle {
+    width: 100px;
+    font-weight: 500;
 }
