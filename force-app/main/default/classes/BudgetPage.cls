@@ -82,7 +82,7 @@ public without sharing class BudgetPage {
     
             String query = 'SELECT Id, ' + apiString;
             query += 'buildertek__Group__c, buildertek__Group__r.Name, buildertek__Group__r.buildertek__Sort_Id__c FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =\'' + budgetId + '\'';
-            query += ' ORDER BY buildertek__Group__r.buildertek__Sort_Id__c NULLS Last, buildertek__Group__r.Name, Name ASC';
+            query += ' ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c NULLS Last, buildertek__Group__r.Name, buildertek__Sort_Id__c ASC NULLS Last, Name ASC';
             System.debug('query: ' + query);
     
             List<buildertek__Budget_Item__c> budgetLineList = Database.query(query);
@@ -124,7 +124,7 @@ public without sharing class BudgetPage {
     public static massUpdateBudgetItemWrapper massUpdateBudget(String Budget) {
         massUpdateBudgetItemWrapper BIWrapper = new massUpdateBudgetItemWrapper();
         try {
-            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name, buildertek__Group__c, buildertek__Group__r.Name, buildertek__Budget__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Forecast_To_Complete__c FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =: Budget ORDER BY buildertek__Group__r.buildertek__Sort_Id__c NULLS Last, buildertek__Group__r.Name, Name ASC];
+            List<buildertek__Budget_Item__c> budgetLineList = [SELECT Id, Name, buildertek__Group__c, buildertek__Group__r.Name, buildertek__Budget__r.Name, buildertek__Quantity__c, buildertek__Unit_Price__c, buildertek__Markup__c, buildertek__Tax__c, buildertek__Forecast_To_Complete__c FROM buildertek__Budget_Item__c WHERE buildertek__Budget__c =: Budget ORDER BY buildertek__Group__r.buildertek__Sorting_Id__c NULLS Last, buildertek__Group__r.Name,buildertek__Sort_Id__c ASC NULLS LAST, Name ASC];
             BIWrapper.BudgetItemList = budgetLineList;
             
             List<buildertek__Budget_Line_Group__c> groupingList = [SELECT Id, Name FROM buildertek__Budget_Line_Group__c ORDER BY Name];
