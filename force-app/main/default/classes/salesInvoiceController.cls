@@ -18,7 +18,7 @@ public with sharing class salesInvoiceController {
     @AuraEnabled 
     public static Map<String, String> getpricebooks(){
         Map<String, String> options = new Map<String, String>();
-        list<pricebook2> PriceList = [Select Id, Name from pricebook2 ORDER BY Name ASC];
+        list<pricebook2> PriceList = [SELECT Id, Name FROM pricebook2 WHERE buildertek__BT_Visible__c = true AND isActive = true ORDER BY Name ASC];
         for (pricebook2 p: PriceList) {
             options.put(p.name, p.Id); 
         }

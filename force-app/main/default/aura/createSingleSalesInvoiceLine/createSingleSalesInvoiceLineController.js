@@ -76,7 +76,6 @@
 
     saveSalesInvoiceLineRecord: function (component, event, helper) {
         let salesinvoiceLineName = component.find('salesInvoiceLineID').get("v.value");
-        console.log(`salesinvoiceLineName: ${salesinvoiceLineName}`);
         if (!salesinvoiceLineName){
             var toastEvent = $A.get("e.force:showToast");
             toastEvent.setParams({
@@ -117,7 +116,7 @@
                     $A.getCallback(function () {
                         var toastEvent = $A.get("e.force:showToast");
                         toastEvent.setParams({
-                            mode: 'sticky',
+                            mode: 'dismissible',
                             message: 'Sales Invoice Line created successfully',
                             messageTemplate: "Sales Invoice Line created successfully.",
                             messageTemplateData: [{
@@ -125,7 +124,7 @@
                                 label: result.Name,
                             }],
                             type: 'success',
-                            duration: '10000',
+                            duration: '3000',
                             mode: 'dismissible'
                         });
                         toastEvent.fire();
@@ -134,7 +133,6 @@
                 $A.get("e.c:BT_SpinnerEvent").setParams({
                     "action": "HIDE"
                 }).fire();
-                component.refreshData();
                 $A.get('e.force:refreshView').fire();
 
             }
