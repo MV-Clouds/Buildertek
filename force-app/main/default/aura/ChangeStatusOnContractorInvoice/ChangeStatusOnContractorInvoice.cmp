@@ -1,0 +1,13 @@
+<aura:component
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader"
+    controller="changeStatusOnCIControlller" access="global">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <lightning:notificationsLibrary aura:id="notifLib" />
+    <div aura:id="progressbar">
+        <center>
+            <img alt="Updating Status to Paid" src="{!$Resource.gearsloading}" style="height:150px !important;" />
+            <br />
+            Updating Contractor Invoice Status to Paid.
+        </center>
+    </div>
+</aura:component>
