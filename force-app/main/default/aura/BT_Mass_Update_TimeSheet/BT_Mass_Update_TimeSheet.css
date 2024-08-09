@@ -49,3 +49,8 @@
 .THIS .header {
     padding-left: 5px !important;
 }
+
+.THIS .slds-has-error .slds-input {
+    box-shadow: unset !important;
+    border-color: unset !important;
+}
