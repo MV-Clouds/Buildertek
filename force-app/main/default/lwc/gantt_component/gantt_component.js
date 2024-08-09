@@ -36,7 +36,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   @track scheduleItemsData;
   @track contractorAndResources;
   @track internalResources;
-
+  dynamicTabIndex = 0;
   @track error_toast = true;
   @track taskId = "";
   considerWeekendsAsWorking = false;
@@ -567,6 +567,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
   createGanttChartInitially() {
     const GanttToolbar = GanttToolbarMixin(bryntum.gantt.Toolbar);
 
+    let that = this;
     var assignments = {};
     var resources = {};
     var tasks = {};
@@ -643,36 +644,6 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
         },
         {
           type: "action",
-          draggable: false,
-          // text    : 'Files',
-          width: 30,
-          actions: [
-            {
-              cls: "b-fa b-fa-file",
-              onClick: ({ record }) => {
-                this.showFileForRecord = record._data.id;
-                this.showFilePopup = true;
-              },
-              renderer: ({ action, record }) => {
-                if (
-                  record._data.type == "Task" &&
-                  record._data.id.indexOf("_generate") == -1 &&
-                  record._data.name != "Milestone Complete"
-                ) {
-                  if (this.storeRes["" + record._data.id]["fileLength"]) {
-                    return `<i style="font-size:1.1rem;color:green;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                  }
-                  return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                  // return `<i class="b-action-item ${action.cls}" data-btip="File"></i>`;
-                } else {
-                  return `<i class="b-action-item ${action.cls}" data-btip="File" style="display:none;"></i>`;
-                }
-              },
-            },
-          ],
-        },
-        {
-          type: "action",
           text: "",
           width: 30,
           actions: [
@@ -730,6 +701,7 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
               cls: "b-fa b-fa-pen",
               onClick: ({ record }) => {
                 if (record.type == "Task" && record.name != "Milestone Complete") {
+                  that.dynamicTabIndex = 0;
                   gantt.editTask(record);
                 }
               },
@@ -967,6 +939,58 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             },
           ],
         },
+        {
+          type: "action",
+          draggable: false,
+          // text    : 'Files',
+          width: 30,
+          actions: [
+            {
+              cls: "b-fa b-fa-file",
+              onClick: ({ record }) => {
+                this.showFileForRecord = record._data.id;
+                this.showFilePopup = true;
+              },
+              renderer: ({ action, record }) => {
+                if (
+                  record._data.type == "Task" &&
+                  record._data.id.indexOf("_generate") == -1 &&
+                  record._data.name != "Milestone Complete"
+                ) {
+                  if (this.storeRes["" + record._data.id]["fileLength"]) {
+                    return `<i style="font-size:1.1rem;color:green;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
+                  }
+                  return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="File"></i>`;
+                  // return `<i class="b-action-item ${action.cls}" data-btip="File"></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" data-btip="File" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
+        {
+          type: "action",
+          draggable: false,
+          // text    : 'Files',
+          width: 30,
+          actions: [
+            {
+              cls: "b-fa b-fa-commenting",
+              renderer: ({ action, record }) => {
+                if (
+                  record._data.type == "Task" &&
+                  record._data.id.indexOf("_generate") == -1 &&
+                  record._data.name != "Milestone Complete"
+                ) {
+                  return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="Notes"></i>`;
+                } else {
+                  return `<i class="b-action-item ${action.cls}" data-btip="Notes" style="display:none;"></i>`;
+                }
+              },
+            },
+          ],
+        },
       ],
 
       subGridConfigs: {
@@ -1095,12 +1119,14 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
             return false;
           }
         },
-        beforeTaskEditShow({ editor, taskRecord }) {
+        beforeTaskEditShow({ taskRecord, editor }) {
+          
           editor.widgetMap.newCustomField.value = taskRecord._data.NewPhase;
-          console.log(taskRecord._data);
           editor.widgetMap.manuallyScheduledField.value = taskRecord._data.manuallyScheduled;
+          const desiredTabIndex = that.dynamicTabIndex;
+          editor.widgetMap.tabs.activeTab = desiredTabIndex;
           return true;
-        }
+        },
       },
 
       taskRenderer({ taskRecord, renderData }) {
@@ -1222,6 +1248,15 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
       }
       if (event.column.text == "Contractor") {
         this.taskRecordId = event.record.id;
+      }
+
+      console.log('event.column ',event.column);
+      
+      if (event.column.id == "col16") {
+        if (gantt.selectedRecord) {
+          this.dynamicTabIndex = 2;          
+          gantt.editTask(gantt.selectedRecord);
+        }
       }
 
       //   if ((event.column.data.text == "Name") && (event.record.type == "Task") && (event.record.name != "Milestone Complete")) {
