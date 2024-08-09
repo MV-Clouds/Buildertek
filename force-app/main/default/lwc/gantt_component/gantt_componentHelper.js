@@ -119,6 +119,7 @@ function convertJSONtoApexData(data, taskData, dependenciesData, resourceData) {
                 updateData['buildertek__Finish__c'] = enddate.getFullYear() + '-' + Number(enddate.getMonth() + 1) + '-' + enddate.getDate();
                 updateData['buildertek__Duration__c'] = rowData[i]['duration']
                 updateData['buildertek__Completion__c'] = rowData[i]['percentDone']
+                updateData['buildertek__Notes__c'] = rowData[i]['note']
                 updateData['buildertek__task_color__c'] = rowData[i]['eventColor']
                 updateData['buildertek__ConstraintDate__c'] = null
                 updateData['buildertek__ConstraintType__c'] = 'None'
@@ -551,6 +552,7 @@ function grpTaskOnPhase(records) {
             startDate: record.buildertek__Start__c,
             constraintType: "startnoearlierthan",
             constriantDate: record.buildertek__Start__c,
+            note: record.buildertek__Notes__c,
             expanded: true,
             type: "Task",
             iconCls: "b-fa b-fa-arrow-right",

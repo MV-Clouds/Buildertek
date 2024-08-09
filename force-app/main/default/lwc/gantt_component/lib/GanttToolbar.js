@@ -398,7 +398,7 @@ export default base => class GanttToolbar extends base {
 
     onEditTaskClick() {
         const { gantt } = this;
-
+        this.gantt.callGanttComponent.dynamicTabIndex = 0;
         if (gantt.selectedRecord) {
             gantt.editTask(gantt.selectedRecord);
         }
