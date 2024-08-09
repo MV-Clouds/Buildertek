@@ -181,17 +181,21 @@ public without sharing class checkListQuestionsCtrl{
     public static List<groupinnerclass> getQuestions(string CheckQuestionId){
         system.debug('CheckQuestionId' + CheckQuestionId);
         List<string> questionIds = new List<string>();
-        List<buildertek__Checklist_Questions__c> questionList = [select id,buildertek__Checklist_Configuration__r.buildertek__Ordered_Section__c, buildertek__Questions__c, buildertek__Questions__r.buildertek__Options__c, buildertek__Questions__r.buildertek__group_name__c, buildertek__Questions__r.buildertek__Customize__c, buildertek__Questions__r.buildertek__Question_Type__c, buildertek__Questions__r.buildertek__Section__r.Name,  buildertek__Questions__r.buildertek__Sub_Section__r.Name
+        List<buildertek__Checklist_Questions__c> questionList = [select id,buildertek__Checklist_Configuration__r.buildertek__Ordered_Subsection__c, buildertek__Checklist_Configuration__r.buildertek__Ordered_Section__c, buildertek__Questions__c, buildertek__Questions__r.buildertek__Options__c, buildertek__Questions__r.buildertek__group_name__c, buildertek__Questions__r.buildertek__Customize__c, buildertek__Questions__r.buildertek__Question_Type__c, buildertek__Questions__r.buildertek__Section__r.Name,  buildertek__Questions__r.buildertek__Sub_Section__r.Name
                                                                  from buildertek__Checklist_Questions__c
                                                                  where buildertek__Checklist_Configuration__c = :CheckQuestionId AND buildertek__Questions__r.buildertek__Section__c != null
                                                                  ORDER BY buildertek__Questions__r.buildertek__Section__r.Name ASC
                                                                  NULLS LAST, buildertek__Questions__r.buildertek__Sub_Section__r.Name NULLS Last, CreatedDate desc];
 
         Map<String, List<buildertek__Checklist_Questions__c>> sectionCustomOrderMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
+        Map<String, List<String>> sectionIdSubsectionListMap = new Map<String, List<String>>();
+        Map<String, List<String>> sectionNameSubsectionListMap = new Map<String, List<String>>();
         String jsonSectionOrder;
+        String jsonSubsectionOrder;
 
         if(questionList.size() > 0){
             jsonSectionOrder = questionList[0].buildertek__Checklist_Configuration__r.buildertek__Ordered_Section__c;
+            jsonSubsectionOrder = questionList[0].buildertek__Checklist_Configuration__r.buildertek__Ordered_Subsection__c;
         }
 
         if(!String.isBlank(jsonSectionOrder)){
@@ -205,36 +209,59 @@ public without sharing class checkListQuestionsCtrl{
             }
         }
 
+        if(!String.isBlank(jsonSubsectionOrder)){
+            Map<String, Object> tempMap2 = (Map<String, Object>) JSON.deserializeUntyped(jsonSubsectionOrder);
+
+            for (String key : tempMap2.keySet()) {
+                List<String> listOfSubSections = new List<String>();
+                listOfSubSections = (List<String>) JSON.deserialize(JSON.serialize(tempMap2.get(key)), List<String>.class);
+                sectionIdSubsectionListMap.put(key, listOfSubSections);
+            }
+        }
+
         for (buildertek__Checklist_Questions__c Ques : questionList){
             if(!sectionCustomOrderMap.containsKey(ques.buildertek__Questions__r.buildertek__Section__r.Name)){
                 sectionCustomOrderMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, new list<buildertek__Checklist_Questions__c>());
             }
             sectionCustomOrderMap.get(ques.buildertek__Questions__r.buildertek__Section__r.Name).add(Ques);
+
+            if(sectionIdSubsectionListMap.containsKey(ques.buildertek__Questions__r.buildertek__Section__c)){
+                sectionNameSubsectionListMap.put(ques.buildertek__Questions__r.buildertek__Section__r.Name, sectionIdSubsectionListMap.get(ques.buildertek__Questions__r.buildertek__Section__c));
+            }
         }
         
         
         list<groupinnerclass> groupinnerclasslist = new list<groupinnerclass>();
         for (string groupname : sectionCustomOrderMap.keyset()){
-            // NOTE: subsection list
+            //* main map for subsection grouping and handling iteration
             Map<String, List<buildertek__Checklist_Questions__c>> subSectionMap = new Map<String, List<buildertek__Checklist_Questions__c>>();
+
+            // NOTE: subsection list doing operation for subsection ordering.
+            List<String> subSectionNameList = new List<String>();
+            if(sectionNameSubsectionListMap.containsKey(groupname)){
+                subSectionNameList = sectionNameSubsectionListMap.get(groupname);
+            }
+
+            if (subSectionNameList.size() > 0){
+                for (String subSectionName : subSectionNameList) {
+                    subSectionMap.put(subSectionName, new List<buildertek__Checklist_Questions__c>());
+                }
+            }
+
             for(buildertek__Checklist_Questions__c ques : sectionCustomOrderMap.get(groupname)){
-                system.debug('ques for subsection ==> ' + ques);
                 String s = String.isBlank(ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name) ? 'No Subsection' : ques.buildertek__Questions__r.buildertek__Sub_Section__r.Name ;
-                system.debug('check map string s ==> ' + s);                
+
                 if (subSectionMap.containsKey(s)) {
                     subSectionMap.get(s).add(ques);
                 } else {
                     subSectionMap.put(s, new List<buildertek__Checklist_Questions__c>{ ques });
                 }
             }
-            System.debug('new subsection list ==> ' + subSectionMap);
 
             groupinnerclass groupinnerclassrec = new groupinnerclass();
             groupinnerclassrec.GroupName = groupname;
             list<QuestionsInnerclass> QuestionsInnerclasslist = new list<QuestionsInnerclass>();
             list<groupinnerclass2> groupinnerclass2List = new list<groupinnerclass2>();
-            
-
 
             for(String subSectionName : subSectionMap.keyset()){
                 groupinnerclass2 groupinnerclassrec2 = new groupinnerclass2();

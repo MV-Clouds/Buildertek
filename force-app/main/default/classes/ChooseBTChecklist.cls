@@ -175,7 +175,6 @@ public class ChooseBTChecklist {
         if (recordId != null && recordId != '') {
             bcc.Id = Id.valueOf(recordId);
         }
-        upsert bcc;
 
         if (recordId != null && recordId != '') {
             List<buildertek__Checklist_Questions__c> existingQuestions = [SELECT buildertek__Questions__c FROM buildertek__Checklist_Questions__c WHERE buildertek__Checklist_Configuration__c = :bcc.Id];
@@ -187,8 +186,12 @@ public class ChooseBTChecklist {
             
             List<buildertek__Checklist_Questions__c> questionListToDelete = [SELECT Id FROM buildertek__Checklist_Questions__c WHERE buildertek__Checklist_Configuration__c = :bcc.Id AND buildertek__Questions__c NOT IN :QuestionIds];
             
+            if (questionListToDelete.size() > 0) {              
+              bcc.buildertek__Ordered_Section__c = null;
+              bcc.buildertek__Ordered_Subsection__c = null;
+            }
+            upsert bcc;
             delete questionListToDelete;
-            
             for (String questionId : QuestionIds) {
                 if (!existingQuestionIds.contains(questionId)) {
                     buildertek__Checklist_Questions__c bcq = new buildertek__Checklist_Questions__c();

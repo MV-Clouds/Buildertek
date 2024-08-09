@@ -1,3 +1,57 @@
-<aura:component>
-    
-</aura:component>	
+<aura:component controller="OrderChecklistController"
+    implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+    access="global">
+
+    <aura:attribute name="checkListId" type="string" default="" />
+    <aura:attribute name="globalListWithSectionSubsection" type="List" default="[]" />
+    <aura:attribute name="globalMapWithSectionWithSubsection" type="Map" default="{}" />
+    <aura:registerEvent name="childOrderSubsectionComponentEvent" type="c:compEvent" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="options" type="List" default="[{'label':'Bob','value':'123', 'selected':true},
+                                                         {'label':'Chrissey','value':'345', 'selected':false},
+                                                         {'label':'Jessica','value':'456', 'selected':false},
+                                                         {'label':'Sunny','value':'567', 'selected':false}]" />
+    <aura:attribute name="selectedValues" type="List" default="" description="Selected value in Multi Select" />
+
+
+    <div class="slds-m-around_xx-large">
+        <!-- Modal/Popup Box starts here-->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box Header Starts here-->
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                        variant="bare-inverse" class="slds-modal__close" />
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Order</h2>
+                </header>
+                <!--Modal/Popup Box Body Starts here-->
+                <div class="slds-modal__content slds-p-around_medium mainBody" id="modal-content-id-1">
+                    <aura:if isTrue="{!not(empty(v.globalListWithSectionSubsection))}">
+                        <aura:iteration items="{!v.globalListWithSectionSubsection}" var="item">
+                            <div class="setUpRows">
+                                <div class="titleForSection">
+                                    <span>{!item.sectionName}</span>
+                                </div>
+                                <div class="cmp-section-style">
+                                    <c:multiSelectLWCCombobox selectedValues="{!item.existingStoredSubsectionList}" iterId="{!item.sectionId}" onselect="{!c.handleChildSectionEvent}" multiSelect="true" options="{!item.subSectionList}" ></c:multiSelectLWCCombobox>
+                                </div>
+                            </div>
+                        </aura:iteration>
+                        <aura:set attribute="else">
+                            <div class="whenNoRecords">
+                                <h2>No Subsections Found</h2>
+                            </div>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <!--Modal/Popup Box Footer Starts here-->
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }" />
+                    <lightning:button variant="brand" label="Save" title="Save" disabled="{!(empty(v.globalListWithSectionSubsection))}"   onclick="{!c.submitDetails}" />
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>
