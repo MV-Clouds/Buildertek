@@ -983,6 +983,9 @@ export default class Gantt_component extends NavigationMixin(LightningElement) {
                   record._data.id.indexOf("_generate") == -1 &&
                   record._data.name != "Milestone Complete"
                 ) {
+                  if (record.note) {
+                    return `<i style="font-size:1.1rem;color:green;" class="b-action-item ${action.cls}" data-btip="Notes"></i>`;
+                  }
                   return `<i style="font-size:1.1rem;" class="b-action-item ${action.cls}" data-btip="Notes"></i>`;
                 } else {
                   return `<i class="b-action-item ${action.cls}" data-btip="Notes" style="display:none;"></i>`;
