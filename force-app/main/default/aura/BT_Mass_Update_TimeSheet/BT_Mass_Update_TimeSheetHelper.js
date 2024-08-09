@@ -1,6 +1,5 @@
 ({
     getTimeSheetEntries: function (component, event, helper) {
-        console.log('getTimeSheetEntries');
         var timesheetId = component.get('v.recordId');
         var action = component.get("c.fetchDataAndFieldSetValues");
         action.setParams({
@@ -11,7 +10,6 @@
         action.setCallback(this, function (response) {
             var result = response.getReturnValue();
             if (result) {
-                console.log(`result = ${JSON.stringify(result)}`);
                 component.set("v.timeSheetEntries", result.timesheetentryObject);
                 component.set("v.fieldSetValues", result.FieldSetValues);
                 if (result.timesheetentryObject.length > 0) {
@@ -21,7 +19,6 @@
                     component.set("v.TimeSheetProject", result.timesheetObject[0].buildertek__BT_Project__c);
                     component.set("v.TimeSheetResource", result.timesheetObject[0].buildertek__Contact__c);
                 }
-                console.log('timeSheetEntries', component.get('v.timeSheetEntries'));
             }
         });
         component.set("v.Spinner", false);
@@ -29,10 +26,8 @@
     },
 
     validateTimeSheetEntries: function (component, event, helper) {
-        console.log('validateTimeSheetEntries');
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var isValid = true;
-        console.log(timeSheetEntries.length);
         if (timeSheetEntries.length == 0) {
             component.set("v.Spinner", false);
             isValid = false;
@@ -68,8 +63,6 @@
             if (timeSheetEntries[i].buildertek__Start_Time__c && timeSheetEntries[i].buildertek__End_Time__c) {
                 var startTime = new Date(timeSheetEntries[i].buildertek__Start_Time__c);
                 var endTime = new Date(timeSheetEntries[i].buildertek__End_Time__c);
-                console.log(timeSheetEntries[i].buildertek__Start_Time__c);
-                console.log(timeSheetEntries[i].buildertek__End_Time__c);
                 if (startTime > endTime) {
                     component.set("v.Spinner", false);
                     isValid = false;
@@ -142,9 +135,7 @@
 
     updateTimeSheetEntries: function (component, event, helper) {
         var timeSheetEntries = component.get('v.timeSheetEntries');
-        console.log('timeSheetEntries', timeSheetEntries);
         var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
-        console.log('deletedTimeSheetEntries', deletedTimeSheetEntries);
 
         var action = component.get("c.updateTimeSheetEntries");
         action.setParams({

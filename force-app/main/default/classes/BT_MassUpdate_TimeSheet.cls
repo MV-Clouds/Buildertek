@@ -49,7 +49,7 @@ public with sharing class BT_MassUpdate_TimeSheet {
             // Include all required fields by default
             for (String fieldName : mapFields.keySet()) {
                 Schema.DescribeFieldResult fieldDescribe = mapFields.get(fieldName).getDescribe();
-                if (!fieldDescribe.isNillable() && !fieldDescribe.isDefaultedOnCreate()) {
+                if (!fieldDescribe.isNillable() && !fieldDescribe.isDefaultedOnCreate() && fieldName != 'buildertek__BT_Time_Sheet__c') {
                     String fieldPath = fieldDescribe.getName();
                     if (!queryFields.contains(fieldPath)) {
                         Map<String, Object> fieldData = new Map<String, Object>();

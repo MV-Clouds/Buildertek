@@ -6,7 +6,6 @@
     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
     <lightning:overlayLibrary aura:id="overlayLib" />
     <aura:registerEvent name="myevent" type="c:myEvent" />
-    <lightning:overlayLibrary aura:id="overlayLib" />
 
 
     <aura:attribute name="Spinner" type="boolean" />

@@ -15,7 +15,7 @@
     },
 
     onAddClick: function(component, event, helper){
-        console.log('onAddClick');
+
         var timeSheetEntries = component.get('v.timeSheetEntries');
         //create a timeSheetEntry
         var timeSheetEntry = {
@@ -30,11 +30,10 @@
     },
 
     deleteRecord: function(component, event, helper){
-        console.log('deleteRecord');
         var target = event.target;
         var timeSheetEntries = component.get('v.timeSheetEntries');
         var index = target.getAttribute("data-index");
-        console.log('index', index);
+
         if(index != null){
             if(timeSheetEntries[index].Id != '' && timeSheetEntries[index].Id != undefined  && timeSheetEntries[index].Id != null){
                 var deletedTimeSheetEntries = component.get('v.deletedTimeSheetEntries');
