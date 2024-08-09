@@ -330,11 +330,13 @@ public without sharing class checkListQuestionsCtrl{
             list<buildertek__Questionnaire__c> Questionnairelist = new list<buildertek__Questionnaire__c>();
             List<string> questionList = new List<string>();
             Map<string, string> questionMap = new Map<string, string>();
-            List<buildertek__Questions__c> bclist;
+            List<buildertek__Questions__c> bclist = new List<buildertek__Questions__c>();
 
             for (groupinnerclass groups : QuestionsInner){
-                for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
-                    questionList.add(Ques.QuestionId);
+                if (groups.QuestionsInnerclasslist != null) {
+                    for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
+                        questionList.add(Ques.QuestionId);
+                    }
                 }
             }
             if (!questionList.isEmpty()){
@@ -342,29 +344,32 @@ public without sharing class checkListQuestionsCtrl{
                           from buildertek__Questions__c
                           where id IN:questionList];
             }
-
-            for (buildertek__Questions__c b : bclist){
-                questionMap.put(b.id, b.buildertek__Customize__c);
+            if (bclist.size() > 0){
+                for (buildertek__Questions__c b : bclist){
+                    questionMap.put(b.id, b.buildertek__Customize__c);
+                }
             }
             for (groupinnerclass groups : QuestionsInner){
-                for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
-                    buildertek__Questionnaire__c Questionnaire = new buildertek__Questionnaire__c();
-                    Questionnaire.buildertek__Questions__c = Ques.QuestionId;
-                    Questionnaire.buildertek__Checklist_Response__c = checklistresponse.Id;
-                    if (bclist.size() > 0){
-                        Questionnaire.buildertek__QuestionireQuestion__c = questionMap.get(Ques.QuestionId);
-                    }
-                    if (Ques.QuestionType != 'Multi Select Answer'){
-                        Questionnaire.buildertek__Answer__c = Ques.QuestionValue;
-                    } else{
-                        if (Ques.QuestionValues == null){
-                            Questionnaire.buildertek__Answer__c = '';
-                        } else{
-                            Questionnaire.buildertek__Answer__c = '' + Ques.QuestionValues;
+                if (groups.QuestionsInnerclasslist != null) {
+                    for (QuestionsInnerclass Ques : groups.QuestionsInnerclasslist){
+                        buildertek__Questionnaire__c Questionnaire = new buildertek__Questionnaire__c();
+                        Questionnaire.buildertek__Questions__c = Ques.QuestionId;
+                        Questionnaire.buildertek__Checklist_Response__c = checklistresponse.Id;
+                        if (bclist.size() > 0){
+                            Questionnaire.buildertek__QuestionireQuestion__c = questionMap.get(Ques.QuestionId);
                         }
+                        if (Ques.QuestionType != 'Multi Select Answer'){
+                            Questionnaire.buildertek__Answer__c = Ques.QuestionValue;
+                        } else{
+                            if (Ques.QuestionValues == null){
+                                Questionnaire.buildertek__Answer__c = '';
+                            } else{
+                                Questionnaire.buildertek__Answer__c = '' + Ques.QuestionValues;
+                            }
 
+                        }
+                        Questionnairelist.add(Questionnaire);
                     }
-                    Questionnairelist.add(Questionnaire);
                 }
             }
             insert Questionnairelist;
